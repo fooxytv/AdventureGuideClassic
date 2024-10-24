@@ -1,0 +1,11 @@
+# Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
+# All rights reserved.
+# Programming by: TomCat / TomCat's Gaming
+
+## Title: AdventureGuideClassic
+## Version: 1.0.2-alpha.04588a7
+## Notes: Provides a dungeon and raid journal for Classic WoW.
+## DefaultState: enabled
+## SavedVariables: AdventureGuideClassic_Account
+
+Main.xml

@@ -1,0 +1,28 @@
+<!--
+Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
+All rights reserved.
+
+Programming by: TomCat / TomCat's Gaming
+ -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Include file="Templates.xml" />
+
+    <Script file="lib/TomCats/GlobalFacade.lua" />
+    <Script file="lib/TomCats/Images.lua" />
+    <Include file="lib/TomCats/MinimapButton.xml" />
+    <Script file="lib/TomCats/MinimapButton.lua" />
+
+    <Script file="DynamicTable.lua" />
+    <Script file="Atlas.lua" />
+
+    <Include file="services/Services.xml" />
+    <Include file="data/Data.xml" />
+    <Include file="ui/UI.xml" />
+
+    <Script file="SlashCommands.lua" />
+    <Script file="Bindings.lua" />
+    <Script file="Main.lua" />
+
+</Ui>

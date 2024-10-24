@@ -1,0 +1,38 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Script file="ui/UI.lua" />
+
+    <Script file="ui/widgets/Widgets.lua" />
+    <Script file="ui/widgets/WidgetTypeMixin.lua" />
+    <Script file="ui/widgets/CollapsibleSectionWidgetTypeMixin.lua" />
+    <Script file="ui/widgets/Root.lua" />
+    <Script file="ui/widgets/Text.lua" />
+    <Script file="ui/widgets/Heading.lua" />
+    <Script file="ui/widgets/Role.lua" />
+    <Script file="ui/widgets/Section.lua" />
+    <Script file="ui/widgets/Spell.lua" />
+    <Script file="ui/widgets/NPC.lua" />
+
+    <Script file="ui/mappings/EquipMapping.lua" />
+    <Script file="ui/mappings/Colors.lua" />
+    <Script file="ui/mappings/SeasonMapping.lua" />
+    <Script file="ui/mappings/InstanceMapping.lua" />
+
+    <Script file="ui/Component.lua" />
+    <Script file="ui/EncounterJournal.lua" />
+    <Script file="ui/NavBar.lua" />
+    <Script file="ui/InstanceSelect.lua" />
+    <Script file="ui/EncounterFrame.lua" />
+    <Script file="ui/Info.lua" />
+    <Script file="ui/ModelFrame.lua" />
+    <Script file="ui/CreatureButtons.lua" />
+    <Script file="ui/InstanceOverview.lua" />
+    <Script file="ui/DynamicContentScroller.lua" />
+    <Script file="ui/Encounters.lua" />
+    <Script file="ui/EncounterJournalTabs.lua" />
+    <Script file="ui/InfoTabs.lua" />
+    <Script file="ui/Loot.lua" />
+    <Script file="ui/MinimapButton.lua" />
+
+</Ui>
