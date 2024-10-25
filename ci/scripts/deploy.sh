@@ -1,12 +1,19 @@
 #!/bin/bash
 
 # Load .env file with proper handling for spaces
+# if [ -f .env ]; then
+#     while IFS='=' read -r key value; do
+#         if [[ $key != \#* ]]; then
+#             export "$key"="${value%\"}"
+#         fi
+#     done < .env
+# else
+#     echo "Error: .env file not found."
+#     exit 1
+# fi
+
 if [ -f .env ]; then
-    while IFS='=' read -r key value; do
-        if [[ $key != \#* ]]; then
-            export "$key"="${value%\"}"
-        fi
-    done < .env
+    export $(grep -v '^#' .env | xargs)
 else
     echo "Error: .env file not found."
     exit 1
@@ -57,7 +64,7 @@ local_deploy() {
         unzip -o "$zip_file" -d "$wow_addons_dir/$addon_name"
         echo "Done."
     else
-        echo "Copying $zip_file to \"$wow_addons_dir/$addon_name\"..."
+        echo "Copying $zip_file to "$wow_addons_dir/$addon_name"..."
         unzip -o "$zip_file" -d "$wow_addons_dir/$addon_name"
         echo "Done."
     fi
@@ -70,3 +77,33 @@ else
     echo "Error: Invalid argument. Use 'local' or 'lcl' to deploy locally."
     exit 1
 fi
+
+
+
+
+# #!/bin/bash
+
+# if [ -f .env ]; then
+#     export $(grep -v '^#' .env | xargs)
+# else
+#     echo "Error: .env file not found."
+#     exit 1
+# fi
+
+# toc_file=$(find "$(pwd)" -name "*.toc" | head -n 1)
+# addon_name=$(awk -F': ' '/^## Title:/ {print $2}' "$toc_file")
+# version=$(awk -F': ' '/^## Version:/ {print $2}' "$toc_file")
+# zip_file="ci/dist/${addon_name}-${version}.zip"
+
+# local_deploy() {
+#    echo "Copying $zip_file to $wow_addons_dir.."
+#    unzip -o "$zip_file" -d "$wow_addons_dir"/"$addon_name"
+#    echo "Done."
+# }
+
+# if [ "$1" == "local" ] || [ "$1" == "lcl" ]; then
+#     local_deploy
+# else
+#     echo "Error: Invalid argument. Use 'local' or 'lcl' to deploy locally."
+#     exit 1
+# fi
