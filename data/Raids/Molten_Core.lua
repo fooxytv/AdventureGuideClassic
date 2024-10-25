@@ -13,6 +13,7 @@ InstanceService.AddRaid({
 	icon = 136346,
 	splash = 1396505,
 	mapID = 409,
+	season = false,
 	overview = "",
 	{
 		name = "Lucifron",

@@ -66,7 +66,7 @@ function CollapsibleSectionWidgetTypeMixin:Construct(parent)
 		table.insert(button.icons, iconFrame)
 		iconFrame:SetSize(32, 32)
 		iconFrame.icon = iconFrame:CreateTexture(nil, "OVERLAY")
-		iconFrame.icon:SetTexture(I.UIEJIcons)
+		-- iconFrame.icon:SetTexture(I.UIEJIcons)
 		iconFrame.icon:SetPoint("CENTER")
 		iconFrame.icon:SetSize(32, 32)
 		iconFrame:SetScript("OnEnter", function(self)
@@ -111,7 +111,6 @@ function CollapsibleSectionWidgetTypeMixin:Construct(parent)
 end
 
 function CollapsibleSectionWidgetTypeMixin:SetContents(widget, contents, bulleted)
-
 	self:SetAnchors(widget)
 	--local height = 32
 	for idx, contentPart in ipairs(contents) do

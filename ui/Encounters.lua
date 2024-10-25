@@ -12,6 +12,7 @@ local encountersScrollBox
 local sharedHighlightFrame
 
 local function EncounterButton_OnClick(self)
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
 	AdventureGuideNavigationService.SetEncounter(self.encounter)
 	EncounterJournal.encounter.info.encounterTitle:SetText("")
 	if self.encounter then
@@ -22,7 +23,7 @@ local function EncounterButton_OnClick(self)
 	sharedHighlightFrame:SetParent(self)
 	sharedHighlightFrame:SetAllPoints(self)
 	sharedHighlightFrame:Show()
-	--todo: Switch to correct view
+	--todo: Switch to correct view - this needs to be moved to a separate function
 	local selectedTabName = components.InfoTabs.GetSelectedTabName()
 	if selectedTabName == "Overview" then
 		components.DynamicContentScroller.ShowOverview()
@@ -119,7 +120,11 @@ function component.Init(components_)
 		button.encounter = encounter
 		button.name:SetText(encounter.name);
 		button.bgImage:SetTexture(encounter.portrait);
-		button.DefeatedOverlay:Hide()
+		if (encounter.defeated == 1) then
+			button.DefeatedOverlay:Show()
+		else
+			button.DefeatedOverlay:Hide()
+		end
 	end
 	local bossView = CreateScrollBoxListLinearView();
 	bossView:SetElementExtent(55)
@@ -128,12 +133,41 @@ function component.Init(components_)
 	ScrollUtil.InitScrollBoxListWithScrollBar(encountersScrollBox, encountersScrollBar, bossView);
 end
 
-function component.SetInstance(instance)
+function component.SetInstance(instance, dungeonName)
+	if not encountersScrollBox then
+		print("Error: encountersScrollBoxis not initialized.")
+		return
+	end
 	local dataProvider = CreateDataProvider();
 	encountersScrollBox:SetDataProvider(dataProvider);
 	for _, encounter in ipairs(instance) do
+		encounter.dungeonName = dungeonName
 		dataProvider:Insert(encounter)
 	end
 end
+
+local function RefreshEncounters()
+    if _G.AdventureGuideClassic_UI_Encounters_Refresh then
+        -- Get the current dungeon info
+        local instanceName = GetInstanceInfo()
+        local dungeons = InstanceService.GetDungeons()
+
+        -- Find the matching dungeon and refresh the UI
+        for _, dungeon in ipairs(dungeons) do
+            if dungeon.name == instanceName then
+                component.SetInstance(dungeon, instanceName)
+                break
+            end
+        end
+
+        -- Reset the flag after refreshing
+        _G.AdventureGuideClassic_UI_Encounters_Refresh = false
+    end
+end
+
+local refreshFrame = CreateFrame("Frame")
+refreshFrame:SetScript("OnUpdate", function(self, elapsed)
+    RefreshEncounters()
+end)
 
 UI.Add(component)

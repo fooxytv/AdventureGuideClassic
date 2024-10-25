@@ -13,6 +13,7 @@ InstanceService.AddRaid({
 	icon = 136329,
 	splash = 1396499,
 	mapID = 469,
+	season = false,
 	overview = "",
 	{
 		name = "Razorgore the Untamed",

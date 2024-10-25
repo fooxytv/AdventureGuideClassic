@@ -13,6 +13,7 @@ InstanceService.AddRaid({
 	icon = 136320,
 	splash = 1396510,
 	mapID = 509,
+	season = false,
 	overview = "",
 	{
 		name = "Kurinnaxx",

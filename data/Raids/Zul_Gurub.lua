@@ -13,6 +13,7 @@ InstanceService.AddRaid({
 	icon = 136369,
 	splash = 526416,
 	mapID = 309,
+	season = false,
 	overview = "Zul'Gurub is a 20-man raid located in the northeastern portion of [Stranlgethorn Vale], east of Lake Nazferiti. It is used to serve as the capitial city for the Gurubashi Trolls, however it was eventually destroyed by civil war and corruption. Centuries later, Atal'ai Priests have returned to the ctiy, seeking to use it for the evil purpose of summoning their Blood God, [Hakkar], the Soulflayer.",
 	{
 		name = "High Priestess Jeklik",

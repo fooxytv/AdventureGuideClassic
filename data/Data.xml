@@ -21,13 +21,13 @@
     <Script file="data/Dungeons/Wailing_Caverns.lua" />
     <Script file="data/Dungeons/Zul_Farrak.lua" />
 
+    <Script file="data/Raids/Blackfathom_Deeps.lua" />    
     <Script file="data/Raids/Molten_Core.lua" />
     <Script file="data/Raids/Blackwing_Lair.lua" />
     <Script file="data/Raids/Zul_Gurub.lua" />
     <Script file="data/Raids/Ruins_of_Ahn_Qiraj.lua" />
     <Script file="data/Raids/Temple_of_Ahn_Qiraj.lua" />
     <Script file="data/Raids/Naxxramas.lua" />
-    <Script file="data/Raids/Blackfathom_Deeps.lua" />
 
     <SimpleHTML name="AdventureGuideClassic_SampleEncounterDescription"
                 file="Interface\AddOns\AdventureGuideClassic\data\encounterDescriptions\sample.html"

@@ -13,20 +13,9 @@ local components
 local lootContainer
 local lootScrollBox
 
--- local function LootButton_OnClick(self)
--- 	AdventureGuideNavigationService.SetEncounter(self.encounter)
--- 	EncounterJournal.encounter.info.encounterTitle:SetText("")
--- 	if self.encounter then
--- 		local encounterName = AdventureGuideNavigationService.GetEncounterName()
--- 		EncounterJournal.encounter.info.encounterTitle:SetText(encounterName .. "Loot")
--- 		components.NavBar.Refresh(encounterName)
--- 	end
--- end
-
 function component.Init(components_)
 	components = components_
     lootContainer = CreateFrame("Frame", nil, EncounterJournal.encounter.info)
-	-- component.frame = lootContainer
 	lootContainer:SetSize(345, 382)
 	lootContainer:SetPoint("BOTTOMRIGHT", -5, 1)
 	EncounterJournal.encounter.LootContainer = lootContainer
@@ -38,7 +27,6 @@ function component.Init(components_)
 	EncounterJournal.encounter.LootScrollBar = lootScrollBar
 	lootScrollBar:SetPoint("TOPLEFT", lootScrollBox, "TOPRIGHT", 5, -5)
 	lootScrollBar:SetPoint("BOTTOMLEFT", lootScrollBox, "BOTTOMRIGHT", 5, 5)
-	-- lootScrollBar:Hide()
 	local function LootButtonInitalizer(button, lootItem)
 		button.lootItem = lootItem
 		if (not button.initialized) then
@@ -75,14 +63,14 @@ function component.Init(components_)
 			button.slot:SetJustifyH("LEFT")
 			button.slot:SetTextColor(0, 0, 0)
 			button.slot:SetSize(0, 12)
-			button.slot:SetPoint("BOTTOMLEFT", 55, 5)
+			button.slot:SetPoint("BOTTOMLEFT", 55, 3)
 			button.slot:SetFont("Fonts\\FRIZQT__.TTF", 10)
 			button.name = button:CreateFontString()
 			button.name:SetJustifyH("LEFT")
 			button.name:SetJustifyV("MIDDLE")
 			button.name:SetTextColor(0.87, 0.659, 0.463)
 			button.name:SetSize(250, 45)
-			button.name:SetPoint("TOPLEFT", 55, -3)
+			button.name:SetPoint("TOPLEFT", 55, 3)
 			button:SetFontString(button.name)
 			button:SetNormalFontObject("GameFontNormalMed3")
 			button.initialized = true
@@ -92,17 +80,37 @@ function component.Init(components_)
 		button.armorType:SetText(lootItem.armorType or "Unknown")
 		button.slot:SetText(lootItem.slot or "Unknown")
 		button:SetScript("OnEnter", function(self)
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			GameTooltip:SetHyperlink(lootItem.link)
-			GameTooltip:Show()
+			local itemLink = lootItem.link
+			-- Conflict with Auctionator - delay tooltip
+			if C_AddOns.IsAddOnLoaded("Auctionator") then
+				C_Timer.After(0.01, function()
+					if GameTooltip:GetOwner() ~= self then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+						GameTooltip:SetHyperlink(itemLink)
+						GameTooltip:Show()
+					end
+				end)
+			else
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+				GameTooltip:SetHyperlink(itemLink)
+				GameTooltip:Show()
+			end
 		end)
 		button:SetScript("OnLeave", function(self)
-			GameTooltip:Hide()
+			C_Timer.After(0.01, function()
+				if GameTooltip:GetOwner() == self and not self:IsMouseOver() then
+					GameTooltip:Hide()
+				end
+			end)
 		end)
 		button:SetScript("OnClick", function(self, mouseButton)
 			if mouseButton == "LeftButton" and IsControlKeyDown() then
 				if self.lootItem and self.lootItem.link then
 					DressUpItemLink(self.lootItem.link)
+				end
+			elseif mouseButton == "LeftButton" then
+				if self.lootItem and self.lootItem.link then
+					ChatEdit_InsertLink(self.lootItem.link)
 				end
 			end
 		end)
@@ -112,7 +120,7 @@ function component.Init(components_)
 		button.iconOverlay:SetVertexColor(color.r, color.g, color.b)
 	end
 	local lootView = CreateScrollBoxListLinearView()
-	lootView:SetElementExtent(55)
+	lootView:SetElementExtent(47)
 	lootView:SetElementInitializer("Button", LootButtonInitalizer)
 	ScrollUtil.InitScrollBoxListWithScrollBar(lootScrollBox, lootScrollBar, lootView)
 end

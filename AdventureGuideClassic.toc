@@ -4,9 +4,10 @@
 
 ## Interface: 11403
 ## Title: AdventureGuideClassic
-## Version: v1.0.1
-## Notes: Version: 1.0.1
+## Version: v0.1.0-alpha
+## Notes: Version: 0.1.0-alpha
 ## DefaultState: enabled
 ## SavedVariables: AdventureGuideClassic_Account
+## SavedVariablesPerCharacter: AdventureGuideClassic_Lockout
 
 Main.xml

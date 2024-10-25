@@ -13,6 +13,7 @@ InstanceService.AddRaid({
 	icon = 136347,
 	splash = 1396506,
 	mapID = 533,
+	season = false,
 	overview = "",
 	{
 		name = "Anub'Rekhan",

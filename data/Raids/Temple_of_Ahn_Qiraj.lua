@@ -13,6 +13,7 @@ InstanceService.AddRaid({
 	icon = 136321,
 	splash = 1396512,
 	mapID = 531,
+	season = false,
 	overview = "",
 	{
 		name = "The Prophet Skeram",

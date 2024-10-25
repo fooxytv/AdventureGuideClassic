@@ -6,5 +6,6 @@
     <Script file="services/HyperlinkService.lua" />
     <Script file="services/NPC.lua" />
     <Script file="services/TokenizedText.lua" />
-
+    <Script file="services/Lockout.lua" />
+    <Script file="services/TrackEncounters.lua" />
 </Ui>

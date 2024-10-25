@@ -16,7 +16,6 @@
 
     <Script file="ui/mappings/EquipMapping.lua" />
     <Script file="ui/mappings/Colors.lua" />
-    <Script file="ui/mappings/SeasonMapping.lua" />
     <Script file="ui/mappings/InstanceMapping.lua" />
 
     <Script file="ui/Component.lua" />
@@ -34,5 +33,4 @@
     <Script file="ui/InfoTabs.lua" />
     <Script file="ui/Loot.lua" />
     <Script file="ui/MinimapButton.lua" />
-
 </Ui>

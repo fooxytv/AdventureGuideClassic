@@ -13,7 +13,7 @@ InstanceService.AddDungeon({
 	icon = 136325,
 	splash = 608234,
 	mapID = 48,
-	season = false,
+	season = true,
 	overview = "Once dedicated to the night elves' goddess Elune, Blackfathom Deeps was thought to have been destroyed during the Sundering, lost beneath the ocean. Millennia later, members of the Twilight's Hammer cult were drawn to the temple by whispers and foul dreams. After sacrificing untold numbers of innocents, the cult was rewarded with a new task: to protect one of the Old Gods' most cherished creatures, a pet that is still in need of nurturing before he can unleash his dark powers on the world.",
 	{
 		name = "Ghamoo-Ra",

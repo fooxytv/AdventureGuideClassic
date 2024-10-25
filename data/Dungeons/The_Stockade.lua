@@ -7,16 +7,17 @@ Programming by: TomCat / TomCat's Gaming
 select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
-	name = "The Stockade",
+	name = "Stormwind Stockade",
 	instanceID = 238,
 	thumbnail = 608223,
 	icon = 136358,
 	splash = 608262,
 	mapID = 34,
-	season  = true,
+	season  = false,
 	overview = "Stormwind Stockade is a closely guarded prison built beneath the canals of Stormwind City. Warden Thelwater keeps watch over the stockade and the highly dangerous criminals who call it home. Recently, the inmates revolted, overthrowing their guards and plunging the prison into a state of pandemonium.",
 	{
 		name = "Targorr the Dread",
+		defeated = 0,
 		encounterID = 1696,
 		portrait = I.UIEJBossTargorrTheDread,
 		loot = { },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Kam Deepfury",
+		defeated = 0,
 		encounterID = 1666,
 		portrait = I.UIEJBossKamDeepfury,
 		loot = { },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Hamhock",
+		defeated = 0,
 		encounterID = 1717,
 		portrait = I.UIEJBossHamhock,
 		loot = { },
@@ -99,6 +102,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Dextren Ward",
+		defeated = 0,
 		encounterID = 1663,
 		portrait = I.UIEJBossDextrenWard,
 		loot = { },
@@ -126,6 +130,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Bazil Thredd",
+		defeated = 0,
 		encounterID = 1716,
 		portrait = I.UIEJBossBazilThredd,
 		loot = { },
@@ -133,30 +138,19 @@ InstanceService.AddDungeon({
 		overview = {
 			"Bazil Thredd is a cunning and treacherous defias rogue who has taken control of the Stockade's operations. He is responsible for the corruption and chaos that have engulfed the prison. Bazil's presence within the Stockade represents the power and influence of the Defias Brotherhood over the institution.",
 			{ heading = "Overview" },
-			"information goes here..",
-
-			--Bazil Thredd is a boss of the Stormwind Stockade, and is accompanied by adds. Clear the room before you engage Thredd.
-
+			"Bazil Thredd is the final boss of The Stockade. He is a defias rogue. He is accompanied by adds. Damage dealers should focus on killing the adds before engaging Bazil Thredd, while managing their threat. Healers should concentrate their healing on the tank. Tanks should maximize threat so damage dealers can go all-out. Bazil Thredd deals high amounts of damage that can be perilous to a damage dealer if they manage to gain his attention.",
 			{
 				role = DAMAGE,
-				"",
-
-				--In the last boss encounter of the dungeon, damage dealers should focus on dealing as much damage as possible while watching their threat. Bazil Thredd deals high amounts of damage that can be perilous to a damage dealer if they manage to gain his attention.
+				"Damage dealers should focus on dealing as much damage as possible while watching their threat. Bazil Thredd deals high amounts of damage that can be perilous to a damage dealer if they manage to gain his attention.",
 
 			},
 			{
 				role = HEALER,
-				"",
-
-				--For the last boss encounter of the dungeon, healers should focus on maintaining the tank's health pool. This boss deals significant damage to your tank.
-
+				"Focus your healing on the tank. This boss deals significant damage to your tank.",
 			},
 			{
 				role = TANK,
-				"",
-
-				--The last boss encounter of the dungeon, Bazil Thredd, deals high amounts of damage while also being accompanied by adds. Tanks should focus on maintaining aggro on the adds while damage dealers kill them.
-
+				"Maintain aggro on the adds while damage dealers kill them.",
 			}
 		},
 		abilities = {
