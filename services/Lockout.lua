@@ -71,6 +71,7 @@ end
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ENCOUNTER_END")
 frame:RegisterEvent("CHAT_MSG_SYSTEM")
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:SetScript("OnEvent", function(self, event, ...)
     if event == "CHAT_MSG_SYSTEM" then
         local message = ...

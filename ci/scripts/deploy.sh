@@ -1,28 +1,22 @@
 #!/bin/bash
 
-# Load .env file with proper handling for spaces
-# if [ -f .env ]; then
-#     while IFS='=' read -r key value; do
-#         if [[ $key != \#* ]]; then
-#             export "$key"="${value%\"}"
-#         fi
-#     done < .env
-# else
-#     echo "Error: .env file not found."
-#     exit 1
-# fi
-
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+if [[ -d "/e" ]]; then
+    ostype="windows"
 else
-    echo "Error: .env file not found."
-    exit 1
-fi
+    ostype="linux"
+    
+    if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+    else
+        echo "Error: .env file not found."
+        exit 1
+    fi
 
-# Confirm that wow_addons_dir is set
-if [ -z "$wow_addons_dir" ]; then
-    echo "Error: wow_addons_dir is not set in the .env file."
-    exit 1
+    # Confirm that wow_addons_dir is set
+    if [ -z "$wow_addons_dir" ]; then
+        echo "Error: wow_addons_dir is not set in the .env file."
+        exit 1
+    fi
 fi
 
 # Locate .toc file
@@ -46,6 +40,9 @@ if [ -z "$addon_name" ] || [ -z "$version" ]; then
     exit 1
 fi
 
+# # Run package script
+./ci/scripts/package.sh
+
 # Define zip file path and output for confirmation
 zip_file="ci/dist/${addon_name}-${version}.zip"
 echo "Zip file will be: '$zip_file'"
@@ -53,13 +50,8 @@ echo "Zip file will be: '$zip_file'"
 # Local deployment function with quoted paths
 local_deploy() {
     # Determine the ostype for the unzip command volume paths in the Docker container
-    if [[ -d "/mnt/e" ]]; then
-        ostype="windows"
-    else
-        ostype="linux"
-    fi
     if [ "$ostype" == "windows" ]; then
-        wow_addons_dir="/mnt/e/Program Files/World of Warcraft/_classic_era_/Interface/AddOns"
+        wow_addons_dir="/e/Program Files/World of Warcraft/_classic_era_/Interface/AddOns"
         echo "Copying $zip_file to \"$wow_addons_dir/$addon_name\"..."
         unzip -o "$zip_file" -d "$wow_addons_dir/$addon_name"
         echo "Done."

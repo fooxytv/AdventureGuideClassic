@@ -21,4 +21,4 @@ RUN dos2unix ./ci/scripts/*.sh
 # Run chmod on the scripts
 RUN chmod +x ./ci/scripts/*.sh
 
-CMD ["bash"]
+CMD ["bash", "dos2unix ./ci/scripts/*.sh"]
