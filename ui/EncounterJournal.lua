@@ -22,7 +22,7 @@ function component.Init(components_)
     EncounterJournal:EnableMouse(true)
     EncounterJournal:SetToplevel(true)
 
-    -- Create version icon
+    -- Create version icon -- todo: This should be moved to a separate component and moved..
     local emptyRingTexture = "Interface\\Common\\portrait-ring-withbg"
     local helpTexture = "Interface\\Common\\help-i"
     local highlightTexture = "Interface\\Common\\portrait-ring-withbg-highlight"

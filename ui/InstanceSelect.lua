@@ -21,7 +21,8 @@ function component.Init(components_)
 		local activeSeasonID = C_Seasons.GetActiveSeason()
 		if activeSeasonID == 3 then
 			instanceSelect.bg = instanceSelect:CreateTexture(nil, "BACKGROUND")
-			instanceSelect.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Cataclysm")
+			-- This is hardcore mode -- Change this background to the hardcore mode backgroundTexture
+			instanceSelect.bg:SetTexture(I.UIEJHardcore)
 		else
 			instanceSelect.bg = instanceSelect:CreateTexture(nil, "BACKGROUND")
 			instanceSelect.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Classic")
@@ -66,6 +67,7 @@ function component.Init(components_)
 			highlight:SetTexCoord(0.34570313, 0.68554688, 0.33300781, 0.42675781)
 			button:SetHighlightTexture(highlight)
 			button:SetScript("OnClick", function()
+				PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
 				instanceSelect:Hide()
 				AdventureGuideNavigationService.Reset()
 				AdventureGuideNavigationService.SetInstance(button.instance)
