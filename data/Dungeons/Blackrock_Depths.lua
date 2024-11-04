@@ -138,71 +138,80 @@ InstanceService.AddDungeon({
 				npc = 9027,
 				{
 					role = DAMAGE,
-					"Allow for your tank to establish threat, and then begin your damage rotation. Melee damage dealers should be aware of the {spell:15589} ability, which will deal damage to targets in melee range. Ranged damage dealers should ensure they are out of {spell:15589} range always.",
+					"Melee damage dealers should be aware of the {spell:15589} ability, which will deal damage to targets in melee range.",
+					"Ranged damage dealers should ensure they are out of {spell:15589} range always.",
 				},
 				{
 					role = HEALER,
-				    "The challenge to healing through this fight is the {spell:15708}, which will reduce the healing taken by the tank. When this debuff comes up, use whatever abilities or cooldowns you can to increase your healing output.",
+				        "{spell:15708} will reduce the healing taken by the tank. ",
 				},
 				{
 					role = TANK,
-				    "Tanking this fight is straight forward, maintain threat and allow damage dealers to focus Gorosh down. Use defensive cooldowns when you are affected by {spell:15708} to help reduce the damage you take and the need for healing spells. Be aware of when the boss uses {spell:21049}, as a combination of this and {spell:15708} will result in you taking significantly more damage.",
+				        "Use defensive cooldowns when you are affected by {spell:15708} to help reduce the damage you take and the need for healing spells.",
+				        "Be aware of when the boss uses {spell:21049}, as a combination of this and {spell:15708} will result in you taking significantly more damage.",
 				}
 			},
 			{
 				npc = 9028,
 				{
 					role = DAMAGE,
-					"Allow for your tank to establish threat before you open up on damage. Ranged damage dealers should stand at maximum range to avoid the effects of {spell:6524}.",
+					"Allow for your tank to establish threat before you open up on damage.",
+					"Ranged damage dealers should stand at maximum range to avoid the effects of {spell:6524}.",
 				},
 				{
 					role = HEALER,
-					"Focus your healing on the tank. Stay maximum distance to outrange the effects of {spell:6524}."
+					"Stay maximum distance to outrange the effects of {spell:6524}."
 				},
 				{
 					role = TANK,
-					"This fight is simple, focus damage on {npc:9028} and hold aggro."
+					"Focus damage on {npc:9028} and hold aggro."
 				}
 			},
 			{
 				npc = 9029,
 				{
 					role = DAMAGE,
-					"When Eviscerator uses {spell:7121}, caster damage dealers should hold off from casting to not waste mana. Priests should buff the group with {spell:1279}, and Warlocks should use their {spell:6232} to mitigate damage from {spell:28599}.",
+					"When Eviscerator uses {spell:7121}, caster damage dealers should hold off from casting to not waste mana.",
+					"Priests should buff the group with {spell:1279}, and Warlocks should use their {spell:6232} to mitigate damage from {spell:28599}.",
 				},
 				{
 					role = HEALER,
-					"During the encounter, focus your healing on the tank who will be affected by {spell:16095}. Priest healers should buff the group with {spell:1279} to reduce the effects of {spell:28599}.",
+					"Focus your healing on the tank who will be affected by {spell:16095}.",
+					"Priest healers should buff the group with {spell:1279} to reduce the effects of {spell:28599}.",
 				},
 				{
 					role = TANK,
-					"This fight is simple, focus your damage on Eviscerator and maintain threat.",
+					"Focus your damage on Eviscerator and maintain threat.",
 				}
 			},
 			{
 				npc = 9030,
 				{
 					role = DAMAGE,
-					"Once your tank has established threat you can begin your damage rotation, keep a distance from Ok'thor to avoid being hit by {spell:26192}. Be aware of who has been targeted by {spell:14621}, and {spell:21076} it if your calass can do so.",
+					"Keep a distance from Ok'thor to avoid being hit by {spell:26192}.",
+					"Be aware of who has been targeted by {spell:14621}, and {spell:21076} it if your class can do so.",
 				},
 				{
 					role = HEALER,
-					"Melee damage dealers, the tank, and anyone standing too close to Ok'thor will be hit by {spell:26192}. Top everyone off after this goes out to avoid unnecessary deaths. Be aware of who is affected by {spell:14621}, and if your class can, be quick to {spell:21076} the target.",
+					"Standing too close to Ok'thor will be hit by {spell:26192}.",
+					"Be aware of who is affected by {spell:14621}, and if your class can, be quick to {spell:21076} the target.",
 				},
 				{
 					role = TANK,
-					"Tanking this boss does not require any unfamiliar techniques or positioning. Establish and maintain threat while your damage dealers focus him down.",
+					"Establish and maintain threat while your damage dealers focus him down.",
 				}
 			},
 			{
 				npc = 9031,
 				{
 					role = DAMAGE,
-					"During the fight spread out and allow the tank to establish and maintain threat, then maximize your damage output. Mages and Druids should prioritize decuring {spell:15470}.",
+					"During the fight spread out and allow the tank to establish and maintain threat, then maximize your damage output.",
+					"Mages and Druids should prioritize decuring {spell:15470}.",
 				},
 				{
 					role = HEALER,
-					"Healing this encounter is not challenging, but be sure to keep everyones health up as often as possible in case you get hit with {spell:15471}. If possible, decurse {spell:15470} from yourself or your group.",
+					"Keep everyones health up as often as possible in case you get hit with {spell:15471}.",
+					"Decurse {spell:15470} from yourself or your group.",
 				},
 				{
 					role = TANK,
@@ -213,11 +222,12 @@ InstanceService.AddDungeon({
 				npc = 9032,
 				{
 					role = DAMAGE,
-					"Allow the tank to establish and maintain threat, then begin your damage rotation. If your class can cleanse posions or dispel the {spell:15474} movement impairing effect, to help out your healer.",
+					"Cleanse posions or dispel the {spell:15474} movement impairing effect, to help out your healer.",
 				},
 				{
 					role = HEALER,
-					"Be aware that the group may require healing through the effects of {spell:15475}, but otherwise you should focus your healing on the tank. The poisons can and should be cleansed, and {spell:15474} can be dispelled.",
+					"Be aware that the group may require healing through the effects of {spell:15475}.",
+					"The poisons can and should be cleansed, and {spell:15474} can be dispelled.",
 				},
 				{
 					role = TANK,
@@ -241,11 +251,13 @@ InstanceService.AddDungeon({
 			"Quickly take down Pyromancer Loregrain's {spell:15038} when summoned, healers focus healing on the tank and prepare for group damage from {spell:15038}. If there's a Paladin in the group use {spell:19891}.",
 			{
 				role = DAMAGE,
-				"Focus damage on Pyromancer Loregrain, swap and focus to {spell:15038} when summoned. Avoid using fire spells when {spell:15041} is active.",
+				"Focus damage on Pyromancer Loregrain, swap and focus to {spell:15038} when summoned.",
+				"Avoid using fire spells when {spell:15041} is active.",
 			},
 			{
 				role = HEALER,
-				"Focus healing on the tank, expect group damage from {spell:15038}, Paladin's use {spell:19891}.",
+				"Focus healing on the tank, expect group damage from {spell:15038}",
+				"Paladin's use {spell:19891}.",
 			},
 			{
 				role = TANK,
@@ -376,7 +388,9 @@ InstanceService.AddDungeon({
 			"Plugger Spazzring is an optional encounter located in the Grim Guzzler. You cannot interrupt his abilities, decurse members affected by {spell:13338}. Position Plugger Spazzring away from other mobs in the Grim Guzzler.",
 			{
 				role = DAMAGE,
-				"Focus damage on Plugger Spazzring and get him down quicky, you can not interrupt any of his abilities. Decurse party members affected by {spell:13338}.",
+				"Focus damage on Plugger Spazzring and get him down quicky",
+				"You can not interrupt any of his abilities.",
+				"Decurse party members affected by {spell:13338}.",
 			},
 			{
 				role = HEALER,

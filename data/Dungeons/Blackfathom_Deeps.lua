@@ -25,7 +25,7 @@ InstanceService.AddDungeon({
 		overview = {
 			"Ghamoo-Ra is a massive and ancient turtle residing deep within Blackfathom Deeps. This aquatic behemoth is considered a guardian of the subterranean waters and the creatures that dwell within them. Ghamoo-Ra's immense size and formidable defenses make it a fearsome inhabitant of the underground aquatic realm.",
 			{ heading = "Overview" },
-			"Ghamoo-Ra is the first boss in Blackfathom Deeps. Ghamoo-Ra has high amount of armor, and will {spell:5568} a random party member.",
+			"Ghamoo-Ra will {spell:5568} a random party member.",
 			{
 				role = DAMAGE,
 				"Ghamoo-Ra has only one ability {spell:5568}. Ghamoo-Ra can be stunned and feared.",
@@ -93,10 +93,12 @@ InstanceService.AddDungeon({
 		overview = {
 			"Lady Sarevess is a naga sorceress who has claimed Blackfathom Deeps as her lair. She is known for her mastery of water-based magic and her allegiance to the naga forces that seek to expand their dominion beneath the waves. Lady Sarevess's control over the aquatic environment and her cunning tactics make her a formidable adversary in the depths.",
 			{ heading = "Overview" },
-			"Lady Sarevess is the second boss encountered in Blackfathom Deeps, and is accompanied by two adds. Lady Sarvess uses {spell:8435} that will hit all players in front of her.",
+			"Lady Sarevess is accompanied by two adds. Lady Sarvess uses {spell:8435} that will hit all players in front of her.",
 			{
 				role = DAMAGE,
-				"Interrupt Lady Sarevess' {spell:8435} to prevent her from casting {spell:865}. Stay spread to avoid chaining from her frontal cone {spell:8435}. She casts {spell:246} if kited. Crowd control one guard, then focus the other before Lady Sarevess.",
+				"Interrupt Lady Sarevess' {spell:8435} to prevent her from casting {spell:865}.",
+				"Stay spread to avoid chaining from her frontal cone {spell:8435}.",
+				"She casts {spell:246} if kited. Crowd control one guard, then focus the other before Lady Sarevess.",
 			},
 			{
 				role = HEALER,
@@ -161,10 +163,12 @@ InstanceService.AddDungeon({
 		overview = {
 			"Gelihast is a fearsome murloc warrior who has established a stronghold within Blackfathom Deeps. He commands a tribe of murlocs and is known for his ruthless tactics and territorial nature. Gelihast's mastery of close combat and his control over his murloc followers make him a dangerous foe in the depths.",
 			{ heading = "Overview" },
-			"Gelihast is an optional Murloc boss located in Blackfathom Deeps, who casts {spell:6533} against his enemies. Pull the adds in his room one at a time to clear it out, then try to pull the boss alone. Remember to click the stone behind him once he's defeated for {spell:8733}.",
+			"Gelihast casts {spell:6533} against his enemies. Pull the adds in his room one at a time to clear it out, then try to pull the boss alone. Remember to click the stone behind him once he's defeated for {spell:8733}.",
 			{
 				role = DAMAGE,
-				"Gelihast casts {spell:6533} on random targets. Targets that have been affected by {spell:6533} receive reduced threat. Ranged damage should stay close in order to get {spell:6533} to mitigate threat generation.",
+				"Gelihast casts {spell:6533} on random targets.",
+				"Targets that have been affected by {spell:6533} receive reduced threat.",
+				"Ranged damage should stay close in order to get {spell:6533} to mitigate threat generation.",
 			},
 			{
 				role = HEALER,
@@ -218,11 +222,13 @@ InstanceService.AddDungeon({
 			"Twilight Lord Kelris is an Orc Warlock located in the ceremonial chamber before the final room of the instance.",
 			{
 				role = DAMAGE,
-				"Kelris casts {spell:8399} and {spell:15587}. They cannot be interrupted. Be careful if the tank has been casted with {spell:8399} as you might be next on the threat table.  ",
+				"Kelris casts {spell:8399} and {spell:15587}. They cannot be interrupted.",
+				"Be careful if the tank has been casted with {spell:8399} as you might be next on the threat table.",
 			},
 			{
 				role = HEALER,
-				"Assign a damage dealer with healing ability to help cover in the event you are targeted by {spell:8399}. Use {spell:527} to remove the sleep affect, be ready to quickly use it on your group members, especially the tank.",
+				"Assign a damage dealer with healing ability to help cover in the event you are targeted by {spell:8399}.",
+				"Use {spell:527} to remove the sleep affect, be ready to quickly use it on your group members, especially the tank.",
 			},
 			{
 				role = TANK,
@@ -272,7 +278,10 @@ InstanceService.AddDungeon({
 			"Aku'mai is the final Hydra boss of Blackfathom Deeps who uses {spell:3815} to damage the group.",
 			{
 				role = DAMAGE,
-				"{spell:3815} can be interrupted. Don't stand in {spell:3815}, Aku'mai can be stunned. You should save your stuns and crowd control effects for his {spell:3490}. While enraged, Aku'mai receives 75% increased attack speed for 5 seconds.",
+				"{spell:3815} can be interrupted.",
+				"Don't stand in {spell:3815}, Aku'mai can be stunned.",
+				"You should save your stuns and crowd control effects for his {spell:3490}.",
+				"While enraged, Aku'mai receives 75% increased attack speed for 5 seconds.",
 			},
 			{
 				role = HEALER,
@@ -280,7 +289,9 @@ InstanceService.AddDungeon({
 			},
 			{
 				role = TANK,
-				"Tank the boss away from the healer and ranged damage dealers. Move out of {spell:3815}. Use defensive cooldowns when he casts {spell:3490}",
+				"Tank the boss away from the healer and ranged damage dealers.",
+				"Move out of {spell:3815}.",
+				"Use defensive cooldowns when he casts {spell:3490}",
 			}
 		},
 		abilities = {
