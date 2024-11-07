@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Once dedicated to the night elves' goddess Elune, Blackfathom Deeps was thought to have been destroyed during the Sundering, lost beneath the ocean. Millennia later, members of the Twilight's Hammer cult were drawn to the temple by whispers and foul dreams. After sacrificing untold numbers of innocents, the cult was rewarded with a new task: to protect one of the Old Gods' most cherished creatures, a pet that is still in need of nurturing before he can unleash his dark powers on the world.",
 	{
 		name = "Ghamoo-Ra",
+		defeated = 1,
 		encounterID = 4887,
 		portrait = 607613,
 		instance = "Blackfathom Deeps",
@@ -86,6 +87,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Lady Sarevess",
+		defeated = 0,
 		encounterID = 4837,
 		portrait = 607682,
 		loot = { 888, 11121, 3078 },
@@ -156,6 +158,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Gelihast",
+		defeated = 0,
 		encounterID = 6243,
 		portrait = 607609,
 		loot = { 6906, 6905 },
@@ -212,6 +215,7 @@ InstanceService.AddDungeon({
 	-- },
 	{
 		name = "Twilight Lord Kelris",
+		defeated = 0,
 		encounterID = 4832,
 		portrait = 607800,
 		loot = { 1155, 6903, },
@@ -268,6 +272,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Aku'mai",
+		defeated = 0,
 		encounterID = 4829,
 		portrait = 607614,
 		loot = { 6910, 6911, 6909 },

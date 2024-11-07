@@ -467,7 +467,6 @@ InstanceService.AddDungeon({
 		npcs = { 9056 },
 		overview = {
 			"Fineous Darkvire is a Dark Iron dwarf known for his role as the chief architect and overseer of the detention block within Blackrock Depths. He is responsible for the imprisonment and interrogation of captives, and his methods are known to be ruthless. Fineous's allegiance to Emperor Dagran Thaurissan and his mastery of the fortress's security make him a formidable figure within the depths.",
-			"Adventurers who venture into Blackrock Depths may find themselves facing Fineous Darkvire's formidable combat abilities and his role in maintaining the detention block's defenses. His presence within the fortress highlights the Dark Iron dwarves' commitment to security and their willingness to go to great lengths to protect their interests.",
 			{ heading = "Overview" },
 			"Fineous Darkvire can be found patrolling the Halls of Crafting. Be sure to clear all of the adds in the area before engaging him to avoid bringing additional mobs, prioritize interrupting {spell:15587}.",
 			{
@@ -521,7 +520,7 @@ InstanceService.AddDungeon({
 		loot = { 11808, 11809, 11812, 11814, 11832 },
 		npcs = { 9156 },
 		overview = {
-			"Ambassador Flamelash is a powerful fire elemental who serves as the ambassador of Ragnaros the Firelord within Blackrock Depths. Known for his control over flames and his connection to the elemental plane of fire, Flamelash is a formidable representative of the Firelord's interests. His role includes overseeing the alliance between the Dark Iron dwarves and the elemental forces.",
+			"Ambassador Flamelash is a powerful fire elemental who serves as the ambassador of Ragnaros the Firelord within Blackrock Depths.",
 			{ heading = "Overview" },
 			"Focus Ambassador Flamelash until the adds spawn and take them down before they reach Flamelash, healing will intensify the longer it lasts, position Ambassador Flamelash in the center of the room.",
 			{
