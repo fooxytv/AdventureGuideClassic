@@ -2,3 +2,4 @@
 .idea
 .env
 ci/dist/
+code/
