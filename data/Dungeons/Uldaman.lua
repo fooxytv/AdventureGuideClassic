@@ -17,14 +17,15 @@ InstanceService.AddDungeon({
 	overview = "Uldaman is an ancient titan vault buried deep within the earth. It is said the titans sealed away a failed experiment there and then moved on to a new project, related to the genesis of the dwarves. Tales of a fabled treasure containing great knowledge have enticed would-be treasure hunters to dig deeper into the secrets of Uldaman, a task made perilous by the presence of stone defenders, savage troggs, Dark Iron invaders, and other dangers lurking in the lost city.",
 	{
 		name = "The Lost Dwarves",
+		defeated = 0,
 		encounterID = 6906,
 		portrait = 607550,
-		loot = { },
+		loot = { 9394, 9401, 9404, 9398 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
-			"In the depths of Uldaman, an ancient Titan vault, the Lost Dwarves—Baelog, Olaf, and Eric—stand as relics of a bygone era. Originally members of the renowned Stormpike Expedition, they delved too deep into the hidden secrets of the dungeon. Stranded and forgotten, these intrepid explorers now guard Uldaman's mysteries with unmatched tenacity, embodying the resilience and courage of their kind. Their presence is a testament to the dangers lurking within the ancient halls and the unyielding spirit of the dwarves who dare to uncover Azeroth's deepest secrets.",
+			"In the depths of Uldaman, an ancient Titan vault, the Lost Dwarves—Baelog, Olaf, and Eric—stand as relics of a bygone era. Originally members of the renowned Stormpike Expedition, they delved too deep into the hidden secrets of the dungeon.",
 			{ heading = "Overview" },
-			"Damage dealers should focus on Eric first, as the tank can't hold his aggro during {spell:20252}, and use crowd control on Baelog, following the kill order: Eric, Olaf, Baelog. Healers should stay at maximum range, continuously heal the tank and damage dealers, and use bubbles and heal-over-time spells on all party members due to {spell:20252}. Tanks need to focus on Olaf to ensure his {spell:20252} targets them, initially generating threat on Eric to protect the healer and damage dealers from unnecessary damage.",
+			"Focus on Eric first, as the tank can't hold his aggro during {spell:20252}. Use crowd control on Baelog. Kill order: Eric, Olaf, Baelog. Healers stay at max range, continuously heal the tank and damage dealers, and use bubbles and heal-over-time spells due to {spell:20252}. Tanks focus on Olaf to ensure his {spell:20252} targets them, initially generating threat on Eric to protect the healer and damage dealers.",
 			{
 				role = DAMAGE,
 				"Focus on Eric first, as the tank can't hold his aggro during {spell:20252}. Use crowd control on Baelog. Kill order: Eric, Olaf, Baelog.",
@@ -44,9 +45,10 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Revelosh",
+		defeated = 0,
 		encounterID = 6910,
 		portrait = 607757,
-		loot = { },
+		loot = { 9388, 9387, 9390, 9389 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Revelosh is an ancient and enigmatic stone golem that guards the depths of Uldaman. Crafted by the titans in ages past, he stands as a sentinel over the secrets hidden within the ancient vaults. Revelosh's presence in Uldaman signifies the enduring power of the titans' creations.",
@@ -72,25 +74,28 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Ironaya",
+		defeated = 0,
 		encounterID = 7228,
 		portrait = 607664,
-		loot = { },
+		loot = { 9409, 9408, 9407 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Ironaya is a fearsome stone golem that dwells deep within Uldaman. Created by the titans, she guards the inner chambers of the ancient complex. Ironaya's presence in Uldaman symbolizes the titans' dedication to safeguarding their creations.",
 			{ heading = "Overview" },
-			"Ranged damage dealers should spread out behind Ironaya and use direct damage spells, avoiding damage over time spells as Ironaya is immune. Melee should also spread out and avoid {spell:8374}. Healers need to focus on keeping the tank healed, spreading out with the ranged damage dealers, and prioritizing the tank while damage dealers should take minimal damage if correctly positioned. The tank should pick up Ironaya and face her away from the damage dealers and healer to avoid {spell:8374}.",
+			"Ranged damage dealers spread out behind Ironaya and use direct damage spells, avoiding DoTs as Ironaya is immune. Melee should spread out and avoid {spell:8374}. Healers focus on the tank, spread out with ranged damage dealers, and prioritize the tank. The tank should face Ironaya away from the group to avoid {spell:8374}.",
 			{
 				role = DAMAGE,
-				"Ranged damage dealers spread out behind the boss and use direct damage spells. Avoid damage over time spells; Ironaya is immune. Melee spread out and avoid {spell:8374}.",
+				"Ranged damage dealers spread out behind the boss and use direct damage spells.",
+				"Avoid damage over time spells; Ironaya is immune. Melee spread out and avoid {spell:8374}.",
 			},
 			{
 				role = HEALER,
-				"Focus on keeping the tank healed. Spread out with ranged damage dealers and prioritize healing the tank. Damage dealers should take minimal damage if positioned correctly.",
+				"Focus on keeping the tank healed. Spread out with ranged damage dealers and prioritize healing the tank.", 
+				"Damage dealers should take minimal damage if positioned correctly.",
 			},
 			{
 				role = TANK,
-				"The Tank needs to pick up Ironaya and face her away from damage dealers and the healer to avoid {spell:8374}.",
+				"Tank needs to pick up Ironaya and face her away from damage dealers and the healer to avoid {spell:8374}.",
 			}
 		},
 		abilities = {
@@ -99,6 +104,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Obsidian Sentinel",
+		defeated = 0,
 		encounterID = 7023,
 		portrait = 607729,
 		loot = { },
@@ -121,57 +127,61 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Ancient Stone Keeper",
+		defeated = 0,
 		encounterID = 7206,
 		portrait = 607538,
-		loot = { },
+		loot = { 9410, 9411 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Ancient Stone Keeper is a sentinel crafted by the titans to protect the secrets within Uldaman. Its ancient and weathered form stands as a testament to the passage of time. The presence of the Ancient Stone Keeper in Uldaman signifies the enduring legacy of the titans.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Watch out for {spell:10094}, which has a silence effect. Stay at max range to avoid it and focus on maintaining threat and healing the tank.",
 			{
 				role = DAMAGE,
-				"Ranged DPS need to stay at max range in order to avoid being affected by the silence component of [Sand Storms].",
+				"Stay at max range in order to avoid being affected by the silence component of {spell:10094}.",
 			},
 			{
 				role = HEALER,
-				"Stay at max range to avoid the silence effect of [Sand Storms] and focus healing on the tank during this fight.",
+				"Stay at max range to avoid the silence effect of {spell:10094}",
+				"Focus healing on the tank during this fight.",
 			},
 			{
 				role = TANK,
-				"Tanking this fight is straightforward: simply maintain threat.",
+				"Maintain threat on the boss and face him away from the group.",
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Galgann Firehammer",
+		defeated = 0,
 		encounterID = 7291,
 		portrait = 607606,
-		loot = { },
+		loot = { 11311, 11310, 9412, 9419 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Galgann Firehammer is a formidable Dark Iron dwarf who has taken up residence within Uldaman. His allegiance to the Dark Iron clan and his mastery of fire magic make him a formidable adversary. Galgann's presence within Uldaman adds an element of danger to the ancient chambers.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Dispel {spell:9482} as soon as possible, as it increases the damage taken by the tank. Damage dealers try to tank one of the Shadowforge Geologist away from Galgann. Focus",
 			{
 				role = DAMAGE,
-				"",
+				"Focus on killing the adds first, then switch to Galgann.",
+				"Damge dealer should try and tank one of the Shadowforge Geologist away from Galgann.",
 			},
 			{
 				role = HEALER,
-				"",
+				"{spell:9482} will increase the damage taken by the tank.",
+				"Prioritize keeping both of the players tanking the Shadowforge Geologist alive.",
+				"Dispel {spell:9482} as soon as possible.",
 			},
 			{
 				role = TANK,
-				"",
+				"Tank Galgann and one of the Shadowforge Geologist facing away from the group.",
 			}
 		},
 		abilities = {
@@ -180,25 +190,27 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Grimlok",
+		defeated = 0,
 		encounterID = 4854,
 		portrait = 607626,
-		loot = { },
+		loot = { 9416, 9415, 9414 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Grimlok is a powerful and brutish trogg chieftain who has claimed a portion of Uldaman as his domain. His physical strength and leadership over the troggs make him a formidable adversary. Grimlok's presence in Uldaman signifies the diverse inhabitants that have carved out territories within the ancient complex.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Crowd control the adds and focus on Grimlok. Focus down Grimlock as quick as possible. Position yourself to avoid being stunned. Tank Grimlok and face him away from the group and up against a wall.",
 			{
 				role = DAMAGE,
-				"",
+				"Crowd control the adds and focus on Grimlok.",
+				"Focus down Grimlock as quick as possible.",
 			},
 			{
 				role = HEALER,
-				"",
+				"Position yourself to avoid being stunned by the Basilisk or attracting any threat from the other.",
 			},
 			{
 				role = TANK,
-				"",
+				"Tank Grimlok and face him away from the groupand up against a wall.",
 			}
 		},
 		abilities = {
@@ -207,29 +219,34 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Archaedas",
+		defeated = 0,
 		encounterID = 2748,
 		portrait = 607546,
-		loot = { },
+		loot = { 11118, 9418, 9413 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Archaedas is a colossal and ancient stone golem that guards the deepest chambers of Uldaman. Crafted by the titans themselves, he stands as a sentinel over the most sacred secrets of the complex. Archaedas's presence in Uldaman signifies the pinnacle of the titans' creations.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Spread out to avoid {spell:6524}. Prioritize killing the Stone Stewards. Allow the tank to generate threat on the Stone Stewards before attacking.",
 			{
 				role = DAMAGE,
-				"",
+				"Spread out to avoid {spell:6524}.",
+				"Prioritize killing the Stone Stewards.",
+				"Allow tank to generate threat on the Stone Stewards before attacking.",
 			},
 			{
 				role = HEALER,
-				"",
+				"Focus healing on the tank.",
+				"Spread out from Archaedas to avoid {spell:6524}.",
 			},
 			{
 				role = TANK,
-				"",
+				"Kite Archaedas to the previous chamber for the fight.",
+				"Keep Archaedas away from the group to help avoid {spell:6524}.",
+				"Pick up the Stone Stewards as they spawn and generate threat on them before attacking.",
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

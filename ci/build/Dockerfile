@@ -2,6 +2,7 @@ FROM ubuntu:latest
 
 # Install necessary packages including dos2unix
 RUN apt-get update && apt-get install -y \
+    rsync \
     zip \
     git \
     curl \

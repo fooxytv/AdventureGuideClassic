@@ -17,7 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Once dedicated to the night elves' goddess Elune, Blackfathom Deeps was thought to have been destroyed during the Sundering, lost beneath the ocean. Millennia later, members of the Twilight's Hammer cult were drawn to the temple by whispers and foul dreams. After sacrificing untold numbers of innocents, the cult was rewarded with a new task: to protect one of the Old Gods' most cherished creatures, a pet that is still in need of nurturing before he can unleash his dark powers on the world.",
 	{
 		name = "Ghamoo-Ra",
-		defeated = 1,
+		defeated = 0,
 		encounterID = 4887,
 		portrait = 607613,
 		instance = "Blackfathom Deeps",
@@ -186,33 +186,35 @@ InstanceService.AddDungeon({
 
 		}
 	},
-	-- {
-	-- 	name = "Baron Aquanis",
-	-- 	encounterID = 12876,
-	-- 	portrait = 607552,
-	-- 	loot = { 1155, 6903 },
-	-- 	npcs = { 2135, 12456, 12314 },
-	-- 	overview = {
-	-- 		"Baron Aquanis is a powerful water elemental that has been summoned to Blackfathom Deeps by dark forces. This elemental entity serves as a guardian of the submerged tunnels and channels beneath the depths. Baron Aquanis's control over water magic and his formidable elemental form make him a formidable protector of the underground waters.",
-	-- 		{ heading = "Overview" },
-	-- 		"Baron Aquanis is another miniboss that is summoned when Horde party members loot the Fathom Stone for a dungeon quest.",
-	-- 		{
-	-- 			role = DAMAGE,
-	-- 			"Baron Aquanis is an easy fight, let the tank pull and don't over aggro, focus damage on Baron Aquanis.",
-	-- 		},
-	-- 		{
-	-- 			role = HEALER,
-	-- 			"Maintain healing on the tank.",
-	-- 		},
-	-- 		{
-	-- 			role = TANK,
-	-- 			"Maintain aggro on Baron Aquanis and face him away from the group.",
-	-- 		}
-	-- 	},
-	-- 	abilities = {
+	{
+		name = "Baron Aquanis",
+		defeated = 0,
+		encounterID = 12876,
+		portrait = 607552,
+		loot = { 1155, 6903 },
+		npcs = { 2135, 12456, 12314 },
+		overview = {
+			"Baron Aquanis is a powerful water elemental that has been summoned to Blackfathom Deeps by dark forces. This elemental entity serves as a guardian of the submerged tunnels and channels beneath the depths. Baron Aquanis's control over water magic and his formidable elemental form make him a formidable protector of the underground waters.",
+			{ heading = "Overview" },
+			"Baron Aquanis is another miniboss that is summoned when Horde party members loot the Fathom Stone for a dungeon quest.",
+			{
+				role = DAMAGE,
+				"Let the tank pull and don't over aggro",
+				"Focus damage on Baron Aquanis.",
+			},
+			{
+				role = HEALER,
+				"Maintain healing on the tank.",
+			},
+			{
+				role = TANK,
+				"Maintain aggro on Baron Aquanis and face him away from the group.",
+			}
+		},
+		abilities = {
 			
-	-- 	}
-	-- },
+		}
+	},
 	{
 		name = "Twilight Lord Kelris",
 		defeated = 0,
@@ -236,7 +238,8 @@ InstanceService.AddDungeon({
 			},
 			{
 				role = TANK,
-				"Tank the boss away from the group, maintaining threat throughout the fight. If you're targeted with {spell:8399}, be ready to use high threat abilities or taunt to regain aggro.",
+				"Tank the boss away from the group, maintaining threat throughout the fight.",
+				"If you're targeted with {spell:8399}, be ready to use high threat abilities or taunt to regain aggro.",
 			}
 		},
 		abilities = {
@@ -255,7 +258,7 @@ InstanceService.AddDungeon({
 			"Old Serra'kis is an optional boss in Blackfathom Deeps who will periodcally heal himself when attacking. The notable aspect of this boss is that you fight him underwater.",
 			{
 				role = DAMAGE,
-				"maximize your damage output without overthrowing the tank from the primary threat position, or running out of breath.",
+				"Maximize your damage output without overthrowing the tank from the primary threat position, or running out of breath.",
 			},
 			{
 				role = HEALER,
@@ -267,7 +270,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -300,7 +302,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })
