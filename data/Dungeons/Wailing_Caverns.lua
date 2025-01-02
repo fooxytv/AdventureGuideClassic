@@ -105,84 +105,85 @@ InstanceService.AddDungeon({
 				"If your healer is targeted by {spell:8040}, you will need to use a cooldown to survive the incoming damage."
 			}
 		},
-		abilities = {	
+		abilities = {
 		}
 	},
 	{
 		name = "Lord Pythas",
+		defeated = 0,
 		encounterID = 3670,
 		portrait = 607696,
-		loot = { },
+		loot = { 6473, 6472 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Lord Pythas is a powerful naga lord who has made the Wailing Caverns his domain. His presence adds a touch of arcane mystique to the already enigmatic caverns. Lord Pythas's formidable magical abilities and commanding presence make him a noteworthy adversary within the subterranean labyrinth.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Lord Pythas is accompanied by an add Druid of the Fang. Focus damage on the Druid of the Fang first, then switch to Lord Pythas.",
 			{
 				role = DAMAGE,
-				"",
+				"Lord Pythas is accompanied by an add Druid of the Fang.",
+				"{spell:9532}, {spell:700} and {spell:5187} can be interrupted.",
 			},
 			{
 				role = HEALER,
-				"",
+				"Focus healing on the tank, watch out for the {spell:700} ability if you are targeted.",
 			},
 			{
 				role = TANK,
-				"",
+				"Establish and maintain threat on Lord Pythas, so the damage dealers can focus on the Druid of the Fang.",
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Skum",
 		encounterID = 3674,
 		portrait = 607775,
-		loot = { },
+		loot = { 6449, 6448 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Skum is a monstrous murloc who resides in the watery depths of the Wailing Caverns. His presence within the caverns represents the wide array of creatures that have found refuge in its labyrinthine passages. Skum's ferocity and aquatic nature make him a formidable resident of this underground realm.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Skum casts {spell:6254}, spread out to avoid being hit.",
 			{
 				role = DAMAGE,
-				"",
+				"{spell:6254} can be interrupted, Skum is immune to nature damage.",
 			},
 			{
 				role = HEALER,
-				"",
+				"Focus healing the tank while staying spread out to avoid being hit by {spell:6254}.",
 			},
 			{
 				role = TANK,
-				"",
+				"Tank Skum facing away from the group.",
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Lord Serpentis",
+		defeated = 0,
 		encounterID = 3673,
 		portrait = 607698,
-		loot = { },
+		loot = { 10411, 6459, 5970, 6469 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Lord Serpentis is a cunning naga lord who has established himself as a resident of the Wailing Caverns. His presence within the caverns adds a touch of intrigue and danger to the underground labyrinth. Lord Serpentis's serpentine form and mastery of venomous attacks make him a dangerous adversary lurking in the shadows.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Lord Serpentis casts {spell:9532}, {spell:700} and {spell:5187}, if possible make sure to interrupt them.",
 			{
 				role = DAMAGE,
-				"",
+				"Lord Serpentis is not accompanied by an adds. {spell:9532}, {spell:700} and {spell:5187} can be interrupted.",
 			},
 			{
 				role = HEALER,
-				"",
+				"Focus healing on the tank, also be aware if you're targeted by {spell:700}.",
 			},
 			{
 				role = TANK,
-				"",
+				"Establish threat, and be prepared to interrupt {spell:9532} or {spell:700} if possible.",
 			}
 		},
 		abilities = {
@@ -191,56 +192,63 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Verdan the Everliving",
+		defeated = 0,
 		encounterID = 5775,
 		portrait = 607805,
-		loot = { },
+		loot = { 6631, 6630, 6629 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Verdan the Everliving is an ancient and colossal serpent who has taken root within the Wailing Caverns. His presence in the caverns signifies the enduring power of nature and the intricate web of life within this underground ecosystem. Verdan's immense size and regenerative abilities make him a legendary inhabitant of the caverns, a living testament to the forces of nature.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Verdan the Everliving casts {spell:8142}, stunning and rooting the player for 10 seconds. This spell can not be interrupted.",
 			{
 				role = DAMAGE,
-				"",
+				"Verdan the Everliving casts {spell:}, stunning for 2 seconds and rooting the player for 10 seconds. This spell can not be interrupted",
+				"Ranged damage dealers should stay 10 yards away to avoid being affected by {spell:}.",
 			},
 			{
 				role = HEALER,
-				"",
+				"Stand at maximum distance to avoid being hit by {spell:8142}.",
+				"Focus healing on the tank while they are knocked down by {spell:8142}, as they will not be able to defend themselves.",
 			},
 			{
 				role = TANK,
-				"",
+				"Maintain threat on Verdan the Everliving, and be prepared to be knocked down by {spell:8142}.",
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Mutanus the Devourer",
+		defeated = 0,
 		encounterID = 3654,
 		portrait = 607721,
-		loot = { },
+		loot = { 6463, 6627, 6461 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Mutanus the Devourer is a monstrous hydra that lurks in the watery recesses of the Wailing Caverns. His presence within the caverns represents the primal and ferocious aspects of the underground ecosystem. Mutanus's multiple heads and insatiable appetite make him a terrifying resident of this labyrinthine realm.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Mutanus the Devourer casts {spell:7399} on players, causing them to fear for 4 seconds. This spell can not be interrupted.",
 			{
 				role = DAMAGE,
-				"",
+				"Mutanus the Devourer casts {spell:7399} on players, causing them to fear for 4 seconds. This spell can not be interrupted.",
+				"{spell:7967} can be interrupted.",
+				"Adds must be defeated first before Mutanus the Devourer emerges from the water nearby.",
 			},
 			{
 				role = HEALER,
-				"",
+				"Focus on healing your tank, and be prepared to heal party members who are feared by {spell:7399}.",
+				"Make sure to top off melee damage dealers after Mutanus the Devourer casts {spell:8150}.",
+				"Stay maximum distance to avoid being hit by {spell:7399}.",
 			},
 			{
 				role = TANK,
-				"",
+				"Tank Mutanus the Devourer away from the Disciple of Naralex to avoid him taking damage.",
+				"Use defensive cooldowns to help your healers recover from {spell:8150}"
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })
