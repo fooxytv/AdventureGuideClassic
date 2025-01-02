@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Built deep within the mountains of Dun Morogh, the wondrous city of Gnomeregan was a testament to the gnomes' intelligence and industry. But when the capital was invaded by troggs, the gnomish high tinker was betrayed by his advisor Sicco Thermaplugg. As a result, Gnomeregan was irradiated, and most of its inhabitants slain. The surviving gnomes fled, vowing to return someday and retake their home.",
 	{
 		name = "Grubbis",
+		defeated = 0,
 		encounterID = 7361,
 		portrait = 607628,
 		loot = { 19445 },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Viscous Fallout",
+		defeated = 0,
 		encounterID = 7079,
 		portrait = 607808,
 		loot = { 9454, 9452, 9453 },
@@ -70,6 +72,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Electrocutioner 6000",
+		defeated = 0,
 		encounterID = 6235,
 		portrait = 607594,
 		loot = { 9447, 9446, 9448 },
@@ -96,6 +99,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Crowd Pummeler 9-60",
+		defeated = 0,
 		encounterID = 6229,
 		portrait = 607572,
 		loot = { 9449, 9450 },
@@ -122,6 +126,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Dark Iron Ambassador",
+		defeated = 0,
 		encounterID = 6228,
 		portrait = I.UIEJBossDarkIronAmbassador,
 		loot = { 9456, 9457, 9455 },
@@ -148,6 +153,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Mekgineer Thermaplugg",
+		defeated = 0,
 		encounterID = 7800,
 		portrait = 607714,
 		loot = { 9458, 9459, 9461, 9492 },

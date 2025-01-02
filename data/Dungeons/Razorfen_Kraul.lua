@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Many quilboar have taken up residence in the largest cluster of giant thorns, the Razorfen, which they revere as Agamaggan's resting place.",
 	{
 		name = "Roogug",
+		defeated = 0,
 		encounterID = 6168,
 		portrait = 607760,
 		loot = { },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Aggem Thorncurse",
+		defeated = 0,
 		encounterID = 4424,
 		portrait = 607531,
 		loot = { 6681 },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Death Speaker Jargba",
+		defeated = 0,
 		encounterID = 4428,
 		portrait = 607584,
 		loot = { 6682, 6685, 2816 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Overlord Ramtusk",
+		defeated = 0,
 		encounterID = 4420,
 		portrait = 607736,
 		loot = { 6686, 6687 },
@@ -125,6 +129,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Agathelos the Raging",
+		defeated = 0,
 		encounterID = 4422,
 		portrait = 607530,
 		loot = { 6690, 6691 },
@@ -152,6 +157,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Charlga Razorflank",
+		defeated = 0,
 		encounterID = 4421,
 		portrait = 607563,
 		loot = { 6693, 6694, 6692 },

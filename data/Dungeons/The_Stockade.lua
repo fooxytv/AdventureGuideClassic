@@ -40,7 +40,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -69,7 +68,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -99,7 +97,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -129,7 +126,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -157,7 +153,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

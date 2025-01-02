@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Individuals seeking to master the powers of undeath know well of Scholomance, the infamous school of necromancy located in the dark and foreboding crypts beneath Caer Darrow. In recent years, several of the instructors have changed, but the institution remains under the control of Darkmaster Gandling, a particularly sadistic and insidious practitioner of necromantic magic.",
 	{
 		name = "Kirtonos the Herald",
+		defeated = 0,
 		encounterID = 10506,
 		portrait = 607675,
 		loot = { 13969, 13960, 13956, 13955, 14024, 13967, 13957, 13983, 16734 },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Jandice Barov",
+		defeated = 0,
 		encounterID = 10503,
 		portrait = 607666,
 		loot = { 18690, 18689, 14548, 14545, 14543, 16701, 14541, 22394 },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Rattlegore",
+		defeated = 0,
 		encounterID = 11622,
 		portrait = 607755,
 		loot = { 18686, 14539, 14537, 14538, 14531, 14528, 16711 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Marduk Blackpool",
+		defeated = 0,
 		encounterID = 10433,
 		portrait = 607709,
 		loot = { 18692, 14576 },
@@ -125,6 +129,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Vectus",
+		defeated = 0,
 		encounterID = 10432,
 		portrait = 607804,
 		loot = { 18691, 14577 },
@@ -152,6 +157,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Ras Frostwhisper",
+		defeated = 0,
 		encounterID = 10508,
 		portrait = 607754,
 		loot = { 13314, 14487, 14525, 14503, 14340, 14502, 13952, 18696, 14522, 16689, 18694, 18693, 18695 },
@@ -179,6 +185,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Instructor Malicia",
+		defeated = 0,
 		encounterID = 10505,
 		portrait = 607661,
 		loot = { 23201, 23200, 16710, 18681, 18680, 18682, 18683, 18684 },
@@ -206,6 +213,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Doctor Theolen Krastinov",
+		defeated = 0,
 		encounterID = 11261,
 		portrait = 607586,
 		loot = { 23201, 23200, 16684, 18681, 18680, 18682, 18683, 18684 },
@@ -233,6 +241,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Lorekeeper Polkelt",
+		defeated = 0,
 		encounterID = 10901,
 		portrait = 607700,
 		loot = { 23201, 23200, 16705, 18681, 18680, 18682, 18683, 18684 },
@@ -260,6 +269,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "The Ravenian",
+		defeated = 0,
 		encounterID = 10507,
 		portrait = 607791,
 		loot = { 23201, 23200, 16716, 18681, 18680, 18682, 18683, 18684 },
@@ -287,6 +297,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Lord Alexei Barov",
+		defeated = 0,
 		encounterID = 10504,
 		portrait = 607691,
 		loot = { 23201, 23200, 16722, 18681, 18680, 18682, 18683, 18684 },
@@ -314,6 +325,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Lady Illucia Barov",
+		defeated = 0,
 		encounterID = 10502,
 		portrait = 607681,
 		loot = { 23201, 23200, 16722, 18681, 18680, 18682, 18683, 18684 },
@@ -341,6 +353,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Darkmaster Gandling",
+		defeated = 0,
 		encounterID = 1853,
 		portrait = 607582,
 		loot = { 22433, 13937, 13950, 13964, 13398, 13951, 13938, 13953, 13944, 16693, 16698, 16720, 16677, 16731, 16686, 16707, 16727, 16667 },

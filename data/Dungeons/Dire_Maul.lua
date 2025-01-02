@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Built thousands of years ago to house the kaldorei's arcane secrets, the formerly great city of Eldre'Thalas now lies in ruin, writhing with warped, twisted forces. Competing covens once fought for control of Dire Maul's corrupted energy, but they have since settled into uneasy truces, choosing to exploit the power within their own territories rather than continue to battle over the entire complex.",
 	{
 		name = "Pusillin",
+		defeated = 0,
 		encounterID = 14327,
 		portrait = 521744,
 		loot = {  },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Lethtendris",
+		defeated = 0,
 		encounterID = 14327,
 		portrait = 607686,
 		loot = { 18325, 18311, 18302, 18301 },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Hydrospawn",
+		defeated = 0,
 		encounterID = 13280,
 		portrait = 607653,
 		loot = { 18317, 18322, 18324, 18305, 18307 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Zevrim Thornhoof",
+		defeated = 0,
 		encounterID = 11490,
 		portrait = 607824,
 		loot = { 18319, 18313, 18323, 18308, 18306 },
@@ -125,6 +129,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Alzzin the Wildshaper",
+		defeated = 0,
 		encounterID = 11492,
 		portrait = 607533,
 		loot = { 18321, 18312, 18310, 18309, 18318, 18326, 18314, 18315, 18328, 18327 },
@@ -152,6 +157,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Guard Mol'dar",
+		defeated = 0,
 		encounterID = 14326,
 		portrait = 607630,
 		loot = { 18451, 18462, 18458, 18463, 18450, 18460, 18498, 18464, 18459, 18493, 18494, 18496, 18497 },
@@ -179,6 +185,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Stomper Kreeg",
+		defeated = 0,
 		encounterID = 14322,
 		portrait = 607777,
 		loot = { 18425 },
@@ -206,6 +213,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Guard Fengus",
+		defeated = 0,
 		encounterID = 14321,
 		portrait = 607629,
 		loot = { 18451, 18464, 18462, 18463, 18458, 18459, 18450 },
@@ -233,6 +241,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Guard Slip'kik",
+		defeated = 0,
 		encounterID = 14323,
 		portrait = 607631,
 		loot = { 18493, 18494, 18498, 18496, 18497, 18459 },
@@ -260,6 +269,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Captain Kromcrush",
+		defeated = 0,
 		encounterID = 14325,
 		portrait = 607560,
 		loot = { 18502, 18503, 18505, 18507 },
@@ -314,6 +324,7 @@ InstanceService.AddDungeon({
 	-- },
 	{
 		name = "King Gordok",
+		defeated = 0,
 		encounterID = 11501,
 		portrait = 607673,
 		loot = { 18523, 18527, 18524, 18525, 18526, 18521, 18520, 18522, 18485, 18484, 18490, 18483 },
@@ -341,6 +352,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Tendris Warpwood",
+		defeated = 0,
 		encounterID = 11489,
 		portrait = 607785,
 		loot = { 18390, 18393, 18353, 18352 },
@@ -368,6 +380,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Magister Kalendris",
+		defeated = 0,
 		encounterID = 11487,
 		portrait = 607703,
 		loot = { 18374, 18397, 18371, 18351, 18350 },
@@ -395,6 +408,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Illyanna Ravenoak",
+		defeated = 0,
 		encounterID = 11488,
 		portrait = 607656,
 		loot = { 18383, 18386, 18349, 18347 },
@@ -422,6 +436,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Immol'thar",
+		defeated = 0,
 		encounterID = 11496,
 		portrait = 607657,
 		loot = { 18370, 18391, 18379, 18377, 18381, 18384, 18389, 18385, 18372, 18394 },
@@ -449,6 +464,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Prince Tortheldrin",
+		defeated = 0,
 		encounterID = 11486,
 		portrait = 607745,
 		loot = { 18382, 18378, 18375, 18392, 18380, 18395, 18396, 18376, 18388, 18373 },
@@ -473,5 +489,5 @@ InstanceService.AddDungeon({
 		abilities = {
 			-- Abilities details go here
 		}
-	},	
+	}
 })

@@ -223,8 +223,6 @@ function component.Refresh()
 		end
 	end
 	-- disableTab(questTab)
-	-- disableTab(abilitiesTab)
-	-- disableTab(modelTab)
 	-- if (selectedTab ~= abilitiesTab) then
 	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
 	-- 		unselectTab(abilitiesTab)

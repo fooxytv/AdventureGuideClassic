@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Thousands of years ago, the Gurubashi empire was plunged into a civil war by a powerful sect of priests, the Atal'ai, who sought to summon to Azeroth an avatar of their god of blood, Hakkar the Soulflayer. The Gurubashi people exiled the Atal'ai to the Swamp of Sorrows, where the priests built the Temple of Atal'Hakkar. Ysera, Aspect of the green dragonflight, sank the temple beneath the swamp and assigned wardens to ensure that the summoning rituals never be performed again.",
 	{
 		name = "Atal'alarion",
+		defeated = 0,
 		encounterID = 8580,
 		portrait = I.UIEJBossAtalalarion,
 		loot = { 10798, 10800, 10799 },
@@ -39,11 +40,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Jammal'an the Prophet",
+		defeated = 0,
 		encounterID = 5710,
 		portrait = 607665,
 		loot = { 10808, 10807, 10806,  },
@@ -66,11 +67,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Weaver and Dreamscythe",
+		defeated = 0,
 		encounterID = 5721,
 		portrait = 608311,
 		loot = { 12243, 10797, 12463, 10796, 10795, 12465, 12464, 12466 },
@@ -93,11 +94,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Hazzas and Morphaz",
+		defeated = 0,
 		encounterID = 5722,
 		portrait = 608311,
 		loot = { 12243, 10797, 12463, 10796, 10795, 12465, 12464, 12466 },
@@ -125,6 +126,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Avatar of Hakkar",
+		defeated = 0,
 		encounterID = 8443,
 		portrait = 607548,
 		loot = { 10846, 10843, 10842, 10845, 10838, 10844, 12462 },
@@ -147,11 +149,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Shade of Eranikus",
+		defeated = 0,
 		encounterID = 5709,
 		portrait = 607768,
 		loot = { 10836, 10837, 10833, 10828, 10835, 10829, 10847 },
@@ -174,7 +176,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

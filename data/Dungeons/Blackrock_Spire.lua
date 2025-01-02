@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "This imposing fortress, carved into the fiery core of Blackrock Mountain, represented the might of the Dark Iron clan for centuries. More recently, the black dragon Nefarian and his spawn seized the keep's upper spire and ignited a brutal war against the dwarves. The draconic armies have since allied with Warchief Rend Blackhand and his false Horde. This combined force lords over the spire, conducting horrific experiments to bolster its ranks while plotting the meddlesome Dark Irons' downfall.",
 		{
 			name = "Highlord Omokk",
+			defeated = 0,
 			encounterID = 9196,
 			portrait = 607645,
 			loot = { 16670, 13167, 13168, 13170, 13166, 13169 },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Shadow Hunter Vosh'gajin",
+			defeated = 0,
 			encounterID = 9236,
 			portrait = 607769,
 			loot = { 12651, 13257, 12626, 12653, 16712, 13255 },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "War Master Voone",
+			defeated = 0,
 			encounterID = 9237,
 			portrait = 607810,
 			loot = { 16676, 13179, 12582, 13177, 13175 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Mother Smolderweb",
+			defeated = 0,
 			encounterID = 10596,
 			portrait = 607719,
 			loot = { 13244, 13213, 13183, 16715 },
@@ -125,6 +129,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Urok Doomhowl",
+			defeated = 0,
 			encounterID = 10584,
 			portrait = 607801,
 			loot = { 13178, 22232, 13259, 13258, },
@@ -152,6 +157,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Quartermaster Zigris",
+			defeated = 0,
 			encounterID = 9736,
 			portrait = 607751,
 			loot = { 13252, 13253 },
@@ -179,6 +185,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Halycon",
+			defeated = 0,
 			encounterID = 10220,
 			portrait = 607634,
 			loot = { 22313, 13212, 13210, 13211 },
@@ -206,6 +213,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Gizrul the Slavener",
+			defeated = 0,
 			encounterID = 10268,
 			portrait = 607615,
 			loot = { 13208, 13205, 16718, 13206 },
@@ -233,6 +241,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Overlord Wyrmthalak",
+			defeated = 0,
 			encounterID = 9568,
 			portrait = 607737,
 			loot = { 22321, 13143, 16679, 13148, 13164, 13162, 13163, 13161 },
@@ -260,6 +269,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Pyroguard Emberseer",
+			defeated = 0,
 			encounterID = 9816,
 			portrait = 607748,
 			loot = { 12905, 12926, 12927, 12929, 16672 },
@@ -287,6 +297,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Solakar Flamewreath",
+			defeated = 0,
 			encounterID = 9816,
 			portrait = 607737,
 			loot = { 12606,  12589, 12603, 12609, 16695 },
@@ -314,6 +325,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Goraluk Anvilcrack",
+			defeated = 0,
 			encounterID = 10339,
 			portrait = 521744,
 			loot = { 13498, 13502, 18047, 18048 },
@@ -341,6 +353,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "Warchief Rend Blackhand",
+			defeated = 0,
 			encounterID = 10429,
 			portrait = 607813,
 			loot = { 22225, 12952, 12953, 12960, 16669, 22247, 12587, 12935, 18102, 18103, 12936, 16733, 18104, 12583, 12940, 12939, 12590 },
@@ -368,6 +381,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "The Beast",
+			defeated = 0,
 			encounterID = 10430,
 			portrait = 607786,
 			loot = { 22311, 12709, 12963, 12964, 12965, 12966, 12967, 12968, 12969, 16729 },
@@ -395,6 +409,7 @@ InstanceService.AddDungeon({
 		},
 		{
 			name = "General Drakkisath",
+			defeated = 0,
 			encounterID = 10363,
 			portrait = 607612,
 			loot = { 22267, 22269, 22268, 22253, 12602, 13098, 13141, 13142, 16666, 16674, 16688, 16690, 16700, 16706, 16721, 16726, 16730, 12592 },

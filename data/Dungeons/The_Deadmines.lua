@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "It is said the Deadmines' gold deposits once accounted for a third of Stormwind's treasure reserves. Amid the chaos of the First War, the mines were abandoned and later thought to be haunted, leaving them relatively untouched until the Defias Brotherhood--a group of former laborers turned brigands--claimed the labyrinth as a base of operations for its subversive activities against Stormwind.",
 	{
 		name = "Rhahk'Zor",
+		defeated = 0,
 		encounterID = 644,
 		portrait = 607777,
 		loot = { 5187, 872 },
@@ -39,11 +40,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Sneed's Shredder",
+		defeated = 0,
 		encounterID = 642,
 		portrait = I.UIEJBossSneedsShredder,
 		loot = { 5194, 5195, 2169, 1937 },
@@ -66,11 +67,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Gilnid",
+		defeated = 0,
 		encounterID = 1763,
 		portrait = I.UIEJBossGilnid,
 		loot = { 5199, 1156 },
@@ -93,11 +94,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Mr. Smite",
+		defeated = 0,
 		encounterID = 646,
 		portrait = I.UIEJBossMrSmite,
 		loot = { 7230, 5196, 5192 },
@@ -120,11 +121,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Captain Greenskin",
+		defeated = 0,
 		encounterID = 647,
 		portrait = I.UIEJBossCaptainGreenSkin,
 		loot = { 5201, 5200, 10403 },
@@ -147,11 +148,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Edwin VanCleef",
+		defeated = 0,
 		encounterID = 639,
 		portrait = I.UIEJBossEdwinVanCleef,
 		loot = { 5193, 5202, 5191, 10399 },
@@ -174,11 +175,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Cookie",
+		defeated = 0,
 		encounterID = 645,
 		portrait = 522210,
 		loot = { 5198, 5197,  },
@@ -201,7 +202,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

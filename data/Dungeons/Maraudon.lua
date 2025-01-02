@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "According to legend, Zaetar, son of Cenarius, and the earth elemental princess Theradras begot the barbaric centaur race. Shortly after the centaur's creation, the ruthless creatures murdered their father. The grief-stricken Theradras is said to have trapped her lover's spirit within Maraudon, corrupting the region. Now, vicious centaur ghosts and twisted elemental minions roam every corner of the sprawling caves.",
 	{
 		name = "Noxxion",
+		defeated = 0,
 		encounterID = 13282,
 		portrait = 607728,
 		loot = { 17744, 17745, 17746 },
@@ -43,6 +44,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Razorlash",
+		defeated = 0,
 		encounterID = 12258,
 		portrait = 607756,
 		loot = { 17749, 17748, 17751, 17750 },
@@ -69,6 +71,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Lord Vyletongue",
+		defeated = 0,
 		encounterID = 12236,
 		portrait = 607699,
 		loot = { 17754, 17752, 17755 },
@@ -95,6 +98,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Celebras the Cursed",
+		defeated = 0,
 		encounterID = 12225,
 		portrait = 607562,
 		loot = { 17738, 17739, 17740 },
@@ -121,6 +125,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Landslide",
+		defeated = 0,
 		encounterID = 12203,
 		portrait = 607684,
 		loot = { 17737, 17943, 17734, 17736 },
@@ -147,6 +152,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Tinkerer Gizlock",
+		defeated = 0,
 		encounterID = 13601,
 		portrait = 607796,
 		loot = { 17718, 17719, 17717 },
@@ -173,6 +179,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Rotgrip",
+		defeated = 0,
 		encounterID = 13596,
 		portrait = 607761,
 		loot = { 17728, 17730, 17732 },
@@ -199,6 +206,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Princess Theradras",
+		defeated = 0,
 		encounterID = 12201,
 		portrait = 607747,
 		loot = { 17780, 17713, 17714, 17710, 17711, 17715, 17707, 17766 },

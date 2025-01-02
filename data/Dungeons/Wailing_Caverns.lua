@@ -203,8 +203,8 @@ InstanceService.AddDungeon({
 			"Verdan the Everliving casts {spell:8142}, stunning and rooting the player for 10 seconds. This spell can not be interrupted.",
 			{
 				role = DAMAGE,
-				"Verdan the Everliving casts {spell:}, stunning for 2 seconds and rooting the player for 10 seconds. This spell can not be interrupted",
-				"Ranged damage dealers should stay 10 yards away to avoid being affected by {spell:}.",
+				"Verdan the Everliving casts {spell:8142}, stunning for 2 seconds and rooting the player for 10 seconds. This spell can not be interrupted",
+				"Ranged damage dealers should stay 10 yards away to avoid being affected by {spell:8142}.",
 			},
 			{
 				role = HEALER,

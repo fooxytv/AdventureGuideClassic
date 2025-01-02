@@ -59,8 +59,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
     if event == "ENCOUNTER_START" then
         DetectEncounter.Start()
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        local subEvent, _, _, _, _, _, _, destName = select(2, CombatLogGetCurrentEventInfo())
-        if (subEvent == "PARTY_KILL" or subEvent == "SPELL_AURA_REMOVED") and destName == encounterName then
+        local eventType, _, _, _, _, _, _, destName = select(2, CombatLogGetCurrentEventInfo())
+        if (eventType == "UNIT_DIED") and destName == encounterName then
+            PlaySound(6199) -- "Work Complete" sound
             DetectEncounter.Defeated()
         end
     end

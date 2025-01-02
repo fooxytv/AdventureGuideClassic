@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Recently, scouts have reported seeing undead milling about the region, engendering fears that the dreaded Scourge may be moving to conquer Kalimdor.",
 	{
 		name = "Tuten'kash",
+		defeated = 0,
 		encounterID = 7355,
 		portrait = 607799,
 		loot = { 10775, 10776, 10777 },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Plaguemaw the Rotting",
+		defeated = 0,
 		encounterID = 7356,
 		portrait = I.UIEJBossPlaguemawTheRotting,
 		loot = { 10760, 10766 },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Mordresh Fire Eye",
+		defeated = 0,
 		encounterID = 7357,
 		portrait = 607718,
 		loot = { 10769, 10770, 10771 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Ragglesnout",
+		defeated = 0,
 		encounterID = 7354,
 		portrait = I.UIEJBossRagglesnout,
 		loot = { 10767, 10768, 10758 },
@@ -125,6 +129,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Glutton",
+		defeated = 0,
 		encounterID = 8567,
 		portrait = 607617,
 		loot = { 10772, 10774 },
@@ -152,6 +157,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Amnennar the Coldbringer",
+		defeated = 0,
 		encounterID = 7358,
 		portrait = 607537,
 		loot = { 10761, 10763, 10764, 10762, 10765 },

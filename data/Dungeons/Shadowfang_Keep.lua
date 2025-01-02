@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Looming over Pyrewood Village from the southern bluffs of Silverpine Forest, Shadowfang Keep casts a shadow as dark as its legacy. Sinister forces occupy these ruins, formerly the dwelling of the mad archmage Arugal's worgen. The restless shade of Baron Silverlaine lingers, while Lord Godfrey and his cabal of erstwhile Gilnean noblemen plot against their enemies both living and undead.",
 	{
 		name = "Rethilgore",
+		defeated = 0,
 		encounterID = 3914,
 		portrait = I.UIEJBossRethilgore,
 		loot = { 5254 },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Razorclaw the Butcher",
+		defeated = 0,
 		encounterID = 3886,
 		portrait = I.UIEJBossRethilgore,
 		loot = { 6226, 6633, 1292 },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Baron Silverlaine",
+		defeated = 0,
 		encounterID = 3887,
 		portrait = 522206,
 		loot = { 6323, 6321 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Commander Springvale",
+		defeated = 0,
 		encounterID = 4278,
 		portrait = 522213,
 		loot = { 3191, 6320 },
@@ -125,6 +129,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Odo the Blindwatcher",
+		defeated = 0,
 		encounterID = 4279,
 		portrait = I.UIEJBossOdoTheBindwatcher,
 		loot = { 6319, 6318 },
@@ -152,6 +157,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Fenrus the Devourer",
+		defeated = 0,
 		encounterID = 4274,
 		portrait = 607634,
 		loot = { 6340, 3230 },
@@ -179,6 +185,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Wolf Master Nandos",
+		defeated = 0,
 		encounterID = 3927,
 		portrait = I.UIEJBossOdoTheBindwatcher,
 		loot = { 3748, 6314 },
@@ -206,6 +213,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Archmage Arugal",
+		defeated = 0,
 		encounterID = 4275,
 		portrait = I.UIEJBossArchmageArugal,
 		loot = { 6324, 6392, 6220 },

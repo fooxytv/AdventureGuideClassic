@@ -69,7 +69,7 @@ local function HandleCombatLogEvent(...)
 end
 
 local frame = CreateFrame("Frame")
-frame:RegisterEvent("ENCOUNTER_END")
+-- frame:RegisterEvent("ENCOUNTER_END")
 frame:RegisterEvent("CHAT_MSG_SYSTEM")
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:SetScript("OnEvent", function(self, event, ...)
@@ -78,8 +78,8 @@ frame:SetScript("OnEvent", function(self, event, ...)
         if message:find("has been reset.") then
             HandleInstanceReset()
         end
-    elseif event == "ENCOUNTER_END" then
-        HandleEncounterEnd(...)
+    -- elseif event == "ENCOUNTER_END" then
+    --     HandleEncounterEnd(...)
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         HandleCombatLogEvent(...)
     end

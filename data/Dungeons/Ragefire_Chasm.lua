@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Ragefire Chasm extends deep below the city of Orgrimmar. Barbaric troggs and devious Searing Blade cultists once plagued the volcanic caves, but now a new threat has emerged: dark shaman. Although Warchief Garrosh Hellscream recently called on a number of shaman to use the elements as weapons against the Alliance, the chasm's current inhabitants appear to be renegades. Reports have surfaced that these shadowy figures are amassing a blistering army that could wreak havoc if unleashed upon Orgrimmar.",
 	{
 		name = "Taragaman the Hungerer",
+		defeated = 0,
 		encounterID = 11520,
 		portrait = 607781,
 		loot = { 14148, 14149, 14145 },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Oggleflint",
+		defeated = 0,
 		encounterID = 11517,
 		portrait = 607730,
 		loot = { },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Jergosh the Invoker",
+		defeated = 0,
 		encounterID = 11518,
 		portrait = 607668,
 		loot = { 14147, 14150, 14151 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Bazzalan",
+		defeated = 0,
 		encounterID = 11519,
 		portrait = 607554,
 		loot = { },
@@ -123,5 +127,4 @@ InstanceService.AddDungeon({
 			-- Abilities details go here
 		}
 	}
-	
 })

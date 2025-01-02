@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "The smoldering Blackrock Depths are home to the Dark Iron dwarves and their emperor, Dagran Thaurissan. Like his predecessors, he serves under the iron rule of Ragnaros the Firelord, a merciless being summoned into the world centuries ago. The presence of chaotic elementals has attracted Twilight's Hammer cultists to the mountain domain. Along with Ragnaros' servants, they have pushed the dwarves toward increasingly destructive ends that could soon spell doom for all of Azeroth.",
 	{
 		name = "Lord Roccor",
+		defeated = 0,
 		encounterID = 9025,
 		portrait = 607697,
 		loot = { 22397, 22234, 11631, 11632 },
@@ -39,11 +40,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Bael'Gar",
+		defeated = 0,
 		encounterID = 9016,
 		portrait = 607549,
 		loot = { 11802, 11803, 11805, 11807 },
@@ -66,11 +67,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Houndmaster Grebmar",
+		defeated = 0,
 		encounterID = 9319,
 		portrait = 607647,
 		loot = { 11623, 11629, 11628, 11627 },
@@ -93,11 +94,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "High Interrogator Gerstahn",
+		defeated = 0,
 		encounterID = 9018,
 		portrait = 607644,
 		loot = { 22240, 11626, 11625, 11624 },
@@ -120,11 +121,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Ring of Law",
+		defeated = 0,
 		encounterID = 10096,
 		portrait = 608314,
 		loot = { 11726, 22271, 22266, 22257, 22270, 11722, 11703, 11702, 11730, 11679, 11685, 11686, 11728, 11662, 11665, 11824, 11731, 11675, 11677, 11678, 11729, 11633, 11634, 11635 },
@@ -236,11 +237,11 @@ InstanceService.AddDungeon({
 			},
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Pyromancer Loregrain",
+		defeated = 0,
 		encounterID = 9024,
 		portrait = 607749,
 		loot = { 11750, 11749, 11748, 11747 },
@@ -265,11 +266,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "General Angerforge",
+		defeated = 0,
 		encounterID = 9033,
 		portrait = 607610,
 		loot = { 11816, 11817, 11820, 11821, 11810 },
@@ -292,11 +293,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Golem Lord Argelmach",
+		defeated = 0,
 		encounterID = 8983,
 		portrait = 607618,
 		loot = { 11669, 11819, 11822, 11823 },
@@ -319,11 +320,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Ribbly Screwspigot",
+		defeated = 0,
 		encounterID = 9543,
 		portrait = 607758,
 		loot = { 11742, 2663, 2662 },
@@ -346,11 +347,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Hurley Blackbreath",
+		defeated = 0,
 		encounterID = 9537,
 		portrait = 607650,
 		loot = { 22275, 18044, 18043 },
@@ -373,11 +374,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Plugger Spazzring",
+		defeated = 0,
 		encounterID = 9499,
 		portrait = 607741,
 		loot = { 12791, 12793 },
@@ -402,11 +403,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Phalanx",
+		defeated = 0,
 		encounterID = 9502,
 		portrait = 607740,
 		loot = { 22212, 11744, 11745, 11743 },
@@ -429,11 +430,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Lord Incendius",
+		defeated = 0,
 		encounterID = 9017,
 		portrait = 607694,
 		loot = { 11764, 11765, 11766, 11767 },
@@ -456,11 +457,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Fineous Darkvire",
+		defeated = 0,
 		encounterID = 9056,
 		portrait = 607602,
 		loot = { 22223, 11839, 11841, 11842 },
@@ -483,11 +484,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Warder Stilgiss & Verek",
+		defeated = 0,
 		encounterID = 9041,
 		portrait = 607814,
 		loot = { 22241, 11784, 11783, 11782, 22242, 11755, 22242 },
@@ -510,11 +511,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Ambassador Flamelash",
+		defeated = 0,
 		encounterID = 9156,
 		portrait = 607535,
 		loot = { 11808, 11809, 11812, 11814, 11832 },
@@ -537,11 +538,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Chest of The Seven",
+		defeated = 0,
 		encounterID = 169243,
 		portrait = 607636,
 		loot = { 11920, 11921, 11922, 11923, 11925, 11926, 11927, 11929 },
@@ -564,11 +565,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Magmus",
+		defeated = 0,
 		encounterID = 9938,
 		portrait = 607705,
 		loot = { 11746, 22400, 22395, 22208, 11935 },
@@ -591,11 +592,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Emperor Dagran Thaurissan",
+		defeated = 0,
 		encounterID = 9019,
 		portrait = 607595,
 		loot = { 22204, 22207, 11815, 11684, 11924, 11928, 11932, 11934, 11930, 11933, 11931, 12553, 12554, 12556, 12557 },
@@ -619,7 +620,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "Stratholme was once the jewel of northern Lordaeron, but today it is remembered for its harrowing fall to ruin. It was here that Prince Arthas turned his back on the noble paladin Uther Lightbringer, slaughtering countless residents believed to be infected with the horrific plague of undeath. Ever since, cursed Stratholme has been marred by death, betrayal, and hopelessness.",
 	{
 		name = "Skul",
+		defeated = 0,
 		encounterID = 10393,
 		portrait = 607804,
 		loot = { 13395, 13394, 13396 },
@@ -39,11 +40,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Hearthsinger Forresten",
+		defeated = 0,
 		encounterID = 10558,
 		portrait = I.UIEJBossHearthsingerForresten,
 		loot = { 16682, 13384, 13378, 13383, 13379 },
@@ -66,11 +67,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "The Unforgiven",
+		defeated = 0,
 		encounterID = 10516,
 		portrait = 607792,
 		loot = { 13404, 13408, 13409, 13405, 16717 },
@@ -93,11 +94,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Postmaster Malown",
+		defeated = 0,
 		encounterID = 11143,
 		portrait = I.UIEJBossPostmasterMalown,
 		loot = { 13393, 13390, 13392, 13391, 13389, 13388 },
@@ -120,11 +121,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Timmy the Cruel",
+		defeated = 0,
 		encounterID = 10808,
 		portrait = 607795,
 		loot = { 13403, 16724, 13401, 13402, 13400 },
@@ -147,11 +148,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Cannon Master Willey",
+		defeated = 0,
 		encounterID = 10997,
 		portrait = I.UIEJBossCannonMasterWilley,
 		loot = { 22405, 22407, 22403, 22404, 22406, 18721, 13382, 13381, 16708, 13380 },
@@ -174,11 +175,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Archivist Galford",
+		defeated = 0,
 		encounterID = 10811,
 		portrait = I.UIEJBossArchivistGalford,
 		loot = { 13386, 18716, 16692, 13385, 13387 },
@@ -201,11 +202,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Balnazzar",
+		defeated = 0,
 		encounterID = 10813,
 		portrait = 607551,
 		loot = { 22334, 13348, 13369, 13359, 13360, 12103, 13358, 16725, 18717, 18718, 18720, 22334, 13353 },
@@ -228,11 +229,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Magistrate Barthilas",
+		defeated = 0,
 		encounterID = 10435,
 		portrait = 607704,
 		loot = { 23198, 18725, 18726, 18722, 18727, 13376 },
@@ -255,11 +256,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Stonespine",
+		defeated = 0,
 		encounterID = 10809,
 		portrait = 607675,
 		loot = { 13954, 13397, 13399 },
@@ -282,11 +283,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Nerub'enkan",
+		defeated = 0,
 		encounterID = 10437,
 		portrait = 607724,
 		loot = { 16675, 18738, 18739, 13529, 18740, 13531, 13530, 13532, 13533, 13508 },
@@ -309,14 +310,14 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Black Guard Swordsmith",
+		defeated = 0,
 		encounterID = 11121,
 		portrait = I.UIEJBossBlackGuardSwordsmith,
-		loot = { },
+		loot = { 18783 },
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Black Guard Swordsmith is an undead blacksmith who forges deadly weapons for the Scourge within Stratholme. He is known for his skill in crafting blades of death and his role as a weapon forger. The Swordsmith's presence reflects the Scourge's relentless pursuit of arms and power within the city.",
@@ -336,11 +337,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Maleki the Palid",
+		defeated = 0,
 		encounterID = 10438,
 		portrait = 607707,
 		loot = { 18737, 16691, 18735, 18734, 13524, 13509, 13526, 13525, 13527, 13528 },
@@ -363,11 +364,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Baroness Anastari",
+		defeated = 0,
 		encounterID = 10436,
 		portrait = 607553,
 		loot = { 18728, 13534, 16704, 18729, 18730, 13538, 13539, 13514, 13537, 13535 },
@@ -390,11 +391,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Ramstein the Gorger",
+		defeated = 0,
 		encounterID = 10439,
 		portrait = 607752,
 		loot = { 13373, 18723, 13375, 16737, 13515, 13372, 13374 },
@@ -417,11 +418,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Baron Rivendare",
+		defeated = 0,
 		encounterID = 10440,
 		portrait = I.UIEJBossBaronRivendare,
 		loot = { 22412, 22409, 22410, 22411, 22408, 13335, 13505, 13349, 13344, 13345, 13340, 13346, 13361, 13368, 16719, 16678, 16687, 16728, 16694, 16709, 16668, 16699, 16732 },
@@ -444,7 +445,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

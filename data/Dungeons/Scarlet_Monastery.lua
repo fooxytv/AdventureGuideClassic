@@ -17,6 +17,7 @@ InstanceService.AddDungeon({
 	overview = "The Crusade's fanatical leaders direct their followers from the Scarlet Cathedral, at the heart of the monastery grounds. This heavily guarded location functions as the order's headquarters, and some of the most zealous and intolerant crusaders roam the halls of this once-hallowed place.",
 	{
 		name = "Interrogator Vishas",
+		defeated = 0,
 		encounterID = 3983,
 		portrait = 607662,
 		loot = { 7683, 7682 },
@@ -44,6 +45,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Bloodmage Thalnos",
+		defeated = 0,
 		encounterID = 4543,
 		portrait = 607557,
 		loot = { 7684, 7685 },
@@ -71,6 +73,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Houndmaster Loksey",
+		defeated = 0,
 		encounterID = 3974,
 		portrait = 607648,
 		loot = { 7756, 3456, 7710 },
@@ -98,6 +101,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Arcanist Doan",
+		defeated = 0,
 		encounterID = 6487,
 		portrait = 607545,
 		loot = { 7712, 7711, 7713, 7714 },
@@ -125,6 +129,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Herod",
+		defeated = 0,
 		encounterID = 3975,
 		portrait = 607640,
 		loot = { 7719, 7718, 10330, 7717 },
@@ -152,6 +157,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "High Inquisitor Fairbanks",
+		defeated = 0,
 		encounterID = 4542,
 		portrait = 607642,
 		loot = { 19508, 19509, 19507 },
@@ -179,6 +185,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Scarlet Commander Mograine",
+		defeated = 0,
 		encounterID = 3976,
 		portrait = 607764,
 		loot = { 7726, 7723, 7724, 10330 },
@@ -206,6 +213,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "High Inquisitor Whitemane",
+		defeated = 0,
 		encounterID = 3977,
 		portrait = 607643,
 		loot = { 7720, 7721, 7722 },

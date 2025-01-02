@@ -23,10 +23,15 @@ local function EncounterButton_OnClick(self)
 	sharedHighlightFrame:SetParent(self)
 	sharedHighlightFrame:SetAllPoints(self)
 	sharedHighlightFrame:Show()
+
 	--todo: Switch to correct view - this needs to be moved to a separate function
 	local selectedTabName = components.InfoTabs.GetSelectedTabName()
 	if selectedTabName == "Overview" then
-		components.DynamicContentScroller.ShowOverview()
+		components.Loot.Show() -- Fix: load loot frame before overview to fix scroll issue
+		C_Timer.After(0.01, function()
+			components.DynamicContentScroller.ShowOverview()
+			components.InfoTabs.Refresh()
+		end)
 	elseif selectedTabName == "Loot" then
 		components.Loot.Show()
 	elseif selectedTabName == "Quest" then
@@ -36,7 +41,6 @@ local function EncounterButton_OnClick(self)
 	elseif selectedTabName == "Model" then
 		-- todo: implement
 	end
-	-- components.DynamicContentScroller.ShowOverview()
 	components.InfoTabs.Refresh()
 end
 
@@ -135,7 +139,6 @@ end
 
 function component.SetInstance(instance, dungeonName)
 	if not encountersScrollBox then
-		print("Error: encountersScrollBoxis not initialized.")
 		return
 	end
 	local dataProvider = CreateDataProvider();
