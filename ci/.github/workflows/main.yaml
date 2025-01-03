@@ -1,0 +1,43 @@
+name: "Build and Publish Artifact - AdventureGuideClassic"
+
+on:
+  pr:
+    branches:
+      - main
+jobs:
+  publish-addon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up scripts
+        run: |
+          chmod +x ./ci/scripts/lint.sh
+          chmod +x ./ci/scripts/package.sh
+          chmod +x ./ci/scripts/repackage.sh
+
+      - name: Lint
+        run: |
+          ./ci/scripts/lint.sh
+
+      - name: Package
+        run: |
+          ./ci/scripts/package.sh
+
+      - name: Repackage
+        run: |
+          ./ci/scripts/repackage.sh
+
+      - name: Publish to CurseForge
+        uses: itsmeaow/curseforge-upload@v3
+        with:
+          file_path: "ci/dist/*.zip"
+          project_id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          game_endpoint: "wow"
+          token: ${{ secrets.CURSEFORGE_TOKEN }}
+          release_type: "alpha" # This needs to be a parameter so it's configurable
+          changelog: "ci/dist/changelog.txt" # Data within this changelog.txt file should be automatically generated
+          changelog_type: "markdown"
+          game_versions: "1.115.5" # This needs to be a parameter so it's configurable or automatically generated
+
