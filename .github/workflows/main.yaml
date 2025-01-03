@@ -49,7 +49,7 @@ jobs:
           game_endpoint: "wow"
           token: ${{ secrets.CURSEFORGE_TOKEN }}
           release_type: ${{ github.event.inputs.release_type }}
-          changelog: "- Publish test from GitHub Actions." # Data within this changelog.txt file should be automatically generated
+          changelog: "- Publish test to CurseForge from GitHub Actions." # Data within this changelog.txt file should be automatically generated
           changelog_type: "markdown"
           game_versions: ${{ github.event.inputs.game_versions }} # This needs to be a parameter so it's configurable or automatically generated
 
