@@ -3,6 +3,8 @@ name: "Build and Publish Artifact - AdventureGuideClassic"
 on:
   push:
     tags:
+    # How to commit a tag: git tag -a "v1.0.0" -m "v1.0.0"
+    # How to push a tag: git push origin v1.0.0
       - "v*.*.*"
   workflow_dispatch:
     inputs:
@@ -40,7 +42,7 @@ jobs:
           ./ci/scripts/repackage.sh
 
       - name: Publish to CurseForge
-        uses: itsmeaow/curseforge-upload@v3
+        uses: itsmeow/curseforge-upload@v3
         with:
           file_path: "ci/dist/*.zip"
           project_id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
