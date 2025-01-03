@@ -1,6 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 toc_file=$(find "$(pwd)" -name "*.toc" | head -n 1)
-pre_release=false
-pre_release_type=""
+bump_type="${1:-none}"
+pre_release_type="${2:-}"
 commit_hash=$(git rev-parse --short HEAD)
 
 increment_version() {
@@ -37,37 +41,29 @@ update_toc_version() {
     echo "Updated $toc_file with new version: $new_version"
 }
 
-commit_message=$(git log -1 --pretty=%B)
-
-if [[ $commit_message == *"BREAKING CHANGE:"* ]]; then
-    version_type="major"
-elif [[ $commit_message == *"feat:"* ]]; then
-    version_type="minor"
-elif [[ $commit_message == *"fix:"* ]] || [[ $commit_message == *"Fix"* ]]; then
-    version_type="patch"
-else
-    echo "No version increment detected in commit message."
-    exit 1
-fi
-
-if [[ $1 == "alpha" || $1 == "beta" ]]; then
-    pre_release=true
-    pre_release_type=$1
-fi
-
+# 1. Get current .toc version
 current_version=$(get_version_from_toc)
 if [[ -z "$current_version" ]]; then
     echo "No version found in .toc file."
     exit 1
 fi
 
+# 2. If we want to SKIP version bump, just output the current version and exit
+if [[ "$bump_type" == "none" ]]; then
+    >&2 echo "Skipping version bump. Using existing version: $current_version"
+    echo "$current_version" | tr -d '\r'
+    exit 0
+fi
+
+# 3. Otherwise, do the normal bump logic
 # Strip any existing pre-release suffix from the current version
-current_version=$(echo "$current_version" | sed 's/-.*//')
+base_version=$(echo "$current_version" | sed 's/-.*//')
 
-new_version=$(increment_version "$current_version" "$version_type")
+new_version=$(increment_version "$base_version" "$bump_type")
 
-if [[ $pre_release == true ]]; then
+if [[ "$pre_release_type" == "alpha" || "$pre_release_type" == "beta" ]]; then
     new_version="$new_version-$pre_release_type.$commit_hash"
 fi
 
 update_toc_version "$new_version"
+echo "$new_version"

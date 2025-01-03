@@ -17,7 +17,11 @@ WORKDIR /app
 COPY ./ci/scripts ./ci/scripts
 
 # Convert line endings for consistency
-RUN dos2unix ./ci/scripts/*.sh
+RUN for script in ./ci/scripts/*.sh; do dos2unix "$script"; done
+
+# Setup CI git config
+RUN git config --global user.name "CI Bot"
+RUN git config --global user.email ""
 
 # Run chmod on the scripts
 RUN chmod +x ./ci/scripts/*.sh
