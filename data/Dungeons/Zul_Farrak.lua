@@ -28,7 +28,7 @@ InstanceService.AddDungeon({
 			"Antu'sul casts healing spells which need to be interrupted, totems and adds need to be focused.",
 			{
 				role = DAMAGE,
-				"Utilise AOE abilities to damage the adds that are summoned at the beginning of the right and also near the end of the fight.",
+				"Utilise AOE abilities to damage the adds that are summoned at the beginning of the fight and also near the end of the fight.",
 				"Focus damage on the adds when they spawn, and then return to damaging Antu'sul.",
 				"Interrupt {spell:11895} and {spell:11899}.",
 				"Priorize killing totems whenever they spawn - {spell:11899} and {spell:8376}."
