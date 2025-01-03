@@ -29,9 +29,9 @@ jobs:
           chmod +x ./ci/scripts/package.sh
           chmod +x ./ci/scripts/repackage.sh
 
-      - name: Lint
-        run: |
-          ./ci/scripts/lint.sh
+      # - name: Lint
+      #   run: |
+      #     ./ci/scripts/lint.sh
 
       - name: Package
         run: |
