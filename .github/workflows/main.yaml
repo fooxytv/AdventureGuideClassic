@@ -1,9 +1,19 @@
 name: "Build and Publish Artifact - AdventureGuideClassic"
 
 on:
-  pr:
-    branches:
-      - main
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "CurseForge Release Type (alpha, beta, release)"
+        required: false
+        default: "alpha"
+      game_versions:
+        description: "Game Version(s)"
+        required: false
+        default: "1.115.5"
 jobs:
   publish-addon:
     runs-on: ubuntu-latest
