@@ -41,10 +41,24 @@ jobs:
         run: |
           ./ci/scripts/repackage.sh
 
+      - name: Select correct artifact
+        id: find_artifact
+        run: |
+          echo "Searching for artifact..."
+          ZIP_FILE=$(ls ci/dist/[0-9]*.zip | head -n 1)
+
+          if [ -z "$ZIP_FILE" ]; then
+            echo "No matching artifact found."
+            exit 1
+          fi 
+
+          echo "Found artifact: $ZIP_FILE"
+          echo "ZIP_PATH=$ZIP_FILE" >> $GITHUB_ENV
+
       - name: Publish to CurseForge
         uses: itsmeow/curseforge-upload@v3
         with:
-          file_path: "ci/dist/*.zip"
+          file_path: ${{ env.ZIP_PATH }}
           project_id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
           game_endpoint: "wow"
           token: ${{ secrets.CURSEFORGE_TOKEN }}
