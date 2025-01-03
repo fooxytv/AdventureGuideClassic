@@ -2,9 +2,9 @@
 # All rights reserved.
 # Programming by: TomCat / TomCat's Gaming
 
-## Interface: 11403
+## Interface: 11505
 ## Title: AdventureGuideClassic
-## Version: 1.0.2-alpha.04588a
+## Version: 1.0.3-alpha.073a05a
 ## Notes: Provides a dungeon and raid journal for Classic WoW
 ## DefaultState: enabled
 ## SavedVariables: AdventureGuideClassic_Account

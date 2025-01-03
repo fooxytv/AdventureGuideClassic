@@ -210,6 +210,39 @@ local function disableTab(tab)
 	tab.unselected:SetDesaturated(true)
 end
 
+-- function component.Refresh()
+-- 	selectTab(selectedTab)
+-- 	if (selectedTab ~= overviewTab) then
+-- 		unselectTab(overviewTab)
+-- 	end
+-- 	if (selectedTab ~= lootTab) then
+-- 		if (AdventureGuideNavigationService.GetEncounter()) then
+-- 			unselectTab(lootTab)
+-- 		else
+-- 			disableTab(lootTab)
+-- 		end
+-- 	end
+
+	-- Comment out the below code
+	-- disableTab(questTab)
+	-- disableTab(abilitiesTab)
+	-- disableTab(modelTab)
+	-- if (selectedTab ~= abilitiesTab) then
+	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
+	-- 		unselectTab(abilitiesTab)
+	-- 	else
+	-- 		disableTab(abilitiesTab)
+	-- 	end
+	-- end
+	-- if (selectedTab ~= modelTab) then
+	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
+	-- 		unselectTab(modelTab)
+	-- 	else
+	-- 		disableTab(modelTab)
+	-- 	end
+	-- end
+-- end
+
 function component.Refresh()
 	selectTab(selectedTab)
 	if (selectedTab ~= overviewTab) then
@@ -240,11 +273,21 @@ function component.Refresh()
 end
 
 function component.GetSelectedTabName()
-	if isOverviewTabSelected then return "Overview" end
-	if isLootTabSelected then return "Loot" end
-	if isQuestTabSelected then return "Quest" end
-	if isAbilitiesTabSelected then return "Abilities" end
-	if isModelTabSelected then return "Model" end
+	if isOverviewTabSelected then
+		return "Overview"
+	end
+	if isLootTabSelected then
+		return "Loot"
+	end
+	if isQuestTabSelected then
+		return "Quest"
+	end
+	if isAbilitiesTabSelected then
+		return "Abilities"
+	end
+	if isModelTabSelected then
+		return "Model"
+	end
 end
 
 UI.Add(component)
