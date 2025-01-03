@@ -67,7 +67,7 @@ InstanceService.AddDungeon({
 			{
 				role = HEALER,
 				"Focus healing on the tank, this will be a quick fight.",
-				"Dispel {spell:8600} if possible",
+				"Dispel {spell:8600} whenever possible",
 			},
 			{
 				role = TANK,
