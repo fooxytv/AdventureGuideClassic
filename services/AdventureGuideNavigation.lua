@@ -31,7 +31,14 @@ function AdventureGuideNavigationService.GetEncounterContent()
 end
 
 function AdventureGuideNavigationService.GetEncounterLoot()
-	return encounter and encounter.loot or { }
+	-- return encounter.loot or {}
+	return {
+		loot = encounter and encounter.loot or {},
+		sharedLoot = encounter and encounter.sharedLoot or {},
+		rareLoot = encounter and encounter.rareLoot or {},
+		veryRareLoot = encounter and encounter.veryRareLoot or {},
+		extremelyRareLoot = encounter and encounter.extremelyRareLoot or {}
+	}
 end
 
 function AdventureGuideNavigationService.GetInstance()
