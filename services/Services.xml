@@ -8,4 +8,6 @@
     <Script file="services/TokenizedText.lua" />
     <!-- <Script file="services/Lockout.lua" /> -->
     <Script file="services/TrackEncounters.lua" />
+    <Script file="services/ObjectiveTracker.lua" />
+    <Script file="services/AdventureObjectiveTracker.lua" />
 </Ui>

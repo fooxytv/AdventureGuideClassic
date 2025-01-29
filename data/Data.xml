@@ -21,6 +21,8 @@
     <Script file="data/Dungeons/Wailing_Caverns.lua" />
     <Script file="data/Dungeons/Zul_Farrak.lua" />
 
+    <Script file="data/ObjectiveTracker/Dungeons.lua" />
+
     <Script file="data/Raids/Blackfathom_Deeps.lua" />    
     <Script file="data/Raids/Molten_Core.lua" />
     <Script file="data/Raids/Blackwing_Lair.lua" />

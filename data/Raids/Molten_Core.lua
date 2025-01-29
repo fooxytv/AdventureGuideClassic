@@ -28,18 +28,23 @@ InstanceService.AddRaid({
 		overview = {
 			"Among the ranks of the flamewakers, overseers and their guards constantly jockey for higher status among the hierarchy of elementals in hopes of gaining favor with Ragnaros. Lucifron is no exception. He has clashed with Gehennas on several occasions, particularly during their incarceration within the Elemental Plane. This rivalry has now extended to the Molten Core where Lucifron quietly waits for his opportunity to capitalize on any weakness shown by the other flamewakers.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Ranged damage dealers should stay at maximum range from Lucifron during the fight, prioritize decusring and dispelling {spell:19703}, {spell:19702} and {spell:20604} debuff from all raid members over dealing damage to the boss and adds.",
 			{
 				role = DAMAGE,
-				"",
+				"Ranged damage dealers should stay at maximum range from Lucifron during the fight.",
+				"Focus down the adds before moving on to Lucifron.",
+				"{spell:4987}, {spell:527} the {spell:19702} debuff and {spell:20604} debuff from all members of the raid as quickly as possible.",
+				"Decurse the {spell:19703} from all raid members over dealing damage to the boss and adds."
 			},
 			{
 				role = HEALER,
-				"",
+				"Downrank your healing spells when affected by {spell:19703}, or wait to be decursed before utilising your abilities.",
+				"{spell:4987} {spell:527} the {spell:19702} debuff and {spell:20604} debuff from all members of the raid as quickly as possible. Prioritize {spell:2782} on {spell:19703} from all raid members."
 			},
 			{
 				role = TANK,
-				"",
+				"Lucifron is accompanied by two Flamewaker Protector adds. Assign your main tank and off-tanks to the adds and Lucifron.",
+				"Stack up Lucifron and the Flamewaker adds so that they can be cleaved down."
 			}
 		},
 		abilities = {
@@ -58,18 +63,24 @@ InstanceService.AddRaid({
 		overview = {
 			"A terrifying behemoth composed of igneous rock and roiling magma, Magmadar serves as the origin of the core hounds that roam the earthen halls of Molten Core. Favourred among Ragnaros's pets, Magmadar is protected by the flamewakers Lucifron and surrounded by vicious packs of ravenous hounds. It is said that while Ragnaros was imprisoned in the Elemental Plane, the Firelord would feed the remains of his captured enemies to Magmadar, who would then consume them in a fiery blaze.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Dispel Magmadar's {spell:19451} as quickly as possible to prevent the raid from taking unnecessary damage. Avoid standing in fire patches left behind by {spell:19411}. Stand behind Magmadar to avoid being hit by {spell:19450}.",
 			{
 				role = DAMAGE,
-				"",
+				"Assign a hunter to use {spell:19801} in rotation to dispel Magmadar's {spell:19451}.",
+				"Avoid standing in fire patches left behind by {spell:19411}.",
+				"Stand behind Magmadar to avoid being hit by {spell:19450}.",
+				"Ranged damage dealers should stay at maximum range from Magmadar during the fight. This will allow you to avoid being hit by {spell:19408}.",
 			},
 			{
 				role = HEALER,
-				"",
+				"utilise {spell:8143} and {spell:6346} to keep your tank from being affected by {spell:19408}.",
+				"Stand behind Magmadar to avoid being hit by {spell:19450}.",
+				"Avoid standing in fire patches left behind by {spell:19411}.",
 			},
 			{
 				role = TANK,
-				"",
+				"Main tank should engage Magmadar right where the boss stands, only move to avoid standing in fire patches left behind by {spell:19411}.",
+				"Turn Magmadar away from the raid to avoid hitting them with {spell:19450}.",
 			}
 		},
 		abilities = {
@@ -88,18 +99,26 @@ InstanceService.AddRaid({
 		overview = {
 			"Gehennas and his fellow flamewakers were extricated from the Elemental Plane by Ragnaros shortly after Thaurissan accidentally summoned the Firelord. Unlike the fire elementals, who are beings of pure flame, the flamewakers are elementals composed of flesh and blood. Gehennas resides near the bottom of the Firelord's elemental hierarchy and covets the power and station of his superiors.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Split Gehennas and the Flamewaker adds and focus down the adds first. Prioritize dispelling {spell:19716} over dealing damage to Gehennas or the adds. Melee can utilise Free Action Potion to prevent being stunned by {spell:20277}. Avoid being hit by {spell:19717}, it does not move, so do not stand in it.",
 			{
 				role = DAMAGE,
-				"",
+				"Focus down the Flamewaker adds first, which will be tanked away from Gehennas.",
+				"Prioritize dispelling {spell:19716} over dealing damage to Gehennas or the adds.",
+				"Melee can utilise Free Action Potion to prevent being stunned by {spell:20277}.",
+				"Avoid being hit by {spell:19717}, it does not move, so do not stand in it."
 			},
 			{
 				role = HEALER,
-				"",
+				"Split the healers between the main tanks, off-tanks and for raid healing.",
+				"Tanks will require extra healing when effected by {spell:20277}.",
+				"Prioritise dispelling {spell:19716} over dealing damage to Gehennas or the adds.",
+				"Avoid being hit by {spell:19717}, it does not move, so do not stand in it."
 			},
 			{
 				role = TANK,
-				"",
+				"Main tank should engage Gehennas and off-tanks should pick up the Flamewaker adds.",
+				"Split Gehennas and the Flamewaker adds and focus down the adds first.",
+				"Utilise Free Action Potion to prevent being stunned by {spell:20277}.",
 			}
 		},
 		abilities = {
@@ -118,18 +137,23 @@ InstanceService.AddRaid({
 		overview = {
 			"Garr is described as one of the lieutenants of Ragnaros who carried out the betrayal of Lord Thunderaan, the Prince of Air and otherwise referred to as the Windseeker. During the Elemental Sundering, Ragnaros sought to consume Thunderaan, and did so by having his two lieutenants, Baron Geddon and Gar perpetrate him. Thunderaan, caught off guard, was utterly destroyed. Ragnaros almost completely consumed Thunderaan's essence, and stored the rest within a talisman of elemental binding.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Melee need to focus on damaging the adds one at a time. When the adds die, the Firesworn will Erupt, dealing significant damage and knocking back any affected players. Ranged damage dealers need to focus their damage output on each of the adds while staying at maximum distance abd being sure to follow the assigned kill order. Top priority in this encounter will be to keep their assigned adds under control with {spell:710}. You can dispel the damage over time effect from Garr's {spell:15732} ability.",
 			{
 				role = DAMAGE,
-				"",
+				"Melee need to focus on damaging the adds one at a time. When the adds die, the Firesworn will Erupt, dealing significant damage and knocking back any affected players.",
+				"Ranged damage dealers need to focus their damage output on each of the adds while staying at maximum distance abd being sure to follow the assigned kill order.",
+				"Top priority in this encounter will be to keep their assigned adds under control with {spell:710}.",
+				"You can dispel the damage over time effect from Garr's {spell:15732} ability."
 			},
 			{
 				role = HEALER,
-				"",
+				"Assign healers to focus on one of the tanks, or to be a general raid healer.",
 			},
 			{
 				role = TANK,
-				"",
+				"Tank the Fireswon adds away from the raid, and be prepared to pick up adds as their {spell:} times out.",
+				"Be clear with your group about which add you are tanking, and be sure to keep them under control with {spell:710}.",
+				"You can use your {spell:355} abilities while the adds are still {spell:710}."
 			}
 		},
 		abilities = {
@@ -148,18 +172,26 @@ InstanceService.AddRaid({
 		overview = {
 			"Shazzrah is the most talented in the realm of the arcane. Shazzrah is aware that his colleague Baron Geddon suspects the elemental Garr of treachery. The conflict between Baron Geddon and Garr suits Shazzrah well, for in fact it is Shazzrah who seeks to posses both halves of the Talisman of Elemental Binding so that he might find a way to siphon its energes for his own use.",
 			{ heading = "Overview" },
-			"information goes here..",
+			"Focus your damage on Shazzrah during the fight, when Shazzrah uses {spell:1953} stop all damage and allow for the tank to reestablish aggro. Focus on removing {spell:19713} as soon as possible from all players in the raid. Use {spell:527} or {spell:370} abilities to remove the Shazzrah's {spell:19714} buff from him. Caster damage dealers need to stop casting before {spell:2139} goes off to avoid being silenced.",
 			{
 				role = DAMAGE,
-				"",
+				"Focus your damage on Shazzrah during the fight, when Shazzrah uses {spell:1953} stop all damage and allow for the tank to reestablish aggro.",
+				"Focus on removing {spell:19713} as soon as possible from all players in the raid.",
+				"Use {spell:527} or {spell:370} abilities to remove the Shazzrah's {spell:19714} buff from him.",
+				"Caster damage dealers need to stop casting before {spell:2139} goes off to avoid being silenced."
 			},
 			{
 				role = HEALER,
-				"",
+				"Be aware that your melee group will be taking damage from {spell:19712} ability every 15 seconds.",
+				"Shazzrah will cast {spell:2139} on the raid, try to use instant cast abilities during this time to avoid being countered and silenced.",
+				"Use {spell:527} or {spell:370} on Shazzrah's {spell:19714} self buff ability.",
+				"Removing {spell:19713} from all players in the raid is a top priority."
 			},
 			{
 				role = TANK,
-				"",
+				"Only one main tank is neccessary for this encounter, tank Shazzrah away from the ranged damage dealers and healers.",
+				"Be aware not to aggro any of the adds around Shazzrah which have not been engaged.",
+				"When Shazzrah uses {spell:1953} ability, they will teleport in one direction and wipe all threat. Immediately reestablish aggro."
 			}
 		},
 		abilities = {
