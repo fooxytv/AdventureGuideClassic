@@ -9,11 +9,11 @@ on:
       release_type:
         description: "CurseForge Release Type (alpha, beta, release)"
         required: false
-        default: "alpha"
+        default: alpha
       game_versions:
         description: "Game Version(s)"
         required: false
-        default: "1.15.6"
+        default: 1.15.6
 jobs:
   publish-addon:
     runs-on: ubuntu-latest
