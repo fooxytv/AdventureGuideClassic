@@ -151,7 +151,7 @@ InstanceService.AddRaid({
 			},
 			{
 				role = TANK,
-				"Tank the Fireswon adds away from the raid, and be prepared to pick up adds as their {spell:} times out.",
+				"Tank the Fireswon adds away from the raid, and be prepared to pick up adds as their {spell:710} times out.",
 				"Be clear with your group about which add you are tanking, and be sure to keep them under control with {spell:710}.",
 				"You can use your {spell:355} abilities while the adds are still {spell:710}."
 			}
