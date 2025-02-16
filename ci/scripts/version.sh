@@ -38,25 +38,21 @@ get_version_from_toc() {
 update_toc_version() {
     local new_version=$1
     sed -i.bak "s/^## Version:.*/## Version: $new_version/" "$toc_file"
-    echo "Updated $toc_file with new version: $new_version"
+    echo "Updated $toc_file with new version: $new_version" >&2
 }
 
-# 1. Get current .toc version
 current_version=$(get_version_from_toc)
 if [[ -z "$current_version" ]]; then
     echo "No version found in .toc file."
     exit 1
 fi
 
-# 2. If we want to SKIP version bump, just output the current version and exit
 if [[ "$bump_type" == "none" ]]; then
     >&2 echo "Skipping version bump. Using existing version: $current_version"
     echo "$current_version" | tr -d '\r'
     exit 0
 fi
 
-# 3. Otherwise, do the normal bump logic
-# Strip any existing pre-release suffix from the current version
 base_version=$(echo "$current_version" | sed 's/-.*//')
 
 new_version=$(increment_version "$base_version" "$bump_type")
