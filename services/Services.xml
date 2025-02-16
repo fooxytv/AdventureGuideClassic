@@ -10,4 +10,5 @@
     <!-- <Script file="services/TrackEncounters.lua" /> -->
     <Script file="services/Objectives.lua" />
     <Script file="services/AdventureObjectives.lua" />
+    <Script file="services/EncounterObjectives.lua" />
 </Ui>

@@ -1,6 +1,6 @@
 select(2, ...).SetupGlobalFacade()
 
-local AdventureObjectives = {}
+AdventureObjectives = AdventureObjectives or {}
 
 function AdventureObjectives:CreateFrame(dungeonName)
     self.frame = CreateFrame("Frame", "AdventureObjectivesFrame", UIParent, "BackdropTemplate")
@@ -118,20 +118,26 @@ function AdventureObjectives:CreateEncounterHeader(index, encounterData)
     return encounterFrame
 end
 
-function AdventureObjectives:LoadEncounters(dungeonName)
+function AdventureObjectives:LoadEncounters(dungeonName, updatedEncounters)
     if self.encounterFrames then
         for _, frame in ipairs(self.encounterFrames) do
             frame:Hide()
             frame:SetParent(nil)
         end
     end
-    local dungeons = ObjectiveService.GetDungeons()
-    local encounters = nil
-    for _, dungeon in ipairs(dungeons) do
-        if dungeon.name == dungeonName then
-            encounters = dungeon.encounters
-            break
+    local encounters = updatedEncounters
+    if not encounters then
+        local dungeons = ObjectiveService.GetDungeons()
+        for _, dungeon in ipairs(dungeons) do
+            if dungeon.name == dungeonName then
+                encounters = dungeon.encounters
+                break
+            end
         end
+    end
+    if not encounters then
+        print("[Error] No encounters found for", dungeonName)
+        return
     end
     self.lastEncounterFrame = self.instanceTitleFrame
     self.encounterFrames = {}
@@ -141,15 +147,42 @@ function AdventureObjectives:LoadEncounters(dungeonName)
     end
 end
 
+
+-- function AdventureObjectives:LoadEncounters(dungeonName)
+--     if self.encounterFrames then
+--         for _, frame in ipairs(self.encounterFrames) do
+--             frame:Hide()
+--             frame:SetParent(nil)
+--         end
+--     end
+--     local dungeons = ObjectiveService.GetDungeons()
+--     local encounters = nil
+--     for _, dungeon in ipairs(dungeons) do
+--         if dungeon.name == dungeonName then
+--             encounters = dungeon.encounters
+--             break
+--         end
+--     end
+--     self.lastEncounterFrame = self.instanceTitleFrame
+--     self.encounterFrames = {}
+--     for i, encounterData in ipairs(encounters) do
+--         local frame = self:CreateEncounterHeader(i, encounterData)
+--         table.insert(self.encounterFrames, frame)
+--     end
+-- end
+
 function AdventureObjectives:UpdateVisibility()
     local inInstance = IsInInstance()
     if inInstance then
         local dungeonName = GetInstanceInfo()
-        AdventureObjectives:CreateFrame(dungeonName)
-        AdventureObjectives:LoadEncounters(dungeonName)
+        if not self.frame then
+            self:CreateFrame(dungeonName)
+        end
+        self:LoadEncounters(dungeonName)
+        self.frame:Show()
     else
-        if AdventureObjectives.frame then
-            AdventureObjectives.frame:Hide()
+        if self.frame then
+            self.frame:Hide()
         end
     end
 end
@@ -162,6 +195,3 @@ eventFrame:SetScript("OnEvent", function(_, event)
         AdventureObjectives:UpdateVisibility()
     end
 end)
-
--- AdventureObjectives:CreateFrame()
--- AdventureObjectives:UpdateVisibility()

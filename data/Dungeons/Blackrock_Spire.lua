@@ -316,7 +316,7 @@ InstanceService.AddDungeon({
 			name = "Goraluk Anvilcrack",
 			defeated = 0,
 			encounterID = 10339,
-			portrait = 521744,
+			portrait = I.UIEJBossGoralukAnvilcrack,
 			loot = { 13498, 13502, 18047, 18048 },
 			npcs = { 10899 },
 			overview = {

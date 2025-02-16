@@ -21,7 +21,25 @@
     <Script file="data/Dungeons/Wailing_Caverns.lua" />
     <Script file="data/Dungeons/Zul_Farrak.lua" />
 
+    <!-- <Script file="data/Objectives/Blackfathom_Deeps.lua" />-->
+    <Script file="data/Objectives/Blackrock_Depths.lua" />
+    <Script file="data/Objectives/Blackrock_Spire.lua" />
+    <Script file="data/Objectives/Dire_Maul.lua" />
+    <!-- <Script file="data/Objectives/Gnomeregan.lua" /> -->
+    <Script file="data/Objectives/Maraudon.lua" />
+    <Script file="data/Objectives/Ragefire_Chasm.lua" />
+    <Script file="data/Objectives/Razorfen_Downs.lua" />
+    <Script file="data/Objectives/Razorfen_Kraul.lua" />
+    <Script file="data/Objectives/Scarlet_Monastery.lua" />
+    <Script file="data/Objectives/Scholomance.lua" />
+    <Script file="data/Objectives/Shadowfang_Keep.lua" />
+    <Script file="data/Objectives/Stratholme.lua" />
+    <Script file="data/Objectives/The_Deadmines.lua" />
     <Script file="data/Objectives/The_Stockade.lua" />
+    <!-- <Script file="data/Objectives/The_Temple_of_Atal_hakkar.lua" /> -->
+    <Script file="data/Objectives/Uldaman.lua" />
+    <Script file="data/Objectives/Wailing_Caverns.lua" />
+    <Script file="data/Objectives/Zul_Farrak.lua" />
 
     <Script file="data/Raids/Blackfathom_Deeps.lua" />    
     <Script file="data/Raids/Molten_Core.lua" />

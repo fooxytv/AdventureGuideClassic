@@ -1,2 +1,0 @@
--- If message "dungeonName has been reset." is received, reset all encounters in that dungeon.
--- At the moment /reload will reset all encounter defeatedOverlay to 0.

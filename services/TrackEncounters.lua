@@ -1,6 +1,7 @@
 select(2, ...).SetupGlobalFacade()
 
-local DetectEncounter = {}
+-- another name for TrackObjectiveInstance is DetectEncounter or TrackEncounter or TrackEncounters or EncounterTracker
+local ObjectiveInstance = {}
 local encounterName
 local dungeonName
 local defeatedTriggered = false
@@ -51,7 +52,6 @@ function DetectEncounter.Defeated()
     return false
 end
 
--- Event frame setup
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ENCOUNTER_START")
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")

@@ -16,11 +16,7 @@ pre_release_type="${2:-}"
 branch="develop"
 
 echo "Bumping (or reading) version ($bump_type) [prerelease: $pre_release_type]..."
-
-# Capture the output from version.sh
 raw_version="$(./ci/scripts/version.sh "$bump_type" "$pre_release_type")"
-
-# Remove any unwanted carriage returns or hidden characters
 new_version="$(echo "$raw_version" | tr -d '[:cntrl:]')"
 
 echo "Version to publish: [$new_version]"

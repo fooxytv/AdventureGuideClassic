@@ -19,7 +19,8 @@ InstanceService.AddDungeon({
 		name = "Pusillin",
 		defeated = 0,
 		encounterID = 14327,
-		portrait = 521744,
+		-- portrait = 521744, -- Use this code for default portrait image
+		portrait = I.UIEJBossPusillin,
 		loot = {  },
 		npcs = { 14354 },
 		overview = {
