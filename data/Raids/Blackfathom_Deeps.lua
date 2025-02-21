@@ -20,7 +20,11 @@ InstanceService.AddRaid({
 		encounterID = 4887,
 		portrait = 607613,
 		instance = "Blackfathom Deeps",
-		loot = { 209436, 209830, 209418, 209824 },
+		loot = {{ id = 209436, seasonFilter = "all" }, { id = 209830, seasonFilter = "all" }, { id = 209418, seasonFilter = "all" }, { id = 209824, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Ghamoo-Ra is a massive and ancient turtle residing deep within Blackfathom Deeps. This aquatic behemoth is considered a guardian of the subterranean waters and the creatures that dwell within them. Ghamoo-Ra's immense size and formidable defenses make it a fearsome inhabitant of the underground aquatic realm.",
@@ -88,7 +92,11 @@ InstanceService.AddRaid({
 		name = "Lady Sarevess",
 		encounterID = 4837,
 		portrait = 607682,
-		loot = { 888, 11121, 3078 },
+		loot = {{ id = 888, seasonFilter = "all" }, { id = 11121, seasonFilter = "all" }, { id = 3078, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Lady Sarevess is a naga sorceress who has claimed Blackfathom Deeps as her lair. She is known for her mastery of water-based magic and her allegiance to the naga forces that seek to expand their dominion beneath the waves. Lady Sarevess's control over the aquatic environment and her cunning tactics make her a formidable adversary in the depths.",
@@ -156,7 +164,11 @@ InstanceService.AddRaid({
 		name = "Gelihast",
 		encounterID = 6243,
 		portrait = 607609,
-		loot = { 6906, 6905 },
+		loot = {{ id = 6906, seasonFilter = "all" }, { id = 6905, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Gelihast is a fearsome murloc warrior who has established a stronghold within Blackfathom Deeps. He commands a tribe of murlocs and is known for his ruthless tactics and territorial nature. Gelihast's mastery of close combat and his control over his murloc followers make him a dangerous foe in the depths.",
@@ -210,7 +222,11 @@ InstanceService.AddRaid({
 		name = "Twilight Lord Kelris",
 		encounterID = 4832,
 		portrait = 607800,
-		loot = { 1155, 6903, },
+		loot = {{ id = 1155, seasonFilter = "all" }, { id = 6903, seasonFilter = "all" }, { id = 18425, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Twilight Lord Kelris is a high-ranking member of the Twilight's Hammer cult, which seeks to usher in the return of the malevolent Old Gods. Within Blackfathom Deeps, Kelris conducts dark rituals and schemes to further the cult's goals. His mastery of shadow magic and his allegiance to the Old Gods make him a formidable and sinister figure in the depths.",
@@ -230,14 +246,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Old Serra'kis",
 		encounterID = 4830,
 		portrait = 607733,
-		loot = { 6901, 6902, 6904 },
+		loot = {{ id = 6901, seasonFilter = "all" }, { id = 6902, seasonFilter = "all" }, { id = 6904, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Old Serra'kis is a massive and ancient hydra that dwells within the watery depths of Blackfathom Deeps. This colossal creature is a testament to the primal forces of nature that still exist deep underground. Old Serra'kis's multiple heads and devastating attacks make it a formidable and iconic inhabitant of the submerged realm.",
@@ -264,7 +283,11 @@ InstanceService.AddRaid({
 		name = "Aku'mai",
 		encounterID = 4829,
 		portrait = 607614,
-		loot = { 6910, 6911, 6909 },
+		loot = {{ id = 6910, seasonFilter = "all" }, { id = 6911, seasonFilter = "all" }, { id = 6909, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Aku'mai is an immense and malevolent creature known as the Deepstrider that lurks in the darkest depths of Blackfathom Deeps. Its origins are shrouded in mystery, but it is believed to be a primeval and nightmarish entity. Aku'mai's horrifying form and deadly attacks make it the ultimate challenge for adventurers who dare to explore the deepest reaches of the submerged caverns.",
@@ -284,7 +307,6 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

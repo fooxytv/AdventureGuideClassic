@@ -31,13 +31,33 @@ function AdventureGuideNavigationService.GetEncounterContent()
 end
 
 function AdventureGuideNavigationService.GetEncounterLoot()
-	-- return encounter.loot or {}
+	local activeSeason = C_Seasons.GetActiveSeason()
+	local function ShouldIncludeLootItem(item)
+		local filterType = item.seasonFilter or "all"
+		if filterType == "all" then
+			return true
+		elseif filterType == "exclusive" and activeSeason == 2 then
+			return true
+		elseif filterType == "restricted" and activeSeason ~= 2 then
+			return true
+		end
+		return false
+	end
+	local function FilterLoot(lootTable)
+		local filteredLoot = {}
+		for _, item in ipairs(lootTable or {}) do
+			if ShouldIncludeLootItem(item) then
+				table.insert(filteredLoot, item.id)
+			end
+		end
+		return filteredLoot
+	end
 	return {
-		loot = encounter and encounter.loot or {},
-		sharedLoot = encounter and encounter.sharedLoot or {},
-		rareLoot = encounter and encounter.rareLoot or {},
-		veryRareLoot = encounter and encounter.veryRareLoot or {},
-		extremelyRareLoot = encounter and encounter.extremelyRareLoot or {}
+		loot = FilterLoot(encounter and encounter.loot),
+		sharedLoot = FilterLoot(encounter and encounter.sharedLoot),
+		rareLoot = FilterLoot(encounter and encounter.rareLoot),
+		veryRareLoot = FilterLoot(encounter and encounter.veryRareLoot),
+		extremelyRareLoot = FilterLoot(encounter and encounter.extremelyRareLoot)
 	}
 end
 

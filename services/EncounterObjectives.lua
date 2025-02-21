@@ -3,7 +3,7 @@ select(2, ...).SetupGlobalFacade()
 local EncounterObjective = {}
 AdventureObjectives = AdventureObjectives or {}
 
-function EncounterObjective:GetDungeonEncounters(dungeonName)
+function EncounterObjective.GetDungeonEncounters(dungeonName)
     local dungeons = InstanceService.GetDungeons()
     local filteredEncounters = {}
     for _, dungeon in ipairs(dungeons) do
@@ -21,7 +21,7 @@ function EncounterObjective:GetDungeonEncounters(dungeonName)
     end
 end
 
-function EncounterObjective:CheckEncounterDefeated(bossName)
+function EncounterObjective.CheckEncounterDefeated(bossName)
     if not bossName then return end
     local dungeonName = GetInstanceInfo()
     local dungeons = ObjectiveService.GetDungeons()
@@ -29,7 +29,7 @@ function EncounterObjective:CheckEncounterDefeated(bossName)
         if dungeon.name == dungeonName then
             for _, encounter in ipairs(dungeon.encounters) do
                 if encounter.name == bossName then
-                    EncounterObjective:MarkEncounterAsDefeated(dungeonName, bossName)
+                    EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
                     if AdventureObjectives and AdventureObjectives.UpdateVisibility then
                         AdventureObjectives:UpdateVisibility()
                     end
@@ -40,7 +40,7 @@ function EncounterObjective:CheckEncounterDefeated(bossName)
     end
 end
 
-function EncounterObjective:MarkEncounterAsDefeated(dungeonName, bossName)
+function EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
     if not dungeonName or not bossName then
         return
     end
@@ -85,8 +85,8 @@ local function OnCombatEvent(_, event, ...)
             if dungeon.name == dungeonName then
                 for _, encounter in ipairs(dungeon.encounters) do
                     if encounter.name == destName then
-                        print("[Debug] Boss Confirmed Dead: " .. destName)
-                        EncounterObjective:CheckEncounterDefeated(destName)
+                        PlaySoundFile("Interface\\AddOns\\AdventureGuideClassic\\sounds\\UIEJBossDefeated.ogg", "Dialog")
+                        EncounterObjective.CheckEncounterDefeated(destName)
                         return
                     end
                 end

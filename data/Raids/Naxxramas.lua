@@ -19,7 +19,11 @@ InstanceService.AddRaid({
 		name = "Anub'Rekhan",
 		encounterID = 15956,
 		portrait = 1378964,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -39,14 +43,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Grand Widow Faerlina",
 		encounterID = 15953,
 		portrait = 1378980,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -66,14 +73,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Maexxna",
 		encounterID = 15952,
 		portrait = 1378994,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -93,14 +103,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Noth the Plaguebringer",
 		encounterID = 15954,
 		portrait = 1379004,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -120,14 +133,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Heigan the Unclean",
 		encounterID = 15936,
 		portrait = 1378984,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -147,14 +163,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Instructors Razuvious",
 		encounterID = 16061,
 		portrait = 1378988,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -174,14 +193,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Gothik the Harvester",
 		encounterID = 16060,
 		portrait = 1378979,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -201,14 +223,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "The Four Horsemen",
 		encounterID = 181366,
 		portrait = 1385732,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -228,14 +253,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Patchwerk",
 		encounterID = 16028,
 		portrait = 1379005,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -255,14 +283,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Grobbulus",
 		encounterID = 15931,
 		portrait = 1378981,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -282,14 +313,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Gluth",
 		encounterID = 15932,
 		portrait = 1378977,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -309,14 +343,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Thaddius",
 		encounterID = 15928,
 		portrait = 1379019,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -336,7 +373,6 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -363,14 +399,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Kel'Thuzad",
 		encounterID = 15990,
 		portrait = 1378989,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -390,7 +429,6 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

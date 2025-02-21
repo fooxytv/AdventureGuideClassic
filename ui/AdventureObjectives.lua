@@ -136,7 +136,6 @@ function AdventureObjectives:LoadEncounters(dungeonName, updatedEncounters)
         end
     end
     if not encounters then
-        print("[Error] No encounters found for", dungeonName)
         return
     end
     self.lastEncounterFrame = self.instanceTitleFrame
@@ -146,30 +145,6 @@ function AdventureObjectives:LoadEncounters(dungeonName, updatedEncounters)
         table.insert(self.encounterFrames, frame)
     end
 end
-
-
--- function AdventureObjectives:LoadEncounters(dungeonName)
---     if self.encounterFrames then
---         for _, frame in ipairs(self.encounterFrames) do
---             frame:Hide()
---             frame:SetParent(nil)
---         end
---     end
---     local dungeons = ObjectiveService.GetDungeons()
---     local encounters = nil
---     for _, dungeon in ipairs(dungeons) do
---         if dungeon.name == dungeonName then
---             encounters = dungeon.encounters
---             break
---         end
---     end
---     self.lastEncounterFrame = self.instanceTitleFrame
---     self.encounterFrames = {}
---     for i, encounterData in ipairs(encounters) do
---         local frame = self:CreateEncounterHeader(i, encounterData)
---         table.insert(self.encounterFrames, frame)
---     end
--- end
 
 function AdventureObjectives:UpdateVisibility()
     local inInstance = IsInInstance()

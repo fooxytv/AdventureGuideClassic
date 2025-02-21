@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136357,
 	splash = 526410,
 	mapID = 33,
-	season = false,
+	seasonFilter = "all",
 	overview = "Looming over Pyrewood Village from the southern bluffs of Silverpine Forest, Shadowfang Keep casts a shadow as dark as its legacy. Sinister forces occupy these ruins, formerly the dwelling of the mad archmage Arugal's worgen. The restless shade of Baron Silverlaine lingers, while Lord Godfrey and his cabal of erstwhile Gilnean noblemen plot against their enemies both living and undead.",
 	{
 		name = "Rethilgore",
 		defeated = 0,
 		encounterID = 3914,
 		portrait = I.UIEJBossRethilgore,
-		loot = { 5254 },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Rethilgore is a wretched worgen who has succumbed to the dark curse of Shadowfang Keep. Once a victim of the relentless curse that plagues the keep's inhabitants, Rethilgore has become a twisted and malevolent creature. His presence within the accursed keep reflects the enduring influence of the curse and the horrors that await those who venture into its depths.",
@@ -40,7 +44,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -48,7 +51,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3886,
 		portrait = I.UIEJBossRethilgore,
-		loot = { 6226, 6633, 1292 },
+		loot = {{ id = 6226, seasonFilter = "all" }, { id = 6633, seasonFilter = "all" }, { id = 1292, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Razorclaw the Butcher is a monstrous and sadistic worgen who revels in the pain and suffering of others. He serves as one of the ruthless enforcers within Shadowfang Keep, responsible for tormenting prisoners and disposing of intruders. Razorclaw's presence within the keep reflects the cruelty and malevolence that define its inhabitants.",
@@ -68,7 +75,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -76,7 +82,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3887,
 		portrait = 522206,
-		loot = { 6323, 6321 },
+		loot = {{ id = 6323, seasonFilter = "all" }, { id = 6321, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Baron Silverlaine is the lord and master of Shadowfang Keep, a once-noble figure who has been consumed by the darkness that plagues the keep. He rules over the cursed fortress with an iron fist, commanding the spectral and wretched creatures within. Baron Silverlaine's presence within the keep reflects the tragic transformation of a once-noble soul into a malevolent force.",
@@ -96,7 +106,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -104,7 +113,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4278,
 		portrait = 522213,
-		loot = { 3191, 6320 },
+		loot = {{ id = 3191, seasonFilter = "all" }, { id = 6320, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Commander Springvale is a loyal servant of Baron Silverlaine and a formidable worgen warrior within Shadowfang Keep. He stands as a sentinel and protector of the keep, ready to defend it against intruders. Commander Springvale's presence reflects the unwavering loyalty of the keep's inhabitants to their cursed lord.",
@@ -124,7 +137,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -132,7 +144,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4279,
 		portrait = I.UIEJBossOdoTheBindwatcher,
-		loot = { 6319, 6318 },
+		loot = {{ id = 6319, seasonFilter = "all" }, { id = 6318, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Odo the Blindwatcher is a blind and enigmatic figure who serves the denizens of Shadowfang Keep as a seer and mystic. Despite his blindness, he possesses an uncanny ability to sense and perceive intruders. Odo's presence within the keep reflects the mystical and supernatural elements that are intertwined with its cursed halls.",
@@ -152,7 +168,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -160,7 +175,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4274,
 		portrait = 607634,
-		loot = { 6340, 3230 },
+		loot = {{ id = 6340, seasonFilter = "all" }, { id = 3230, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Fenrus the Devourer is a monstrous worgen known for his insatiable hunger and his role as a guardian of Shadowfang Keep. He is responsible for hunting down and consuming intruders who dare to enter the keep. Fenrus's presence reflects the savage and predatory nature of the worgen within the cursed fortress.",
@@ -180,7 +199,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -188,7 +206,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3927,
 		portrait = I.UIEJBossOdoTheBindwatcher,
-		loot = { 3748, 6314 },
+		loot = {{ id = 3748, seasonFilter = "all" }, { id = 6314, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Wolf Master Nandos is a worgen who has embraced his lupine form and serves as a trainer and leader of the worgen packs within Shadowfang Keep. He commands these savage creatures with unwavering loyalty to Baron Silverlaine. Nandos's presence within the keep reflects the primal and bestial nature of its inhabitants.",
@@ -208,7 +230,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -216,7 +237,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4275,
 		portrait = I.UIEJBossArchmageArugal,
-		loot = { 6324, 6392, 6220 },
+		loot = {{ id = 6324, seasonFilter = "all" }, { id = 6392, seasonFilter = "all" }, { id = 6220, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Archmage Arugal is a powerful and twisted mage who is responsible for summoning worgen into the region of Silverpine Forest and ultimately cursing Shadowfang Keep. He became obsessed with the idea of creating a loyal army and inadvertently unleashed a terrible curse. Arugal's presence within the keep reflects the cataclysmic consequences of his reckless magic.",
@@ -236,7 +261,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 })

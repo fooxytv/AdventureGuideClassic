@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136360,
 	splash = 608256,
 	mapID = 109,
-	season = true,
+	seasonFilter = "restricted",
 	overview = "Thousands of years ago, the Gurubashi empire was plunged into a civil war by a powerful sect of priests, the Atal'ai, who sought to summon to Azeroth an avatar of their god of blood, Hakkar the Soulflayer. The Gurubashi people exiled the Atal'ai to the Swamp of Sorrows, where the priests built the Temple of Atal'Hakkar. Ysera, Aspect of the green dragonflight, sank the temple beneath the swamp and assigned wardens to ensure that the summoning rituals never be performed again.",
 	{
 		name = "Atal'alarion",
 		defeated = 0,
 		encounterID = 8580,
 		portrait = I.UIEJBossAtalalarion,
-		loot = { 10798, 10800, 10799 },
+		loot = {{ id = 10798, seasonFilter = "all" }, { id = 10800, seasonFilter = "all" }, { id = 10799, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Atal'alarion is a powerful and vengeful spirit bound within The Temple of Atal'Hakkar. Once a guardian of the temple, he has been corrupted by dark forces and now seeks to defend it with a malevolent rage. Atal'alarion's presence within the temple signifies the tragic fall of an ancient protector.",
@@ -47,7 +51,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 5710,
 		portrait = 607665,
-		loot = { 10808, 10807, 10806,  },
+		loot = {{ id = 10808, seasonFilter = "all" }, { id = 10807, seasonFilter = "all" }, { id = 10806, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Jammal'an the Prophet is a high-ranking Atal'ai priest within The Temple of Atal'Hakkar. His mastery of shadow magic and his devotion to the dark god Hakkar make him a formidable adversary. Jammal'an's presence in the temple highlights the Atal'ai trolls' commitment to serving the bloodthirsty deity.",
@@ -74,7 +82,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 5721,
 		portrait = 608311,
-		loot = { 12243, 10797, 12463, 10796, 10795, 12465, 12464, 12466 },
+		loot = {{ id = 12243, seasonFilter = "all" }, { id = 10797, seasonFilter = "all" }, { id = 12463, seasonFilter = "all" }, { id = 10796, seasonFilter = "all" }, { id = 10795, seasonFilter = "all" }, { id = 12465, seasonFilter = "all" }, { id = 12464, seasonFilter = "all" }, { id = 12466, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Weaver and Dreamscythe is a malevolent entity that lurks within The Temple of Atal'Hakkar. A manifestation of the dark and twisted dreams that haunt the temple's depths, Dreamscythe embodies the surreal and nightmarish aspects of the Sunken Temple. Its presence serves as a reminder of the eerie and otherworldly forces at play.",
@@ -101,7 +113,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 5722,
 		portrait = 608311,
-		loot = { 12243, 10797, 12463, 10796, 10795, 12465, 12464, 12466 },
+		loot = {{ id = 12243, seasonFilter = "all" }, { id = 10797, seasonFilter = "all" }, { id = 12463, seasonFilter = "all" }, { id = 10796, seasonFilter = "all" }, { id = 10795, seasonFilter = "all" }, { id = 12465, seasonFilter = "all" }, { id = 12464, seasonFilter = "all" }, { id = 12466, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Hazzas and Morphaz is a malevolent spirit bound to The Temple of Atal'Hakkar, cursed to protect the temple's secrets for all eternity. His tormented existence and spectral powers make him a formidable adversary. Hazzas's presence within the temple underscores the tragic fate of those who become ensnared by its dark forces.",
@@ -121,7 +137,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -129,7 +144,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 8443,
 		portrait = 607548,
-		loot = { 10846, 10843, 10842, 10845, 10838, 10844, 12462 },
+		loot = {{ id = 10846, seasonFilter = "all" }, { id = 10843, seasonFilter = "all" }, { id = 10842, seasonFilter = "all" }, { id = 10845, seasonFilter = "all" }, { id = 10838, seasonFilter = "all" }, { id = 10844, seasonFilter = "all" }, { id = 12462, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Avatar of Hakkar is a manifestation of the bloodthirsty god Hakkar the Soulflayer within The Temple of Atal'Hakkar. Its malevolent power and insatiable hunger for blood make it a terrifying foe. The Avatar's presence in the temple signifies the dark deity's influence over its chambers.",
@@ -156,7 +175,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 5709,
 		portrait = 607768,
-		loot = { 10836, 10837, 10833, 10828, 10835, 10829, 10847 },
+		loot = {{ id = 10836, seasonFilter = "all" }, { id = 10837, seasonFilter = "all" }, { id = 10833, seasonFilter = "all" }, { id = 10828, seasonFilter = "all" }, { id = 10835, seasonFilter = "all" }, { id = 10829, seasonFilter = "all" }, { id = 10847, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Shade of Eranikus is a corrupted green dragon who has fallen under the sway of the malevolent god Hakkar the Soulflayer within The Temple of Atal'Hakkar. Once a protector of nature, Eranikus's corruption has made him a formidable and tragic adversary. His presence in the temple highlights the destructive influence of Hakkar.",

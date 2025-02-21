@@ -13,15 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136333,
 	splash = 608239,
 	mapID = 429,
-	season = false,
+	seasonFilter = "all",
 	overview = "Built thousands of years ago to house the kaldorei's arcane secrets, the formerly great city of Eldre'Thalas now lies in ruin, writhing with warped, twisted forces. Competing covens once fought for control of Dire Maul's corrupted energy, but they have since settled into uneasy truces, choosing to exploit the power within their own territories rather than continue to battle over the entire complex.",
 	{
 		name = "Pusillin",
 		defeated = 0,
 		encounterID = 14327,
-		-- portrait = 521744, -- Use this code for default portrait image
 		portrait = I.UIEJBossPusillin,
-		loot = {  },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 14354 },
 		overview = {
 			"Pusillin is a cunning and elusive imp who resides within the heart of Dire Maul East, a place teeming with magic and untold secrets. His role within the tainted halls of the Eldre'Thalas complex is that of a mischievous trickster and a self-proclaimed guardian of arcane knowledge. Pusillin's mysterious nature and his ability to manipulate the intricate magical barriers of Dire Maul make him a unique and enigmatic presence.",
@@ -49,7 +52,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 14327,
 		portrait = 607686,
-		loot = { 18325, 18311, 18302, 18301 },
+		loot = {{ id = 18325, seasonFilter = "all" }, { id = 18311, seasonFilter = "all" }, { id = 18302, seasonFilter = "all" }, { id = 18301, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Lethtendris is a high-ranking Highborne sorceress who has succumbed to the corruptive influence of Dire Maul. She wields powerful arcane magic and guards the East Wing of the ruins. Lethtendris's tragic transformation serves as a stark reminder of the ancient conflicts that have scarred these once-great halls.",
@@ -77,7 +84,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 13280,
 		portrait = 607653,
-		loot = { 18317, 18322, 18324, 18305, 18307 },
+		loot = {{ id = 18317, seasonFilter = "all" }, { id = 18322, seasonFilter = "all" }, { id = 18324, seasonFilter = "all" }, { id = 18305, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Hydrospawn is a colossal water elemental found in Dire Maul's East Wing. His watery form and mastery over water magic make him a formidable guardian of the ruins. Hydrospawn's existence within Dire Maul is a reflection of the elemental forces that have been harnessed by those who seek to desecrate its sanctity.",
@@ -105,7 +116,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11490,
 		portrait = 607824,
-		loot = { 18319, 18313, 18323, 18308, 18306 },
+		loot = {{ id = 18319, seasonFilter = "all" }, { id = 18313, seasonFilter = "all" }, { id = 18323, seasonFilter = "all" }, { id = 18308, seasonFilter = "all" }, { id = 18306, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Zevrim Thornhoof is a satyr sorcerer who lurks within Dire Maul's Warpwood Quarter. He is known for his mastery of dark magic and his allegiance to the corrupted satyrs. Thornhoof's presence within the once-sacred halls of Dire Maul is a testament to the foul influence that has taken root within the ancient elven ruins.",
@@ -133,7 +148,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11492,
 		portrait = 607533,
-		loot = { 18321, 18312, 18310, 18309, 18318, 18326, 18314, 18315, 18328, 18327 },
+		loot = {{ id = 18321, seasonFilter = "all" }, { id = 18312, seasonFilter = "all" }, { id = 18310, seasonFilter = "all" }, { id = 18309, seasonFilter = "all" }, { id = 18318, seasonFilter = "all" }, { id = 18326, seasonFilter = "all" }, { id = 18314, seasonFilter = "all" }, { id = 18315, seasonFilter = "all" }, { id = 18328, seasonFilter = "all" }, { id = 18327, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Alzzin the Wildshaper, a druid corrupted by dark forces, resides in Dire Maul's Warpwood Quarter. He has the ability to shape-shift into various animal forms, making him a versatile and unpredictable foe. Alzzin's presence within Dire Maul represents the corruption that has seeped into the heart of the natural world.",
@@ -161,7 +180,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 14326,
 		portrait = 607630,
-		loot = { 18451, 18462, 18458, 18463, 18450, 18460, 18498, 18464, 18459, 18493, 18494, 18496, 18497 },
+		loot = {{ id = 18451, seasonFilter = "all" }, { id = 18462, seasonFilter = "all" }, { id = 18458, seasonFilter = "all" }, { id = 18463, seasonFilter = "all" }, { id = 18450, seasonFilter = "all" }, { id = 18460, seasonFilter = "all" }, { id = 18498, seasonFilter = "all" }, { id = 18464, seasonFilter = "all" }, { id = 18459, seasonFilter = "all" }, { id = 18493, seasonFilter = "all" }, { id = 18494, seasonFilter = "all" }, { id = 18496, seasonFilter = "all" }, { id = 18497, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Guard Mol'dar is a formidable ogre enforcer who commands the Gordok forces within Dire Maul's North Wing. His brute strength and unwavering loyalty to the Gordok tribe make him a key defender of their territory. Mol'dar's presence within Dire Maul represents the might and tenacity of the ogres who have claimed this part of the ruins.",
@@ -189,7 +212,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 14322,
 		portrait = 607777,
-		loot = { 18425 },
+		loot = {{ id = 18425, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Stomper Kreeg is a massive, ale-loving ogre who resides within Dire Maul's North Wing. He is known for his insatiable appetite for alcohol and his formidable strength. Kreeg's presence within the ruins is a reflection of the unique character and challenges found within the North Wing.",
@@ -217,7 +244,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 14321,
 		portrait = 607629,
-		loot = { 18451, 18464, 18462, 18463, 18458, 18459, 18450 },
+		loot = {{ id = 18451, seasonFilter = "all" }, { id = 18464, seasonFilter = "all" }, { id = 18462, seasonFilter = "all" }, { id = 18463, seasonFilter = "all" }, { id = 18458, seasonFilter = "all" }, { id = 18459, seasonFilter = "all" }, { id = 18450, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Guard Fengus is a powerful ogre enforcer responsible for overseeing the Gordok forces within Dire Maul's North Wing. He is known for his unwavering loyalty to the Gordok tribe and his formidable combat skills. Fengus's presence within Dire Maul serves as a symbol of the ogres' dominance in this part of the ruins.",
@@ -245,7 +276,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 14323,
 		portrait = 607631,
-		loot = { 18493, 18494, 18498, 18496, 18497, 18459 },
+		loot = {{ id = 18493, seasonFilter = "all" }, { id = 18494, seasonFilter = "all" }, { id = 18498, seasonFilter = "all" }, { id = 18496, seasonFilter = "all" }, { id = 18497, seasonFilter = "all" }, { id = 18459, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Guard Slip'kik is a vigilant ogre enforcer responsible for maintaining order within Dire Maul's North Wing. His loyalty to the Gordok tribe and his relentless dedication to their cause make him a formidable defender of their territory. Slip'kik's presence within Dire Maul reflects the Gordok ogres' unwavering hold on this part of the ruins.",
@@ -273,7 +308,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 14325,
 		portrait = 607560,
-		loot = { 18502, 18503, 18505, 18507 },
+		loot = {{ id = 18502, seasonFilter = "all" }, { id = 18503, seasonFilter = "all" }, { id = 18505, seasonFilter = "all" }, { id = 18507, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Captain Kromcrush is a fearsome ogre commander who leads the Gordok forces within Dire Maul's North Wing. His formidable strength and tactical prowess make him a key figure in the defense of their territory. Kromcrush's presence within Dire Maul exemplifies the might and leadership of the Gordok tribe in this part of the ruins.",
@@ -328,7 +367,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11501,
 		portrait = 607673,
-		loot = { 18523, 18527, 18524, 18525, 18526, 18521, 18520, 18522, 18485, 18484, 18490, 18483 },
+		loot = {{ id = 18523, seasonFilter = "all" }, { id = 18527, seasonFilter = "all" }, { id = 18524, seasonFilter = "all" }, { id = 18525, seasonFilter = "all" }, { id = 18526, seasonFilter = "all" }, { id = 18521, seasonFilter = "all" }, { id = 18520, seasonFilter = "all" }, { id = 18522, seasonFilter = "all" }, { id = 18485, seasonFilter = "all" }, { id = 18484, seasonFilter = "all" }, { id = 18490, seasonFilter = "all" }, { id = 18483, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"King Gordok is the reigning monarch of the Gordok ogres and the ruler of Dire Maul's North Wing. His immense size and might, combined with his ruthless authority, make him a formidable figure within the ruins. King Gordok's presence exemplifies the Gordok ogres' dominance over this part of Dire Maul.",
@@ -356,7 +399,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11489,
 		portrait = 607785,
-		loot = { 18390, 18393, 18353, 18352 },
+		loot = {{ id = 18390, seasonFilter = "all" }, { id = 18393, seasonFilter = "all" }, { id = 18353, seasonFilter = "all" }, { id = 18352, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Tendris Warpwood is a malevolent treant corrupted by dark forces, found within Dire Maul's Warpwood Quarter. He is known for his mastery of fel magic and his allegiance to the twisted beings that have overtaken the area. Tendris's presence within Dire Maul serves as a grim reminder of the corruptive influence that has befallen the once-sacred elven ruins.",
@@ -384,7 +431,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11487,
 		portrait = 607703,
-		loot = { 18374, 18397, 18371, 18351, 18350 },
+		loot = {{ id = 18374, seasonFilter = "all" }, { id = 18397, seasonFilter = "all" }, { id = 18371, seasonFilter = "all" }, { id = 18351, seasonFilter = "all" }, { id = 18350, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Magister Kalendris is a Highborne elf who has embraced the arcane arts within Dire Maul's Capital Gardens. He is known for his formidable magical abilities and unwavering loyalty to the corrupted Highborne cause. Kalendris's presence within Dire Maul represents the tragic legacy of a once-great civilization now steeped in darkness.",
@@ -412,7 +463,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11488,
 		portrait = 607656,
-		loot = { 18383, 18386, 18349, 18347 },
+		loot = {{ id = 18383, seasonFilter = "all" }, { id = 18386, seasonFilter = "all" }, { id = 18349, seasonFilter = "all" }, { id = 18347, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Illyanna Ravenoak is a treant corrupted by the malevolent forces within Dire Maul's Warpwood Quarter. Once a guardian of nature, she now serves the twisted beings that have taken control of the area. Illyanna's fall from grace is a tragic example of the ruinous power that has overtaken the ancient ruins.",
@@ -440,7 +495,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11496,
 		portrait = 607657,
-		loot = { 18370, 18391, 18379, 18377, 18381, 18384, 18389, 18385, 18372, 18394 },
+		loot = {{ id = 18370, seasonFilter = "all" }, { id = 18391, seasonFilter = "all" }, { id = 18379, seasonFilter = "all" }, { id = 18377, seasonFilter = "all" }, { id = 18381, seasonFilter = "all" }, { id = 18384, seasonFilter = "all" }, { id = 18389, seasonFilter = "all" }, { id = 18385, seasonFilter = "all" }, { id = 18372, seasonFilter = "all" }, { id = 18394, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Immol'thar, a monstrous voidwalker, is imprisoned within Dire Maul's Capital Gardens. His immense power and dark nature make him a formidable guardian of the arcane secrets contained within the ruins. Immol'thar's captivity is a testament to the lengths the Highborne went to protect their knowledge, even if it meant imprisoning a powerful entity.",
@@ -468,7 +527,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11486,
 		portrait = 607745,
-		loot = { 18382, 18378, 18375, 18392, 18380, 18395, 18396, 18376, 18388, 18373 },
+		loot = {{ id = 18382, seasonFilter = "all" }, { id = 18378, seasonFilter = "all" }, { id = 18375, seasonFilter = "all" }, { id = 18392, seasonFilter = "all" }, { id = 18380, seasonFilter = "all" }, { id = 18395, seasonFilter = "all" }, { id = 18396, seasonFilter = "all" }, { id = 18376, seasonFilter = "all" }, { id = 18388, seasonFilter = "all" }, { id = 18373, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Prince Tortheldrin is a malevolent Highborne elf who rules over Dire Maul's Athenaeum. He is a master of arcane magic and serves as the final guardian of the ancient Highborne knowledge contained within. Tortheldrin's presence within Dire Maul is a reflection of the corruptive influence that has pervaded the once-noble Highborne civilization.",

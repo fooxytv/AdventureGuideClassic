@@ -72,15 +72,6 @@ function component.Init(components_)
 			button.DefeatedOverlay.Icon = button.DefeatedOverlay:CreateTexture(nil, "BACKGROUND")
 			Atlas.SetAtlas(button.DefeatedOverlay.Icon, "Map-MarkedDefeated", true)
 			button.DefeatedOverlay.Icon:SetPoint("CENTER")
-			--todo: implement if API provides a means to do so
-			--[[
-				for button.DefeatedOverlay
-				<Scripts>
-					<OnEnter function="EncounterJournalBossButtonDefeatedOverlay_OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			]]
-			-- anonymous frame
 			local creatureFrame = CreateFrame("Frame", nil, button)
 			creatureFrame:SetSize(1, 1)
 			creatureFrame:SetPoint("TOPLEFT", -4, 13)

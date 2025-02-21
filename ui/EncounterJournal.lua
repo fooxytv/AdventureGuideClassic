@@ -8,9 +8,7 @@ select(2, ...).SetupGlobalFacade()
 
 local component = UI.CreateComponent("EncounterJournal")
 local components
-
 local currentView
-
 local version = C_AddOns.GetAddOnMetadata(addonName, "Version")
 
 function component.Init(components_)

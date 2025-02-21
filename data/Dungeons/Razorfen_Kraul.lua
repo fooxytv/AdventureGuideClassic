@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136353,
 	splash = 608252,
 	mapID = 47,
-	season = false,
+	seasonFilter = "all",
 	overview = "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Many quilboar have taken up residence in the largest cluster of giant thorns, the Razorfen, which they revere as Agamaggan's resting place.",
 	{
 		name = "Roogug",
 		defeated = 0,
 		encounterID = 6168,
 		portrait = 607760,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Roogug is a massive and ferocious quillboar chieftain who rules over the hordes within Razorfen Kraul. His immense size and brutal leadership have made him a central figure in the quillboar's hierarchy. Roogug's presence in Razorfen Kraul symbolizes the relentless aggression and power struggle among the quillboar clans.",
@@ -40,7 +44,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -48,7 +51,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4424,
 		portrait = 607531,
-		loot = { 6681 },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Aggem Thorncurse is a malevolent and powerful warlock who has established a stronghold within the depths of Razorfen Kraul. His dark sorcery and mastery over demonic forces have corrupted the quillboar lair. Aggem's presence in Razorfen Kraul represents the sinister influences that have taken root within the quillboar's tunnels.",
@@ -68,7 +75,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -76,7 +82,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4428,
 		portrait = 607584,
-		loot = { 6682, 6685, 2816 },
+		loot = {{ id = 6682, seasonFilter = "all" }, { id = 6685, seasonFilter = "all" }, { id = 2816, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Death Speaker Jargba is a sinister and necromantic quillboar who has risen to power within Razorfen Kraul. His mastery over necromancy and his dark rituals have corrupted the lair. Jargba's presence in Razorfen Kraul signifies the unholy and necrotic forces that have infested the quillboar tunnels.",
@@ -96,7 +106,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -104,7 +113,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4420,
 		portrait = 607736,
-		loot = { 6686, 6687 },
+		loot = {{ id = 6686, seasonFilter = "all" }, { id = 6687, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Overlord Ramtusk is a formidable quillboar chieftain who commands the warbands within Razorfen Kraul. His martial prowess and ruthless leadership have solidified his position as a central figure in the quillboar hierarchy. Ramtusk's presence in Razorfen Kraul represents the unyielding aggression and territorial control of the quillboar clans.",
@@ -124,7 +137,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -132,7 +144,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4422,
 		portrait = 607530,
-		loot = { 6690, 6691 },
+		loot = {{ id = 6690, seasonFilter = "all" }, { id = 6691, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Agathelos the Raging is a massive and enraged quillboar who has taken up residence within the depths of Razorfen Kraul. His uncontrollable fury and overwhelming strength have turned the quillboar lair into a chaotic battleground. Agathelos's presence within Razorfen Kraul reflects the primal and destructive forces that lurk in the quillboar tunnels.",
@@ -152,7 +168,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -160,7 +175,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4421,
 		portrait = 607563,
-		loot = { 6693, 6694, 6692 },
+		loot = {{ id = 6693, seasonFilter = "all" }, { id = 6694, seasonFilter = "all" }, { id = 6692, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Charlga Razorflank is a cunning and ruthless quillboar matriarch who holds sway over the quillboar clans within Razorfen Kraul. Her mastery of druidic magic and her command over the Thornweavers have corrupted the lair. Charlga's presence in Razorfen Kraul signifies the twisted and unnatural influences that have infested the quillboar tunnels.",
@@ -180,7 +199,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	}
 })

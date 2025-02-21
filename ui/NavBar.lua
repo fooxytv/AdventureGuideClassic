@@ -40,13 +40,37 @@ function component.Init(components_)
 	local homeData = {
 		name = "Home",
 		OnClick = function()
-			AdventureGuideNavigationService.SetInstances(InstanceService.GetDungeons())
+			local currentInstance = AdventureGuideNavigationService.GetInstance()
+			local isRaid = false
+			if currentInstance then
+				for _, raid  in ipairs(InstanceService.GetRaids() or {}) do
+					if raid.name == currentInstance.name then
+						isRaid = true
+						break
+					end
+				end
+			end
+			if isRaid then
+				AdventureGuideNavigationService.SetInstances(InstanceService.GetRaids())
+			else
+				AdventureGuideNavigationService.SetInstances(InstanceService.GetDungeons())
+			end
 			local instances = AdventureGuideNavigationService.GetInstances()
 			if (instances) then
 				components.InstanceSelect.Show()
 			end
 		end,
 	}
+	-- local homeData = {
+	-- 	name = "Home",
+	-- 	OnClick = function()
+	-- 		AdventureGuideNavigationService.SetInstances(InstanceService.GetDungeons())
+	-- 		local instances = AdventureGuideNavigationService.GetInstances()
+	-- 		if (instances) then
+	-- 			components.InstanceSelect.Show()
+	-- 		end
+	-- 	end,
+	-- }
 	NavBar_Initialize(navBar, "NavButtonTemplate", homeData, navBar.home, navBar.overflow);
 	-- local button2Data = {
 	-- 	name = "Fooxy",

@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136359,
 	splash = 608255,
 	mapID = 329,
-	season = false,
+	seasonFilter = "all",
 	overview = "Stratholme was once the jewel of northern Lordaeron, but today it is remembered for its harrowing fall to ruin. It was here that Prince Arthas turned his back on the noble paladin Uther Lightbringer, slaughtering countless residents believed to be infected with the horrific plague of undeath. Ever since, cursed Stratholme has been marred by death, betrayal, and hopelessness.",
 	{
 		name = "Skul",
 		defeated = 0,
 		encounterID = 10393,
 		portrait = 607804,
-		loot = { 13395, 13394, 13396 },
+		loot = {{ id = 13395, seasonFilter = "all" }, { id = 13394, seasonFilter = "all" }, { id = 13396, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Skul, the Necropolis' caretaker, is a loyal servant of the Scourge and is responsible for overseeing the undead within Stratholme. He is known for his eerie demeanor and his role as a sentinel of the cursed city. Skul's presence within Stratholme reflects the grim authority of the Scourge over the city's ruins.",
@@ -47,7 +51,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10558,
 		portrait = I.UIEJBossHearthsingerForresten,
-		loot = { 16682, 13384, 13378, 13383, 13379 },
+		loot = {{ id = 16682, seasonFilter = "all" }, { id = 13384, seasonFilter = "all" }, { id = 13378, seasonFilter = "all" }, { id = 13383, seasonFilter = "all" }, { id = 13379, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Hearthsinger Forresten was once a renowned bard and entertainer in Stratholme before its fall. However, he succumbed to the plague and now roams the city as a tormented spirit, seeking to relive his past glory. Forresten's presence within Stratholme reflects the tragedy and despair that befell its inhabitants.",
@@ -74,7 +82,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10516,
 		portrait = 607792,
-		loot = { 13404, 13408, 13409, 13405, 16717 },
+		loot = {{ id = 13404, seasonFilter = "all" }, { id = 13408, seasonFilter = "all" }, { id = 13409, seasonFilter = "all" }, { id = 13405, seasonFilter = "all" }, { id = 16717, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Unforgiven is a vengeful spirit who dwells within Stratholme, driven by a burning desire for retribution against those he deems responsible for his suffering. His presence reflects the lingering torment and anger that permeate the cursed city.",
@@ -101,7 +113,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11143,
 		portrait = I.UIEJBossPostmasterMalown,
-		loot = { 13393, 13390, 13392, 13391, 13389, 13388 },
+		loot = {{ id = 13393, seasonFilter = "all" }, { id = 13390, seasonFilter = "all" }, { id = 13392, seasonFilter = "all" }, { id = 13391, seasonFilter = "all" }, { id = 13389, seasonFilter = "all" }, { id = 13388, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Postmaster Malown was once responsible for Stratholme's mail service before its fall to the Scourge. He has been transformed into a malevolent undead postmaster who now haunts the city's post office. Malown's presence reflects the perversion of everyday life within Stratholme by the Scourge.",
@@ -128,7 +144,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10808,
 		portrait = 607795,
-		loot = { 13403, 16724, 13401, 13402, 13400 },
+		loot = {{ id = 13403, seasonFilter = "all" }, { id = 16724, seasonFilter = "all" }, { id = 13401, seasonFilter = "all" }, { id = 13402, seasonFilter = "all" }, { id = 13400, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Timmy the Cruel is a tormented child spirit who wanders the streets of Stratholme, consumed by the darkness that plagues the city. His presence reflects the tragedy of innocent lives lost during the city's fall to the Scourge.",
@@ -155,7 +175,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10997,
 		portrait = I.UIEJBossCannonMasterWilley,
-		loot = { 22405, 22407, 22403, 22404, 22406, 18721, 13382, 13381, 16708, 13380 },
+		loot = {{ id = 22405, seasonFilter = "all" }, { id = 22407, seasonFilter = "all" }, { id = 22403, seasonFilter = "all" }, { id = 22404, seasonFilter = "all" }, { id = 22406, seasonFilter = "all" }, { id = 18721, seasonFilter = "all" }, { id = 13382, seasonFilter = "all" }, { id = 13381, seasonFilter = "all" }, { id = 16708, seasonFilter = "all" }, { id = 13380, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Cannon Master Willey was once a skilled engineer in Stratholme, responsible for the city's defenses. In undeath, he has been transformed into a fearsome cannon master who guards the city's gates. Willey's presence reflects the militarization and fortification of Stratholme by the Scourge.",
@@ -182,7 +206,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10811,
 		portrait = I.UIEJBossArchivistGalford,
-		loot = { 13386, 18716, 16692, 13385, 13387 },
+		loot = {{ id = 13386, seasonFilter = "all" }, { id = 18716, seasonFilter = "all" }, { id = 16692, seasonFilter = "all" }, { id = 13385, seasonFilter = "all" }, { id = 13387, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Archivist Galford was once a scholar and historian in Stratholme, responsible for preserving its knowledge and history. In undeath, he has been transformed into a malevolent archivist who guards the city's secrets. Galford's presence reflects the corruption of knowledge and the manipulation of history by the Scourge.",
@@ -209,7 +237,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10813,
 		portrait = 607551,
-		loot = { 22334, 13348, 13369, 13359, 13360, 12103, 13358, 16725, 18717, 18718, 18720, 22334, 13353 },
+		loot = {{ id = 22334, seasonFilter = "all" }, { id = 13348, seasonFilter = "all" }, { id = 13369, seasonFilter = "all" }, { id = 13359, seasonFilter = "all" }, { id = 13360, seasonFilter = "all" }, { id = 12103, seasonFilter = "all" }, { id = 13358, seasonFilter = "all" }, { id = 16725, seasonFilter = "all" }, { id = 18717, seasonFilter = "all" }, { id = 18718, seasonFilter = "all" }, { id = 18720, seasonFilter = "all" }, { id = 22334, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ id = 228539, seasonFilter = "exclusive" }, { id = 13353, seasonFilter = "restricted" }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Balnazzar is a powerful dreadlord and one of the dreadlords who manipulated the events that led to Stratholme's fall. He serves as a central figure in the Scourge's control of the city and its undead inhabitants. Balnazzar's presence reflects the malevolent influence of the Nathrezim over Stratholme.",
@@ -236,7 +268,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10435,
 		portrait = 607704,
-		loot = { 23198, 18725, 18726, 18722, 18727, 13376 },
+		loot = {{ id = 23198, seasonFilter = "all" }, { id = 18725, seasonFilter = "all" }, { id = 18726, seasonFilter = "all" }, { id = 18722, seasonFilter = "all" }, { id = 18727, seasonFilter = "all" }, { id = 13376, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Magistrate Barthilas was once a lawkeeper in Stratholme, responsible for maintaining order and justice. In undeath, he has become a malevolent magistrate who enforces the twisted laws of the Scourge. Barthilas's presence reflects the perversion of justice and order within the cursed city.",
@@ -263,7 +299,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10809,
 		portrait = 607675,
-		loot = { 13954, 13397, 13399 },
+		loot = {{ id = 13954, seasonFilter = "all" }, { id = 13397, seasonFilter = "all" }, { id = 13399, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Stonespine is a monstrous and undead giant who guards the corridors of Stratholme with brute strength. He is known for his formidable presence and his role as a sentinel of the city's depths. Stonespine's presence reflects the overwhelming power of the Scourge within the cursed city.",
@@ -290,7 +330,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10437,
 		portrait = 607724,
-		loot = { 16675, 18738, 18739, 13529, 18740, 13531, 13530, 13532, 13533, 13508 },
+		loot = {{ id = 16675, seasonFilter = "all" }, { id = 18738, seasonFilter = "all" }, { id = 18739, seasonFilter = "all" }, { id = 13529, seasonFilter = "all" }, { id = 18740, seasonFilter = "all" }, { id = 13531, seasonFilter = "all" }, { id = 13530, seasonFilter = "all" }, { id = 13532, seasonFilter = "all" }, { id = 13533, seasonFilter = "all" }, { id = 13508, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Nerub'enkan is an undead nerubian who has been twisted and enslaved by the Scourge to guard Stratholme's inner chambers. He is known for his ruthless nature and his role as a sentinel of the city's depths. Nerub'enkan's presence reflects the corruption of the nerubian race by the dark forces that control the city.",
@@ -317,7 +361,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 11121,
 		portrait = I.UIEJBossBlackGuardSwordsmith,
-		loot = { 18783 },
+		loot = {{ id = 18783, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Black Guard Swordsmith is an undead blacksmith who forges deadly weapons for the Scourge within Stratholme. He is known for his skill in crafting blades of death and his role as a weapon forger. The Swordsmith's presence reflects the Scourge's relentless pursuit of arms and power within the city.",
@@ -344,7 +392,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10438,
 		portrait = 607707,
-		loot = { 18737, 16691, 18735, 18734, 13524, 13509, 13526, 13525, 13527, 13528 },
+		loot = {{ id = 18737, seasonFilter = "all" }, { id = 16691, seasonFilter = "all" }, { id = 18735, seasonFilter = "all" }, { id = 18734, seasonFilter = "all" }, { id = 13524, seasonFilter = "all" }, { id = 13509, seasonFilter = "all" }, { id = 13526, seasonFilter = "all" }, { id = 13525, seasonFilter = "all" }, { id = 13527, seasonFilter = "all" }, { id = 13528, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Maleki the Pallid is a sinister and powerful undead sorcerer who serves as a guardian of Stratholme's inner chambers. He is known for his mastery of dark magic and his role as a sentinel of the city's depths. Maleki's presence reflects the malevolent and arcane forces that infest the cursed city.",
@@ -371,7 +423,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10436,
 		portrait = 607553,
-		loot = { 18728, 13534, 16704, 18729, 18730, 13538, 13539, 13514, 13537, 13535 },
+		loot = {{ id = 18728, seasonFilter = "all" }, { id = 13534, seasonFilter = "all" }, { id = 16704, seasonFilter = "all" }, { id = 18729, seasonFilter = "all" }, { id = 18730, seasonFilter = "all" }, { id = 13538, seasonFilter = "all" }, { id = 13539, seasonFilter = "all" }, { id = 13514, seasonFilter = "all" }, { id = 13537, seasonFilter = "all" }, { id = 13535, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Baroness Anastari is an elegant and deadly undead noble who was once a prominent figure in Stratholme's aristocracy. In undeath, she has become a malevolent baroness who commands the undead with regal authority. Anastari's presence reflects the perversion of nobility and power by the Scourge.",
@@ -398,7 +454,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10439,
 		portrait = 607752,
-		loot = { 13373, 18723, 13375, 16737, 13515, 13372, 13374 },
+		loot = {{ id = 13373, seasonFilter = "all" }, { id = 18723, seasonFilter = "all" }, { id = 13375, seasonFilter = "all" }, { id = 16737, seasonFilter = "all" }, { id = 13515, seasonFilter = "all" }, { id = 13372, seasonFilter = "all" }, { id = 13374, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Ramstein the Gorger is a monstrous and grotesque abomination who dwells within the depths of Stratholme. He is known for his insatiable appetite for flesh and his role as a guardian of the city's catacombs. Ramstein's presence reflects the grotesque and horrifying creations of the Scourge.",
@@ -425,7 +485,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 10440,
 		portrait = I.UIEJBossBaronRivendare,
-		loot = { 22412, 22409, 22410, 22411, 22408, 13335, 13505, 13349, 13344, 13345, 13340, 13346, 13361, 13368, 16719, 16678, 16687, 16728, 16694, 16709, 16668, 16699, 16732 },
+		loot = {{ id = 22412, seasonFilter = "all" }, { id = 22409, seasonFilter = "all" }, { id = 22410, seasonFilter = "all" }, { id = 22411, seasonFilter = "all" }, { id = 22408, seasonFilter = "all" }, { id = 13349, seasonFilter = "all" }, { id = 13344, seasonFilter = "all" }, { id = 13345, seasonFilter = "all" }, { id = 13340, seasonFilter = "all" }, { id = 13346, seasonFilter = "all" }, { id = 13361, seasonFilter = "all" }, { id = 13368, seasonFilter = "all" }, { id = 16719, seasonFilter = "all" }, { id = 16678, seasonFilter = "all" }, { id = 16687, seasonFilter = "all" }, { id = 16728, seasonFilter = "all" }, { id = 16694, seasonFilter = "all" }, { id = 16709, seasonFilter = "all" }, { id = 16668, seasonFilter = "all" }, { id = 16699, seasonFilter = "all" }, { id = 16732, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ id = 228543, seasonFilter = "exclusive" }, { id = 13505, seasonFilter = "restricted" }, { id = 13335, seasonFilter = "all" }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Baron Rivendare is a powerful and ruthless undead noble who serves as the master of Stratholme. He is responsible for maintaining the Scourge's control over the cursed city. Rivendare's presence reflects the central authority of the Scourge within Stratholme.",

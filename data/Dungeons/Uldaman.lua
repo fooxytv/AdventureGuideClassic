@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136363,
 	splash = 608264,
 	mapID = 70,
-	season = false,
+	seasonFilter = "all",
 	overview = "Uldaman is an ancient titan vault buried deep within the earth. It is said the titans sealed away a failed experiment there and then moved on to a new project, related to the genesis of the dwarves. Tales of a fabled treasure containing great knowledge have enticed would-be treasure hunters to dig deeper into the secrets of Uldaman, a task made perilous by the presence of stone defenders, savage troggs, Dark Iron invaders, and other dangers lurking in the lost city.",
 	{
 		name = "The Lost Dwarves",
 		defeated = 0,
 		encounterID = 6906,
 		portrait = 607550,
-		loot = { 9394, 9401, 9404, 9398 },
+		loot = {{ id = 9394, seasonFilter = "all" }, { id = 9401, seasonFilter = "all" }, { id = 9404, seasonFilter = "all" }, { id = 9398, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"In the depths of Uldaman, an ancient Titan vault, the Lost Dwarves—Baelog, Olaf, and Eric—stand as relics of a bygone era. Originally members of the renowned Stormpike Expedition, they delved too deep into the hidden secrets of the dungeon.",
@@ -47,7 +51,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 6910,
 		portrait = 607757,
-		loot = { 9388, 9387, 9390, 9389 },
+		loot = {{ id = 9388, seasonFilter = "all" }, { id = 9387, seasonFilter = "all" }, { id = 9390, seasonFilter = "all" }, { id = 9389, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Revelosh is an ancient and enigmatic stone golem that guards the depths of Uldaman. Crafted by the titans in ages past, he stands as a sentinel over the secrets hidden within the ancient vaults. Revelosh's presence in Uldaman signifies the enduring power of the titans' creations.",
@@ -75,7 +83,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7228,
 		portrait = 607664,
-		loot = { 9409, 9408, 9407 },
+		loot = {{ id = 9409, seasonFilter = "all" }, { id = 9408, seasonFilter = "all" }, { id = 9407, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Ironaya is a fearsome stone golem that dwells deep within Uldaman. Created by the titans, she guards the inner chambers of the ancient complex. Ironaya's presence in Uldaman symbolizes the titans' dedication to safeguarding their creations.",
@@ -104,7 +116,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7023,
 		portrait = 607729,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Obsidian Sentinel is an imposing construct that watches over Uldaman's inner chambers. Crafted from obsidian and enchanted by the titans, it stands as an unyielding guardian. The Obsidian Sentinel's presence underscores the enduring power of the titans' creations.",
@@ -131,7 +147,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7206,
 		portrait = 607538,
-		loot = { 9410, 9411 },
+		loot = {{ id = 9410, seasonFilter = "all" }, { id = 9411, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"The Ancient Stone Keeper is a sentinel crafted by the titans to protect the secrets within Uldaman. Its ancient and weathered form stands as a testament to the passage of time. The presence of the Ancient Stone Keeper in Uldaman signifies the enduring legacy of the titans.",
@@ -159,7 +179,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7291,
 		portrait = 607606,
-		loot = { 11311, 11310, 9412, 9419 },
+		loot = {{ id = 11311, seasonFilter = "all" }, { id = 11310, seasonFilter = "all" }, { id = 9412, seasonFilter = "all" }, { id = 9419, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Galgann Firehammer is a formidable Dark Iron dwarf who has taken up residence within Uldaman. His allegiance to the Dark Iron clan and his mastery of fire magic make him a formidable adversary. Galgann's presence within Uldaman adds an element of danger to the ancient chambers.",
@@ -189,7 +213,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4854,
 		portrait = 607626,
-		loot = { 9416, 9415, 9414 },
+		loot = {{ id = 9416, seasonFilter = "all" }, { id = 9415, seasonFilter = "all" }, { id = 9414, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Grimlok is a powerful and brutish trogg chieftain who has claimed a portion of Uldaman as his domain. His physical strength and leadership over the troggs make him a formidable adversary. Grimlok's presence in Uldaman signifies the diverse inhabitants that have carved out territories within the ancient complex.",
@@ -217,7 +245,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 2748,
 		portrait = 607546,
-		loot = { 11118, 9418, 9413 },
+		loot = {{ id = 11118, seasonFilter = "all" }, { id = 9418, seasonFilter = "all" }, { id = 9413, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Archaedas is a colossal and ancient stone golem that guards the deepest chambers of Uldaman. Crafted by the titans themselves, he stands as a sentinel over the most sacred secrets of the complex. Archaedas's presence in Uldaman signifies the pinnacle of the titans' creations.",

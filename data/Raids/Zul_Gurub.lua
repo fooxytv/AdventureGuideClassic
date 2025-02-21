@@ -19,7 +19,11 @@ InstanceService.AddRaid({
 		name = "High Priestess Jeklik",
 		encounterID = 14517,
 		portrait = I.UIEJBossJeklik,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -39,14 +43,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "High Priest Venoxis",
 		encounterID = 14507,
 		portrait = 522236,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -66,14 +73,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "High Priestess Mar'li",
 		encounterID = 14510,
 		portrait = I.UIEJBossMarli,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -93,14 +103,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Bloodlord Mandokir",
 		encounterID = 11382,
 		portrait = I.UIEJBossMandokir,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -120,14 +133,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Edge of Madness",
 		encounterID = 15083,
 		portrait = I.UIEJBossHazzarah,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -147,14 +163,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "High Priest Thekal",
 		encounterID = 14509,
 		portrait = I.UIEJBossThekal,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -174,14 +193,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "High Priestess Arlokk",
 		encounterID = 14515,
 		portrait = I.UIEJBossArlokk,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -201,7 +223,6 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
@@ -228,14 +249,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Hakkar",
 		encounterID = 14834,
 		portrait = I.UIEJBossHakkar,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -255,14 +279,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Gahz'ranka",
 		encounterID = 15114,
 		portrait = 607614,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -282,7 +309,6 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })

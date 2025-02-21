@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136368,
 	splash = 608267,
 	mapID = 209,
-	season = false,
+	seasonFilter = "all",
 	overview = "Zul'Farrak was once the shining jewel of Tanaris, ferociously protected by the cunning Sandfury tribe. Despite the trolls' tenacity, this isolated group was forced to surrender much of its territory throughout history. Now, it appears that Zul'Farrak's inhabitants are creating a horrific army of undead trolls to conquer the surrounding region. Other disturbing rumors tell of an ancient creature sleeping within the city--one that, if awakened, will rain death and destruction across Tanaris.",
 	{
 		name = "Antu'sul",
 		defeated = 0,
 		encounterID = 8127,
 		portrait = 607541,
-		loot = { 9641, 9379, 9639, 9640 },
+		loot = {{ id = 9641, seasonFilter = "all" }, { id = 9379, seasonFilter = "all" }, { id = 9639, seasonFilter = "all" }, { id = 9640, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Antu'sul is a powerful sand troll and a guardian of Zul'Farrak, a vast troll city in the Tanaris Desert. His role within the city is tied to the preservation of its ancient secrets and the protection of its inhabitants. Antu'sul's formidable presence and mastery over earth magic make him a significant figure in the troll hierarchy.",
@@ -53,7 +57,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7272,
 		portrait = 607793,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Theka the Martyr is a revered figure among the sand trolls of Zul'Farrak. His devotion to the ancient rituals and traditions of his people has earned him a special place within the city. Theka's resilience and his mastery of protective magic make him a central figure in the troll hierarchy.",
@@ -83,7 +91,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7271,
 		portrait = 607819,
-		loot = { 18083, 18082 },
+		loot = {{ id = 18083, seasonFilter = "all" }, { id = 18082, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Witch Doctor Zum'rah is a cunning practitioner of dark voodoo magic within Zul'Farrak. His role within the city is to invoke the power of the loa and provide spiritual guidance to the sand troll community. Zum'rah's mystical abilities and connection to the spirit world make him a prominent figure in the troll hierarchy.",
@@ -141,7 +153,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7275,
 		portrait = 607770,
-		loot = { 9470, 9475, 9474, 9473 },
+		loot = {{ id = 9470, seasonFilter = "all" }, { id = 9475, seasonFilter = "all" }, { id = 9474, seasonFilter = "all" }, { id = 9473, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Shadowpriest Sezz'ziz is a malevolent troll who has delved into the darker aspects of voodoo magic within Zul'Farrak. His role within the city involves wielding shadowy powers and maintaining control over sinister forces. Sezz'ziz's mastery of dark magic and his malevolent nature make him a feared figure in the troll hierarchy.",
@@ -170,7 +186,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7604,
 		portrait = I.UIEJBossSergeantBly,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Sergeant Bly is a battle-hardened troll warrior who has risen through the ranks within Zul'Farrak. His role involves training and leading the troll forces in defense of the city. Bly's combat expertise and unwavering loyalty to his people make him a crucial figure in the troll hierarchy.",
@@ -200,7 +220,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7795,
 		portrait = 607652,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Hydromancer Velratha is a master of water and frost magic among the sand trolls of Zul'Farrak. Her role within the city involves harnessing the power of water and maintaining control over its elemental forces. Velratha's mastery of elemental magic and her connection to the waters make her a significant figure in the troll hierarchy.",
@@ -229,7 +253,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7267,
 		portrait = 607564,
-		loot = { 9476, 9479, 11086, 9478, 9477 },
+		loot = {{ id = 9476, seasonFilter = "all" }, { id = 9479, seasonFilter = "all" }, { id = 11086, seasonFilter = "all" }, { id = 9478, seasonFilter = "all" }, { id = 9477, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Chief Ukorz Sandscalp is the formidable leader of the sand trolls within Zul'Farrak. His role involves overseeing the city's operations and ensuring the welfare of his people. Ukorz's strength, wisdom, and unwavering dedication make him the highest authority in the troll hierarchy.",

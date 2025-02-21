@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136352,
 	splash = 608251,
 	mapID = 129,
-	season = false,
+	seasonFilter = "all",
 	overview = "Legends state that where the demigod Agamaggan fell, his blood gave rise to great masses of thorny vines. Recently, scouts have reported seeing undead milling about the region, engendering fears that the dreaded Scourge may be moving to conquer Kalimdor.",
 	{
 		name = "Tuten'kash",
 		defeated = 0,
 		encounterID = 7355,
 		portrait = 607799,
-		loot = { 10775, 10776, 10777 },
+		loot = {{ id = 10775, seasonFilter = "all" }, { id = 10776, seasonFilter = "all" }, { id = 10777, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Tuten'kash is a grotesque and ancient crypt fiend that has taken residence deep within Razorfen Downs. Its malevolent presence and insatiable appetite for flesh have corrupted the once-sacred crypts. Tuten'kash's existence in Razorfen Downs serves as a chilling testament to the necromantic forces that have twisted the crypts into a nightmarish realm.",
@@ -48,7 +52,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7356,
 		portrait = I.UIEJBossPlaguemawTheRotting,
-		loot = { 10760, 10766 },
+		loot = {{ id = 10760, seasonFilter = "all" }, { id = 10766, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Plaguemaw the Rotting is a vile and ancient carrion worm that infests the depths of Razorfen Downs. Its putrid presence and the diseases it spreads have tainted the once-pure crypts. Plaguemaw's presence in Razorfen Downs represents the grim consequences of the crypts' desecration.",
@@ -68,7 +76,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -76,7 +83,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7357,
 		portrait = 607718,
-		loot = { 10769, 10770, 10771 },
+		loot = {{ id = 10769, seasonFilter = "all" }, { id = 10770, seasonFilter = "all" }, { id = 10771, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Mordresh Fire Eye is a malevolent and powerful undead sorcerer who has claimed Razorfen Downs as his domain. His mastery of fire magic and his dark ambitions have corrupted the once-holy crypts. Mordresh's presence in Razorfen Downs symbolizes the dangerous arcane forces that now rule the crypts.",
@@ -96,7 +107,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -104,7 +114,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7354,
 		portrait = I.UIEJBossRagglesnout,
-		loot = { 10767, 10768, 10758 },
+		loot = {{ id = 10767, seasonFilter = "all" }, { id = 10768, seasonFilter = "all" }, { id = 10758, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Ragglesnout is a massive and ravenous boar that roams the desecrated halls of Razorfen Downs. Its immense size and insatiable appetite have turned the crypts into a treacherous labyrinth. Ragglesnout's presence within Razorfen Downs reflects the chaotic and dangerous wildlife that now inhabits the crypts.",
@@ -124,7 +138,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -132,7 +145,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 8567,
 		portrait = 607617,
-		loot = { 10772, 10774 },
+		loot = {{ id = 10772, seasonFilter = "all" }, { id = 10774, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Glutton is a repugnant and bloated creature that has made its lair within the plagued halls of Razorfen Downs. Its ravenous hunger and corrosive bile have tainted the once-sacred crypts. Glutton's presence in Razorfen Downs represents the grotesque corruption that now infests the crypts.",
@@ -152,7 +169,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -160,7 +176,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7358,
 		portrait = 607537,
-		loot = { 10761, 10763, 10764, 10762, 10765 },
+		loot = {{ id = 10761, seasonFilter = "all" }, { id = 10763, seasonFilter = "all" }, { id = 10764, seasonFilter = "all" }, { id = 10762, seasonFilter = "all" }, { id = 10765, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"Amnennar the Coldbringer is an ancient and powerful lich who has claimed Razorfen Downs as his necropolis. His mastery of frost magic and his dark ambitions have frozen the crypts in eternal winter. Amnennar's presence in Razorfen Downs symbolizes the malevolent necromantic forces that have taken root in the crypts.",
@@ -180,7 +200,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	}
 })

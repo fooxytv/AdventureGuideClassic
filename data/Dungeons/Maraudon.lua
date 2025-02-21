@@ -13,14 +13,18 @@ InstanceService.AddDungeon({
 	icon = 136345,
 	splash = 608248,
 	mapID = 349,
-	season = false,
+	seasonFilter = "all",
 	overview = "According to legend, Zaetar, son of Cenarius, and the earth elemental princess Theradras begot the barbaric centaur race. Shortly after the centaur's creation, the ruthless creatures murdered their father. The grief-stricken Theradras is said to have trapped her lover's spirit within Maraudon, corrupting the region. Now, vicious centaur ghosts and twisted elemental minions roam every corner of the sprawling caves.",
 	{
 		name = "Noxxion",
 		defeated = 0,
 		encounterID = 13282,
 		portrait = 607728,
-		loot = { 17744, 17745, 17746 },
+		loot = {{ id = 17744, seasonFilter = "all" }, { id = 17745, seasonFilter = "all" }, { id = 17746, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Noxxion is a malevolent elemental lord who dwells within the putrid waters of Maraudon's inner sanctum. His watery form and toxic abilities have corrupted the once-pure waters of the cavern. Noxxion's presence in Maraudon is a stark reminder of the elemental chaos that has consumed the underground springs.",
 			{ heading = "Overview" },
@@ -39,7 +43,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -47,7 +50,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 12258,
 		portrait = 607756,
-		loot = { 17749, 17748, 17751, 17750 },
+		loot = {{ id = 17749, seasonFilter = "all" }, { id = 17748, seasonFilter = "all" }, { id = 17751, seasonFilter = "all" }, { id = 17750, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Razorlash is a monstrous thorned terror that has taken root within the lush greenery of Maraudon's inner sanctum. Its massive form and deadly thorns have overrun the verdant growth, twisting it into a dangerous and chaotic realm. Razorlash's presence within Maraudon represents the perversion of nature and the struggle to contain its unchecked power.",
 			{ heading = "Overview" },
@@ -66,7 +73,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -74,7 +80,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 12236,
 		portrait = 607699,
-		loot = { 17754, 17752, 17755 },
+		loot = {{ id = 17754, seasonFilter = "all" }, { id = 17752, seasonFilter = "all" }, { id = 17755, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Lord Vyletongue is a sinister satyr who has established a stronghold within Maraudon's inner sanctum. His dark sorcery and malevolent presence have corrupted the once-pure heart of the cavern. Lord Vyletongue's presence in Maraudon symbolizes the insidious influence of the Burning Legion on the sacred earth.",
 			{ heading = "Overview" },
@@ -101,7 +111,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 12225,
 		portrait = 607562,
-		loot = { 17738, 17739, 17740 },
+		loot = {{ id = 17738, seasonFilter = "all" }, { id = 17739, seasonFilter = "all" }, { id = 17740, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Celebras the Cursed is a tragic figure who was once a guardian of Maraudon but has been twisted by corruption. His existence within the sacred cavern is a poignant reminder of the cataclysmic events that have befallen the area. Celebras's presence in Maraudon symbolizes the desperate struggle to restore balance and purity to the cavern's depths.",
 			{ heading = "Overview" },
@@ -128,7 +142,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 12203,
 		portrait = 607684,
-		loot = { 17737, 17943, 17734, 17736 },
+		loot = {{ id = 17737, seasonFilter = "all" }, { id = 17943, seasonFilter = "all" }, { id = 17734, seasonFilter = "all" }, { id = 17736, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Landslide is a colossal earth elemental that roams the rocky passages of Maraudon's inner sanctum. Its immense size and destructive force have reshaped the underground terrain, turning it into a treacherous labyrinth. Landslide's presence within Maraudon reflects the elemental upheaval that has gripped the subterranean caverns.",
 			{ heading = "Overview" },
@@ -147,7 +165,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -155,7 +172,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 13601,
 		portrait = 607796,
-		loot = { 17718, 17719, 17717 },
+		loot = {{ id = 17718, seasonFilter = "all" }, { id = 17719, seasonFilter = "all" }, { id = 17717, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Tinkerer Gizlock is a cunning goblin engineer who has established a workshop within Maraudon's inner sanctum. His ingenious gadgets and destructive creations have added chaos to the cavern's already tumultuous environment. Tinkerer Gizlock's presence in Maraudon represents the volatile combination of goblin innovation and the cavern's inherent dangers.",
 			{ heading = "Overview" },
@@ -174,7 +195,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -182,7 +202,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 13596,
 		portrait = 607761,
-		loot = { 17728, 17730, 17732 },
+		loot = {{ id = 17728, seasonFilter = "all" }, { id = 17730, seasonFilter = "all" }, { id = 17732, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Rotgrip is a monstrous and ravenous hydra that lurks within the murky waters of Maraudon's inner sanctum. Its multiple heads and insatiable appetite have made it a feared inhabitant of the subterranean pools. Rotgrip's presence within Maraudon underscores the dangerous and diverse wildlife that inhabits the cavern.",
 			{ heading = "Overview" },
@@ -201,7 +225,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -209,7 +232,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 12201,
 		portrait = 607747,
-		loot = { 17780, 17713, 17714, 17710, 17711, 17715, 17707, 17766 },
+		loot = {{ id = 17713, seasonFilter = "all" }, { id = 17714, seasonFilter = "all" }, { id = 17710, seasonFilter = "all" }, { id = 17711, seasonFilter = "all" }, { id = 17715, seasonFilter = "all" }, { id = 17707, seasonFilter = "all" }, { id = 17766, seasonFilter = "all" }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ id = 223964, seasonFilter = "exclusive" }, { id = 17780, seasonFilter = "restricted" }},
+		extremelyRareLoot = {{ }},
 		overview = {
 			"Princess Theradras is a powerful earth elemental lordess who has claimed Maraudon as her domain. Her dominion over the sacred cavern and her dark ambitions have made her a formidable and reviled figure. Princess Theradras's presence in Maraudon represents the ongoing struggle to cleanse and purify the cavern's depths.",
 			{ heading = "Overview" },
@@ -228,7 +255,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	}
 })

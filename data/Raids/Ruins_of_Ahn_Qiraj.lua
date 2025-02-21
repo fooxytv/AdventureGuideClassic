@@ -19,7 +19,11 @@ InstanceService.AddRaid({
 		name = "Kurinnaxx",
 		encounterID = 15348,
 		portrait = 1385749,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -39,14 +43,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "General Rajaxx",
 		encounterID = 15341,
 		portrait = 1385734,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -66,14 +73,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Moam",
 		encounterID = 15340,
 		portrait = 1385755,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -93,14 +103,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Buru the Gorger",
 		encounterID = 15370,
 		portrait = 1385723,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -120,14 +133,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Ayamiss the Hunter",
 		encounterID = 15369,
 		portrait = 1385718,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -147,14 +163,17 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 	{
 		name = "Ossirian the Unscarred",
 		encounterID = 15339,
 		portrait = 1385759,
-		loot = { },
+		loot = {{ }}
+,		sharedLoot = {{ }},
+		rareLoot = {{ }},
+		veryRareLoot = {{ }},
+		extremelyRareLoot = {{ }},
 		npcs = { 2135, 12456, 12314 },
 		overview = {
 			"lore information goes here..",
@@ -174,7 +193,6 @@ InstanceService.AddRaid({
 			}
 		},
 		abilities = {
-			
 		}
 	},
 })
