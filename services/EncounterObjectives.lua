@@ -87,6 +87,7 @@ local function OnCombatEvent(_, event, ...)
                     if encounter.name == destName then
                         PlaySoundFile("Interface\\AddOns\\AdventureGuideClassic\\sounds\\UIEJBossDefeated.ogg", "Dialog")
                         EncounterObjective.CheckEncounterDefeated(destName)
+                        AdventureGuideClassicEventToastManager:ShowEncounterDefeatedToast(destName, "Has been defeated!")
                         return
                     end
                 end

@@ -19,16 +19,6 @@ function InstanceService.AddRaid(raid)
 	table.insert(raids, raid)
 end
 
--- function InstanceService.GetDungeons()
---     local filteredDungeons = { }
---     for i, dungeon in ipairs(dungeons) do
---         if C_Seasons.GetActiveSeason() ~= 2 or (C_Seasons.GetActiveSeason() == 2 and not dungeon.season) then
---             table.insert(filteredDungeons, dungeon)
---         end
---     end
---     return filteredDungeons
--- end
-
 local function ShouldIncludeInstance(instance)
 	local activeSeason = C_Seasons.GetActiveSeason()
 	local filterType = instance.seasonFilter or "all"

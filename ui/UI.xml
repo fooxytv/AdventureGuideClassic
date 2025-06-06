@@ -19,6 +19,7 @@
     <Script file="ui/mappings/InstanceMapping.lua" />
 
     <Script file="ui/AdventureObjectives.lua" />
+    <Script file="ui/EventToastManager.lua" />
     <Script file="ui/Map.lua" />
     <Script file="ui/Component.lua" />
     <Script file="ui/EncounterJournal.lua" />
@@ -34,5 +35,6 @@
     <Script file="ui/EncounterJournalTabs.lua" />
     <Script file="ui/InfoTabs.lua" />
     <Script file="ui/Loot.lua" />
+    <Script file="ui/WishList.lua" />
     <Script file="ui/MinimapButton.lua" />
 </Ui>

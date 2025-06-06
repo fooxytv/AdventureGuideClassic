@@ -2,6 +2,7 @@ select(2, ...).SetupGlobalFacade()
 
 ObjectiveService.AddDungeons({
     name = "Stormwind Stockade",
+    info = "",
     encounters = {
         { name = "Targorr the Dread", defeated = 0 },
         { name = "Kam Deepfury", defeated = 0 },

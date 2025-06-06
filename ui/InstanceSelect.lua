@@ -17,20 +17,8 @@ function component.Init(components_)
 	EncounterJournal.instanceSelect = instanceSelect
 	instanceSelect:SetPoint("TOPLEFT", EncounterJournal.inset, 0, -2)
 	instanceSelect:SetPoint("BOTTOMRIGHT", EncounterJournal.inset, -3, 0)
-	if C_Seasons.HasActiveSeason() then
-		local activeSeasonID = C_Seasons.GetActiveSeason()
-		if activeSeasonID == 3 then
-			instanceSelect.bg = instanceSelect:CreateTexture(nil, "BACKGROUND")
-			-- This is hardcore mode -- Change this background to the hardcore mode backgroundTexture
-			instanceSelect.bg:SetTexture(I.UIEJHardcore)
-		else
-			instanceSelect.bg = instanceSelect:CreateTexture(nil, "BACKGROUND")
-			instanceSelect.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Classic")
-		end
-	else
-		instanceSelect.bg = instanceSelect:CreateTexture(nil, "BACKGROUND")
-		instanceSelect.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Classic")
-	end
+	instanceSelect.bg = instanceSelect:CreateTexture(nil, "BACKGROUND")
+	instanceSelect.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Classic")
 	instanceSelect.bg:SetAllPoints()
 	instanceSelect.bg:SetPoint("TOPLEFT", 3, -1)
 	instanceSelect.title = instanceSelect:CreateFontString(nil, "BACKGROUND", "GameFontNormalLarge2")

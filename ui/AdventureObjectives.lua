@@ -136,6 +136,7 @@ function AdventureObjectives:LoadEncounters(dungeonName, updatedEncounters)
         end
     end
     if not encounters then
+        print("No encounters found for dungeon: ", dungeonName)
         return
     end
     self.lastEncounterFrame = self.instanceTitleFrame
@@ -166,7 +167,7 @@ local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 eventFrame:SetScript("OnEvent", function(_, event)
-    if event == "ZONE_CHANGED_NEW_AREA" then
+    if event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" then
         AdventureObjectives:UpdateVisibility()
     end
 end)
