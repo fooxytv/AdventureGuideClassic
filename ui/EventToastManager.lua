@@ -70,12 +70,12 @@ function AdventureGuideClassicEventToastManager:ShowEncounterDefeatedToast(title
         frame:SetAlpha(0)
         frame:Show()
         UIFrameFadeIn(frame, 1, 0, 1)
-        -- C_Timer.After(3, function()
-        --     UIFrameFadeOut(frame, 1, 1, 0)
-        --     C_Timer.After(1, function()
-        --         frame:Hide()
-        --     end)
-        -- end)
+        C_Timer.After(3, function()
+            UIFrameFadeOut(frame, 1, 1, 0)
+            C_Timer.After(1, function()
+                frame:Hide()
+            end)
+        end)
     end)
 end
 

@@ -18,7 +18,7 @@
     <Script file="ui/mappings/Colors.lua" />
     <Script file="ui/mappings/InstanceMapping.lua" />
 
-    <Script file="ui/AdventureObjectives.lua" />
+    <!-- <Script file="ui/AdventureObjectives.lua" /> -->
     <Script file="ui/EventToastManager.lua" />
     <Script file="ui/Map.lua" />
     <Script file="ui/Component.lua" />
