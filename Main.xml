@@ -20,6 +20,7 @@ Programming by: TomCat / TomCat's Gaming
     <Include file="services/Services.xml" />
     <Include file="data/Data.xml" />
     <Include file="ui/UI.xml" />
+    <Include file="ui/InstanceSelectTemplates.xml" />
 
     <Script file="SlashCommands.lua" />
     <Script file="Bindings.lua" />

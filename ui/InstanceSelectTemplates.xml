@@ -1,0 +1,6 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+  <!-- totally blank button, just defines a size -->
+  <Button name="AdventureGuideInstanceButtonTemplate" virtual="true">
+    <Size x="174" y="96"/>
+  </Button>
+</Ui>

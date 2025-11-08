@@ -69,10 +69,13 @@ function component.Init(components_)
 		button.bgImage:SetTexture(instance.thumbnail);
 		button:Show()
 	end
-	local view = CreateScrollBoxListGridView(4, 4, 0, 0, 0, 15, 15);
+	local view = CreateScrollBoxListGridView(4, 4, 0, 0, 0, 15, 15)
 	view:SetElementExtent(96)
-	view:SetElementInitializer("Button", Initializer);
-	ScrollUtil.InitScrollBoxWithScrollBar(scrollbox, scrollbar, view);
+
+	view:SetElementInitializer("AdventureGuideInstanceButtonTemplate", Initializer)
+	view:SetElementResetter(function(button) button:Hide() end)
+
+	ScrollUtil.InitScrollBoxWithScrollBar(scrollbox, scrollbar, view)
 	instanceSelect:Hide()
 end
 
