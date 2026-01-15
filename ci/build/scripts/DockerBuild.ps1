@@ -15,8 +15,14 @@ $dockerFilePath = "./ci/build/Dockerfile"
 $projectDir = "/c/Users/Simon/workspace/addons/AdventureGuideClassic"
 $containerWorkDir = "/app"
 
-# Hardcoded path for wow_addons_dir
-$wowAddonsDir = "/e/Program Files/World of Warcraft/_classic_era_/Interface/AddOns"
+# # Hardcoded path for wow_addons_dir
+# $wowAddonsDir = "/e/Program Files/World of Warcraft/_classic_era_/Interface/AddOns"
+
+# # Hardcoded path for wow_addons_dir_ptr
+# $wowAddonsDir = "/e/Program Files/World of Warcraft/_classic_era_ptr_/Interface/AddOns"
+
+# Hardcoded path for wow_addons_dir_tbc
+$wowAddonsDir = "/e/Program Files/World of Warcraft/_anniversary_/Interface/AddOns"
 
 Write-Host "Building Docker image: $imageName"
 docker build -t $imageName -f $dockerFilePath .

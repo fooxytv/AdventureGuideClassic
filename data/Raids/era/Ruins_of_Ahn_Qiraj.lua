@@ -1,0 +1,231 @@
+--[[
+Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
+All rights reserved.
+
+Programming by: TomCat / TomCat's Gaming
+]]
+select(2, ...).SetupGlobalFacade()
+
+InstanceService.AddRaid({
+	name = "Ruins of Ahn'Qiraj",
+	instanceID = 743,
+	thumbnail = 1396591,
+	icon = 136320,
+	splash = 1396510,
+	mapID = 509,
+	season = false,
+	overview = "The Ruins of Ahn'Qiraj lie within the ancient fortress city of the qiraji, located in the southern reaches of Silithus. Thousands of years ago, the night elves and the bronze dragonflight sealed the qiraji behind the Scarab Wall following the devastating War of the Shifting Sands. When the Scarab Gong was rung and the gates of Ahn'Qiraj opened once more, heroes of the Horde and Alliance ventured into these ruins to confront the insectoid servants of the Old God C'Thun and prevent a second qiraji war.",
+	{
+		name = "Kurinnaxx",
+		encounterID = 15348,
+		portrait = 1385749,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15348 },
+		overview = {
+			"Kurinnaxx is the first boss encounter in the Ruins of Ahn'Qiraj and one of the most straightforward fights in the instance. The main mechanics involve tank swapping to manage stacking debuffs, avoiding Sand Traps, and dealing with his enrage at 30% health.",
+			{ heading = "Overview" },
+			"This fight tests your raid's ability to manage tank debuffs and avoid ground effects. Kurinnaxx uses a frontal cleave that applies stacking Mortal Wound debuffs, reducing healing received by 10% per stack. He also spawns Sand Traps that silence and reduce hit chance of anyone caught in them. At 30% health, he enrages, significantly increasing his damage output.",
+			{
+				role = DAMAGE,
+				"Stay behind the boss to avoid Wide Slash. Watch for Sand Traps appearing beneath you and move out immediately. Ranged DPS should be ready to AoE down any adds that spawn. Save cooldowns for the enrage phase at 30% to burn him down quickly.",
+			},
+			{
+				role = HEALER,
+				"Monitor the tank's Mortal Wound stacks - healing becomes increasingly difficult as stacks increase. Be prepared for heavy tank damage during the enrage phase. Watch raid members for Sand Trap debuffs and dispel silences if possible. Keep mana for the final phase burn.",
+			},
+			{
+				role = TANK,
+				"Swap tanks at approximately 5 stacks of Mortal Wound to avoid overwhelming healers. Face Kurinnaxx away from the raid to prevent Wide Slash from hitting others. Save defensive cooldowns for the enrage phase at 30% health when damage increases dramatically.",
+			}
+		},
+		abilities = {
+			{ spell = 25814, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 25646, strats = { TANK } },
+			{ spell = 25648, strats = { DAMAGE, HEALER } },
+			{ spell = 3391, strats = { TANK } },
+			{ spell = 26527, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 26446, strats = { TANK } },
+		}
+	},
+	{
+		name = "General Rajaxx",
+		encounterID = 15341,
+		portrait = 1385734,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15341 },
+		overview = {
+			"General Rajaxx is a two-phase encounter featuring a lengthy gauntlet of seven waves followed by the general himself. This is one of the three mandatory bosses in AQ20 and requires careful crowd control and cooldown management.",
+			{ heading = "Overview" },
+			"Phase 1 consists of seven waves of enemies, each containing multiple smaller adds and one larger Captain. Try to keep Lieutenant General Andorov and his four allies alive throughout the waves as they provide significant assistance. Phase 2 begins when General Rajaxx engages. His primary mechanic is Thundercrash, which knocks back the entire raid and deals damage equal to half of everyone's current health. He also uses Disarm on the main tank, requiring tank swaps.",
+			{
+				role = DAMAGE,
+				"During the gauntlet waves, use crowd control liberally on adds. Focus down Captains quickly. Save major cooldowns for General Rajaxx himself in Phase 2. Be prepared to quickly recover positioning after each Thundercrash knockback. AoE damage is valuable for clearing wave adds efficiently.",
+			},
+			{
+				role = HEALER,
+				"Keep Lieutenant General Andorov and his allies alive during the waves for easier progression. During General Rajaxx, ensure everyone is topped off before Thundercrash as it deals damage based on current health. Be ready to heal through the tank swaps when Disarm is cast. Mana conservation during waves is important.",
+			},
+			{
+				role = TANK,
+				"Control add positioning during waves to enable effective AoE and cleave damage. Pick up Captains immediately as they deal heavy damage. When fighting General Rajaxx, swap tanks when Disarm is cast to maintain threat. Position the boss to minimize raid knockback issues from Thundercrash.",
+			}
+		},
+		abilities = {
+			{ spell = 25599, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 6713, strats = { TANK } },
+			{ spell = 26550, strats = { DAMAGE, HEALER } },
+			{ spell = 8269, strats = { TANK } },
+			{ spell = 20477, strats = { TANK } },
+		}
+	},
+	{
+		name = "Moam",
+		encounterID = 15340,
+		portrait = 1385755,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15340 },
+		overview = {
+			"Moam features a unique mechanic in Classic WoW where the raid must prevent the boss from reaching 100% mana or face a raid-wiping Arcane Eruption. This optional boss requires specific classes with mana-draining abilities and careful phase management.",
+			{ heading = "Overview" },
+			"Moam constantly drains mana from raid members and adds it to his own mana pool. If he reaches 100% mana, he casts Arcane Eruption which will likely wipe the raid. Priests must spam Mana Burn, while Warlocks and Hunters use Drain Mana and Viper Sting to keep his mana depleted. After approximately 90 seconds, Moam enters a stone phase where he becomes invulnerable and spawns three adds. These adds can be killed or Banished. With well-geared groups, it's possible to kill Moam before the first stone phase.",
+			{
+				role = DAMAGE,
+				"Priests should do nothing but spam Mana Burn on Moam - this is your primary job. Hunters maintain Viper Sting at all times. Warlocks use Drain Mana when possible. Other DPS classes should focus on dealing damage while managing their own mana carefully. Have mana potions ready as the fight constantly drains your mana. During stone phase, kill or control the adds quickly.",
+			},
+			{
+				role = HEALER,
+				"If you're a Priest, your primary role is Mana Burning Moam, not healing. Other healers must compensate. Monitor the raid's mana levels as everyone will be drained constantly. During stone phase, heal through add damage. Keep mana potions and consumables ready. If the group is well-geared, you may kill him before stone phase occurs.",
+			},
+			{
+				role = TANK,
+				"Standard tank and spank mechanics. Face Moam away from the raid. Your main challenge is maintaining threat while the raid's mana is constantly being drained. During stone phase, pick up the three adds that spawn. Be prepared to survive without as much healing since Priests are focused on Mana Burning.",
+			}
+		},
+		abilities = {
+			{ spell = 25685, strats = { DAMAGE, HEALER } },
+			{ spell = 25672, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 15550, strats = { TANK } },
+		}
+	},
+	{
+		name = "Buru the Gorger",
+		encounterID = 15370,
+		portrait = 1385723,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15370 },
+		overview = {
+			"Buru the Gorger is an unconventional fight where the boss cannot be traditionally tanked or killed during the first phase. Players must kite Buru over eggs scattered around the room, destroying the eggs to damage him until he reaches 20% health.",
+			{ heading = "Overview" },
+			"Phase 1 (100%-20%): Buru takes massively reduced damage from players and cannot be effectively tanked. He fixates on random players and chases them at increasing speed. The fixated player must kite Buru over eggs placed around the room. When eggs are destroyed near Buru, they deal 45,000 damage to him and spawn a Hive'Zara Hatchling add. If Buru catches a player, he applies Dismember, a devastating stacking bleed dealing 1,248 damage every 2 seconds. After about 60 seconds without being hit by an egg explosion, Buru moves fast enough to catch players. Phase 2 (Below 20%): Buru becomes vulnerable to damage and attacks players randomly. The raid should burn him down quickly while tanks handle remaining adds. Creeping Plague activates, dealing 80 damage per tick with exponentially stacking damage.",
+			{
+				role = DAMAGE,
+				"During Phase 1, destroy eggs only when Buru is nearby so the explosion hits him. DPS and tanks should kill the Hive'Zara Hatchlings that spawn from broken eggs. The fixated player should NOT destroy eggs - only other players should. Assign scouts to locate and mark egg positions. At 20% health, pop all cooldowns and burn Buru down quickly before Creeping Plague stacks become overwhelming.",
+			},
+			{
+				role = HEALER,
+				"If someone gets caught by Buru and receives Dismember stacks, they need intense healing or will die quickly. Monitor the fixated player's health. During Phase 2, Creeping Plague will stack on the entire raid, requiring heavy healing output. The faster you kill Buru in Phase 2, the fewer Creeping Plague stacks accumulate. Have mana for the intense Phase 2 healing.",
+			},
+			{
+				role = TANK,
+				"Buru cannot be traditionally tanked in Phase 1. Help kill Hive'Zara Hatchlings that spawn from broken eggs. If Buru fixates you, run away and kite him over eggs. At 20% health in Phase 2, Buru will attack randomly - tanks should focus on picking up remaining Hatchling adds while the raid burns down Buru.",
+			}
+		},
+		abilities = {
+			{ spell = 96, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 1557, strats = { DAMAGE } },
+			{ spell = 20512, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 25640, strats = { DAMAGE, TANK } },
+		}
+	},
+	{
+		name = "Ayamiss the Hunter",
+		encounterID = 15369,
+		portrait = 1385718,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15369 },
+		overview = {
+			"Ayamiss the Hunter is the most difficult fight in AQ20, featuring two phases and a sacrifice mechanic. The fight demands strong ranged DPS, nature resistance, and excellent raid coordination to handle larvae before they reach sacrificed players.",
+			{ heading = "Overview" },
+			"Phase 1 (100%-70%): Ayamiss is airborne and only vulnerable to ranged attacks. She casts Stinger Spray every 30 seconds, dealing 1,000 Nature damage to the entire raid. Her current threat target takes stacking Poison Stinger debuffs (25 Nature damage per second, stacks up to 100 times). Ranged DPS must manage threat carefully to avoid excessive stacks. She periodically Paralyzes a player on the altar, and a Hive'Zara Larva spawns at the bottom. Melee DPS must kill the Larva before it reaches the sacrificed player or it will kill them and spawn an Elite wasp. She also summons approximately 20 Hive'Zara Swarmers that descend simultaneously. Phase 2 (70% and below): Ayamiss lands and becomes vulnerable to melee. Threat resets completely. The sacrifice and swarmer mechanics continue.",
+			{
+				role = DAMAGE,
+				"Ranged DPS: In Phase 1, you are the only source of damage. Manage your threat carefully - if you gain aggro, stop attacking briefly to let another ranged take over, avoiding excessive Poison Stinger stacks. Equip nature resistance gear to survive Stinger Spray and poison damage better. Melee DPS: Stay stacked on the altar throughout the fight. Your primary job is killing Hive'Zara Larvae instantly when they spawn - this is absolutely critical. Kill Swarmers when they descend. At 70%, you can finally attack the boss. All DPS: Bring nature resistance and be prepared for heavy raid damage.",
+			},
+			{
+				role = HEALER,
+				"This fight has the highest healing requirement in AQ20. Raid-wide Stinger Spray hits every 30 seconds for significant Nature damage. The ranged player with aggro takes rapidly stacking poison damage requiring focused healing. Nature resistance on the raid makes this more manageable. Monitor sacrificed players and ensure they survive until the Larva is killed. Watch for Swarmer swarms and prepare for burst healing. Have significant mana reserves and consumables ready.",
+			},
+			{
+				role = TANK,
+				"During Phase 1, there is no tanking role. Stack with melee on the altar and help kill Larvae - if even one reaches a sacrificed player, it causes major problems. At 70% health when Ayamiss lands, threat resets completely. Quickly establish aggro and tank her normally. Face her away from the raid if she has cleave mechanics. Continue watching for Larvae spawns as the mechanic persists in Phase 2.",
+			}
+		},
+		abilities = {
+			{ spell = 25749, strats = { DAMAGE, HEALER } },
+			{ spell = 25748, strats = { HEALER } },
+			{ spell = 25725, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 25852, strats = { TANK } },
+			{ spell = 3391, strats = { TANK } },
+			{ spell = 8269, strats = { TANK } },
+		}
+	},
+	{
+		name = "Ossirian the Unscarred",
+		encounterID = 15339,
+		portrait = 1385759,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15339 },
+		overview = {
+			"Ossirian the Unscarred is the final boss of Ruins of Ahn'Qiraj. The fight revolves around using crystals scattered around the room to temporarily remove his devastating damage buff and apply elemental weaknesses that can be exploited for massive damage.",
+			{ heading = "Overview" },
+			"Ossirian starts with Strength of Ossirian, a buff that increases his damage by 200-300%, making him nearly impossible to tank without crystal usage. Crystals spawn randomly around the room and must be clicked to activate. When activated, a crystal removes his damage buff for 45 seconds and applies a random elemental weakness (Fire, Frost, Shadow, Nature, or Arcane), causing him to take 100% more damage from that school. He casts Enveloping Winds on the main tank, stunning them for 10 seconds unless they use Free Action Potions. He also uses War Stomp to knock back and damage nearby players. Tornadoes spawn randomly throughout the room and should be avoided. Ossirian is immune to taunt, so both tanks must manually build threat through damage and abilities.",
+			{
+				role = DAMAGE,
+				"Assign 2-3 melee DPS as crystal scouts to continuously patrol the room and mark crystal locations on the minimap. When a crystal is activated, immediately switch to spells/abilities matching the elemental weakness if possible - the 100% damage bonus is massive. Classes with multiple schools (Druids, Shamans, Paladins) are particularly valuable. Avoid tornadoes at all times. Help both tanks build threat since taunt doesn't work - let them build solid aggro before unleashing full damage. Watch your threat carefully throughout the fight.",
+			},
+			{
+				role = HEALER,
+				"When Strength of Ossirian is active, tank healing is extremely intensive. Time crystal activations carefully to give healers recovery time. Dispel or cleanse Curse of Tongues from casters as it significantly reduces their casting speed. Watch for War Stomp damage on melee and tanks. Avoid tornadoes while maintaining healing range. The fight can be lengthy, so pace your mana usage and use consumables as needed.",
+			},
+			{
+				role = TANK,
+				"Ossirian is immune to taunt - both tanks must manually build and maintain threat throughout the fight. Use Free Action Potions when Enveloping Winds is cast to avoid the 10-second stun. Be prepared for massive damage spikes when Strength of Ossirian is active - use defensive cooldowns. Coordinate crystal activation timing with your healers to ensure they're ready. Position Ossirian to minimize War Stomp's impact on the raid. Watch for tornadoes and adjust positioning as needed.",
+			}
+		},
+		abilities = {
+			{ spell = 25176, strats = { TANK, HEALER } },
+			{ spell = 25189, strats = { TANK } },
+			{ spell = 25188, strats = { DAMAGE, HEALER, TANK } },
+			{ spell = 25195, strats = { DAMAGE, HEALER } },
+			{ spell = 25177, strats = { DAMAGE } },
+			{ spell = 25178, strats = { DAMAGE } },
+			{ spell = 25180, strats = { DAMAGE } },
+			{ spell = 25181, strats = { DAMAGE } },
+			{ spell = 25183, strats = { DAMAGE } },
+		}
+	},
+})

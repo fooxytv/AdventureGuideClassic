@@ -25,5 +25,6 @@ Programming by: TomCat / TomCat's Gaming
     <Script file="SlashCommands.lua" />
     <Script file="Bindings.lua" />
     <Script file="Main.lua" />
+    <Script file="TestExpansionDetection.lua" />
 
 </Ui>

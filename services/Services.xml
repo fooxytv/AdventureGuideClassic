@@ -9,4 +9,7 @@
     <Script file="services/Objectives.lua" />
     <Script file="services/EncounterObjectives.lua" />
     <Script file="services/Maps.lua" />
+    <Script file="services/WishlistService.lua" />
+    <Script file="services/WishlistLootHook.lua" />
+    <Script file="services/SettingsService.lua" />
 </Ui>

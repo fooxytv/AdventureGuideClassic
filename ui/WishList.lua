@@ -8,6 +8,20 @@ local component = UI.CreateComponent("WishList")
 local components
 local scrollbox
 
+-- Track pending item loads to avoid infinite retry loops
+local pendingItemIds = {}
+
+-- Shared tooltip handlers to avoid creating new functions per button
+local function ItemButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	GameTooltip:SetItemByID(self.itemID)
+	GameTooltip:Show()
+end
+
+local function ItemButton_OnLeave(self)
+	GameTooltip:Hide()
+end
+
 function component.Init(components_)
     components = components_
     local wishListFrame = CreateFrame("Frame", EncounterJournal:GetName() .. "WishList", EncounterJournal)
@@ -29,25 +43,23 @@ function component.Init(components_)
     local scrollbar = CreateFrame("EventFrame", nil, wishListFrame, "MinimalScrollBar")
     scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 12, -60)
     scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 12, 4)
+
     local function SetItemTexture(button, itemID)
         local itemName, _, _, _, _, _, _, _, _, icon = GetItemInfo(itemID)
         if icon then
             button.icon:SetTexture(icon)
         else
             button.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-            C_Timer.After(0.2, function()
-                component.Show()
-            end)
+            -- Only request load if we haven't already
+            if not pendingItemIds[itemID] then
+                pendingItemIds[itemID] = true
+                C_Item.RequestLoadItemDataByID(itemID)
+            end
         end
         button.itemID = itemID
-        button:SetScript("OnEnter", function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetItemByID(self.itemID)
-            GameTooltip:Show()
-        end)
-        button:SetScript("OnLeave", function()
-            GameTooltip:Hide()
-        end)
+        -- Use shared handlers instead of creating new functions
+        button:SetScript("OnEnter", ItemButton_OnEnter)
+        button:SetScript("OnLeave", ItemButton_OnLeave)
     end
     local function Initializer(rowFrame, rowData)
         if not rowFrame.initialized then
@@ -87,6 +99,9 @@ function component.Init(components_)
 end
 
 function component.Show()
+    -- Clear pending items for fresh load
+    wipe(pendingItemIds)
+
     local dataProvider = CreateDataProvider()
     local wishlistData = {
         { slotName = "Head", items = {
@@ -108,5 +123,22 @@ function component.Show()
     components.EncounterJournal.SetCurrentView(component.frame)
     components.NavBar.Reset()
 end
+
+-- Handle item data load results - only refresh if the item is one we're waiting for
+local function OnItemDataLoadResult(event, itemId, success)
+    if success and pendingItemIds[itemId] then
+        pendingItemIds[itemId] = nil
+        -- Only refresh if the wishlist is currently visible
+        if component.frame and component.frame:IsShown() then
+            component.Show()
+        end
+    end
+end
+
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+eventFrame:SetScript("OnEvent", function(self, event, ...)
+    OnItemDataLoadResult(event, ...)
+end)
 
 UI.Add(component)

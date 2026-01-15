@@ -1,0 +1,328 @@
+--[[
+Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
+All rights reserved.
+
+Programming by: TomCat / TomCat's Gaming
+]]
+select(2, ...).SetupGlobalFacade()
+
+InstanceService.AddRaid({
+	name = "Temple of Ahn'Qiraj",
+	instanceID = 744,
+	thumbnail = 1396593,
+	icon = 136321,
+	splash = 1396512,
+	mapID = 531,
+	season = false,
+	overview = "The Temple of Ahn'Qiraj is the inner sanctum of the qiraji empire, where the Old God C'Thun slumbers and directs his minions from the depths. For millennia, the qiraji amassed their forces behind the Scarab Wall, breeding silithid swarms and forging twisted abominations in preparation for conquest. Now the gates have opened, and champions must delve into the heart of this ancient evil to destroy C'Thun before his corruption spreads across all of Azeroth.",
+	{
+		name = "The Prophet Skeram",
+		encounterID = 15263,
+		portrait = 1385769,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15263 },
+		overview = {
+			"The Prophet Skeram is the first boss encounter in the Temple of Ahn'Qiraj. He is a qiraji prophet who serves C'Thun and guards the entrance to the inner sanctum.",
+			{ heading = "Overview" },
+			"Skeram creates two identical clones at 75%, 50%, and 25% health. He teleports around the room, resetting threat, and mind controls the player nearest to him. Spread out to avoid his Arcane Explosion casts.",
+			{
+				role = DAMAGE,
+				"Focus down clones quickly when they spawn - they have less health than the real Skeram. Stay spread out at least 10 yards apart to avoid Arcane Explosion splash damage. Watch for the Eye of C'Thun beam during the clone phases.",
+			},
+			{
+				role = HEALER,
+				"Be ready to dispel Mind Control quickly. The controlled player deals increased damage and has improved resistances. Keep the raid topped up as Arcane Explosion and Earth Shock can deal significant damage.",
+			},
+			{
+				role = TANK,
+				"Use at least 3 tanks to pick up Skeram and his clones. When Skeram teleports, he resets threat - the nearest player will become his new target. Position yourself in the expected teleport locations.",
+			}
+		},
+		abilities = {
+			{ spell = 785, description = "Mind Controls the nearest player, increasing their damage and resistances." },
+			{ spell = 26192, description = "Deals 1500 Arcane damage in a large radius around Skeram." },
+			{ spell = 26194, description = "Deals 2500 Nature damage. Cast on the tank if not in melee range." },
+			{ spell = 747, description = "Creates two identical clones at 75%, 50%, and 25% health." },
+			{ spell = 4801, description = "Teleports to a new location on the platform, resetting threat." },
+		}
+	},
+	{
+		name = "Silithid Royalty",
+		encounterID = 15543,
+		portrait = 1385763,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15511, 15543, 15544 },
+		overview = {
+			"The Bug Trio, also known as Silithid Royalty, consists of Lord Kri, Princess Yauj, and Vem. This optional encounter offers different loot rewards based on kill order, with the highest quality loot awarded when Lord Kri is killed last.",
+			{ heading = "Overview" },
+			"All three bugs must be fought simultaneously. The encounter has a 15-minute hard enrage timer. Lord Kri is the most difficult to kill last due to his area-wide toxic abilities. Princess Yauj spawns adds when killed. Vem is the easiest of the three.",
+			{
+				role = DAMAGE,
+				"Interrupt Princess Yauj's heal. Kill order depends on loot strategy: Kri > Yauj > Vem (easiest) or Vem > Yauj > Kri (best loot but hardest). Spread out to avoid Toxic Volley hitting multiple players. When Yauj dies, immediately AoE down the spawned adds.",
+			},
+			{
+				role = HEALER,
+				"Heavy Nature damage from Lord Kri's Toxic Volley. Nature resistance helps significantly. Be ready for Princess Yauj's fear - it affects nearby players. When adds spawn from Yauj's death, focus healing on players in melee range.",
+			},
+			{
+				role = TANK,
+				"Tank all three bugs separately. Avoid standing in the poison cloud left by Lord Kri's corpse - it deals 2000 damage per second. Vem will charge random players and knock them back. Prepare for Princess Yauj's fear effect.",
+			}
+		},
+		abilities = {
+			{ spell = 25812, description = "Lord Kri's Toxic Volley hits for 500 Nature damage and applies a DoT dealing 125 per tick." },
+			{ spell = 25786, description = "Lord Kri's death creates Toxic Vapors dealing 2000 Nature damage per second." },
+			{ spell = 26580, description = "Princess Yauj and Lord Kri can fear nearby players." },
+			{ spell = 25807, description = "Princess Yauj can heal herself for significant amounts." },
+			{ spell = 18670, description = "Vem knocks away players, inflicting damage and knockback." },
+		}
+	},
+	{
+		name = "Battleguard Sartura",
+		encounterID = 15516,
+		portrait = 1385720,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15516, 15984 },
+		overview = {
+			"Battleguard Sartura is accompanied by three Sartura's Royal Guards. She is a qiraji battleguard who patrols the halls of the Temple of Ahn'Qiraj with deadly whirlwind attacks.",
+			{ heading = "Overview" },
+			"This is a high-mobility fight where both Sartura and her guards use Whirlwind frequently, dealing massive damage to nearby players. She enrages at 20% health, greatly increasing her damage and attack speed. Kill the guards first before focusing on Sartura.",
+			{
+				role = DAMAGE,
+				"Focus down the Royal Guards one at a time before attacking Sartura. Use stuns (Kidney Shot, Hammer of Justice) when they're not whirlwinding. Save cooldowns for the 20% enrage phase when her damage spikes significantly.",
+			},
+			{
+				role = HEALER,
+				"Whirlwind deals 1000-3000 damage to nearby players. Spread healing cooldowns throughout the fight. The 20% enrage phase is extremely healing intensive - use major cooldowns here. Players caught by multiple Whirlwinds may die instantly.",
+			},
+			{
+				role = TANK,
+				"Use 4 tanks total - one for Sartura and one for each Royal Guard. Keep them separated to prevent Whirlwind overlap. Threat resets when they Whirlwind. Position adds away from the raid to minimize Whirlwind casualties.",
+			}
+		},
+		abilities = {
+			{ spell = 26084, description = "Whirlwind deals 1000-3000 damage to all nearby players. Used by Sartura and all guards." },
+			{ spell = 8269, description = "Enrages at 20% health, greatly increasing attack speed and damage." },
+			{ spell = 25174, description = "Sundering Cleave reduces armor on the target." },
+			{ spell = 26027, description = "Knockback ability that repositions players." },
+		}
+	},
+	{
+		name = "Fankriss the Unyielding",
+		encounterID = 15510,
+		portrait = 1385728,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15510 },
+		overview = {
+			"Fankriss the Unyielding is a massive silithid wasp boss located after the infamous bug tunnel. He continuously spawns worm adds throughout the encounter and applies a stacking healing debuff to his current tank.",
+			{ heading = "Overview" },
+			"The main challenge is managing the Mortal Wound debuff that stacks on the tank, reducing healing received by 10% per stack. Multiple tanks are required to swap as stacks accumulate. Worm adds spawn throughout the fight and must be controlled.",
+			{
+				role = DAMAGE,
+				"Kill spawned worms quickly before they overwhelm the raid. Focus single-target damage on Fankriss between add spawns. Save AoE abilities for when multiple worms spawn together.",
+			},
+			{
+				role = HEALER,
+				"Watch the tank's Mortal Wound stacks carefully. At 3-4 stacks, healing becomes very difficult. Call for tank swaps early. The debuff reduces healing received by 10% per stack and lasts 2 minutes.",
+			},
+			{
+				role = TANK,
+				"Use at least 2 tanks. Swap when Mortal Wound reaches 3-4 stacks. The debuff lasts 2 minutes, so timing your swaps is critical. Off-tank should also pick up spawned worms and position them for AoE.",
+			}
+		},
+		abilities = {
+			{ spell = 25646, description = "Mortal Wound reduces healing received by 10% per stack. Stacks indefinitely on the tank." },
+			{ spell = 25831, description = "Summons worm adds throughout the encounter that must be killed." },
+			{ spell = 720, description = "Entangles players, rooting them in place temporarily." },
+		}
+	},
+	{
+		name = "Viscidus",
+		encounterID = 15299,
+		portrait = 1385771,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15299 },
+		overview = {
+			"Viscidus is an optional giant slime boss that requires a unique mechanic to defeat. The boss must be frozen with frost attacks, then shattered with melee hits, splitting into 20 smaller blobs that must be killed.",
+			{ heading = "Overview" },
+			"This encounter requires 100+ frost hits to slow (15% speed reduction), 150+ to start freezing (30% reduction), and 200+ to freeze solid. Once frozen, approximately 75 melee hits will shatter him. Each stage has a 15-second timer or he reverts. Heavy Nature resistance recommended.",
+			{
+				role = DAMAGE,
+				"Casters should use frost wands, Frost Oil on weapons, or frost proc items like Coldrage Dagger. The number of hits matters, not damage - use fast, low-rank frost spells. When he shatters, AoE down the 20 small blobs quickly.",
+			},
+			{
+				role = HEALER,
+				"Nature resistance gear helps survive Poison Bolt Volley. Focus healing during the frozen phase when melee swarms him. When he splits into blobs, the raid takes increased damage - prepare major healing cooldowns.",
+			},
+			{
+				role = TANK,
+				"Equip Nature resistance gear. Position Viscidus away from the raid. After shattering, off-tanks need to pick up the 20 globs and group them for AoE. Each glob that reaches 0 health fully heals Viscidus, so kill them all quickly.",
+			}
+		},
+		abilities = {
+			{ spell = 25991, description = "Poison Bolt Volley deals Nature damage and applies a DoT that ticks every 2 seconds for 10 seconds." },
+			{ spell = 25993, description = "Poison Shock deals significant Nature damage to the tank." },
+			{ spell = 25937, description = "Viscidus Freeze represents the freezing stages: slowing at 100 hits, freezing at 150 hits, frozen solid at 200 hits." },
+		}
+	},
+	{
+		name = "Princess Huhuran",
+		encounterID = 15509,
+		portrait = 1385761,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15509 },
+		overview = {
+			"Princess Huhuran is one of the major Nature resistance gear checks in AQ40. She automatically berserks at 30% health, massively increasing her damage output and firing poison volleys at the 15 closest players.",
+			{ heading = "Overview" },
+			"The encounter is straightforward until 30%, where it becomes a race against time. At 30%, she gains 400% attack speed and fires 2000 damage poison bolts every 3 seconds at the closest 15 players. These 15 players need 150+ Nature resistance to survive.",
+			{
+				role = DAMAGE,
+				"Save at least 50% of your mana for the final 30% health. Pop all DPS cooldowns at 30% - this is a burn phase. If you're one of the 15 closest players, you need 150+ NR. Use Greater Nature Protection Potions to absorb volleys.",
+			},
+			{
+				role = HEALER,
+				"Conserve mana before 30%. During berserk phase, healing intensity is extreme. The 15 closest players take 2000 damage volleys every 3 seconds. Hunters can tranquilize her Frenzy buff periodically to reduce damage.",
+			},
+			{
+				role = TANK,
+				"She will 2-3 shot tanks during berserk. Stack Nature resistance and use defensive cooldowns liberally at 30%. Position yourself to be one of the closest 15 players. Call for external defensive cooldowns from healers.",
+			}
+		},
+		abilities = {
+			{ spell = 26068, description = "Berserks at 30% health, increasing attack speed by 400%." },
+			{ spell = 26052, description = "Poison Bolt Volley fires at the 15 closest players every 3 seconds, dealing 2000 Nature damage." },
+			{ spell = 26050, description = "Acid Spit applies a stacking Nature DoT dealing damage every 2 seconds for 30 seconds." },
+			{ spell = 26180, description = "Wyvern Sting puts a target to sleep for 12 seconds." },
+			{ spell = 26053, description = "Noxious Poison deals 750 Nature damage every 2 seconds for 8 seconds and silences." },
+			{ spell = 26051, description = "Frenzy increases physical damage and attack speed. Can be dispelled with Tranquilizing Shot." },
+		}
+	},
+	{
+		name = "Twin Emperors",
+		encounterID = 15276,
+		portrait = 1390437,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15276, 15275 },
+		overview = {
+			"The Twin Emperors, Emperor Vek'lor and Emperor Vek'nilash, share a health pool and must be fought simultaneously. Vek'lor is immune to physical damage and uses shadow/arcane magic, while Vek'nilash is immune to magic and deals melee damage.",
+			{ heading = "Overview" },
+			"Every 30-40 seconds, the Emperors use Twin Teleport to swap positions and reset threat. They must be kept separated by 60+ yards or they will heal each other for 30,000 HP per second. Warlocks typically tank Vek'lor due to his shadow damage, while Warriors tank Vek'nilash.",
+			{
+				role = DAMAGE,
+				"Melee DPS attacks Vek'nilash (immune to magic). Ranged/Casters attack Vek'lor (immune to physical). After teleport, quickly reposition to your assigned Emperor. Kill mutated bugs quickly - they deal massive damage if left alive.",
+			},
+			{
+				role = HEALER,
+				"Split into two healing groups - one for each Emperor. Shadow resistance helps with Vek'lor's Shadow Bolt spam. After teleport, healers must quickly identify their assigned tank's new position. Watch for Blizzard on the ground.",
+			},
+			{
+				role = TANK,
+				"Warlocks tank Vek'lor with shadow resistance gear (typically 300+ SR). Warriors tank Vek'nilash and must swap after Unbalancing Strike (reduces defense by 100 for 6 seconds). After teleport, nearest player gets threat - position correctly.",
+			}
+		},
+		abilities = {
+			{ spell = 800, description = "Twin Teleport swaps the Emperors' positions every 30-40 seconds and resets threat." },
+			{ spell = 7393, description = "Heal Brother heals the other Emperor for 30,000 HP per second if within 60 yards." },
+			{ spell = 26006, description = "Shadow Bolt from Vek'lor deals heavy Shadow damage to his tank." },
+			{ spell = 26613, description = "Unbalancing Strike from Vek'nilash reduces the tank's defense by 100 for 6 seconds. Requires tank swap." },
+			{ spell = 26007, description = "Uppercut from Vek'nilash knocks back and stuns the target." },
+			{ spell = 26607, description = "Blizzard creates a frost AoE zone that deals damage over time." },
+			{ spell = 802, description = "Mutate Bug empowers small bugs in the arena, greatly increasing their damage." },
+		}
+	},
+	{
+		name = "Ouro",
+		encounterID = 15517,
+		portrait = 1385760,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15517 },
+		overview = {
+			"Ouro is an optional giant sandworm boss that alternates between above-ground and submerged phases. This is another Nature resistance recommended fight due to his Sand Blast ability.",
+			{ heading = "Overview" },
+			"Ouro uses Sand Blast every 20-25 seconds in a 180-degree frontal cone, dealing 3500-4500 Nature damage and clearing all threat. He submerges randomly around every 90 seconds, spawning dirt mounds that cause Ground Rupture. At 20% health, he permanently enrages.",
+			{
+				role = DAMAGE,
+				"Spread out in a wide arc behind Ouro to avoid Sand Blast. When he submerges, move away from dirt mounds before they erupt with Ground Rupture. At 20% he stops submerging but gains both above-ground and underground abilities - burn phase.",
+			},
+			{
+				role = HEALER,
+				"Nature resistance helps with Sand Blast. Players hit by Sand Blast lose all threat, so the tank may change - be ready to adjust healing targets. During submerge phase, raid takes damage from Ground Rupture - heal through the AoE damage.",
+			},
+			{
+				role = TANK,
+				"Stack Nature resistance. Sand Blast wipes your threat completely, so be ready to rebuild aggro. Position Ouro away from the raid. His Sweep hits targets behind him - only the main tank should be in melee. Avoid dirt mounds during submerge.",
+			}
+		},
+		abilities = {
+			{ spell = 26102, description = "Sand Blast deals 3500-4500 Nature damage in a 180-degree frontal cone. Wipes threat on all targets hit." },
+			{ spell = 26103, description = "Sweep hits targets behind Ouro for heavy physical damage." },
+			{ spell = 26058, description = "Summons dirt mounds during submerge phase that explode with Ground Rupture." },
+			{ spell = 26615, description = "Berserks at 20% health, gaining all abilities from both phases simultaneously." },
+		}
+	},
+	{
+		name = "C'Thun",
+		encounterID = 15727,
+		portrait = 1385726,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15727 },
+		overview = {
+			"C'Thun is the final boss of the Temple of Ahn'Qiraj and one of the most mechanically complex encounters in Classic WoW. The fight has two distinct phases: Phase 1 against the Eye of C'Thun, and Phase 2 after damaging the eye enough.",
+			{ heading = "Overview" },
+			"Phase 1: Raid spreads around the eye staying 10+ yards apart. Green Eye Beam chains between nearby players, doubling damage with each jump. Dark Glare is a red beam that rotates 180 degrees. Phase 2: C'Thun's body emerges with Giant Eye/Claw Tentacles. Players are randomly swallowed into his stomach where they must kill Flesh Tentacles to weaken him.",
+			{
+				role = DAMAGE,
+				"Phase 1: Stay 10+ yards from all players to prevent Eye Beam chains. Run perpendicular to Dark Glare rotation. Phase 2: Priority is Eye Tentacles > Claw Tentacles > Small Tentacles. In stomach, kill both Flesh Tentacles quickly to weaken C'Thun for 45 seconds of increased damage.",
+			},
+			{
+				role = HEALER,
+				"Maintain 10+ yard spacing to avoid Eye Beam chains (damage increases 150% per jump). Players in the stomach take stacking Digestive Acid damage - they need emergency healing. Focus healing on Giant Claw targets who take 3000-4000 damage and knockback.",
+			},
+			{
+				role = TANK,
+				"Phase 1: No tanking needed, spread with the raid. Phase 2: Tank Giant Claw Tentacles away from raid. Tanks may be swallowed into stomach - kill Flesh Tentacles quickly. Keep Giant Eye Tentacles stunned and interrupted during their Eye Beam casts.",
+			}
+		},
+		abilities = {
+			{ spell = 26134, description = "Eye Beam (green) chains to nearby players, dealing 2625-3375 Nature damage. Damage increases 150% with each jump." },
+			{ spell = 26029, description = "Dark Glare (red beam) rotates 180 degrees dealing heavy Shadow damage to all players hit." },
+			{ spell = 26476, description = "Digestive Acid stacks on players inside C'Thun's stomach, dealing increasing Nature damage over time." },
+		}
+	},
+})

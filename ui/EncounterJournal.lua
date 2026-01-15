@@ -60,7 +60,6 @@ function component.Init(components_)
         GameTooltip:Hide()
     end)
 
-
     EncounterJournal.title = _G[addonName .. "_EncounterJournalTitleText"]
     EncounterJournal.title:SetText("Adventure Guide")
     EncounterJournal.portrait = _G[addonName .. "_EncounterJournalPortrait"]

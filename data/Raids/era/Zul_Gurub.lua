@@ -1,0 +1,401 @@
+--[[
+Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
+All rights reserved.
+
+Programming by: TomCat / TomCat's Gaming
+]]
+select(2, ...).SetupGlobalFacade()
+
+InstanceService.AddRaid({
+	name = "Zul'Gurub",
+	instanceID = 745,
+	thumbnail = 522364,
+	icon = 136369,
+	splash = 526416,
+	mapID = 309,
+	season = false,
+	overview = "Zul'Gurub is a 20-man raid located in the northeastern portion of [Stranlgethorn Vale], east of Lake Nazferiti. It is used to serve as the capitial city for the Gurubashi Trolls, however it was eventually destroyed by civil war and corruption. Centuries later, Atal'ai Priests have returned to the ctiy, seeking to use it for the evil purpose of summoning their Blood God, [Hakkar], the Soulflayer.",
+	{
+		name = "High Priestess Jeklik",
+		encounterID = 14517,
+		portrait = I.UIEJBossJeklik,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 14517 },
+		overview = {
+			"High Priestess Jeklik, the Bat Aspect, is one of the five High Priests of the Blood God Hakkar. She serves Hakkar with fanatical devotion and guards the ancient troll city with deadly bat swarms.",
+			{ heading = "Overview" },
+			"This fight has two phases. Jeklik begins in bat form using Sonic Burst and summoning bat adds. At 50% health, she transforms into humanoid form where she casts Shadow Word: Pain, Great Heal, and Mind Flay. The encounter requires both strong AoE damage for bats and interrupt capabilities for her healing.",
+			{
+				role = DAMAGE,
+				"Focus AoE damage on bat swarms in phase 1. In phase 2, switch to single target on Jeklik while interrupting Great Heal casts. Priority interrupt on Mind Flay chains to prevent massive raid damage.",
+			},
+			{
+				role = HEALER,
+				"Prepare for heavy raid-wide damage from Sonic Burst in phase 1. Dispel Shadow Word: Pain immediately as it deals significant damage over time. Be ready for spike damage when Mind Flay is not interrupted.",
+			},
+			{
+				role = TANK,
+				"Tank Jeklik away from the raid to avoid Psychic Scream fears affecting melee. In bat form, position her to allow AoE on bat swarms. Maintain threat through both phase transitions.",
+			}
+		},
+		abilities = {
+			{ id = 22884, name = "Psychic Scream", description = "Lets out a psychic scream, causing up to 5 nearby enemies to flee for 4 seconds." },
+			{ id = 23918, name = "Sonic Burst", description = "Inflicts 1750-2250 damage to nearby enemies and prevents them from spellcasting for 10 seconds. Used in bat form." },
+			{ id = 23952, name = "Shadow Word: Pain", description = "Inflicts Shadow damage every 3 seconds for 18 seconds. Used in humanoid form." },
+			{ id = 23954, name = "Great Heal", description = "Calls upon Holy magic to heal an ally. Must be interrupted to prevent significant boss healing." },
+		}
+	},
+	{
+		name = "High Priest Venoxis",
+		encounterID = 14507,
+		portrait = 522236,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 14507 },
+		overview = {
+			"High Priest Venoxis, the Snake Aspect, channels the deadly power of serpents. He serves Hakkar by commanding venomous magic and can transform into a massive cobra.",
+			{ heading = "Overview" },
+			"Venoxis starts in troll form using Holy Fire and self-healing with Renew. At 50% health, he transforms into snake form, gaining Poison Cloud, Venom Spit, and spawning Parasitic Serpents. The key is dispelling his Renew heals and avoiding the poison cloud melee damage.",
+			{
+				role = DAMAGE,
+				"Maintain steady DPS in phase 1. In phase 2, kill Parasitic Serpent adds immediately as they target ranged players. Melee must reposition frequently to avoid Poison Cloud.",
+			},
+			{
+				role = HEALER,
+				"Dispel Renew from the boss immediately to prevent self-healing. Prepare for constant Nature damage in phase 2 from Poison Cloud and Venom Spit. Ranged healers watch for Parasitic Serpent adds.",
+			},
+			{
+				role = TANK,
+				"In phase 2, constantly move the boss to create poison-free zones for melee. Kite in a circular pattern. Be prepared for increased damage from Thrash and potential Enrage at low health.",
+			}
+		},
+		abilities = {
+			{ id = 23860, name = "Holy Fire", description = "Consumes an enemy in flames, inflicting Fire damage every 2 seconds for 8 seconds. Used in troll form." },
+			{ id = 23895, name = "Renew", description = "Heals the boss every 3 seconds for 15 seconds. Must be dispelled to prevent significant healing." },
+			{ id = 23861, name = "Poison Cloud", description = "Inflicts 500 Nature damage to nearby enemies every second for 10 seconds. Used in snake form, requires constant repositioning." },
+			{ id = 23862, name = "Venom Spit", description = "Spits poison at enemies, causing Nature damage with additional periodic damage." },
+			{ id = 23865, name = "Parasitic Serpent", description = "Spawns tiny parasitic snakes that target raid members. Priority kill targets." },
+			{ id = 3391, name = "Thrash", description = "Gives the caster 2 extra attacks." },
+			{ id = 8269, name = "Enrage", description = "Increases attack speed by 60% and Physical damage by 50 for 2 minutes. Triggers at low health." },
+		}
+	},
+	{
+		name = "High Priestess Mar'li",
+		encounterID = 14510,
+		portrait = I.UIEJBossMarli,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 14510 },
+		overview = {
+			"High Priestess Mar'li, the Spider Aspect, commands legions of spiders and deadly poison magic. Her connection to the spider loa makes her a formidable guardian of Hakkar's temple.",
+			{ heading = "Overview" },
+			"Mar'li continuously spawns spider adds from eggs throughout the fight. She uses Enveloping Webs to immobilize and detaunt the tank, requiring a tank swap. Her Drain Life must be interrupted, and spider adds must be killed quickly before they grow too powerful with Enlarge buffs.",
+			{
+				role = DAMAGE,
+				"Kill spider adds immediately as they spawn - they grow stronger over time. Interrupt Drain Life casts to prevent boss healing. Focus fire on enlarged spiders first as they deal massive damage.",
+			},
+			{
+				role = HEALER,
+				"Dispel Corrosive Poison from tanks to restore armor. Be ready to heal whoever gets Enveloping Webs as they become vulnerable. Watch for Poison Bolt Volley raid damage.",
+			},
+			{
+				role = TANK,
+				"Maintain two tanks for swapping when Enveloping Webs removes threat. The webbed tank is immobilized and unable to act. Pick up spider adds quickly and position them for AoE. Be prepared for reduced armor from Corrosive Poison.",
+			}
+		},
+		abilities = {
+			{ id = 24083, name = "Hatch Eggs", description = "Spawns spider adds during combat. Adds must be killed immediately as they grow stronger over time." },
+			{ id = 24099, name = "Poison Bolt Volley", description = "Shoots poison at enemies, inflicting Nature damage plus additional damage every 2 seconds for 10 seconds." },
+			{ id = 24111, name = "Corrosive Poison", description = "Reduces an enemy's armor by 5000 and inflicts 657-843 Nature damage every 5 seconds for 30 seconds. Devastating to tanks." },
+			{ id = 24112, name = "Poison Shock", description = "Nature-based poison attack used during combat phases." },
+			{ id = 24300, name = "Drain Life", description = "Drains 3500 health from an enemy over 7 seconds, transferring it to the caster. Must be interrupted." },
+			{ id = 24110, name = "Enveloping Webs", description = "Immobilizes an enemy, increases time between attacks by 100%, and prevents spellcasting for 8 seconds. Removes tank aggro." },
+			{ id = 24109, name = "Enlarge", description = "Buffs spider adds, significantly increasing their physical damage output." },
+		}
+	},
+	{
+		name = "Bloodlord Mandokir",
+		encounterID = 11382,
+		portrait = I.UIEJBossMandokir,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 11382, 14988 },
+		overview = {
+			"Bloodlord Mandokir is a ruthless troll warrior who rides into battle on his raptor, Ohgan. He gains power by watching his enemies and charges at those who dare act against him during his gaze.",
+			{ heading = "Overview" },
+			"The signature mechanic is Threatening Gaze - Mandokir watches a random player for 6 seconds, and if they take ANY action (attacking, casting, drinking), he charges them with Guillotine for ~15,000 damage. Players must freeze completely when watched. Mandokir also levels up when raid members die, gaining permanent damage increases. Ohgan must be killed but will resurrect once, stacking Sunder Armor on tanks.",
+			{
+				role = DAMAGE,
+				"STOP ALL ACTIONS immediately when you have Threatening Gaze - do not attack, cast, or use abilities. Resume after 6 seconds. Kill Ohgan twice during the fight. Watch for Whirlwind and move away from melee range.",
+			},
+			{
+				role = HEALER,
+				"Stop healing completely if you get Threatening Gaze - let other healers cover. The watched player will die instantly if they act. Prepare for heavy tank damage from Mortal Strike, Sunder Armor stacks, and Overpower. Keep everyone topped for Fear and Whirlwind.",
+			},
+			{
+				role = TANK,
+				"Face Mandokir away from the raid. If you get Threatening Gaze, stop all actions including auto-attacks. Taunt immune during charge. Manage high stacks of Sunder Armor from Ohgan. Overpower cannot be avoided and deals ~2200 damage.",
+			}
+		},
+		abilities = {
+			{ id = 24314, name = "Threatening Gaze", description = "Mandokir watches a player for 6 seconds. If the player takes any action, triggers Charge and Guillotine for ~15,000 damage." },
+			{ id = 24315, name = "Charge", description = "Charges the watched target, inflicting damage and stunning them for 2 seconds. Leads into Guillotine." },
+			{ id = 24316, name = "Guillotine", description = "Instantly strikes the watched target for ~15,000 physical damage after charging." },
+			{ id = 24408, name = "Charge (Regular)", description = "Charges an enemy, inflicting damage and stunning the opponent for 2 seconds." },
+			{ id = 0, name = "Mortal Strike", description = "Inflicts 200% weapon damage and reduces healing received by 50% for 5 seconds. Cast every 20-40 seconds." },
+			{ id = 0, name = "Whirlwind", description = "After 2 seconds, strikes all players in melee range for ~2,500 damage." },
+			{ id = 0, name = "Intimidating Shout", description = "Fears all nearby targets for 6 seconds." },
+			{ id = 0, name = "Overpower", description = "Cast when his target dodges. Deals 2200 damage. Cannot be blocked, dodged, or parried." },
+			{ id = 0, name = "Level Up", description = "Gains a permanent level and damage increase each time a raid member dies. Avoid deaths at all costs." },
+		}
+	},
+	{
+		name = "Edge of Madness",
+		encounterID = 15083,
+		portrait = I.UIEJBossHazzarah,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15082, 15083, 15084, 15085 },
+		overview = {
+			"The Edge of Madness is a rotating boss encounter where one of four spirits appears each week: Gri'lek (week 1), Hazza'rah (week 2), Renataki (week 3), or Wushoolay (week 4). Each presents unique mechanics and challenges.",
+			{ heading = "Gri'lek" },
+			"Gri'lek uses Avatar to massively increase his damage by 500% while slowing himself. During Avatar, he fixates on a random player with Pursuit. The raid must kite away from him during this phase as he can one-shot players.",
+			{ heading = "Hazza'rah" },
+			"Hazza'rah casts Mana Burn that chains through nearby players and Sleep that affects the entire raid. He summons Nightmare Illusions with ~450 HP that must be killed instantly with instant-cast spells. Keep him mana drained to prevent Mana Burn.",
+			{ heading = "Renataki" },
+			"Renataki uses Vanish to stealth and then Ambush a random player for massive damage. The raid must use AoE abilities to find and break his stealth. His Thousand Blades deals heavy damage. Cloth classes can be one-shot by Ambush.",
+			{ heading = "Wushoolay" },
+			"Wushoolay uses Chain Lightning that bounces to multiple targets and creates Lightning Clouds on the ground. Melee must stand behind him to avoid Chain Lightning. Move out of Lightning Clouds immediately as they deal constant Nature damage.",
+			{
+				role = DAMAGE,
+				"Gri'lek: Kite during Avatar. Hazza'rah: Kill Nightmare Illusions instantly with instant spells, mana drain the boss. Renataki: Use AoE to break stealth. Wushoolay: Melee stay behind boss, move from Lightning Clouds.",
+			},
+			{
+				role = HEALER,
+				"Gri'lek: Prepare for raid-wide Ground Tremor stuns. Hazza'rah: Be ready for Sleep + Illusion damage. Renataki: Heal through Ambush burst. Wushoolay: Heavy Nature damage from Chain Lightning and clouds.",
+			},
+			{
+				role = TANK,
+				"Gri'lek: He becomes untauntable during Pursuit - let him chase his target. Hazza'rah: Standard tanking. Renataki: Face away for Gouge. Wushoolay: Position away from raid for Chain Lightning.",
+			}
+		},
+		abilities = {
+			{ id = 0, name = "Avatar (Gri'lek)", description = "Increases Physical damage by 500% but reduces movement speed by 50% for 18 seconds. Extremely dangerous." },
+			{ id = 0, name = "Pursuit (Gri'lek)", description = "Fixates on a random player, becoming immune to Taunt for 15 seconds." },
+			{ id = 0, name = "Entangling Roots (Gri'lek)", description = "Entangles an enemy, inflicting Nature damage every 3 seconds and immobilizing for up to 10 seconds." },
+			{ id = 0, name = "Ground Tremor (Gri'lek)", description = "Stuns nearby enemies for 2 seconds." },
+			{ id = 26046, name = "Mana Burn (Hazza'rah)", description = "Hits nearby enemies with anti-mana bolts. For each point of mana consumed, deals 1 damage. Chains through raid." },
+			{ id = 24728, name = "Summon Nightmare Illusions (Hazza'rah)", description = "Summons 3 Nightmare Illusions with ~450 HP. Must be killed with instant-cast spells immediately." },
+			{ id = 24664, name = "Sleep (Hazza'rah)", description = "Puts nearby enemies to sleep for up to 6 seconds. AOE ability affects entire raid. Damage breaks it." },
+			{ id = 8269, name = "Enrage (Hazza'rah)", description = "Increases attack speed by 60% and physical damage for 2 minutes." },
+			{ id = 24699, name = "Vanish (Renataki)", description = "Makes Renataki invisible. Use AoE to find him." },
+			{ id = 24337, name = "Ambush (Renataki)", description = "Ambush the target for 128-192 damage. Can one-shot cloth classes." },
+			{ id = 24698, name = "Gouge (Renataki)", description = "Inflicts 20 damage and stuns target for up to 4 seconds." },
+			{ id = 3391, name = "Thrash (Renataki)", description = "Gives the caster 2 extra attacks." },
+			{ id = 24649, name = "Thousand Blades (Renataki)", description = "Deals heavy physical damage in melee range." },
+			{ id = 0, name = "Chain Lightning (Wushoolay)", description = "Strikes an enemy with lightning that arcs to up to 10 targets. Affects targets in front of boss only." },
+			{ id = 0, name = "Lightning Cloud (Wushoolay)", description = "Creates a cloud lasting 15 seconds, dealing 463-537 Nature damage initially plus 875-1125 damage every 5 seconds." },
+			{ id = 0, name = "Forked Lightning (Wushoolay)", description = "Inflicts 1157-1343 Nature damage to enemies in a cone in front of the caster." },
+		}
+	},
+	{
+		name = "High Priest Thekal",
+		encounterID = 14509,
+		portrait = I.UIEJBossThekal,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 14509, 11348, 11347 },
+		overview = {
+			"High Priest Thekal, the Tiger Aspect, fights alongside two zealot adds - Zealot Lor'Khan and Zealot Zath. All three must be killed within 10 seconds or they resurrect. After killing all three, Thekal returns as a massive tiger in phase 2.",
+			{ heading = "Overview" },
+			"Phase 1 requires killing Thekal and both zealots (Lor'Khan the healer, Zath the rogue) within 10 seconds of each other. If any live for 10 seconds after one dies, they all resurrect to full health. Phase 2 begins when all three die - Thekal resurrects as a tiger with Charge, Tiger Rush, and summons Zulian Guardians. He also gains Bloodlust increasing attack speed by 75%.",
+			{
+				role = DAMAGE,
+				"Phase 1: Bring all three targets to low health evenly, then burst them down within 10 seconds. Kill Lor'Khan first (healer), then Zath, then Thekal. Phase 2: Kill Zulian Guardian tiger adds quickly. Interrupt Bloodlust if possible.",
+			},
+			{
+				role = HEALER,
+				"Phase 1: Dispel Mor'Khan's Great Heal immediately. Watch for Gouge, Blind, and Silence on tanks/healers. Phase 2: Heavy tank damage from Mortal Cleave (reduces healing by 50%). Prepare for raid damage from Force Punch and tiger adds.",
+			},
+			{
+				role = TANK,
+				"Phase 1: Separate the three targets. One tank on Thekal, one on Lor'Khan, one on Zath. Watch for Gouge stuns. Phase 2: Tank Thekal away from raid. Pick up Zulian Guardians quickly. Mortal Cleave reduces healing effectiveness by 50%.",
+			}
+		},
+		abilities = {
+			{ id = 12540, name = "Gouge", description = "Inflicts 20 damage to an enemy and stuns for up to 4 seconds. Target must be facing you." },
+			{ id = 21060, name = "Blind", description = "Blinds the target, causing it to wander confused for up to 10 seconds. Damage removes the effect." },
+			{ id = 22666, name = "Silence", description = "Silences an enemy, preventing spellcasting for 6 seconds." },
+			{ id = 22859, name = "Mortal Cleave", description = "Inflicts 150% weapon damage and reduces healing effectiveness by 50% for 5 seconds. Phase 2 ability." },
+			{ id = 24183, name = "Summon Zulian Guardians", description = "Spawns tiger adds during phase 2. Must be killed quickly." },
+			{ id = 24185, name = "Bloodlust", description = "Increases an ally's attack speed by 75% for 30 seconds." },
+			{ id = 24189, name = "Force Punch", description = "Ground slam ability that damages nearby players. Phase 2." },
+			{ id = 24192, name = "Speed Slash", description = "Rapid melee attack. Phase 2." },
+			{ id = 24208, name = "Great Heal (Lor'Khan)", description = "Zealot Lor'Khan heals for a large amount. Must be interrupted or dispelled." },
+			{ id = 0, name = "Resurrection", description = "If any of the three are alive 10 seconds after one dies, all resurrect to full health. Coordination is critical." },
+		}
+	},
+	{
+		name = "High Priestess Arlokk",
+		encounterID = 14515,
+		portrait = I.UIEJBossArlokk,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 14515 },
+		overview = {
+			"High Priestess Arlokk, the Panther Aspect, vanishes periodically and marks random raid members. Marked players are hunted by waves of panthers from the cages. She alternates between humanoid and panther forms with deadly backstab and ravage attacks.",
+			{ heading = "Overview" },
+			"Arlokk places Mark of Arlokk on random raid members, causing panther adds to spawn and chase the marked target. She periodically vanishes and becomes untargetable while panthers spawn. In panther form she uses Gouge, Backstab, and Ravage. The fight requires kiting marked players while killing panther waves. She uses Whirlwind in both forms.",
+			{
+				role = DAMAGE,
+				"Kill panther adds as top priority - they chase marked players. Use ranged DPS on Arlokk when she's visible. Watch for Whirlwind and move away. Backstab hits from behind so tanks must face her away.",
+			},
+			{
+				role = HEALER,
+				"Keep marked players alive as they kite panthers. Prepare for burst damage from Ravage (stuns for 2 seconds). Dispel Shadow Word: Pain. Heavy healing needed during panther waves. Watch for Whirlwind raid damage.",
+			},
+			{
+				role = TANK,
+				"Face Arlokk away from raid to prevent Backstab hitting others. When marked players kite panthers, off-tanks should help gather them. Gouge will stun you. During vanish phases, prepare to pick up panthers.",
+			}
+		},
+		abilities = {
+			{ id = 24210, name = "Mark of Arlokk", description = "Marks a random raid member. Marked players are chased by panther adds that spawn from cages." },
+			{ id = 24212, name = "Shadow Word: Pain", description = "Inflicts Shadow damage every 3 seconds for 18 seconds." },
+			{ id = 3391, name = "Thrash", description = "Gives the caster 2 extra attacks." },
+			{ id = 15582, name = "Backstab", description = "Inflicts normal damage plus 30 to an enemy. Only works when attacking from behind." },
+			{ id = 24213, name = "Ravage", description = "Inflicts normal damage plus 500 and stuns the target for 2 seconds. Very dangerous in panther form." },
+			{ id = 24236, name = "Whirlwind", description = "Attacks nearby enemies in a whirlwind lasting 2 seconds, inflicting normal damage plus 300." },
+			{ id = 12540, name = "Gouge", description = "Inflicts 20 damage and stuns an enemy for up to 4 seconds." },
+			{ id = 0, name = "Vanish", description = "Arlokk becomes untargetable periodically while panther adds spawn. Used throughout the fight." },
+		}
+	},
+	{
+		name = "Jin'do the Hexxar",
+		encounterID = 11380,
+		portrait = I.UIEJBossJindo,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 11380 },
+		overview = {
+			"Jin'do the Hexxer is Hakkar's chief lieutenant and master of voodoo magic. He hexes players into frogs, summons powerful totems, and curses the raid with shades that only the cursed player can see and must kill.",
+			{ heading = "Overview" },
+			"Jin'do uses Delusions curse that spawns a Shade of Jin'do only visible to the cursed player - they must kill it alone. He summons Brain Wash Totems (~4000 HP) that mind control nearby players and Powerful Healing Wards (~1000 HP) that heal him significantly. Hex transforms players into frogs, preventing all actions for 5 seconds. All totems must be killed immediately.",
+			{
+				role = DAMAGE,
+				"Kill Powerful Healing Wards immediately (1000 HP) to prevent boss healing. Destroy Brain Wash Totems (4000 HP) before they mind control players. If cursed with Delusions, kill your Shade of Jin'do quickly - only you can see it.",
+			},
+			{
+				role = HEALER,
+				"Dispel Hex quickly to restore player actions. Watch for players running to Brain Wash Totems - they're about to be mind controlled. Cursed players fighting Shades will take damage - heal them even though you can't see the shade.",
+			},
+			{
+				role = TANK,
+				"Tank Jin'do away from the raid. When Hex hits you, you'll be unable to act for 5 seconds - off-tank must taunt. If cursed with Delusions, kill the Shade quickly while avoiding Jin'do. Totems are the priority for all.",
+			}
+		},
+		abilities = {
+			{ id = 17172, name = "Hex", description = "Transforms an enemy into a frog, rendering them unable to attack or cast spells for 5 seconds. Nature school." },
+			{ id = 24306, name = "Delusions of Jin'do", description = "Shadow curse that spawns a Shade of Jin'do visible only to the cursed player. Must kill it alone." },
+			{ id = 24262, name = "Summon Brain Wash Totem", description = "Drops a totem with ~4000 HP that mind controls raid members. Top priority to destroy." },
+			{ id = 24261, name = "Brain Wash", description = "The mind control effect applied by the Brain Wash Totem. Affected players walk toward the totem." },
+			{ id = 24309, name = "Powerful Healing Ward", description = "Summons a ward with ~1000 HP that periodically heals Jin'do. Must be killed immediately." },
+			{ id = 24466, name = "Banish", description = "Shadow magic banishment effect." },
+		}
+	},
+	{
+		name = "Hakkar",
+		encounterID = 14834,
+		portrait = I.UIEJBossHakkar,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 14834 },
+		overview = {
+			"Hakkar the Soulflayer, the Blood God of the Gurubashi trolls, is the final boss of Zul'Gurub. He drains life from the raid with Blood Siphon and afflicts players with Corrupted Blood. The raid must stand in poison clouds from Sons of Hakkar to turn his life drain into damage.",
+			{ heading = "Overview" },
+			"Hakkar casts Blood Siphon every 90 seconds, draining life from all raid members and healing himself massively. To counter this, the raid must stand in the poisonous green clouds that spawn when Sons of Hakkar die - the poison debuff converts Blood Siphon into damage against Hakkar instead of healing. He also uses Cause Insanity on the main tank (increases attack/move speed by 100%/150%, forces attacking allies) and Corrupted Blood on random raid members. He enrages after 10 minutes.",
+			{
+				role = DAMAGE,
+				"Stand in poison clouds from dead Sons of Hakkar to gain poison debuff before Blood Siphon. Kill Sons quickly when they spawn. Maximum DPS on Hakkar - 10 minute enrage timer. Maintain poison debuff at all times.",
+			},
+			{
+				role = HEALER,
+				"Everyone must have poison debuff before Blood Siphon or raid wipes from massive healing. Heal Corrupted Blood targets - no longer spreads in Classic. During Cause Insanity, off-tank takes over. Refresh poison debuff regularly. Heavy raid healing throughout.",
+			},
+			{
+				role = TANK,
+				"Main tank will get Cause Insanity - you'll attack raid members briefly. Off-tank taunts during this. Stand in poison clouds to maintain debuff. Sons of Hakkar must be positioned for poison cloud placement. Face Hakkar away from raid.",
+			}
+		},
+		abilities = {
+			{ id = 24324, name = "Blood Siphon", description = "Drains life from all raid members every ~90 seconds, healing Hakkar massively unless raid has poison debuff, which converts it to damage against him." },
+			{ id = 24327, name = "Cause Insanity", description = "Drives the main tank insane, increasing attack speed by 100% and movement by 150%, forcing them to attack allies for 10 seconds." },
+			{ id = 24328, name = "Corrupted Blood", description = "Deals direct damage with damage over time effect to random raid members. No longer spreads in Classic." },
+			{ id = 0, name = "Poisonous Blood", description = "Green poison cloud spawned when Sons of Hakkar die. Raid must stand in it to gain poison debuff that counters Blood Siphon." },
+			{ id = 0, name = "Enrage", description = "After 10 minutes, Hakkar enrages and deals ~8000+ damage per hit. Strict DPS check." },
+			{ id = 0, name = "Sons of Hakkar", description = "Snake adds that spawn periodically. Must be killed to create poison clouds. Position carefully for cloud placement." },
+		}
+	},
+	{
+		name = "Gahz'ranka",
+		encounterID = 15114,
+		portrait = 607614,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = { 15114 },
+		overview = {
+			"Gahz'ranka is an optional hydra boss summoned by using Mudskunk Lures and Zulian Mudskunks at the fishing pool in Zul'Gurub. This is primarily a tank and spank encounter with knockback mechanics.",
+			{ heading = "Overview" },
+			"Gahz'ranka is a straightforward fight. The boss uses Frost Breath in a frontal cone that deals damage, drains mana, and slows movement. Massive Geyser creates ground hazards that knock players back. The boss periodically uses Gahz'ranka Slam to knock melee away, temporarily removing them from threat. Thrash gives extra attacks. The challenge is gathering the fishing materials to summon him.",
+			{
+				role = DAMAGE,
+				"Standard DPS rotation. Stay behind the boss to avoid Frost Breath. Watch for geysers on the ground and move away. Expect to be knocked back by Slam periodically. Re-engage quickly after knockbacks.",
+			},
+			{
+				role = HEALER,
+				"Relatively simple healing encounter. Top off players hit by Frost Breath. Watch for knockback damage from Massive Geyser and Slam. Melee will be knocked high into the air and lose threat temporarily.",
+			},
+			{
+				role = TANK,
+				"Face Gahz'ranka away from the raid to prevent Frost Breath hitting melee. Slam will knock you high into the air, temporarily removing you from combat. Regain threat immediately upon landing. Be prepared for Thrash bonus attacks.",
+			}
+		},
+		abilities = {
+			{ id = 16099, name = "Frost Breath", description = "Inflicts Frost damage to enemies in a frontal cone, stealing mana and reducing movement speed for 10 seconds." },
+			{ id = 22421, name = "Massive Geyser", description = "Creates environmental hazards that knock back nearby targets. Move away from geysers." },
+			{ id = 3391, name = "Thrash", description = "Gives the caster 2 extra attacks." },
+			{ id = 24326, name = "Gahz'ranka Slam", description = "Inflicts normal damage plus 250 to nearby enemies and knocks them back high into the air." },
+		}
+	},
+})

@@ -117,6 +117,17 @@ function CollapsibleSectionWidgetTypeMixin:Construct(parent)
 	button.middle:SetPoint("LEFT", button.left, "RIGHT", -32, 0)
 	button.middle:SetPoint("RIGHT", button.right, "LEFT", 32, 0)
 
+	-- Initialize expanded state
+	frame.isExpanded = true
+
+	-- Add click handler to toggle expand/collapse
+	button:SetScript("OnClick", function(self)
+		local parentFrame = self:GetParent()
+		parentFrame.isExpanded = not parentFrame.isExpanded
+		CollapsibleSectionWidgetTypeMixin:UpdateExpandedState(parentFrame)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+	end)
+
 	--frame.text = frame:CreateFontString(nil, "ARTWORK", "GameFontBlack")
 	--frame.text:SetJustifyH("LEFT")
 	--frame.text:SetPoint("TOPLEFT", 2, -8)
@@ -146,6 +157,63 @@ function CollapsibleSectionWidgetTypeMixin:SetContents(widget, contents, bullete
 	local height = widget:GetTop() - widget.widgets[#widget.widgets]:GetBottom()
 	widget:SetHeight(height)
 	widget:Show()
+end
+
+-- Override Acquire to reset expanded state when getting widget from pool
+function CollapsibleSectionWidgetTypeMixin:Acquire(parent)
+	local widget = WidgetTypeMixin.Acquire(self, parent)
+	widget.isExpanded = true
+	widget.button.expandedIcon:SetText("-")
+	return widget
+end
+
+-- Update the visual state and height when expanding/collapsing
+function CollapsibleSectionWidgetTypeMixin:UpdateExpandedState(widget)
+	if widget.isExpanded then
+		widget.button.expandedIcon:SetText("-")
+		-- Show children
+		for _, child in ipairs(widget.widgets) do
+			child:Show()
+		end
+		-- Recalculate height based on children
+		if #widget.widgets > 0 then
+			local height = widget:GetTop() - widget.widgets[#widget.widgets]:GetBottom()
+			widget:SetHeight(height)
+		end
+	else
+		widget.button.expandedIcon:SetText("+")
+		-- Hide children
+		for _, child in ipairs(widget.widgets) do
+			child:Hide()
+		end
+		-- Set height to just the button (24px)
+		widget:SetHeight(24)
+	end
+
+	-- Trigger parent height recalculation
+	CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(widget)
+end
+
+-- Cascade height updates to parent widgets
+function CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(widget)
+	local parent = widget:GetParent()
+	if parent and parent.widgets and #parent.widgets > 0 then
+		-- Find the last visible widget
+		local lastVisible = nil
+		for i = #parent.widgets, 1, -1 do
+			if parent.widgets[i]:IsShown() then
+				lastVisible = parent.widgets[i]
+				break
+			end
+		end
+
+		if lastVisible and parent.type and parent.type.name ~= "Root" then
+			local height = parent:GetTop() - lastVisible:GetBottom()
+			parent:SetHeight(height)
+			-- Recursively update grandparent
+			CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(parent)
+		end
+	end
 end
 
 --[[

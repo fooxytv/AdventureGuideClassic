@@ -68,10 +68,25 @@ ptr_deploy() {
     fi
 }
 
+tbc_deploy() {
+    if [ "$ostype" == "windows" ]; then
+        wow_addons_dir_tbc="/e/Program Files/World of Warcraft/_anniversary_/Interface/AddOns"
+        echo "Copying $zip_file to \"$wow_addons_dir_tbc/$addon_name\"..."
+        unzip -o "$zip_file" -d "$wow_addons_dir_tbc/$addon_name"
+        echo "Done."
+    else
+        echo "Copying $zip_file to "$wow_addons_dir_tbc/$addon_name"..."
+        unzip -o "$zip_file" -d "$wow_addons_dir_tbc/$addon_name"
+        echo "Done."
+    fi
+}
+
 if [ "$1" == "local" ] || [ "$1" == "lcl" ]; then
     local_deploy
 elif [ "$1" == "ptr" ]; then
     ptr_deploy
+elif [ "$1" == "tbc" ]; then
+    tbc_deploy
 else
     echo "Error: Invalid argument. Use 'local' or 'lcl', or 'ptr' to deploy."
     exit 1
