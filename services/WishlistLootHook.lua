@@ -15,7 +15,7 @@ local glowFrames = {}
 local WISHLIST_SOUND = "Interface\\AddOns\\AdventureGuideClassic\\sounds\\UIEJBossDefeated.ogg"
 
 -- Marching ants configuration
-local MARCH_SPEED = 40           -- Pixels per second
+local MARCH_SPEED = 15           -- Pixels per second
 local DASH_LENGTH = 4            -- Length of each dash in pixels
 local DASH_GAP = 3               -- Gap between dashes in pixels
 local BORDER_THICKNESS = 2       -- Thickness of border line
@@ -50,6 +50,13 @@ local function CreateGlowFrame(lootButton, index)
     glow.border:SetAllPoints(lootButton)
     glow.border:SetColorTexture(0, 0.8, 0, 0.15) -- Subtle green tint
 
+    -- Create a clipping frame that matches the icon size to contain the dashes
+    local clipFrame = CreateFrame("Frame", nil, glow)
+    clipFrame:SetPoint("TOPLEFT", iconTexture, "TOPLEFT", 0, 0)
+    clipFrame:SetPoint("BOTTOMRIGHT", iconTexture, "BOTTOMRIGHT", 0, 0)
+    clipFrame:SetClipsChildren(true)
+    glow.clipFrame = clipFrame
+
     -- Calculate dash spacing and count
     local dashSpacing = DASH_LENGTH + DASH_GAP
     local dashesPerSide = math.ceil(ICON_SIZE / dashSpacing) + 2 -- Extra dashes for seamless looping
@@ -59,7 +66,7 @@ local function CreateGlowFrame(lootButton, index)
     for side = 1, 4 do
         glow.dashes[side] = {}
         for i = 1, dashesPerSide do
-            local dash = glow:CreateTexture(nil, "OVERLAY")
+            local dash = clipFrame:CreateTexture(nil, "OVERLAY")
             dash:SetColorTexture(BORDER_COLOR[1], BORDER_COLOR[2], BORDER_COLOR[3], 1)
 
             if side == 1 or side == 3 then -- horizontal (top/bottom)
@@ -80,43 +87,26 @@ local function CreateGlowFrame(lootButton, index)
     glow:SetScript("OnUpdate", function(self, elapsed)
         self.marchOffset = (self.marchOffset + elapsed * MARCH_SPEED) % self.dashSpacing
 
-        -- Get actual icon dimensions and position
-        local icon = self.iconTexture
-        local iconWidth, iconHeight = icon:GetSize()
+        -- Get actual icon dimensions
+        local clip = self.clipFrame
+        local iconWidth, iconHeight = clip:GetSize()
 
-        -- Update dash positions for each side
+        -- Update dash positions for each side (positioned relative to clipFrame)
         for side, dashes in ipairs(self.dashes) do
             for i, dash in ipairs(dashes) do
                 local basePos = (i - 1) * self.dashSpacing - self.marchOffset
-                local pos, visible
 
+                dash:ClearAllPoints()
                 if side == 1 then -- Top edge: moves left to right
-                    pos = basePos
-                    visible = pos >= -DASH_LENGTH and pos <= iconWidth
-                    dash:ClearAllPoints()
-                    dash:SetPoint("BOTTOMLEFT", icon, "TOPLEFT", pos, 0)
+                    dash:SetPoint("TOPLEFT", clip, "TOPLEFT", basePos, 0)
                 elseif side == 2 then -- Right edge: moves top to bottom
-                    pos = basePos
-                    visible = pos >= -DASH_LENGTH and pos <= iconHeight
-                    dash:ClearAllPoints()
-                    dash:SetPoint("TOPLEFT", icon, "TOPRIGHT", -BORDER_THICKNESS, -pos)
+                    dash:SetPoint("TOPRIGHT", clip, "TOPRIGHT", 0, -basePos)
                 elseif side == 3 then -- Bottom edge: moves right to left
-                    pos = iconWidth - basePos
-                    visible = pos >= -DASH_LENGTH and pos <= iconWidth
-                    dash:ClearAllPoints()
-                    dash:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", pos, BORDER_THICKNESS)
+                    dash:SetPoint("BOTTOMRIGHT", clip, "BOTTOMRIGHT", -basePos, 0)
                 else -- Left edge: moves bottom to top
-                    pos = iconHeight - basePos
-                    visible = pos >= -DASH_LENGTH and pos <= iconHeight
-                    dash:ClearAllPoints()
-                    dash:SetPoint("TOPLEFT", icon, "TOPLEFT", 0, -pos)
+                    dash:SetPoint("BOTTOMLEFT", clip, "BOTTOMLEFT", 0, basePos)
                 end
-
-                if visible then
-                    dash:Show()
-                else
-                    dash:Hide()
-                end
+                dash:Show()
             end
         end
     end)
