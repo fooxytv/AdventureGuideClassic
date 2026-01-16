@@ -164,6 +164,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Skum",
+		defeated = 0,
 		encounterID = 3674,
 		portrait = 607775,
 		loot = {

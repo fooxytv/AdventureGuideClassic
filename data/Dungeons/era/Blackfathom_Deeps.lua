@@ -20,7 +20,6 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 4887,
 		portrait = 607613,
-		instance = "Blackfathom Deeps",
 		loot = {
 			{ id = 6908, seasonFilter = "all" },
 			{ id = 6907, seasonFilter = "all" }
@@ -283,6 +282,7 @@ InstanceService.AddDungeon({
 	},
 	{
 		name = "Old Serra'kis",
+		defeated = 0,
 		encounterID = 4830,
 		portrait = 607733,
 		loot = {

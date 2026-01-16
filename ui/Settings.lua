@@ -10,33 +10,39 @@ local component = UI.CreateComponent("Settings")
 local components
 local settingsPanel
 
--- Helper function to create a checkbox for Interface Options
-local function CreateOptionsCheckbox(parent, name, label, description, anchorTo, yOffset, getValue, setValue)
-	local checkbox = CreateFrame("CheckButton", "AGCSettings" .. name .. "Checkbox", parent, "InterfaceOptionsCheckButtonTemplate")
+-- Constants for layout
+local SETTINGS_LEFT_PADDING = 16
+local SETTINGS_ROW_HEIGHT = 36
+local SETTINGS_CHECKBOX_WIDTH = 300
 
-	if anchorTo then
-		checkbox:SetPoint("TOPLEFT", anchorTo, "BOTTOMLEFT", 0, yOffset)
-	else
-		checkbox:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, yOffset)
+-- Helper function to create a checkbox row with label on left, checkbox on right
+local function CreateOptionsCheckbox(parent, name, label, description, rowIndex, getValue, setValue)
+	-- Container frame for the row
+	local row = CreateFrame("Frame", "AGCSettings" .. name .. "Row", parent)
+	row:SetSize(SETTINGS_CHECKBOX_WIDTH, SETTINGS_ROW_HEIGHT)
+	row:SetPoint("TOPLEFT", parent, "TOPLEFT", SETTINGS_LEFT_PADDING, -rowIndex * SETTINGS_ROW_HEIGHT)
+
+	-- Label on the left
+	local labelText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	labelText:SetPoint("LEFT", row, "LEFT", 0, 4)
+	labelText:SetText(label)
+
+	-- Checkbox on the right of the label
+	local checkbox = CreateFrame("CheckButton", "AGCSettings" .. name .. "Checkbox", row, "InterfaceOptionsCheckButtonTemplate")
+	checkbox:SetPoint("LEFT", labelText, "RIGHT", 8, 0)
+
+	-- Hide the default template text
+	local templateText = _G[checkbox:GetName() .. "Text"]
+	if templateText then
+		templateText:SetText("")
 	end
 
-	-- Label text
-	local labelText = _G[checkbox:GetName() .. "Text"]
-	if labelText then
-		labelText:SetText(label)
-	else
-		labelText = checkbox:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		labelText:SetPoint("LEFT", checkbox, "RIGHT", 0, 0)
-		labelText:SetText(label)
-	end
-
-	-- Description text below
-	local descText = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	descText:SetPoint("TOPLEFT", checkbox, "BOTTOMLEFT", 26, 2)
+	-- Description text below the label
+	local descText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	descText:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", 0, -2)
 	descText:SetText(description)
 	descText:SetTextColor(0.6, 0.6, 0.6)
 	descText:SetJustifyH("LEFT")
-	checkbox.description = descText
 
 	-- Set initial value
 	checkbox:SetChecked(getValue())
@@ -48,10 +54,11 @@ local function CreateOptionsCheckbox(parent, name, label, description, anchorTo,
 		PlaySound(checked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 	end)
 
-	checkbox.getValue = getValue
-	checkbox.setValue = setValue
+	row.checkbox = checkbox
+	row.getValue = getValue
+	row.setValue = setValue
 
-	return checkbox
+	return row
 end
 
 function component.Init(components_)
@@ -85,47 +92,49 @@ function component.Init(components_)
 	toastDesc:SetText("Configure which on-screen notifications are displayed.")
 	toastDesc:SetTextColor(0.6, 0.6, 0.6)
 
-	-- Level Up Toast checkbox
-	settingsPanel.levelUpCheckbox = CreateOptionsCheckbox(
-		settingsPanel,
+	-- Create a container for toast options (for consistent alignment)
+	local toastContainer = CreateFrame("Frame", "AGCSettingsToastContainer", settingsPanel)
+	toastContainer:SetPoint("TOPLEFT", toastDesc, "BOTTOMLEFT", 0, -8)
+	toastContainer:SetSize(400, 120)
+
+	-- Level Up Toast checkbox (row 0)
+	settingsPanel.levelUpRow = CreateOptionsCheckbox(
+		toastContainer,
 		"LevelUp",
 		"Level Up Toast",
 		"Show a notification when your character levels up",
-		toastDesc,
-		-16,
+		0,
 		function() return SettingsService.GetToastEnabled("LevelUp") end,
 		function(val) SettingsService.SetToastEnabled("LevelUp", val) end
 	)
 
-	-- Boss Defeated Toast checkbox
-	settingsPanel.bossDefeatedCheckbox = CreateOptionsCheckbox(
-		settingsPanel,
+	-- Boss Defeated Toast checkbox (row 1)
+	settingsPanel.bossDefeatedRow = CreateOptionsCheckbox(
+		toastContainer,
 		"BossDefeated",
 		"Boss Defeated Toast",
 		"Show a notification when a dungeon or raid boss is defeated",
-		settingsPanel.levelUpCheckbox.description,
-		-12,
+		1,
 		function() return SettingsService.GetToastEnabled("BossDefeated") end,
 		function(val) SettingsService.SetToastEnabled("BossDefeated", val) end
 	)
 
-	-- Wishlist Item Toast checkbox
-	settingsPanel.wishlistCheckbox = CreateOptionsCheckbox(
-		settingsPanel,
+	-- Wishlist Item Toast checkbox (row 2)
+	settingsPanel.wishlistRow = CreateOptionsCheckbox(
+		toastContainer,
 		"WishlistItem",
 		"Wishlist Item Found Toast",
 		"Show a notification when an item on your wishlist drops",
-		settingsPanel.bossDefeatedCheckbox.description,
-		-12,
+		2,
 		function() return SettingsService.GetToastEnabled("WishlistItem") end,
 		function(val) SettingsService.SetToastEnabled("WishlistItem", val) end
 	)
 
 	-- Refresh callback when panel is shown
 	settingsPanel:SetScript("OnShow", function()
-		settingsPanel.levelUpCheckbox:SetChecked(SettingsService.GetToastEnabled("LevelUp"))
-		settingsPanel.bossDefeatedCheckbox:SetChecked(SettingsService.GetToastEnabled("BossDefeated"))
-		settingsPanel.wishlistCheckbox:SetChecked(SettingsService.GetToastEnabled("WishlistItem"))
+		settingsPanel.levelUpRow.checkbox:SetChecked(SettingsService.GetToastEnabled("LevelUp"))
+		settingsPanel.bossDefeatedRow.checkbox:SetChecked(SettingsService.GetToastEnabled("BossDefeated"))
+		settingsPanel.wishlistRow.checkbox:SetChecked(SettingsService.GetToastEnabled("WishlistItem"))
 	end)
 
 	-- Register with Blizzard Interface Options
@@ -155,3 +164,14 @@ function component.Open()
 end
 
 UI.Add(component)
+
+-- Initialize settings on PLAYER_LOGIN so it registers with Blizzard options immediately
+-- (don't wait for UI.Init which only happens when Encounter Journal is first opened)
+local settingsInitFrame = CreateFrame("Frame")
+settingsInitFrame:RegisterEvent("PLAYER_LOGIN")
+settingsInitFrame:SetScript("OnEvent", function(self, event)
+	if event == "PLAYER_LOGIN" then
+		component.Init({})
+		self:UnregisterEvent("PLAYER_LOGIN")
+	end
+end)

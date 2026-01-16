@@ -214,3 +214,40 @@ _G.AGC_DebugLootFilter = function()
 		print("  No encounter selected")
 	end
 end
+
+-- Auto-navigate to current instance when player opens the journal while in a dungeon/raid
+-- Returns true if navigation occurred, false otherwise
+function AdventureGuideNavigationService.AutoNavigateToCurrentInstance(components)
+	local instanceName, instanceType = GetInstanceInfo()
+
+	-- Only proceed if player is in a dungeon ("party") or raid ("raid")
+	if instanceType ~= "party" and instanceType ~= "raid" then
+		return false
+	end
+
+	-- Search dungeons for a match
+	local dungeons = InstanceService.GetDungeons()
+	for _, dungeon in ipairs(dungeons) do
+		if dungeon.name == instanceName then
+			AdventureGuideNavigationService.SetInstance(dungeon)
+			if components and components.EncounterFrame then
+				components.EncounterFrame.ShowInstanceInfo(dungeon)
+			end
+			return true
+		end
+	end
+
+	-- Search raids for a match
+	local raids = InstanceService.GetRaids()
+	for _, raid in ipairs(raids) do
+		if raid.name == instanceName then
+			AdventureGuideNavigationService.SetInstance(raid)
+			if components and components.EncounterFrame then
+				components.EncounterFrame.ShowInstanceInfo(raid)
+			end
+			return true
+		end
+	end
+
+	return false
+end
