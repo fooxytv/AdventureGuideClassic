@@ -32,9 +32,18 @@ local function CreateGlowFrame(lootButton, index)
         return glowFrames[index]
     end
 
+    -- Get reference to the icon texture on the loot button
+    local iconTexture = lootButton.icon or lootButton.Icon or _G[lootButton:GetName() .. "IconTexture"]
+    if not iconTexture then
+        return nil
+    end
+
     local glow = CreateFrame("Frame", "AGC_WishlistGlow" .. index, lootButton)
     glow:SetAllPoints(lootButton)
     glow:SetFrameLevel(lootButton:GetFrameLevel() + 10)
+
+    -- Store reference to the icon
+    glow.iconTexture = iconTexture
 
     -- Create a subtle green background tint on the row
     glow.border = glow:CreateTexture(nil, "BACKGROUND")
@@ -66,17 +75,14 @@ local function CreateGlowFrame(lootButton, index)
     -- Animation state
     glow.marchOffset = 0
     glow.dashSpacing = dashSpacing
-    glow.iconSize = ICON_SIZE
-    glow.iconOffset = ICON_OFFSET
 
     -- OnUpdate handler for marching animation
     glow:SetScript("OnUpdate", function(self, elapsed)
         self.marchOffset = (self.marchOffset + elapsed * MARCH_SPEED) % self.dashSpacing
 
-        local iconLeft = self.iconOffset
-        local iconTop = (lootButton:GetHeight() - self.iconSize) / 2 + self.iconSize
-        local iconRight = iconLeft + self.iconSize
-        local iconBottom = iconTop - self.iconSize
+        -- Get actual icon dimensions and position
+        local icon = self.iconTexture
+        local iconWidth, iconHeight = icon:GetSize()
 
         -- Update dash positions for each side
         for side, dashes in ipairs(self.dashes) do
@@ -85,25 +91,25 @@ local function CreateGlowFrame(lootButton, index)
                 local pos, visible
 
                 if side == 1 then -- Top edge: moves left to right
-                    pos = iconLeft + basePos
-                    visible = pos >= iconLeft - DASH_LENGTH and pos <= iconRight
+                    pos = basePos
+                    visible = pos >= -DASH_LENGTH and pos <= iconWidth
                     dash:ClearAllPoints()
-                    dash:SetPoint("BOTTOMLEFT", lootButton, "TOPLEFT", pos, -iconTop + BORDER_THICKNESS)
+                    dash:SetPoint("BOTTOMLEFT", icon, "TOPLEFT", pos, 0)
                 elseif side == 2 then -- Right edge: moves top to bottom
                     pos = basePos
-                    visible = pos >= -DASH_LENGTH and pos <= self.iconSize
+                    visible = pos >= -DASH_LENGTH and pos <= iconHeight
                     dash:ClearAllPoints()
-                    dash:SetPoint("TOPLEFT", lootButton, "TOPLEFT", iconRight - BORDER_THICKNESS, -iconBottom - pos - DASH_LENGTH)
+                    dash:SetPoint("TOPLEFT", icon, "TOPRIGHT", -BORDER_THICKNESS, -pos)
                 elseif side == 3 then -- Bottom edge: moves right to left
-                    pos = self.iconSize - basePos
-                    visible = pos >= -DASH_LENGTH and pos <= self.iconSize
+                    pos = iconWidth - basePos
+                    visible = pos >= -DASH_LENGTH and pos <= iconWidth
                     dash:ClearAllPoints()
-                    dash:SetPoint("BOTTOMLEFT", lootButton, "TOPLEFT", iconLeft + pos, -iconTop)
+                    dash:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", pos, BORDER_THICKNESS)
                 else -- Left edge: moves bottom to top
-                    pos = self.iconSize - basePos
-                    visible = pos >= -DASH_LENGTH and pos <= self.iconSize
+                    pos = iconHeight - basePos
+                    visible = pos >= -DASH_LENGTH and pos <= iconHeight
                     dash:ClearAllPoints()
-                    dash:SetPoint("TOPLEFT", lootButton, "TOPLEFT", iconLeft, -iconBottom - pos)
+                    dash:SetPoint("TOPLEFT", icon, "TOPLEFT", 0, -pos)
                 end
 
                 if visible then
@@ -161,16 +167,20 @@ local function CheckLootWindow()
             local lootButton = _G["LootButton" .. slot]
             if lootButton then
                 local glow = CreateGlowFrame(lootButton, slot)
-                glow:SetParent(lootButton)
-                glow:SetAllPoints(lootButton)
-                glow.marchOffset = 0 -- Reset animation
-                glow:Show()
+                if glow then
+                    glow:SetParent(lootButton)
+                    glow:SetAllPoints(lootButton)
+                    glow.marchOffset = 0 -- Reset animation
+                    glow:Show()
+                end
             end
 
-            -- Track item name and ID for notification
-            local itemName = C_Item.GetItemInfo(itemID)
-            if itemName then
-                table.insert(wishlistItems, { name = itemName, id = itemID })
+            -- Track item name and ID for notification (only if we have a valid itemID)
+            if itemID then
+                local itemName = C_Item.GetItemInfo(itemID)
+                if itemName then
+                    table.insert(wishlistItems, { name = itemName, id = itemID })
+                end
             end
         end
     end
