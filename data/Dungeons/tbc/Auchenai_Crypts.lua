@@ -20,21 +20,19 @@ InstanceService.AddDungeon({
 		encounterID = 17371,
 		portrait = 607771,
 		loot = {
-			{ id = 27493, seasonFilter = "all" }, -- Doomplate Gauntlets
-			{ id = 27494, seasonFilter = "all" }, -- Emerald Eye Bracer
-			{ id = 27490, seasonFilter = "all" }, -- Crimson Pendant of Clarity
-			{ id = 27487, seasonFilter = "all" }, -- Gauntlets of the Redeemed Vindicator
-			{ id = 27489, seasonFilter = "all" }, -- Vanquisher's Legplates
-			{ id = 27488, seasonFilter = "all" }, -- Silent-Strider Kneeboots
-			{ id = 27491, seasonFilter = "all" }, -- Greaves of the Iron Guardian (Heroic)
-			{ id = 27492, seasonFilter = "all" }, -- Moonchild Leggings (Heroic)
-			{ id = 27866, seasonFilter = "all" }, -- Soulpriest's Ring of Resolve (Heroic)
-			{ id = 28264, seasonFilter = "all" }  -- Wastewalker Tunic (Heroic)
+			{ id = 25964, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27410, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27408, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 26055, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27409, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27865, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27846, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27847, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27493, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27845, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27866, seasonFilter = "tbc", difficulty = "heroic" }
 		},
-		sharedLoot = {
-			{ id = 23138, seasonFilter = "all" }, -- Auchenai Key
-			{ id = 22556, seasonFilter = "all" }  -- Primal Nether (Heroic)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -76,22 +74,23 @@ InstanceService.AddDungeon({
 		encounterID = 18373,
 		portrait = 607600,
 		loot = {
-			{ id = 27477, seasonFilter = "all" }, -- Hallowed Trousers
-			{ id = 27487, seasonFilter = "all" }, -- Gauntlets of the Redeemed Vindicator
-			{ id = 27495, seasonFilter = "all" }, -- Soldier's Dog Tags
-			{ id = 27524, seasonFilter = "all" }, -- Fetish of the Fallen
-			{ id = 27885, seasonFilter = "all" }, -- Soul-Eater's Handwraps (Heroic)
-			{ id = 27886, seasonFilter = "all" }, -- Slippers of Serenity (Heroic)
-			{ id = 27884, seasonFilter = "all" }, -- Auchenai Death Shroud (Heroic)
-			{ id = 27528, seasonFilter = "all" }, -- Gauntlets of Vindication (Heroic)
-			{ id = 27525, seasonFilter = "all" }, -- Boots of the Unjust (Heroic)
-			{ id = 27537, seasonFilter = "all" }, -- Exarch's Diamond Band (Heroic)
-			{ id = 27870, seasonFilter = "all" }  -- Dath'Remar's Ring of Defense (Heroic)
+			{ id = 27416, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27412, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27413, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27411, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27415, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27414, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27867, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27870, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27523, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27871, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27869, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27872, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29354, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29257, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29244, seasonFilter = "tbc", difficulty = "heroic" }
 		},
-		sharedLoot = {
-			{ id = 23138, seasonFilter = "all" }, -- Auchenai Key
-			{ id = 22556, seasonFilter = "all" }  -- Primal Nether (Heroic)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
