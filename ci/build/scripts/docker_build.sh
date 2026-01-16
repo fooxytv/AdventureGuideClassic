@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# Load .env file, stripping quotes from values
 if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+    while IFS='=' read -r key value; do
+        [[ "$key" =~ ^#.*$ ]] && continue
+        [[ -z "$key" ]] && continue
+        value="${value%\"}"
+        value="${value#\"}"
+        export "$key=$value"
+    done < .env
 else
     echo "Error: .env file not found."
     exit 1
@@ -20,10 +27,30 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+# Extract unique drive letters from all paths
+declare -A drives
+extract_drive() {
+    if [[ "$1" =~ ^/([a-zA-Z])/ ]]; then
+        drives["${BASH_REMATCH[1]^^}"]=1
+    fi
+}
+
+extract_drive "$wow_addons_dir_tbc"
+extract_drive "$wow_addons_dir_ptr"
+extract_drive "$wow_addons_dir_era"
+
+# Build volume arguments for each unique drive
+volume_args=""
+for drive in "${!drives[@]}"; do
+    volume_args="$volume_args -v /${drive}:/${drive}"
+done
+
 echo "Running Docker container and mounting project directory.."
+echo "Mounting drives: ${!drives[*]}"
+
 docker run --rm -ti \
     -v "$project_dir:$container_workdir" \
-    -v "$wow_addons_dir:$wow_addons_dir" \
+    $volume_args \
     $image_name bash
 
 if [[ $? -ne 0 ]]; then

@@ -21,22 +21,18 @@ InstanceService.AddDungeon({
 		encounterID = 17306,
 		portrait = 607817,
 		loot = {
-			{ id = 24024, seasonFilter = "all" },
-			{ id = 24023, seasonFilter = "all" },
-			{ id = 24025, seasonFilter = "all" },
-			{ id = 23999, seasonFilter = "all" },
-			{ id = 27448, seasonFilter = "all" },
-			{ id = 27449, seasonFilter = "all" },
-			{ id = 27450, seasonFilter = "all" },
-			{ id = 27447, seasonFilter = "all" }
+			{ id = 24023, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24021, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24022, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24020, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24024, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27449, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27451, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27447, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27448, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27450, seasonFilter = "tbc", difficulty = "heroic" }
 		},
-		sharedLoot = {
-			{ id = 23998, seasonFilter = "all" },
-			{ id = 24000, seasonFilter = "all" },
-			{ id = 24001, seasonFilter = "all" },
-			{ id = 24073, seasonFilter = "all" },
-			{ id = 24074, seasonFilter = "all" }
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},

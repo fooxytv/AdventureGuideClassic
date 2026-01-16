@@ -7,6 +7,11 @@
 /run WishlistService.ClearAll()
 /run TestWishlistToast()
 /run TestWishlistToastCustom(<id>)
+/run TestLevelUpToast()
+/run TestBossDefeatedToast()
+/run TestBossDefeatedToastCustom("Custom Boss Name")
+/run TestWishlistToast()
+/run TestWishlistToastCustom(itemID)
 
 
   Loot Filters
@@ -43,3 +48,14 @@
 
   The system also supports the difficulty field for TBC heroic/normal filtering:
   { id = 12345, filter = "tbc", difficulty = "heroic" }
+
+    loot = {
+      -- Shows on both normal and heroic (no difficulty field = "both")
+      { id = 24024, seasonFilter = "all" },
+
+      -- Only shows on normal difficulty
+      { id = 24025, seasonFilter = "all", difficulty = "normal" },
+
+      -- Only shows on heroic difficulty
+      { id = 27448, seasonFilter = "all", difficulty = "heroic" },
+  }

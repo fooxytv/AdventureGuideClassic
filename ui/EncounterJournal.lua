@@ -121,9 +121,17 @@ function UI.ToggleEncounterJournal()
         UI.Init()
         initialized = true
     end
+
+    local wasHidden = not EncounterJournal:IsShown()
     EncounterJournal:SetShown(not EncounterJournal:IsShown())
-    if (AdventureGuideNavigationService.GetEncounter()) then
--- todo: switch to correct view
+
+    -- When opening the journal, try to auto-navigate to current instance
+    if wasHidden and EncounterJournal:IsShown() then
+        local autoNavigated = AdventureGuideNavigationService.AutoNavigateToCurrentInstance(components)
+        if not autoNavigated and AdventureGuideNavigationService.GetEncounter() then
+            components.DynamicContentScroller.ShowOverview()
+        end
+    elseif AdventureGuideNavigationService.GetEncounter() then
         components.DynamicContentScroller.ShowOverview()
     end
 end

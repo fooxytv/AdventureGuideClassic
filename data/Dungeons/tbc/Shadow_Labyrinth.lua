@@ -260,7 +260,7 @@ select(2, ...).SetupGlobalFacade()
 			{ id = 27868, seasonFilter = "tbc" }, -- Sparrowhawk Bracers
 			{ id = 28230, seasonFilter = "tbc" }, -- Hallowed Garments (Heroic)
 			{ id = 28233, seasonFilter = "tbc" }, -- Mask of the Soul Eater (Heroic)
-			{ id = 28235, seasonFilter =="tbc" }, -- Cloak of Insidious Intent (Heroic)
+			{ id = 28235, seasonFilter = "tbc" }, -- Cloak of Insidious Intent (Heroic)
 			{ id = 29261, seasonFilter = "tbc" }, -- Flame-Touched Legguards (Heroic)
 			{ id = 29266, seasonFilter = "tbc" }, -- Ryngo's Band of Ingenuity (Heroic)
 			{ id = 29352, seasonFilter = "tbc" }, -- Cobalt Band of Tyrigosa (Heroic)

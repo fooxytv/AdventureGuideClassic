@@ -127,20 +127,20 @@ function AdventureGuideClassicEventToastManager:ShowEncounterDefeatedToast(title
 	frame.background:Show()
 	frame.background:SetAlpha(0.7)
 
-	-- Boss name - large and prominent
-	frame.title:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")
+	-- Boss name - large and prominent (MORPHEUS font like modern WoW)
+	frame.title:SetFont("Fonts\\MORPHEUS.TTF", 26, "")
 	frame.title:SetTextColor(0.8, 0.1, 0.1)
-	frame.title:SetShadowOffset(1, -1)
-	frame.title:SetShadowColor(0, 0, 0, 0.8)
+	frame.title:SetShadowOffset(0, 0)
+	frame.title:SetShadowColor(0, 0, 0, 0)
 	frame.title:ClearAllPoints()
 	frame.title:SetPoint("CENTER", frame, "CENTER", 0, 11)
 	frame.title:SetText(title)
 
-	-- "Has been defeated" - smaller text below, moved down to avoid texture overlap
-	frame.subtitle:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
-	frame.subtitle:SetTextColor(1, 1, 1)
-	frame.subtitle:SetShadowOffset(1, -1)
-	frame.subtitle:SetShadowColor(0, 0, 0, 0.8)
+	-- "has been defeated" - smaller text below, moved down to avoid texture overlap
+	frame.subtitle:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
+	frame.subtitle:SetTextColor(0.8, 0.1, 0.1)
+	frame.subtitle:SetShadowOffset(0, 0)
+	frame.subtitle:SetShadowColor(0, 0, 0, 0)
 	frame.subtitle:ClearAllPoints()
 	frame.subtitle:SetPoint("CENTER", frame, "CENTER", 0, -25)
 	frame.subtitle:SetText(subtitle)
@@ -182,7 +182,7 @@ function AdventureGuideClassicEventToastManager:ShowInstanceToast(title, subtitl
 	frame.background:SetAlpha(0.7)
 
 	-- Simple text styling - "You've Reached" - moved up
-	frame.title:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
+	frame.title:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
 	frame.title:SetTextColor(1, 1, 1)
 	frame.title:SetShadowOffset(1, -1)
 	frame.title:SetShadowColor(0, 0, 0, 1)
@@ -190,11 +190,11 @@ function AdventureGuideClassicEventToastManager:ShowInstanceToast(title, subtitl
 	frame.title:SetPoint("CENTER", frame, "CENTER", 0, 20)
 	frame.title:SetText(title)
 
-	-- "Level X" - larger golden text, moved up
-	frame.subtitle:SetFont("Fonts\\FRIZQT__.TTF", 28, "OUTLINE")
+	-- "Level X" - larger golden text
+	frame.subtitle:SetFont("Fonts\\FRIZQT__.TTF", 28, "")
 	frame.subtitle:SetTextColor(1, 0.82, 0)
-	frame.subtitle:SetShadowOffset(1, -1)
-	frame.subtitle:SetShadowColor(0, 0, 0, 1)
+	frame.subtitle:SetShadowOffset(0, 0)
+	frame.subtitle:SetShadowColor(0, 0, 0, 0)
 	frame.subtitle:ClearAllPoints()
 	frame.subtitle:SetPoint("CENTER", frame, "CENTER", 0, -8)
 	frame.subtitle:SetText(subtitle)
@@ -239,19 +239,19 @@ function AdventureGuideClassicEventToastManager:ShowWishlistToast(title, subtitl
 	frame.background:SetAlpha(0.8)
 
 	-- Title - "Wishlist Item Found!" in gold, centered
-	frame.title:SetFont("Fonts\\FRIZQT__.TTF", 18, "OUTLINE")
+	frame.title:SetFont("Fonts\\FRIZQT__.TTF", 18, "")
 	frame.title:SetTextColor(1, 0.82, 0) -- Gold
 	frame.title:SetShadowOffset(1, -1)
-	frame.title:SetShadowColor(0, 0, 0, 0.8)
+	frame.title:SetShadowColor(0, 0, 0, 1)
 	frame.title:ClearAllPoints()
 	frame.title:SetPoint("CENTER", frame, "CENTER", 0, 12)
 	frame.title:SetText(title)
 
 	-- Item name - subtle white text below
-	frame.subtitle:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
+	frame.subtitle:SetFont("Fonts\\FRIZQT__.TTF", 14, "")
 	frame.subtitle:SetTextColor(0.9, 0.9, 0.9) -- Light gray/white
 	frame.subtitle:SetShadowOffset(1, -1)
-	frame.subtitle:SetShadowColor(0, 0, 0, 0.8)
+	frame.subtitle:SetShadowColor(0, 0, 0, 1)
 	frame.subtitle:ClearAllPoints()
 	frame.subtitle:SetPoint("CENTER", frame, "CENTER", 0, -10)
 	frame.subtitle:SetText(subtitle)
@@ -286,14 +286,14 @@ end
 
 -- Usage in chat: /run TestBossDefeatedToast()
 _G.TestBossDefeatedToast = function()
-	AdventureGuideClassicEventToastManager:ShowEncounterDefeatedToast("Test Boss Name", "Has been defeated!", true)
+	AdventureGuideClassicEventToastManager:ShowEncounterDefeatedToast("Test Boss Name", "has been defeated!", true)
 	print("Testing boss defeat toast")
 end
 
 -- Usage in chat: /run TestBossDefeatedToastCustom("Custom Boss Name")
 _G.TestBossDefeatedToastCustom = function(bossName)
 	bossName = bossName or "Test Boss"
-	AdventureGuideClassicEventToastManager:ShowEncounterDefeatedToast(bossName, "Has been defeated!", true)
+	AdventureGuideClassicEventToastManager:ShowEncounterDefeatedToast(bossName, "has been defeated!", true)
 	print("Testing boss defeat toast: " .. bossName)
 end
 

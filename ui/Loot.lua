@@ -32,7 +32,7 @@ local function CreatePreviewFrame()
 	if previewFrame then return previewFrame end
 
 	local frame = CreateFrame("Frame", "ItemPreviewFrame", UIParent, "BackdropTemplate")
-	frame:SetSize(200, 250)
+	frame:SetSize(200, 280)
 	frame:SetFrameStrata("TOOLTIP")
 	frame:SetFrameLevel(1000)
 	frame:Hide()
@@ -51,13 +51,13 @@ local function CreatePreviewFrame()
 
 	-- Model frame - use DressUpModel for item preview
 	frame.model = CreateFrame("DressUpModel", nil, frame)
-	frame.model:SetSize(180, 230)
-	frame.model:SetPoint("CENTER", 0, 15)
+	frame.model:SetSize(190, 260)
+	frame.model:SetPoint("CENTER", 0, 5)
 
-	-- Camera orbit animation
+	-- Camera orbit animation - positioned to fit taller races like Tauren/Draenei
 	frame.cameraAngle = 0
-	local cameraDistance = 2.2
-	local cameraHeight = 0.8
+	local cameraDistance = 1.8
+	local cameraHeight = 0.7
 	frame:SetScript("OnUpdate", function(self, elapsed)
 		self.cameraAngle = self.cameraAngle + (rotationSpeed * elapsed)
 		-- Calculate camera position orbiting around the character

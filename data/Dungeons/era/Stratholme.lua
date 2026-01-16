@@ -628,7 +628,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {
-			{ id = 228543, seasonFilter = "exclusive" },
+			{ id = 228543, seasonFilter = "sod" },
 			{ id = 13505, seasonFilter = "restricted" },
 			{ id = 13335, seasonFilter = "all" },
 		},
@@ -636,18 +636,18 @@ InstanceService.AddDungeon({
 		overview = {
 			"Baron Rivendare is a powerful and ruthless undead noble who serves as the master of Stratholme. He is responsible for maintaining the Scourge's control over the cursed city. Rivendare's presence reflects the central authority of the Scourge within Stratholme.",
 			{ heading = "Overview" },
-			"Baron Rivendare, the final boss of Stratholme Undead, challenges the group with {spell:9347}, reducing healing on the tank, and {spell:17625}, damaging all nearby party members. Ranged damage dealers should stay at maximum range, prioritizing skeleton adds over the boss. Melee should stay behind Rivendare to avoid {spell:407811}. Healers should maintain distance, use healing cooldowns when the tank is affected by {spell:9347}, and consistently heal melee players affected by {spell:17625}. Tanks should position Rivendare away from the group, use defensive cooldowns for {spell:9347}, and trust damage dealers to handle skeleton adds.",
+			"Baron Rivendare, the final boss of Stratholme Undead, challenges the group with spell, reducing healing on the tank, and spell, damaging all nearby party members. Ranged damage dealers should stay at maximum range, prioritizing skeleton adds over the boss. Melee should stay behind Rivendare to avoid spell. Healers should maintain distance, use healing cooldowns when the tank is affected by spell, and consistently heal melee players affected by spell. Tanks should position Rivendare away from the group, use defensive cooldowns for spell, and trust damage dealers to handle skeleton adds.",
 			{
 				role = DAMAGE,
-				"Ranged dealers should stay at maximum range on the room's left side. Prioritize skeleton adds over the boss. Melee should stay behind Rivendare to avoid {spell:407811}.",
+				"Ranged dealers should stay at maximum range on the room's left side. Prioritize skeleton adds over the boss. Melee should stay behind Rivendare to avoid spell.",
 			},
 			{
 				role = HEALER,
-				"Stay with ranged dealers at maximum distance from Rivendare. Use healing cooldowns when the tank is affected by {spell:9347}. Consistently heal melee players affected by {spell:17625}.",
+				"Stay with ranged dealers at maximum distance from Rivendare. Use healing cooldowns when the tank is affected by spell. Consistently heal melee players affected by spell.",
 			},
 			{
 				role = TANK,
-				"Engage Rivendare with the group, positioning him at the room's back right side. Use defensive cooldowns for {spell:9347}. Trust DPS to handle skeleton adds and avoid turning Rivendare or exposing the group to {spell:17625}.",
+				"Engage Rivendare with the group, positioning him at the room's back right side. Use defensive cooldowns for spell. Trust DPS to handle skeleton adds and avoid turning Rivendare or exposing the group to spell.",
 			}
 		},
 		abilities = {

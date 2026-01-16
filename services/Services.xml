@@ -12,4 +12,5 @@
     <Script file="services/WishlistService.lua" />
     <Script file="services/WishlistLootHook.lua" />
     <Script file="services/SettingsService.lua" />
+    <Script file="services/SearchService.lua" />
 </Ui>
