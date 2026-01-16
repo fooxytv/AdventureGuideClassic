@@ -21,28 +21,22 @@ InstanceService.AddDungeon({
 		encounterID = 18341,
 		portrait = 607738,
 		loot = {
-			{ id = 25939, seasonFilter = "tbc" }, -- Voidfire Wand
-			{ id = 25940, seasonFilter = "tbc" }, -- Idol of the Claw
-			{ id = 25941, seasonFilter = "tbc" }, -- Boots of the Outlander
-			{ id = 25942, seasonFilter = "tbc" }, -- Faith Bearer's Gauntlets
-			{ id = 25943, seasonFilter = "tbc" }, -- Creepjacker
-			{ id = 28166, seasonFilter = "tbc" }, -- Shield of the Void
-			{ id = 27813, seasonFilter = "tbc" }, -- Boots of the Colossus (Heroic)
-			{ id = 27814, seasonFilter = "tbc" }, -- Twinblade of Mastery (Heroic)
-			{ id = 27815, seasonFilter = "tbc" }, -- Totem of the Astral Winds (Heroic)
-			{ id = 27816, seasonFilter = "tbc" }, -- Mindrage Pauldrons (Heroic)
-			{ id = 27817, seasonFilter = "tbc" }, -- Starbolt Longbow (Heroic)
-			{ id = 27818, seasonFilter = "tbc" }  -- Starry Robes of the Crescent (Heroic)
+			{ id = 25941, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25943, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25942, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 28166, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25939, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27813, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27816, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27817, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27818, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27814, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 28558, seasonFilter = "tbc" }, -- Spirit Shard
-			{ id = 29434, seasonFilter = "tbc" }, -- Badge of Justice
-			{ id = 29460, seasonFilter = "tbc" }  -- Ethereum Prison Key
-		},
+		sharedLoot = {},
 		rareLoot = {
-			{ id = 30583, seasonFilter = "tbc" }, -- Timeless Chrysoprase
-			{ id = 30584, seasonFilter = "tbc" }, -- Enscribed Fire Opal
-			{ id = 30585, seasonFilter = "tbc" }  -- Glistening Fire Opal
+			{ id = 30584, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30585, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30583, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -85,28 +79,24 @@ InstanceService.AddDungeon({
 		encounterID = 18343,
 		portrait = 607782,
 		loot = {
-			{ id = 25944, seasonFilter = "tbc" }, -- Shaarde the Greater
-			{ id = 25950, seasonFilter = "tbc" }, -- Staff of Polarities
-			{ id = 25952, seasonFilter = "tbc" }, -- Scimitar of the Nexus-Stalkers
-			{ id = 25945, seasonFilter = "tbc" }, -- Cloak of Revival
-			{ id = 25946, seasonFilter = "tbc" }, -- Nethershade Boots
-			{ id = 25947, seasonFilter = "tbc" }, -- Lightning-Rod Pauldrons
-			{ id = 27821, seasonFilter = "tbc" }, -- Extravagant Boots of Malice (Heroic)
-			{ id = 27822, seasonFilter = "tbc" }, -- Crystal Band of Valor (Heroic)
-			{ id = 27823, seasonFilter = "tbc" }, -- Shard Encrusted Breastplate (Heroic)
-			{ id = 27824, seasonFilter = "tbc" }, -- Robe of the Great Dark Beyond (Heroic)
-			{ id = 27825, seasonFilter = "tbc" }, -- Predatory Gloves (Heroic)
-			{ id = 27826, seasonFilter = "tbc" }  -- Mantle of the Sea Wolf (Heroic)
+			{ id = 25945, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25947, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25946, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25952, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25944, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25950, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27822, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27821, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27825, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27824, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27823, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27826, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 28558, seasonFilter = "tbc" }, -- Spirit Shard
-			{ id = 29434, seasonFilter = "tbc" }, -- Badge of Justice
-			{ id = 22447, seasonFilter = "tbc" }  -- Lesser Planar Essence
-		},
+		sharedLoot = {},
 		rareLoot = {
-			{ id = 30583, seasonFilter = "tbc" }, -- Timeless Chrysoprase
-			{ id = 30584, seasonFilter = "tbc" }, -- Enscribed Fire Opal
-			{ id = 30585, seasonFilter = "tbc" }  -- Glistening Fire Opal
+			{ id = 30584, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30585, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30583, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -150,39 +140,45 @@ InstanceService.AddDungeon({
 		encounterID = 18344,
 		portrait = 607726,
 		loot = {
-			{ id = 25953, seasonFilter = "tbc" }, -- Ethereal Warp-Bow
-			{ id = 25954, seasonFilter = "tbc" }, -- Sigil of Shaffar
-			{ id = 25955, seasonFilter = "tbc" }, -- Mask of the Howling Storm
-			{ id = 25956, seasonFilter = "tbc" }, -- Nexus-Bracers of Vigor
-			{ id = 25957, seasonFilter = "tbc" }, -- Ethereal Boots of the Skystrider
-			{ id = 25962, seasonFilter = "tbc" }, -- Longstrider's Loop
-			{ id = 28490, seasonFilter = "tbc" }, -- Shaffar's Wrappings
-			{ id = 27798, seasonFilter = "tbc" }, -- Gauntlets of Vindication (Heroic)
-			{ id = 27827, seasonFilter = "tbc" }, -- Lucid Dream Bracers (Heroic)
-			{ id = 27828, seasonFilter = "tbc" }, -- Warp-Scarab Brooch (Heroic)
-			{ id = 27829, seasonFilter = "tbc" }, -- Axe of the Nexus-Kings (Heroic)
-			{ id = 27831, seasonFilter = "tbc" }, -- Mantle of the Unforgiven (Heroic)
-			{ id = 27835, seasonFilter = "tbc" }, -- Stillwater Girdle (Heroic)
-			{ id = 27837, seasonFilter = "tbc" }, -- Wastewalker Leggings (Heroic)
-			{ id = 27840, seasonFilter = "tbc" }, -- Scepter of Sha'tar (Heroic)
-			{ id = 27842, seasonFilter = "tbc" }, -- Grand Scepter of the Nexus-Kings (Heroic)
-			{ id = 27843, seasonFilter = "tbc" }, -- Glyph-Lined Sash (Heroic)
-			{ id = 27844, seasonFilter = "tbc" }, -- Pauldrons of Swift Retribution (Heroic)
-			{ id = 28400, seasonFilter = "tbc" }, -- Warp-Storm Warblade (Heroic)
-			{ id = 32082, seasonFilter = "tbc" }, -- The Fel Barrier (Heroic)
-			{ id = 29240, seasonFilter = "tbc" }, -- Bands of Negation (Heroic)
-			{ id = 29352, seasonFilter = "tbc" }, -- Cobalt Band of Tyrigosa (Heroic)
-			{ id = 30535, seasonFilter = "tbc" }, -- Forestwalker Kilt (Heroic)
-			{ id = 33835, seasonFilter = "tbc" }  -- Shaffar's Wondrous Amulet (Heroic)
+			{ id = 25957, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25953, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25962, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25955, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25956, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 25954, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 22921, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 28490, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 29240, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29352, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30535, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32082, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27829, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27798, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27843, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27842, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27827, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27831, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27844, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27840, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27835, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27828, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28400, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27837, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 22921, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30584, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30585, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30583, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 23572, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 31882, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 31910, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28490, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33835, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 28558, seasonFilter = "tbc" }, -- Spirit Shard
-			{ id = 29434, seasonFilter = "tbc" }  -- Badge of Justice
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18344, 18431 }, -- Nexus-Prince Shaffar, Ethereal Beacon
+		npcs = { 18344, 18431 },
 		overview = {
 			"Nexus-Prince Shaffar is the final boss of the Mana-Tombs and leader of a rogue faction of ethereals. This encounter is a DPS race centered around add control, requiring the group to quickly destroy Ethereal Beacons before they spawn dangerous Ethereal Apprentices. The fight combines direct elemental damage from the prince with overwhelming add pressure if beacons are not managed properly.",
 			{ heading = "Overview" },

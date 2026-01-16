@@ -155,11 +155,11 @@ InstanceService.AddDungeon({
 			{ id = 27455, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 27457, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 27452, seasonFilter = "tbc", difficulty = "heroic" },
-			{ id = 27458, seasonFilter = "tbc", difficulty = "heroic" }, //
+			{ id = 27458, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 27456, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 27460, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 27459, seasonFilter = "tbc", difficulty = "heroic" },
-			{ id = 27454, seasonFilter = "tbc" , difficulty = "heroic" }
+			{ id = 27454, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},

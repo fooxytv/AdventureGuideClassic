@@ -21,16 +21,16 @@ InstanceService.AddDungeon({
 		encounterID = 24723,
 		portrait = 607767,
 		loot = {
-			{ id = 34601, seasonFilter = "tbc" }, -- Shoulderplates of Everlasting Pain
-			{ id = 34602, seasonFilter = "tbc" }, -- Eversong Cuffs
-			{ id = 34603, seasonFilter = "tbc" }, -- Distracting Blades
-			{ id = 34604, seasonFilter = "tbc" }, -- Jaded Crystal Dagger
-			{ id = 34697, seasonFilter = "tbc" }, -- Bindings of Raging Fire
-			{ id = 34698, seasonFilter = "tbc" }, -- Bracers of the Forest Stalker
-			{ id = 34699, seasonFilter = "tbc" }, -- Sun-forged Cleaver
-			{ id = 34700, seasonFilter = "tbc" }, -- Gauntlets of Divine Blessings
-			{ id = 34701, seasonFilter = "tbc" }, -- Leggings of the Betrayed
-			{ id = 34702, seasonFilter = "tbc" }  -- Cloak of Swift Mending
+			{ id = 34697, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34698, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34702, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34700, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34701, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34699, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34602, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34604, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34601, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 35275, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -105,16 +105,16 @@ InstanceService.AddDungeon({
 		encounterID = 24744,
 		portrait = 607806,
 		loot = {
-			{ id = 34605, seasonFilter = "tbc" }, -- Breastplate of Fierce Survival
-			{ id = 34606, seasonFilter = "tbc" }, -- Edge of Oppression
-			{ id = 34607, seasonFilter = "tbc" }, -- Fel-tinged Mantle
-			{ id = 34608, seasonFilter = "tbc" }, -- Rod of the Blazing Light
-			{ id = 34703, seasonFilter = "tbc" }, -- Latro's Dancing Blade
-			{ id = 34704, seasonFilter = "tbc" }, -- Band of Arcane Alacrity
-			{ id = 34705, seasonFilter = "tbc" }, -- Bracers of Divine Infusion
-			{ id = 34706, seasonFilter = "tbc" }, -- Band of Determination
-			{ id = 34707, seasonFilter = "tbc" }, -- Boots of Resuscitation
-			{ id = 34708, seasonFilter = "tbc" }  -- Cloak of the Coming Night
+			{ id = 34704, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34706, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34707, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34705, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34708, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34703, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34605, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34606, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34607, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34608, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -192,17 +192,19 @@ InstanceService.AddDungeon({
 		encounterID = 24560,
 		portrait = 607742,
 		loot = {
-			{ id = 34470, seasonFilter = "tbc" }, -- Timbal's Focusing Crystal
-			{ id = 34471, seasonFilter = "tbc" }, -- Vial of the Sunwell
-			{ id = 34472, seasonFilter = "tbc" }, -- Shard of Contempt
-			{ id = 34473, seasonFilter = "tbc" }, -- Commendation of Kael'thas
-			{ id = 34783, seasonFilter = "tbc" }, -- Nightstrike
-			{ id = 34788, seasonFilter = "tbc" }, -- Duskhallow Mantle
-			{ id = 34789, seasonFilter = "tbc" }, -- Bracers of Slaughter
-			{ id = 34790, seasonFilter = "tbc" }, -- Battle-mace of the High Priestess
-			{ id = 34791, seasonFilter = "tbc" }, -- Gauntlets of the Tranquil Waves
-			{ id = 34792, seasonFilter = "tbc" }, -- Cloak of the Betrayed
-			{ id = 35756, seasonFilter = "tbc" }  -- Formula: Enchant Cloak - Steelweave
+			{ id = 34790, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34789, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34792, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34788, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 35756, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34791, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34783, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34473, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 35756, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 35275, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34472, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34470, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34471, seaonsFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -289,33 +291,37 @@ InstanceService.AddDungeon({
 		encounterID = 24664,
 		portrait = 607669,
 		loot = {
-			{ id = 34609, seasonFilter = "tbc" }, -- Quickening Blade of the Prince
-			{ id = 34610, seasonFilter = "tbc" }, -- Scarlet Sin'dorei Robes
-			{ id = 34611, seasonFilter = "tbc" }, -- Cudgel of Consecration
-			{ id = 34612, seasonFilter = "tbc" }, -- Greaves of the Penitent Knight
-			{ id = 34613, seasonFilter = "tbc" }, -- Shoulderpads of the Silvermoon Retainer
-			{ id = 34614, seasonFilter = "tbc" }, -- Tunic of the Ranger Lord
-			{ id = 34615, seasonFilter = "tbc" }, -- Netherforce Chestplate
-			{ id = 34616, seasonFilter = "tbc" }, -- Breeching Comet
-			{ id = 34625, seasonFilter = "tbc" }, -- Kharmaa's Ring of Fate
-			{ id = 34793, seasonFilter = "tbc" }, -- Cord of Reconstruction
-			{ id = 34794, seasonFilter = "tbc" }, -- Axe of Shattered Dreams
-			{ id = 34795, seasonFilter = "tbc" }, -- Helm of Sanctification
-			{ id = 34796, seasonFilter = "tbc" }, -- Robes of Summer Flame
-			{ id = 34797, seasonFilter = "tbc" }, -- Sun-infused Focus Staff
-			{ id = 34798, seasonFilter = "tbc" }, -- Band of Celerity
-			{ id = 34799, seasonFilter = "tbc" }, -- Hauberk of the War Bringer
-			{ id = 34807, seasonFilter = "tbc" }, -- Sunstrider Warboots
-			{ id = 34808, seasonFilter = "tbc" }, -- Gloves of Arcane Acuity
-			{ id = 34809, seasonFilter = "tbc" }, -- Sunrage Treads
-			{ id = 34810, seasonFilter = "tbc" }  -- Cloak of Blade Turning
+			{ id = 34810, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34808, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34799, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34625, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34809, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34807, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34794, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34798, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34793, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34795, seaonsFilter = "tbc", difficulty = "normal" },
+			{ id = 34796, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34797, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34157, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 34616, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34611, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34612, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34615, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 35275, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34609, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34610, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34613, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34614, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34157, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 34160, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {
-			{ id = 35504, seasonFilter = "tbc" }  -- Phoenix Hatchling (Normal mode pet)
+			{ id = 35504, seasonFilter = "tbc", difficulty = "normal" }
 		},
 		veryRareLoot = {
-			{ id = 35513, seasonFilter = "tbc" }  -- Swift White Hawkstrider (Heroic mode mount)
+			{ id = 35513, seasonFilter = "tbc", difficulty = "heroic" }
 		},
 		extremelyRareLoot = {},
 		npcs = { 24664, 24674, 24675 },
