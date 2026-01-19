@@ -51,24 +51,15 @@ function component.Init(components_)
 	UIDropDownMenu_SetText(instanceSelect.filterDropdown, "Classic")
 
 	local function OnFilterClick(self)
+		-- Determine if we're viewing raids BEFORE changing the filter
+		-- Check the title text which is set to RAIDS or DUNGEONS when tabs are clicked
+		local currentTitle = instanceSelect.title:GetText()
+		local isViewingRaids = (currentTitle == RAIDS)
+
+		-- Now change the filter
 		InstanceService.SetExpansionFilter(self.value)
 		UIDropDownMenu_SetText(instanceSelect.filterDropdown, self:GetText())
 		CloseDropDownMenus()
-
-		-- Determine if we're viewing dungeons or raids by checking current instances
-		local currentInstances = AdventureGuideNavigationService.GetInstances()
-		local isViewingRaids = false
-
-		if currentInstances and #currentInstances > 0 then
-			-- Check if the first instance is a raid by looking for it in the raids list
-			local firstInstance = currentInstances[1]
-			for _, raid in ipairs(InstanceService.GetRaids()) do
-				if raid.instanceID == firstInstance.instanceID then
-					isViewingRaids = true
-					break
-				end
-			end
-		end
 
 		-- Re-fetch instances based on current view with new filter applied
 		if isViewingRaids then
