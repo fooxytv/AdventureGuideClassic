@@ -36,6 +36,5 @@
     <Script file="ui/InfoTabs.lua" />
     <Script file="ui/Settings.lua" />
     <Script file="ui/Loot.lua" />
-    <Script file="ui/WishList.lua" />
     <Script file="ui/MinimapButton.lua" />
 </Ui>

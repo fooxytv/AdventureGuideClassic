@@ -110,6 +110,9 @@ local function CheckLootWindow()
     for slot = 1, numLootItems do
         local itemID = GetLootSlotItemID(slot)
         local isOnWishlist = itemID and WishlistService and WishlistService.IsOnWishlist(itemID)
+        if DEBUG_LOG then
+            print("|cffff00ff[AGC Debug]|r Slot", slot, "- itemID:", tostring(itemID), "isOnWishlist:", tostring(isOnWishlist))
+        end
         if DEBUG_SHOW_ALL or isOnWishlist then
             foundWishlistItem = true
             local lootButton = _G["LootButton" .. slot]

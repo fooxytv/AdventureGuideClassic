@@ -67,10 +67,6 @@ function component.Init(components_)
         components.InstanceSelect.SetTitle(RAIDS)
         components.InstanceSelect.Show()
     end)
-    -- EncounterJournal.wishListTab = AddTab("Wish List", "Wish List", function()
-    --     AdventureGuideNavigationService.Reset()
-    --     components.WishList.Show()
-    -- end)
     EncounterJournal.Tabs[1]:GetScript("OnClick")()
 end
 
