@@ -118,27 +118,50 @@ function AdventureObjectives:CreateEncounterHeader(index, encounterData)
     return encounterFrame
 end
 
-function AdventureObjectives:LoadEncounters(dungeonName, updatedEncounters)
+function AdventureObjectives:LoadEncounters(dungeonName)
     if self.encounterFrames then
         for _, frame in ipairs(self.encounterFrames) do
             frame:Hide()
             frame:SetParent(nil)
         end
     end
-    local encounters = updatedEncounters
+
+    local encounters = nil
+
+    -- Check InstanceService dungeons
+    local dungeons = InstanceService.GetDungeons()
+    for _, dungeon in ipairs(dungeons) do
+        if dungeon.name == dungeonName then
+            encounters = {}
+            for i, encounter in ipairs(dungeon) do
+                if type(encounter) == "table" and encounter.name then
+                    table.insert(encounters, encounter)
+                end
+            end
+            break
+        end
+    end
+
+    -- Check InstanceService raids if not found in dungeons
     if not encounters then
-        local dungeons = ObjectiveService.GetDungeons()
-        for _, dungeon in ipairs(dungeons) do
-            if dungeon.name == dungeonName then
-                encounters = dungeon.encounters
+        local raids = InstanceService.GetRaids()
+        for _, raid in ipairs(raids) do
+            if raid.name == dungeonName then
+                encounters = {}
+                for i, encounter in ipairs(raid) do
+                    if type(encounter) == "table" and encounter.name then
+                        table.insert(encounters, encounter)
+                    end
+                end
                 break
             end
         end
     end
-    if not encounters then
-        print("No encounters found for dungeon: ", dungeonName)
+
+    if not encounters or #encounters == 0 then
         return
     end
+
     self.lastEncounterFrame = self.instanceTitleFrame
     self.encounterFrames = {}
     for i, encounterData in ipairs(encounters) do

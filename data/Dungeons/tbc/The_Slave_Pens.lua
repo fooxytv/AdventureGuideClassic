@@ -21,16 +21,17 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17941,
 		portrait = 607715,
 		loot = {
-			-- Normal Mode
-			{ id = 24359, seasonFilter = "tbc" }, -- Princely Reign Leggings
-			{ id = 24361, seasonFilter = "tbc" }, -- Spellfire Longsword
-			{ id = 24357, seasonFilter = "tbc" }, -- Vest of Living Lightning
-			{ id = 24360, seasonFilter = "tbc" }, -- Tracker's Belt
-			-- Heroic Mode
-			{ id = 27541, seasonFilter = "tbc" }, -- Archery Belt of the Broken
-			{ id = 27542, seasonFilter = "tbc" }, -- Cord of Belief
-			{ id = 27543, seasonFilter = "tbc" }, -- Starlight Dagger
-			{ id = 29674, seasonFilter = "tbc" }  -- Pattern: Nature's Soul
+			{ id = 24359, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24361, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24360, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24357, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24356, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 29674, seasonFilter = "tbc" },
+			{ id = 27541, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27542, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27545, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27543, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27546, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -79,16 +80,17 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17991,
 		portrait = 607759,
 		loot = {
-			-- Normal Mode
-			{ id = 24376, seasonFilter = "tbc" }, -- Runed Fungalcap
-			{ id = 24378, seasonFilter = "tbc" }, -- Ironscale War Cloak
-			{ id = 24380, seasonFilter = "tbc" }, -- Calming Spore Reed
-			{ id = 24379, seasonFilter = "tbc" }, -- Bogstrok Scale Cloak
-			-- Heroic Mode
-			{ id = 27544, seasonFilter = "tbc" }, -- Magma Plume Boots
-			{ id = 27546, seasonFilter = "tbc" }, -- Mage-Fury Girdle
-			{ id = 27545, seasonFilter = "tbc" }, -- Skeletal Necklace of Battlerage
-			{ id = 30571, seasonFilter = "tbc" }  -- Don Rodrigo's Heart
+			{ id = 24379, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24380, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24378, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24381, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24376, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27547, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27548, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27550, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28124, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27551, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27549, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -137,20 +139,27 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17942,
 		portrait = 607750,
 		loot = {
-			-- Normal Mode
-			{ id = 24361, seasonFilter = "tbc" }, -- Spellfire Longsword
-			{ id = 24363, seasonFilter = "tbc" }, -- Composite Bow of the Reservoir
-			{ id = 24362, seasonFilter = "tbc" }, -- Swampstone Necklace
-			{ id = 24365, seasonFilter = "tbc" }, -- Midnight Legguards
-			{ id = 24366, seasonFilter = "tbc" }, -- Merciless Bracers
-			-- Heroic Mode
-			{ id = 27712, seasonFilter = "tbc" }, -- Mage-Collar of the Firestorm
-			{ id = 27713, seasonFilter = "tbc" }, -- Pauldrons of Wild Magic
-			{ id = 27714, seasonFilter = "tbc" }, -- Swamplight Lantern
-			{ id = 27715, seasonFilter = "tbc" }, -- Bands of Rarefied Magic
-			{ id = 27800, seasonFilter = "tbc" }, -- Earthsoul Leggings
-			{ id = 28337, seasonFilter = "tbc" }, -- Primal Nether
-			{ id = 33865, seasonFilter = "tbc" }  -- Amani Hex Stick (Badge of Justice)
+			{ id = 24364, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24365, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24366, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24362, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24363, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 29349, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29242, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30538, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32078, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27740, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27741, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27800, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27672, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27742, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27796, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27713, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27673, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27683, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27712, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27714, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33821, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},

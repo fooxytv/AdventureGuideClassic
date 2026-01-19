@@ -21,32 +21,15 @@ InstanceService.AddDungeon({
 		encounterID = 19219,
 		portrait = 607712,
 		loot = {
-			{ id = 27902, seasonFilter = "tbc" }, -- Silent Slippers of Meditation
-			{ id = 27903, seasonFilter = "tbc" }, -- Lunar Crescent Pauldrons
-			{ id = 27904, seasonFilter = "tbc" }, -- Silvermoon Crest Shield
-			{ id = 27905, seasonFilter = "tbc" }, -- Peculiar Neurological Apparatus
-			{ id = 27906, seasonFilter = "tbc" }, -- Bloodfyre Robes of Annihilation
-			{ id = 27907, seasonFilter = "tbc" }, -- Boots of the Glade-Keeper
-			{ id = 27744, seasonFilter = "tbc" }, -- Jagged Bark Pendant (Heroic)
-			{ id = 27796, seasonFilter = "tbc" }, -- Mithril-Chain of the Auger (Heroic)
-			{ id = 27797, seasonFilter = "tbc" }, -- Wastewalker Shoulderpads (Heroic)
-			{ id = 27911, seasonFilter = "tbc" }, -- Capacitus' Cloak of Calibration (Heroic)
-			{ id = 27908, seasonFilter = "tbc" }, -- Nether Core's Control Ring (Heroic)
-			{ id = 27909, seasonFilter = "tbc" }, -- Tidefury Chestpiece (Heroic)
-			{ id = 27910, seasonFilter = "tbc" }, -- Silvermoon Signet (Heroic)
-			{ id = 28202, seasonFilter = "tbc" }, -- Recoilless Rocket Ripper X-54 (Heroic)
-			{ id = 28286, seasonFilter = "tbc" }, -- Weighted Jack-o'-Lantern (Heroic)
-			{ id = 28205, seasonFilter = "tbc" }  -- Breastplate of the Bold (Heroic)
+			{ id = 28257, seasonFilter = "tbc" },
+			{ id = 28255, seasonFilter = "tbc" },
+			{ id = 28253, seasonFilter = "tbc" },
+			{ id = 28256, seasonFilter = "tbc" },
+			{ id = 28254, seasonFilter = "tbc" },
+			{ id = 35582, seasonFilter = "tbc" },
 		},
-		sharedLoot = {
-			{ id = 30533, seasonFilter = "tbc" }, -- Vanquisher's Marks
-			{ id = 29434, seasonFilter = "tbc" }  -- Badge of Justice
-		},
-		rareLoot = {
-			{ id = 30565, seasonFilter = "tbc" }, -- Assassin's Fire Opal
-			{ id = 30566, seasonFilter = "tbc" }, -- Defender's Tanzanite
-			{ id = 30564, seasonFilter = "tbc" }  -- Mysterious Fire Opal
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = { 19219 },
@@ -93,38 +76,16 @@ InstanceService.AddDungeon({
 		encounterID = 19221,
 		portrait = 607725,
 		loot = {
-			{ id = 27898, seasonFilter = "tbc" }, -- Stellaris
-			{ id = 27899, seasonFilter = "tbc" }, -- Shiffar's Nexus-Horn
-			{ id = 27900, seasonFilter = "tbc" }, -- Ironstaff of Regeneration
-			{ id = 27901, seasonFilter = "tbc" }, -- Blackened Naaru Sliver
-			{ id = 27915, seasonFilter = "tbc" }, -- Starfire Waistband
-			{ id = 27916, seasonFilter = "tbc" }, -- Collar of the Aldor
-			{ id = 27917, seasonFilter = "tbc" }, -- Baba's Cloak
-			{ id = 27918, seasonFilter = "tbc" }, -- Bands of Nethekurse
-			{ id = 27919, seasonFilter = "tbc" }, -- Redeemer's Legguards
-			{ id = 27920, seasonFilter = "tbc" }, -- Mantle of Three Terrors
-			{ id = 27921, seasonFilter = "tbc" }, -- Ring of Umbral Doom
-			{ id = 27914, seasonFilter = "tbc" }, -- Leggings of the Astromancer (Heroic)
-			{ id = 27924, seasonFilter = "tbc" }, -- Sparking Arcanite Ring (Heroic)
-			{ id = 27925, seasonFilter = "tbc" }, -- Ravenwing Pauldrons (Heroic)
-			{ id = 27912, seasonFilter = "tbc" }, -- Starlight Gauntlets (Heroic)
-			{ id = 27913, seasonFilter = "tbc" }, -- Topaz-Studded Battlegrips (Heroic)
-			{ id = 28204, seasonFilter = "tbc" }, -- Tunic of the Ranger Lord (Heroic)
-			{ id = 28227, seasonFilter = "tbc" }, -- Nethershard (Heroic)
-			{ id = 28285, seasonFilter = "tbc" }  -- Mantle of the Mind Flayer (Heroic)
+			{ id = 28263, seasonFilter = "tbc" },
+			{ id = 28259, seasonFilter = "tbc" },
+			{ id = 28262, seasonFilter = "tbc" },
+			{ id = 28260, seasonFilter = "tbc" },
 		},
-		sharedLoot = {
-			{ id = 30533, seasonFilter = "tbc" }, -- Vanquisher's Marks
-			{ id = 29434, seasonFilter = "tbc" }  -- Badge of Justice
-		},
-		rareLoot = {
-			{ id = 30565, seasonFilter = "tbc" }, -- Assassin's Fire Opal
-			{ id = 30566, seasonFilter = "tbc" }, -- Defender's Tanzanite
-			{ id = 30564, seasonFilter = "tbc" }  -- Mysterious Fire Opal
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 19221, 19167 }, -- Nethermancer Sepethrea, Ragin' Flames
+		npcs = { 19221, 19167 },
 		overview = {
 			"Nethermancer Sepethrea is a blood elf mage and the second boss of The Mechanar. This encounter is a complex multi-phase fight featuring summoned elemental adds, massive AoE fire damage, and a unique mechanic requiring ranged positioning. The fight tests the group's ability to manage dangerous adds while dealing with heavy raid damage.",
 			{ heading = "Overview" },
@@ -169,41 +130,31 @@ InstanceService.AddDungeon({
 		encounterID = 19220,
 		portrait = 607739,
 		loot = {
-			{ id = 27892, seasonFilter = "tbc" }, -- Molten Earth Kilt
-			{ id = 27893, seasonFilter = "tbc" }, -- Nethershade Boots
-			{ id = 27894, seasonFilter = "tbc" }, -- Aethereal Clasp
-			{ id = 27895, seasonFilter = "tbc" }, -- Band of the Crystalline Void
-			{ id = 27896, seasonFilter = "tbc" }, -- Sigil of the Violet Tower
-			{ id = 27897, seasonFilter = "tbc" }, -- Libram of the Eternal Rest
-			{ id = 27930, seasonFilter = "tbc" }, -- Bloodfyre Robes of Annihilation
-			{ id = 27931, seasonFilter = "tbc" }, -- Midrealm Hat
-			{ id = 27932, seasonFilter = "tbc" }, -- Molten Earth Kilt
-			{ id = 27933, seasonFilter = "tbc" }, -- Icon of Unyielding Courage
-			{ id = 27927, seasonFilter = "tbc" }, -- Greaves of the Shatterer (Heroic)
-			{ id = 27928, seasonFilter = "tbc" }, -- Gauntlets of the Chosen (Heroic)
-			{ id = 27929, seasonFilter = "tbc" }, -- Mithril Band of the Unscarred (Heroic)
-			{ id = 27923, seasonFilter = "tbc" }, -- Nethershard (Heroic)
-			{ id = 27926, seasonFilter = "tbc" }, -- Dreamer's Dragonstaff (Heroic)
-			{ id = 28206, seasonFilter = "tbc" }, -- Cowl of the Grand Engineer (Heroic)
-			{ id = 28203, seasonFilter = "tbc" }, -- Void Slayer's Tunic (Heroic)
-			{ id = 28275, seasonFilter = "tbc" }, -- Beast Lord Leggings (Heroic)
-			{ id = 28288, seasonFilter = "tbc" }, -- Abacus of Violent Odds (Heroic)
-			{ id = 29362, seasonFilter = "tbc" }, -- The Sun Eater (Heroic)
-			{ id = 30532, seasonFilter = "tbc" }, -- Kirin Tor Master's Trousers (Heroic)
-			{ id = 30533, seasonFilter = "tbc" }  -- Vanquisher's Legplates (Heroic)
+			{ id = 28288, seasonFilter = "tbc" },
+			{ id = 28269, seasonFilter = "tbc" },
+			{ id = 28275, seasonFilter = "tbc" },
+			{ id = 28265, seasonFilter = "tbc" },
+			{ id = 28267, seasonFilter = "tbc" },
+			{ id = 28285, seasonFilter = "tbc" },
+			{ id = 28278, seasonFilter = "tbc" },
+			{ id = 27899, seasonFilter = "tbc" },
+			{ id = 28266, seasonFilter = "tbc" },
+			{ id = 28202, seasonFilter = "tbc" },
+			{ id = 28286, seasonFilter = "tbc" },
+			{ id = 28204, seasonFilter = "tbc" },
+			{ id = 21907, seasonFilter = "tbc" },
+			{ id = 31086, seasonFilter = "tbc" },
+			{ id = 29251, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32076, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30533, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29362, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33860, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 30533, seasonFilter = "tbc" }, -- Vanquisher's Marks
-			{ id = 29434, seasonFilter = "tbc" }  -- Badge of Justice
-		},
-		rareLoot = {
-			{ id = 30565, seasonFilter = "tbc" }, -- Assassin's Fire Opal
-			{ id = 30566, seasonFilter = "tbc" }, -- Defender's Tanzanite
-			{ id = 30564, seasonFilter = "tbc" }  -- Mysterious Fire Opal
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 19220, 21230 }, -- Pathaleon the Calculator, Nether Wraith
+		npcs = { 19220, 21230 },
 		overview = {
 			"Pathaleon the Calculator is the final boss of The Mechanar and overseer of Kael'thas Sunstrider's mechanized army production. This encounter features mind control mechanics, summoned adds, and devastating arcane abilities. At 20% health, Pathaleon summons three Nether Wraith adds that must be dealt with while finishing the boss.",
 			{ heading = "Overview" },

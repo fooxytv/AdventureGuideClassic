@@ -32,23 +32,19 @@ local function IsCreatureGuid(guid)
 end
 
 -- Build a lookup table of NPC IDs for the current dungeon
--- Checks both InstanceService (primary, has encounterID as NPC ID) and ObjectiveService (fallback)
+-- Uses InstanceService (encounterID field contains the NPC ID)
 local function BuildNpcLookup(dungeonName)
     local lookup = {}
 
-    -- Primary: InstanceService dungeons (encounterID field is the NPC ID)
+    -- Check dungeons (encounterID field is the NPC ID)
     local instanceDungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(instanceDungeons) do
         if dungeon.name == dungeonName then
             for i, encounter in ipairs(dungeon) do
                 if type(encounter) == "table" and encounter.name then
-                    -- encounterID in dungeon data is actually the NPC ID
+                    -- encounterID in dungeon data is the NPC ID
                     if encounter.encounterID then
                         lookup[encounter.encounterID] = encounter
-                    end
-                    -- Also support npcId field if present
-                    if encounter.npcId then
-                        lookup[encounter.npcId] = encounter
                     end
                     -- Name-based lookup as fallback
                     lookup[encounter.name] = encounter
@@ -67,32 +63,6 @@ local function BuildNpcLookup(dungeonName)
                     if encounter.encounterID then
                         lookup[encounter.encounterID] = encounter
                     end
-                    if encounter.npcId then
-                        lookup[encounter.npcId] = encounter
-                    end
-                    lookup[encounter.name] = encounter
-                end
-            end
-            break
-        end
-    end
-
-    -- Fallback: ObjectiveService dungeons (uses npcId field)
-    local objectiveDungeons = ObjectiveService.GetDungeons()
-    for _, dungeon in ipairs(objectiveDungeons) do
-        if dungeon.name == dungeonName then
-            for _, encounter in ipairs(dungeon.encounters or {}) do
-                if encounter.npcId and not lookup[encounter.npcId] then
-                    lookup[encounter.npcId] = encounter
-                end
-                if encounter.npcIds then
-                    for _, npcId in ipairs(encounter.npcIds) do
-                        if not lookup[npcId] then
-                            lookup[npcId] = encounter
-                        end
-                    end
-                end
-                if encounter.name and not lookup[encounter.name] then
                     lookup[encounter.name] = encounter
                 end
             end
@@ -125,11 +95,29 @@ end
 function EncounterObjective.CheckEncounterDefeated(bossName)
     if not bossName then return end
     local dungeonName = GetInstanceInfo()
-    local dungeons = ObjectiveService.GetDungeons()
+
+    -- Check dungeons
+    local dungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(dungeons) do
         if dungeon.name == dungeonName then
-            for _, encounter in ipairs(dungeon.encounters) do
-                if encounter.name == bossName then
+            for i, encounter in ipairs(dungeon) do
+                if type(encounter) == "table" and encounter.name == bossName then
+                    EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
+                    if AdventureObjectives and AdventureObjectives.UpdateVisibility then
+                        AdventureObjectives:UpdateVisibility()
+                    end
+                    return
+                end
+            end
+        end
+    end
+
+    -- Check raids
+    local raids = InstanceService.GetRaids()
+    for _, raid in ipairs(raids) do
+        if raid.name == dungeonName then
+            for i, encounter in ipairs(raid) do
+                if type(encounter) == "table" and encounter.name == bossName then
                     EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
                     if AdventureObjectives and AdventureObjectives.UpdateVisibility then
                         AdventureObjectives:UpdateVisibility()
@@ -145,34 +133,35 @@ function EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
     if not dungeonName or not bossName then
         return
     end
-    local objectiveDungeons = ObjectiveService.GetDungeons()
-    local updatedEncounters = nil
-    for _, dungeon in ipairs(objectiveDungeons) do
+
+    -- Update in InstanceService dungeons
+    local instanceDungeons = InstanceService.GetDungeons()
+    for _, dungeon in ipairs(instanceDungeons) do
         if dungeon.name == dungeonName then
-            updatedEncounters = dungeon.encounters
-            for _, encounter in ipairs(dungeon.encounters or {}) do
-                if encounter.name == bossName then
+            for i, encounter in ipairs(dungeon) do
+                if type(encounter) == "table" and encounter.name == bossName then
                     encounter.defeated = 1
                 end
             end
             break
         end
     end
-    local instanceDungeons = InstanceService.GetDungeons()
-    for _, dungeon in ipairs(instanceDungeons) do
-        if dungeon.name == dungeonName then
-            for i, encounter in ipairs(dungeon) do
-                if type(encounter) == "table" and encounter.name and encounter.defeated ~= nil then
-                    if encounter.name == bossName then
-                        encounter.defeated = 1
-                    end
+
+    -- Update in InstanceService raids
+    local instanceRaids = InstanceService.GetRaids()
+    for _, raid in ipairs(instanceRaids) do
+        if raid.name == dungeonName then
+            for i, encounter in ipairs(raid) do
+                if type(encounter) == "table" and encounter.name == bossName then
+                    encounter.defeated = 1
                 end
             end
             break
         end
     end
+
     if AdventureObjectives and AdventureObjectives.LoadEncounters then
-        AdventureObjectives:LoadEncounters(dungeonName, updatedEncounters)
+        AdventureObjectives:LoadEncounters(dungeonName)
         _G.AdventureGuideClassic_UI_Encounters_Refresh = true
     end
 end

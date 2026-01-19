@@ -21,16 +21,10 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 20870,
 		portrait = 607823,
 		loot = {
-			{ id = 28401, seasonFilter = "tbc" }, -- Mok'Nathal Beast-Mask (Normal)
-			{ id = 28384, seasonFilter = "tbc" }, -- Arcane Netherband (Normal)
-			{ id = 28403, seasonFilter = "tbc" }, -- Dath'Remar's Ring of Defense (Normal)
-			{ id = 28407, seasonFilter = "tbc" }, -- Chainhawk Charger (Normal)
-			{ id = 28387, seasonFilter = "tbc" }, -- Hungering Spineripper (Normal)
-			{ id = 29241, seasonFilter = "tbc" }, -- Spaulders of Oblivion (Heroic)
-			{ id = 29248, seasonFilter = "tbc" }, -- Shadowstep Striders (Heroic)
-			{ id = 29252, seasonFilter = "tbc" }, -- Bracers of the Void (Heroic)
-			{ id = 29247, seasonFilter = "tbc" }, -- Girdle of the Penitent (Heroic)
-			{ id = 32515, seasonFilter = "tbc" }  -- Shadowstep Striders (Badge of Justice Heroic)
+			{ id = 28373, seasonFilter = "tbc" },
+			{ id = 28374, seasonFilter = "tbc" },
+			{ id = 28384, seasonFilter = "tbc" },
+			{ id = 28375, seasonFilter = "tbc" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -76,16 +70,12 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 20885,
 		portrait = 607574,
 		loot = {
-			{ id = 28390, seasonFilter = "tbc" }, -- Boots of the Nexus Warden (Normal)
-			{ id = 28391, seasonFilter = "tbc" }, -- Exotic Spiked Shoulders (Normal)
-			{ id = 28392, seasonFilter = "tbc" }, -- Libram of the Eternal Rest (Normal)
-			{ id = 28393, seasonFilter = "tbc" }, -- Idol of the Claw (Normal)
-			{ id = 28386, seasonFilter = "tbc" }, -- Nether Core's Control Rod (Normal)
-			{ id = 29249, seasonFilter = "tbc" }, -- Light-Collar of the Incarnate (Heroic)
-			{ id = 29253, seasonFilter = "tbc" }, -- Sash of Arcane Visions (Heroic)
-			{ id = 29251, seasonFilter = "tbc" }, -- Boots of Ethereal Manipulation (Heroic)
-			{ id = 29360, seasonFilter = "tbc" }, -- Vileblade of the Betrayer (Heroic)
-			{ id = 32514, seasonFilter = "tbc" }  -- Boots of Ethereal Manipulation (Badge of Justice Heroic)
+			{ id = 28387, seasonFilter = "tbc" },
+			{ id = 28386, seasonFilter = "tbc" },
+			{ id = 28392, seasonFilter = "tbc" },
+			{ id = 28390, seasonFilter = "tbc" },
+			{ id = 28391, seasonFilter = "tbc" },
+			{ id = 24308, seasonFilter = "tbc" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -137,16 +127,11 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 20886,
 		portrait = 607820,
 		loot = {
-			{ id = 28394, seasonFilter = "tbc" }, -- Brazen Charm of Skill (Normal)
-			{ id = 28397, seasonFilter = "tbc" }, -- Starbolt Longbow (Normal)
-			{ id = 28396, seasonFilter = "tbc" }, -- Gloves of the Searing Grip (Normal)
-			{ id = 28398, seasonFilter = "tbc" }, -- Boots of Endless Betrayal (Normal)
-			{ id = 28400, seasonFilter = "tbc" }, -- Warp Infused Drape (Normal)
-			{ id = 29249, seasonFilter = "tbc" }, -- Light-Collar of the Incarnate (Heroic)
-			{ id = 29253, seasonFilter = "tbc" }, -- Sash of Arcane Visions (Heroic)
-			{ id = 29251, seasonFilter = "tbc" }, -- Boots of Ethereal Manipulation (Heroic)
-			{ id = 29360, seasonFilter = "tbc" }, -- Vileblade of the Betrayer (Heroic)
-			{ id = 32514, seasonFilter = "tbc" }  -- Boots of Ethereal Manipulation (Badge of Justice Heroic)
+			{ id = 28397, seasonFilter = "tbc" },
+			{ id = 28396, seasonFilter = "tbc" },
+			{ id = 28394, seasonFilter = "tbc" },
+			{ id = 28398, seasonFilter = "tbc" },
+			{ id = 28393, seasonFilter = "tbc" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -198,22 +183,23 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 20912,
 		portrait = 607635,
 		loot = {
-			{ id = 28406, seasonFilter = "tbc" }, -- Nether Void Cloak (Normal)
-			{ id = 28413, seasonFilter = "tbc" }, -- Hallowed Handwraps (Normal)
-			{ id = 28412, seasonFilter = "tbc" }, -- Lamp of Peaceful Repose (Normal)
-			{ id = 28410, seasonFilter = "tbc" }, -- Nethershrike (Normal)
-			{ id = 28418, seasonFilter = "tbc" }, -- Shiffar's Nexus-Horn (Normal)
-			{ id = 28415, seasonFilter = "tbc" }, -- Hood of Oblivion (Normal)
-			{ id = 28231, seasonFilter = "tbc" }, -- Tidefury Helm (Normal)
-			{ id = 29242, seasonFilter = "tbc" }, -- Boots of Courage Unending (Heroic)
-			{ id = 29250, seasonFilter = "tbc" }, -- Harness of the Deep Currents (Heroic)
-			{ id = 29254, seasonFilter = "tbc" }, -- Bracers of Sublime Fury (Heroic)
-			{ id = 29255, seasonFilter = "tbc" }, -- Bands of Negation (Heroic)
-			{ id = 29244, seasonFilter = "tbc" }, -- Mithril-Chain of the Apprentice (Heroic)
-			{ id = 29243, seasonFilter = "tbc" }, -- Gavel of Pure Light (Heroic)
-			{ id = 29245, seasonFilter = "tbc" }, -- Soul-Strider Boots (Heroic)
-			{ id = 29246, seasonFilter = "tbc" }, -- Nethergem of Reprisal (Heroic)
-			{ id = 32513, seasonFilter = "tbc" }  -- Bracers of Sublime Fury (Badge of Justice Heroic)
+			{ id = 28205, seasonFilter = "tbc" },
+			{ id = 28419, seasonFilter = "tbc" },
+			{ id = 28403, seasonFilter = "tbc" },
+			{ id = 28407, seasonFilter = "tbc" },
+			{ id = 28413, seasonFilter = "tbc" },
+			{ id = 28414, seasonFilter = "tbc" },
+			{ id = 28415, seasonFilter = "tbc" },
+			{ id = 28416, seasonFilter = "tbc" },
+			{ id = 28412, seasonFilter = "tbc" },
+			{ id = 28418, seasonFilter = "tbc" },
+			{ id = 28406, seasonFilter = "tbc" },
+			{ id = 28231, seasonFilter = "tbc" },
+			{ id = 29241, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29252, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29248, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29360, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33861, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},

@@ -21,16 +21,11 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18731,
 		portrait = 607536,
 		loot = {
-			{ id = 27843, seasonFilter = "tbc" }, -- Gavel of Unearthed Secrets
-			{ id = 27840, seasonFilter = "tbc" }, -- Soulstone of the Forgotten
-			{ id = 27842, seasonFilter = "tbc" }, -- Grand Scepter of the Nexus-Kings
-			{ id = 27837, seasonFilter = "tbc" }, -- Fetish of the Fallen
-			{ id = 27839, seasonFilter = "tbc" }, -- Fanblade Pauldrons
-			{ id = 27846, seasonFilter = "tbc" }, -- Slippers of Serenity
-			{ id = 27845, seasonFilter = "tbc" }, -- Embroidered Cape of Mysteries
-			{ id = 27838, seasonFilter = "tbc" }, -- Hauberk of the Empire's Glory
-			{ id = 27844, seasonFilter = "tbc" }, -- Hellmaw's Hybrid Headpiece (Heroic)
-			{ id = 27841, seasonFilter = "tbc" }  -- Archaic Charm of Presence (Heroic)
+			{ id = 27888, seasonFilter = "tbc" },
+			{ id = 27889, seasonFilter = "tbc" },
+			{ id = 27884, seasonFilter = "tbc" },
+			{ id = 27887, seasonFilter = "tbc" },
+			{ id = 27885, seasonFilter = "tbc" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -90,15 +85,13 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18667,
 		portrait = 607555,
 		loot = {
-			{ id = 27847, seasonFilter = "tbc" }, -- Gauntlets of the Skullsplitter
-			{ id = 27850, seasonFilter = "tbc" }, -- Indomitable Headdress
-			{ id = 27851, seasonFilter = "tbc" }, -- Mantle of the Blacktalon
-			{ id = 27852, seasonFilter = "tbc" }, -- Cord of Screaming Terrors
-			{ id = 27848, seasonFilter = "tbc" }, -- Embroidered Cape of Mysteries
-			{ id = 27849, seasonFilter = "tbc" }, -- Focus-Deprived Shoulderguards
-			{ id = 27854, seasonFilter = "tbc" }, -- Vest of Vengeance (Heroic)
-			{ id = 27853, seasonFilter = "tbc" }, -- Soulpriest's Ring of Resolve (Heroic)
-			{ id = 29240, seasonFilter = "tbc" }  -- Bands of Negation (Heroic)
+			{ id = 27891, seasonFilter = "tbc" },
+			{ id = 27892, seasonFilter = "tbc" },
+			{ id = 27468, seasonFilter = "tbc" },
+			{ id = 27893, seasonFilter = "tbc" },
+			{ id = 25728, seasonFilter = "tbc" },
+			{ id = 27890, seasonFilter = "tbc" },
+			{ id = 30854, seasonFilter = "tbc" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -161,16 +154,12 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18732,
 		portrait = 607625,
 		loot = {
-			{ id = 27855, seasonFilter = "tbc" }, -- Cloak of the Valiant Defender
-			{ id = 27861, seasonFilter = "tbc" }, -- Chestguard of Exile
-			{ id = 27856, seasonFilter = "tbc" }, -- Ironbane Gauntlets
-			{ id = 27858, seasonFilter = "tbc" }, -- Grandmaster's Dragonscale Wristguards
-			{ id = 27857, seasonFilter = "tbc" }, -- Vorpil's Ribbed Stalker
-			{ id = 27859, seasonFilter = "tbc" }, -- Mask of the Deceiver
-			{ id = 27860, seasonFilter = "tbc" }, -- Cryogenics Officer's Trousers
-			{ id = 28387, seasonFilter = "tbc" }, -- Sash of the Nethermancer (Heroic)
-			{ id = 28406, seasonFilter = "tbc" }, -- Shadowmaster's Boots (Heroic)
-			{ id = 28407, seasonFilter = "tbc" }  -- Chestguard of Transcendence (Heroic)
+			{ id = 27901, seasonFilter = "tbc" },
+			{ id = 27775, seasonFilter = "tbc" },
+			{ id = 27898, seasonFilter = "tbc" },
+			{ id = 27897, seasonFilter = "tbc" },
+			{ id = 27900, seasonFilter = "tbc" },
+			{ id = 30827, seasonFilter = "tbc" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -248,23 +237,24 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18708,
 		portrait = 607720,
 		loot = {
-			{ id = 27863, seasonFilter = "tbc" }, -- Earring of Soulful Meditation
-			{ id = 27865, seasonFilter = "tbc" }, -- Collar of Echoing Silence
-			{ id = 27866, seasonFilter = "tbc" }, -- Arcanist's Stone
-			{ id = 27867, seasonFilter = "tbc" }, -- Mask of Shattered Sight
-			{ id = 27869, seasonFilter = "tbc" }, -- Ravenwing Pauldrons
-			{ id = 27870, seasonFilter = "tbc" }, -- Slippers of Oblivion
-			{ id = 27871, seasonFilter = "tbc" }, -- Breastplate of the Deep Watcher
-			{ id = 27872, seasonFilter = "tbc" }, -- Harness of the Deep Currents
-			{ id = 27864, seasonFilter = "tbc" }, -- Cord of the Catacombs
-			{ id = 27868, seasonFilter = "tbc" }, -- Sparrowhawk Bracers
-			{ id = 28230, seasonFilter = "tbc" }, -- Hallowed Garments (Heroic)
-			{ id = 28233, seasonFilter = "tbc" }, -- Mask of the Soul Eater (Heroic)
-			{ id = 28235, seasonFilter = "tbc" }, -- Cloak of Insidious Intent (Heroic)
-			{ id = 29261, seasonFilter = "tbc" }, -- Flame-Touched Legguards (Heroic)
-			{ id = 29266, seasonFilter = "tbc" }, -- Ryngo's Band of Ingenuity (Heroic)
-			{ id = 29352, seasonFilter = "tbc" }, -- Cobalt Band of Tyrigosa (Heroic)
-			{ id = 29353, seasonFilter = "tbc" }  -- Shockwave Truncheon (Heroic)
+			{ id = 24309, seasonFilter = "tbc" },
+			{ id = 27905, seasonFilter = "tbc" },
+			{ id = 28230, seasonFilter = "tbc" },
+			{ id = 27912, seasonFilter = "tbc" },
+			{ id = 27908, seasonFilter = "tbc" },
+			{ id = 28232, seasonFilter = "tbc" },
+			{ id = 27803, seasonFilter = "tbc" },
+			{ id = 27902, seasonFilter = "tbc" },
+			{ id = 27910, seasonFilter = "tbc" },
+			{ id = 27903, seasonFilter = "tbc" },
+			{ id = 27778, seasonFilter = "tbc" },
+			{ id = 27909, seasonFilter = "tbc" },
+			{ id = 27913, seasonFilter = "tbc" },
+			{ id = 29261, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30532, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29357, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29353, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33840, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},

@@ -21,16 +21,14 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17770,
 		portrait = 607649,
 		loot = {
-			{ id = 24387, seasonFilter = "tbc" }, -- Bone Chain Necklace
-			{ id = 24388, seasonFilter = "tbc" }, -- Moonglade Cowl
-			{ id = 24389, seasonFilter = "tbc" }, -- Gauntlets of Desolation
-			{ id = 24390, seasonFilter = "tbc" }, -- Hungarhide Gauntlets
-			{ id = 24391, seasonFilter = "tbc" }, -- Manaspark Gloves
-			{ id = 27736, seasonFilter = "tbc" }, -- Hangman's Noose (Heroic)
-			{ id = 27737, seasonFilter = "tbc" }, -- Starlight Diadem (Heroic)
-			{ id = 27738, seasonFilter = "tbc" }, -- Shoulderpads of Assassination (Heroic)
-			{ id = 27739, seasonFilter = "tbc" }, -- Spore-Soaked Vaneer (Heroic)
-			{ id = 27740, seasonFilter = "tbc" }  -- Band of Frigid Elements (Heroic)
+			{ id = 24451, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24450, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24452, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27746, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27747, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27748, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27743, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27745, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -98,16 +96,17 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18105,
 		portrait = 607614,
 		loot = {
-			{ id = 24392, seasonFilter = "tbc" }, -- Mage-Fury Girdle
-			{ id = 24393, seasonFilter = "tbc" }, -- Helm of the Claw
-			{ id = 24394, seasonFilter = "tbc" }, -- Savage Frog Skin Vest
-			{ id = 24395, seasonFilter = "tbc" }, -- Mindfire Waistband
-			{ id = 24396, seasonFilter = "tbc" }, -- Vestia's Pauldrons of Inner Grace
-			{ id = 27741, seasonFilter = "tbc" }, -- Hydromancer's Headwrap (Heroic)
-			{ id = 27742, seasonFilter = "tbc" }, -- Hateful Strike Greaves (Heroic)
-			{ id = 27743, seasonFilter = "tbc" }, -- Talisman of Tenacity (Heroic)
-			{ id = 27744, seasonFilter = "tbc" }, -- Totem of Spontaneous Regrowth (Heroic)
-			{ id = 27745, seasonFilter = "tbc" }  -- Fiend Slayer Boots (Heroic)
+			{ id = 24459, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24461, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24462, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24458, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24460, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27760, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27755, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27757, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27759, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27758, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27761, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -175,16 +174,17 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17826,
 		portrait = 607779,
 		loot = {
-			{ id = 24397, seasonFilter = "tbc" }, -- Collar of Edus
-			{ id = 24398, seasonFilter = "tbc" }, -- Robe of Hateful Echoes
-			{ id = 24399, seasonFilter = "tbc" }, -- Thunderbringer's Guard
-			{ id = 24400, seasonFilter = "tbc" }, -- Ironscale War Cloak
-			{ id = 24401, seasonFilter = "tbc" }, -- Musel'ek's Throwing Axes
-			{ id = 27746, seasonFilter = "tbc" }, -- Creeping Vines (Heroic)
-			{ id = 27747, seasonFilter = "tbc" }, -- Earthsoul Britches (Heroic)
-			{ id = 27748, seasonFilter = "tbc" }, -- Steam-Hinge Chain of Valor (Heroic)
-			{ id = 27749, seasonFilter = "tbc" }, -- Arch-Protector's Band (Heroic)
-			{ id = 27750, seasonFilter = "tbc" }  -- Swamplight Lantern (Heroic)
+			{ id = 24454, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24456, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24457, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24455, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24453, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27765, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27767, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27763, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27764, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27766, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27762, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -263,17 +263,29 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17882,
 		portrait = 607788,
 		loot = {
-			{ id = 24402, seasonFilter = "tbc" }, -- Bone Stinger
-			{ id = 24403, seasonFilter = "tbc" }, -- Verdant Gloves
-			{ id = 24404, seasonFilter = "tbc" }, -- Bone Scale Leggings
-			{ id = 24405, seasonFilter = "tbc" }, -- Nightstalker's Wristguards
-			{ id = 24406, seasonFilter = "tbc" }, -- Idol of the Emerald Queen
-			{ id = 27751, seasonFilter = "tbc" }, -- Doomplate Gauntlets (Heroic)
-			{ id = 27752, seasonFilter = "tbc" }, -- Cloak of Healing Rays (Heroic)
-			{ id = 27753, seasonFilter = "tbc" }, -- Thoughtblighter Robe (Heroic)
-			{ id = 27754, seasonFilter = "tbc" }, -- Umberhowl's Collar (Heroic)
-			{ id = 27755, seasonFilter = "tbc" }, -- Incanter's Band (Heroic)
-			{ id = 27756, seasonFilter = "tbc" }  -- Crystal Band of Valor (Heroic)
+			{ id = 24463, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24481, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24465, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24466, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24464, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 24248, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 29265, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32081, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30541, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29350, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27896, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27770, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27773, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27779, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27781, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27771, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27769, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27907, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27768, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27780, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27938, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27772, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33826, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},

@@ -18,7 +18,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Pusillin",
 		defeated = 0,
-		encounterID = 14327,
+		encounterID = 14354,
 		portrait = I.UIEJBossPusillin,
 		loot = {},
 		sharedLoot = {},

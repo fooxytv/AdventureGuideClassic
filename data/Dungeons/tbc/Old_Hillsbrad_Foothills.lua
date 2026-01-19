@@ -21,18 +21,22 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17848,
 		portrait = 607689,
 		loot = {
-			{ id = 27911, seasonFilter = "tbc" }, -- Reins of the Bronze Charm (Heroic)
-			{ id = 27911, seasonFilter = "tbc" }, -- Reins of the Bronze Charm (Heroic)
-			{ id = 27911, seasonFilter = "tbc" }, -- Reins of the Bronze Charm (Heroic)
+			{ id = 27423, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27417, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27436, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27418, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27420, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 28211, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28214, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28215, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28213, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28212, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28210, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30590, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30603, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30591, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 27911, seasonFilter = "tbc" }, -- Helm of Assassination (Heroic)
-			{ id = 27913, seasonFilter = "tbc" }, -- Pauldrons of Sufferance (Heroic)
-			{ id = 27914, seasonFilter = "tbc" }, -- Band of Eternity (Heroic)
-			{ id = 27509, seasonFilter = "tbc" }, -- Handgrips of Assassinations (Normal)
-			{ id = 27510, seasonFilter = "tbc" }, -- Timelapse Shard (Normal)
-			{ id = 27512, seasonFilter = "tbc" }, -- Bracers of Deftness (Normal)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -75,18 +79,23 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17862,
 		portrait = 607561,
 		loot = {
-			{ id = 27896, seasonFilter = "tbc" }, -- Wastewalker Shoulderpads (Heroic)
-			{ id = 27897, seasonFilter = "tbc" }, -- Breastplate of the Warbringer (Heroic)
-			{ id = 27899, seasonFilter = "tbc" }, -- Vambraces of Courage (Heroic)
-			{ id = 27519, seasonFilter = "tbc" }, -- Gloves of the Searing Grip (Normal)
-			{ id = 27520, seasonFilter = "tbc" }, -- Southshore Sneakers (Normal)
-			{ id = 27521, seasonFilter = "tbc" }, -- Durnholde Tracking Boots (Normal)
+			{ id = 22927, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27424, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27427, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27426, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27430, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27428, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 28221, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28216, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28219, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28220, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28218, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28217, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30603, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30591, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30590, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 27900, seasonFilter = "tbc" }, -- Ironscale War Cloak (Heroic)
-			{ id = 27522, seasonFilter = "tbc" }, -- World's End Bracers (Normal)
-			{ id = 27523, seasonFilter = "tbc" }, -- Strength of the Untamed (Normal)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -134,24 +143,35 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18096,
 		portrait = 607596,
 		loot = {
-			{ id = 27904, seasonFilter = "tbc" }, -- Resounding Ring of Glory (Heroic)
-			{ id = 27905, seasonFilter = "tbc" }, -- Greaves of the Martyr (Heroic)
-			{ id = 27906, seasonFilter = "tbc" }, -- Epoch's Whispering Cinch (Heroic)
-			{ id = 27525, seasonFilter = "tbc" }, -- Boots of the Glad Tidings (Normal)
-			{ id = 27524, seasonFilter = "tbc" }, -- Cord of Sanctification (Normal)
-			{ id = 27529, seasonFilter = "tbc" }, -- Figurine of the Colossus (Normal)
+			{ id = 24173, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27432, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27440, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27434, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27433, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 27431, seasonFilter = "tbc", difficulty = "normal" },
+			{ id = 29250, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30536, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29246, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30534, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28223, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28225, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27911, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28401, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28191, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28233, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28222, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27904, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28227, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28226, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28224, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 28344, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30603, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30591, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30590, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33847, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 27901, seasonFilter = "tbc" }, -- Blackened Leather Spaulders (Heroic)
-			{ id = 27902, seasonFilter = "tbc" }, -- Silent Mantle of the Overlord (Heroic)
-			{ id = 27903, seasonFilter = "tbc" }, -- Timeslicer (Heroic)
-			{ id = 27526, seasonFilter = "tbc" }, -- Platinum Band of the Tyrant (Normal)
-			{ id = 27530, seasonFilter = "tbc" }, -- Southshore Blade (Normal)
-			{ id = 27531, seasonFilter = "tbc" }, -- Tarren Mill Vitality Locket (Normal)
-		},
-		rareLoot = {
-			{ id = 27977, seasonFilter = "tbc" }, -- Reins of the Bronze Drake (Heroic) - Rare mount drop
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = { 18096 },

@@ -21,18 +21,14 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18472,
 		portrait = 607583,
 		loot = {
-			{ id = 27797, seasonFilter = "tbc" }, -- Sethekk Oracle Cloak (Normal)
-			{ id = 27775, seasonFilter = "tbc" }, -- Hallowed Trousers (Normal)
-			{ id = 27796, seasonFilter = "tbc" }, -- Mana-Etched Gloves (Normal)
-			{ id = 27843, seasonFilter = "tbc" }, -- Sethekk Feather-Darts (Normal)
-			{ id = 27770, seasonFilter = "tbc" }, -- Syth's Shadow Collar (Normal)
-			{ id = 27798, seasonFilter = "tbc" }, -- Gauntlets of the Skullsplitter (Normal)
-			{ id = 27518, seasonFilter = "tbc" }, -- Ivory Idol of the Moongoddess (Druid, Heroic)
-			{ id = 27839, seasonFilter = "tbc" }, -- Duke's Walkboots (Heroic)
-			{ id = 27925, seasonFilter = "tbc" }, -- Ravenclaw Band (Heroic)
-			{ id = 27768, seasonFilter = "tbc" }, -- Oracle Belt of Timeless Mystery (Heroic)
-			{ id = 27838, seasonFilter = "tbc" }, -- Greaves of Desolation (Heroic)
-			{ id = 27840, seasonFilter = "tbc" }, -- Sethekk Wraps (Heroic)
+			{ id = 27918, seasonFilter = "tbc" },
+			{ id = 24160, seasonFilter = "tbc" },
+			{ id = 27919, seasonFilter = "tbc" },
+			{ id = 27914, seasonFilter = "tbc" },
+			{ id = 27916, seasonFilter = "tbc" },
+			{ id = 27915, seasonFilter = "tbc" },
+			{ id = 27633, seasonFilter = "tbc" },
+			{ id = 25461, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -77,15 +73,15 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 23035,
 		portrait = 607544,
 		loot = {
-			{ id = 32768, seasonFilter = "tbc" }, -- Reins of the Raven Lord (Mount, Heroic Only)
-			{ id = 32957, seasonFilter = "tbc" }, -- Talon Lord's Collar (Heroic Only)
-			{ id = 32945, seasonFilter = "tbc" }, -- Raven-Heart Headdress (Heroic Only)
-			{ id = 32946, seasonFilter = "tbc" }, -- Raven's Claw (Heroic Only)
-			{ id = 32953, seasonFilter = "tbc" }, -- Ravenclaw Wand (Heroic Only)
+			{ id = 32779, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32769, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32778, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32781, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32780, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {
-			{ id = 32768, seasonFilter = "tbc" }, -- Reins of the Raven Lord (Mount, 1% drop rate)
+			{ id = 32768, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -131,20 +127,23 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18473,
 		portrait = 607780,
 		loot = {
-			{ id = 27946, seasonFilter = "tbc" }, -- Avian Cloak of Feathers (Normal)
-			{ id = 27986, seasonFilter = "tbc" }, -- Crow Wing Reaper (Normal)
-			{ id = 27944, seasonFilter = "tbc" }, -- Talonguard Armor (Normal)
-			{ id = 27985, seasonFilter = "tbc" }, -- Deathforge Girdle (Normal)
-			{ id = 27980, seasonFilter = "tbc" }, -- Terokk's Nightmace (Normal)
-			{ id = 27940, seasonFilter = "tbc" }, -- Talon Lord's Collar (Normal)
-			{ id = 29249, seasonFilter = "tbc" }, -- Bands of Syth (Heroic)
-			{ id = 27981, seasonFilter = "tbc" }, -- Sethekk Feather-Darts (Heroic)
-			{ id = 27978, seasonFilter = "tbc" }, -- Ravenclaw Band (Heroic)
-			{ id = 27979, seasonFilter = "tbc" }, -- Avian Cloak of Feathers (Heroic)
-			{ id = 27477, seasonFilter = "tbc" }, -- Talisman of Tenacity (Heroic)
-			{ id = 27784, seasonFilter = "tbc" }, -- Avian Ripper (Heroic)
-			{ id = 27787, seasonFilter = "tbc" }, -- Terokk's Quill (Heroic)
-			{ id = 27788, seasonFilter = "tbc" }, -- Talonguard Armor (Heroic)
+			{ id = 27946, seasonFilter = "tbc" },
+			{ id = 27986, seasonFilter = "tbc" },
+			{ id = 27985, seasonFilter = "tbc" },
+			{ id = 27936, seasonFilter = "tbc" },
+			{ id = 27925, seasonFilter = "tbc" },
+			{ id = 27981, seasonFilter = "tbc" },
+			{ id = 27980, seasonFilter = "tbc" },
+			{ id = 27948, seasonFilter = "tbc" },
+			{ id = 27632, seasonFilter = "tbc" },
+			{ id = 27875, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27838, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 27776, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29249, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29259, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 32073, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29355, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33834, seasonFilter = "tbc", difficulty = "heroic" },
 		},
 		sharedLoot = {},
 		rareLoot = {},

@@ -18,7 +18,7 @@ InstanceService.AddRaid({
 	{
 		name = "Balnazzar",
 		defeated = 0,
-		encounterID = 4887,
+		encounterID = 240811,
 		portrait = 607551,
 		instance = "Scarlet Enclave",
 		loot = {
@@ -75,7 +75,7 @@ InstanceService.AddRaid({
 	{
 		name = "High Commander Beatrix",
 		defeated = 0,
-		encounterID = 4837,
+		encounterID = 240812,
 		portrait = I.UIEJBossBeatrix,
 		loot = {},
 		sharedLoot = {},
@@ -116,7 +116,7 @@ InstanceService.AddRaid({
 	{
 		name = "Solistrasza",
 		defeated = 0,
-		encounterID = 6243,
+		encounterID = 238954,
 		portrait = I.UIEJBossSolistrasza,
 		loot = {},
 		sharedLoot = {},
@@ -156,7 +156,7 @@ InstanceService.AddRaid({
 	{
 		name = "Alexei the Beastlord",
 		defeated = 0,
-		encounterID = 12876,
+		encounterID = 240794,
 		portrait = I.UIEJBossAlexeiTheBeastlord,
 		loot = {},
 		sharedLoot = {},
@@ -195,7 +195,7 @@ InstanceService.AddRaid({
 	{
 		name = "Mason the Echo",
 		defeated = 0,
-		encounterID = 4832,
+		encounterID = 241021,
 		portrait = I.UIEJBossMasonTheEcho,
 		loot = {},
 		sharedLoot = {},
@@ -233,7 +233,7 @@ InstanceService.AddRaid({
 	},
 	{
 		name = "Reborn Council",
-		encounterID = 4830,
+		encounterID = 240809,
 		portrait = I.UIEJBossRebornCouncil,
 		loot = {},
 		sharedLoot = {},
@@ -278,7 +278,7 @@ InstanceService.AddRaid({
 	},
     {
 		name = "Lillian Voss",
-		encounterID = 4830,
+		encounterID = 243021,
 		portrait = I.UIEJBossLillanVoss,
 		loot = {},
 		sharedLoot = {},
@@ -317,7 +317,7 @@ InstanceService.AddRaid({
 	},
     {
 		name = "Grand Crusader Caldoran",
-		encounterID = 4830,
+		encounterID = 241006,
 		portrait = I.UIEJBossGrandCrusaderCaldoran,
 		loot = {},
 		sharedLoot = {},

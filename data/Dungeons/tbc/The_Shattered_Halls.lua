@@ -21,20 +21,14 @@ InstanceService.AddDungeon({
 		encounterID = 16807,
 		portrait = 607624,
 		loot = {
-			{ id = 27519, seasonFilter = "all" }, -- Adamantine Repeater
-			{ id = 27520, seasonFilter = "all" }, -- Bands of Nethekurse
-			{ id = 27521, seasonFilter = "all" }, -- Telaari Hunting Girdle
-			{ id = 27522, seasonFilter = "all" }, -- World's End Bracers
-			{ id = 29241, seasonFilter = "all" }, -- Belt of Depravity (Heroic)
-			{ id = 29242, seasonFilter = "all" }, -- Boots of Illusion (Heroic)
-			{ id = 29243, seasonFilter = "all" }, -- Adamantine Repeater (Heroic)
-			{ id = 29240, seasonFilter = "all" }  -- Bands of Nethekurse (Heroic)
+			{ id = 24312, seasonFilter = "tbc" },
+			{ id = 27520, seasonFilter = "tbc" },
+			{ id = 27519, seasonFilter = "tbc" },
+			{ id = 27521, seasonFilter = "tbc" },
+			{ id = 27517, seasonFilter = "tbc" },
+			{ id = 23735, seasonFilter = "tbc" },
 		},
-		sharedLoot = {
-			{ id = 30532, seasonFilter = "all" }, -- Khorium Lockbox
-			{ id = 30633, seasonFilter = "all" }, -- Auchenai Key
-			{ id = 23572, seasonFilter = "all" }  -- Primal Nether (Heroic)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -79,16 +73,13 @@ InstanceService.AddDungeon({
 		encounterID = 20923,
 		portrait = 607556,
 		loot = {
-			{ id = 27540, seasonFilter = "all" }, -- Felstone Reaver
-			{ id = 27538, seasonFilter = "all" }, -- Bleeding Hollow Warhammer
-			{ id = 27536, seasonFilter = "all" }, -- Heathen's Brand
-			{ id = 27537, seasonFilter = "all" }  -- Shadowrobe
+			{ id = 30709, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30705, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30708, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30707, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 30710, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 30532, seasonFilter = "all" }, -- Khorium Lockbox
-			{ id = 30633, seasonFilter = "all" }, -- Auchenai Key
-			{ id = 23572, seasonFilter = "all" }  -- Primal Nether (Heroic)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -133,20 +124,15 @@ InstanceService.AddDungeon({
 		encounterID = 16809,
 		portrait = 607811,
 		loot = {
-			{ id = 27524, seasonFilter = "all" }, -- Boots of the Righteous Path
-			{ id = 27523, seasonFilter = "all" }, -- Skyfire Hawk-Bow
-			{ id = 27525, seasonFilter = "all" }, -- Jeweled Boots of Sanctification
-			{ id = 27526, seasonFilter = "all" }, -- Platemail of the Shattered Hand
-			{ id = 29263, seasonFilter = "all" }, -- Foresthide Gloves (Heroic)
-			{ id = 29262, seasonFilter = "all" }, -- Boots of the Righteous Path (Heroic)
-			{ id = 29264, seasonFilter = "all" }, -- Skyfire Hawk-Bow (Heroic)
-			{ id = 29261, seasonFilter = "all" }  -- Girdle of the Immovable (Heroic)
+			{ id = 27525, seasonFilter = "tbc" },
+			{ id = 27524, seasonFilter = "tbc" },
+			{ id = 27526, seasonFilter = "tbc" },
+			{ id = 27802, seasonFilter = "tbc" },
+			{ id = 27868, seasonFilter = "tbc" },
+			{ id = 72597, seasonFilter = "tbc" },
+			{ id = 30829, seasonFilter = "tbc" },
 		},
-		sharedLoot = {
-			{ id = 30532, seasonFilter = "all" }, -- Khorium Lockbox
-			{ id = 30633, seasonFilter = "all" }, -- Auchenai Key
-			{ id = 23572, seasonFilter = "all" }  -- Primal Nether (Heroic)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -194,24 +180,25 @@ InstanceService.AddDungeon({
 		encounterID = 16808,
 		portrait = 607812,
 		loot = {
-			{ id = 27527, seasonFilter = "all" }, -- Greatsword of Horrid Dreams
-			{ id = 27529, seasonFilter = "all" }, -- Figurine of the Colossus
-			{ id = 27528, seasonFilter = "all" }, -- Gauntlets of Desolation
-			{ id = 27533, seasonFilter = "all" }, -- Demonblood Eviscerator
-			{ id = 27534, seasonFilter = "all" }, -- Hortus' Seal of Brilliance
-			{ id = 27538, seasonFilter = "all" }, -- Nexus-Bracers of Vigor
-			{ id = 29346, seasonFilter = "all" }, -- Feltide Shoulderguards (Heroic)
-			{ id = 29348, seasonFilter = "all" }, -- The Bladefist (Heroic)
-			{ id = 29345, seasonFilter = "all" }, -- Icon of Unyielding Courage (Heroic)
-			{ id = 29347, seasonFilter = "all" }, -- Thatia's Self-Correcting Gauntlets (Heroic)
-			{ id = 33490, seasonFilter = "all" }  -- Haal'esh's Signet Ring (Badge of Justice Turn-in, Heroic)
+			{ id = 27538, seasonFilter = "tbc" },
+			{ id = 27531, seasonFilter = "tbc" },
+			{ id = 23723, seasonFilter = "tbc" },
+			{ id = 27474, seasonFilter = "tbc" },
+			{ id = 27533, seasonFilter = "tbc" },
+			{ id = 27529, seasonFilter = "tbc" },
+			{ id = 27528, seasonFilter = "tbc" },
+			{ id = 27535, seasonFilter = "tbc" },
+			{ id = 27537, seasonFilter = "tbc" },
+			{ id = 27527, seasonFilter = "tbc" },
+			{ id = 27536, seasonFilter = "tbc" },
+			{ id = 27534, seasonFilter = "tbc" },
+			{ id = 27540, seasonFilter = "tbc" },
+			{ id = 29255, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29254, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29263, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29348, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 30532, seasonFilter = "all" }, -- Khorium Lockbox
-			{ id = 30633, seasonFilter = "all" }, -- Auchenai Key
-			{ id = 23572, seasonFilter = "all" }, -- Primal Nether (Heroic)
-			{ id = 29434, seasonFilter = "all" }  -- Badge of Justice (Heroic)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},

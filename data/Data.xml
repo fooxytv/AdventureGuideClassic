@@ -67,31 +67,6 @@
     <Script file="data/Maps/tbc/Hellfire_Ramparts.lua" />
     <Script file="data/Maps/tbc/Karazhan.lua" />
 
-    <!-- Classic Era Objectives -->
-    <Script file="data/Objectives/era/Blackfathom_Deeps.lua" />
-    <Script file="data/Objectives/era/Blackrock_Depths.lua" />
-    <Script file="data/Objectives/era/Blackrock_Spire.lua" />
-    <Script file="data/Objectives/era/Dire_Maul.lua" />
-    <Script file="data/Objectives/era/Gnomeregan.lua" />
-    <Script file="data/Objectives/era/Maraudon.lua" />
-    <Script file="data/Objectives/era/Ragefire_Chasm.lua" />
-    <Script file="data/Objectives/era/Razorfen_Downs.lua" />
-    <Script file="data/Objectives/era/Razorfen_Kraul.lua" />
-    <Script file="data/Objectives/era/Scarlet_Monastery.lua" />
-    <Script file="data/Objectives/era/Scholomance.lua" />
-    <Script file="data/Objectives/era/Shadowfang_Keep.lua" />
-    <Script file="data/Objectives/era/Stratholme.lua" />
-    <Script file="data/Objectives/era/The_Deadmines.lua" />
-    <Script file="data/Objectives/era/The_Stockade.lua" />
-    <Script file="data/Objectives/era/The_Temple_of_Atal_hakkar.lua" />
-    <Script file="data/Objectives/era/Uldaman.lua" />
-    <Script file="data/Objectives/era/Wailing_Caverns.lua" />
-    <Script file="data/Objectives/era/Zul_Farrak.lua" />
-
-    <!-- Burning Crusade Objectives -->
-    <!-- <Script file="data/Objectives/tbc/Hellfire_Ramparts.lua" />
-    <Script file="data/Objectives/tbc/Karazhan.lua" /> -->
-
     <!-- Classic Era Raids -->
     <Script file="data/Raids/era/Blackfathom_Deeps.lua" />
     <Script file="data/Raids/era/Blackwing_Lair.lua" />

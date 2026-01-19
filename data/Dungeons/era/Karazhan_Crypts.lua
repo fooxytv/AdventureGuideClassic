@@ -18,7 +18,7 @@ InstanceService.AddDungeon({
 	{
 		name = "The Failed Apprentices",
 		defeated = 0,
-		encounterID = 4887,
+		encounterID = 237963,
 		portrait = 521744,
 		loot = {
 			{ id = 236707, seasonFilter = "exclusive" },
@@ -70,7 +70,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Opera Boss",
 		defeated = 0,
-		encounterID = 4837,
+		encounterID = 238010,
 		portrait = 521744,
 		loot = {
 			{ id = 235883, seasonFilter = "exclusive" },
@@ -116,7 +116,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Creeping Malison",
 		defeated = 0,
-		encounterID = 6243,
+		encounterID = 238024,
 		portrait = 521744,
 		loot = {
 			{ id = 235893, seasonFilter = "exclusive" },
@@ -162,7 +162,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Harbinger of Sin",
 		defeated = 0,
-		encounterID = 12876,
+		encounterID = 237964,
 		portrait = 521744,
 		loot = {
 			{ id = 235881, seasonFilter = "exclusive" },
@@ -208,7 +208,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Kharon",
 		defeated = 0,
-		encounterID = 4832,
+		encounterID = 237439,
 		portrait = 521744,
 		loot = {
 			{ id = 235875, seasonFilter = "exclusive" },
@@ -282,7 +282,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Dark Rider",
 		defeated = 0,
-		encounterID = 4830,
+		encounterID = 238055,
 		portrait = 521744,
 		loot = {
 			{ id = 235892, seasonFilter = "exclusive" },

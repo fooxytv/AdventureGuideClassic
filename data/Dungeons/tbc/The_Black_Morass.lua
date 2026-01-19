@@ -21,18 +21,15 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17879,
 		portrait = 607566,
 		loot = {
-			{ id = 27873, seasonFilter = "tbc" }, -- Gloves of the Searing Grip (Heroic)
-			{ id = 27870, seasonFilter = "tbc" }, -- Delicate Crimson Spinel (Heroic)
-			{ id = 27871, seasonFilter = "tbc" }, -- Spyglass of the Hidden Fleet (Heroic)
-			{ id = 27544, seasonFilter = "tbc" }, -- Timeshifter Leggings (Normal)
-			{ id = 27549, seasonFilter = "tbc" }, -- Crimson Bracers of Gloom (Normal)
-			{ id = 27550, seasonFilter = "tbc" }, -- Sable Worg Collar (Normal)
+			{ id = 29675, seasonFilter = "tbc" },
+			{ id = 27996, seasonFilter = "tbc" },
+			{ id = 27994, seasonFilter = "tbc" },
+			{ id = 27993, seasonFilter = "tbc" },
+			{ id = 27987, seasonFilter = "tbc" },
+			{ id = 27995, seasonFilter = "tbc" },
+			{ id = 27988, seasonFilter = "tbc" },
 		},
-		sharedLoot = {
-			{ id = 27872, seasonFilter = "tbc" }, -- Timelapse Shard (Heroic)
-			{ id = 27534, seasonFilter = "tbc" }, -- Pendant of the Perilous (Normal)
-			{ id = 27545, seasonFilter = "tbc" }, -- Leggings of the Black Blaze (Normal)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -82,19 +79,14 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17880,
 		portrait = 607784,
 		loot = {
-			{ id = 27875, seasonFilter = "tbc" }, -- Pauldrons of the Crimson Flight (Heroic)
-			{ id = 27879, seasonFilter = "tbc" }, -- Timelapse Shard (Heroic)
-			{ id = 27874, seasonFilter = "tbc" }, -- Wristguards of the Warp (Heroic)
-			{ id = 27551, seasonFilter = "tbc" }, -- Timeshifter Leggings (Normal)
-			{ id = 27552, seasonFilter = "tbc" }, -- Crimson Bracers of Gloom (Normal)
-			{ id = 27553, seasonFilter = "tbc" }, -- Girdle of the Deathdealer (Normal)
+			{ id = 28033, seasonFilter = "tbc" },
+			{ id = 28185, seasonFilter = "tbc" },
+			{ id = 28186, seasonFilter = "tbc" },
+			{ id = 28034, seasonFilter = "tbc" },
+			{ id = 28184, seasonFilter = "tbc" },
+			{ id = 28187, seasonFilter = "tbc" },
 		},
-		sharedLoot = {
-			{ id = 27876, seasonFilter = "tbc" }, -- Ternary Mantle (Heroic)
-			{ id = 27877, seasonFilter = "tbc" }, -- Pendant of Triumph (Heroic)
-			{ id = 27554, seasonFilter = "tbc" }, -- Bindings of the Tide (Normal)
-			{ id = 27555, seasonFilter = "tbc" }, -- Bloodstone Band (Normal)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -144,26 +136,28 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 17881,
 		portrait = 607529,
 		loot = {
-			{ id = 27839, seasonFilter = "tbc" }, -- Cloak of the Betrayed (Heroic)
-			{ id = 27840, seasonFilter = "tbc" }, -- Scarab of the Infinite Cycle (Heroic)
-			{ id = 27841, seasonFilter = "tbc" }, -- Pauldrons of the Harbinger (Heroic)
-			{ id = 27556, seasonFilter = "tbc" }, -- Timeshifter's Grasp (Normal)
-			{ id = 27557, seasonFilter = "tbc" }, -- Hourglass of the Unraveller (Normal)
-			{ id = 27558, seasonFilter = "tbc" }, -- Mantle of the Black Scar (Normal)
+			{ id = 28188, seasonFilter = "tbc" },
+			{ id = 28206, seasonFilter = "tbc" },
+			{ id = 27509, seasonFilter = "tbc" },
+			{ id = 28192, seasonFilter = "tbc" },
+			{ id = 28189, seasonFilter = "tbc" },
+			{ id = 27977, seasonFilter = "tbc" },
+			{ id = 27839, seasonFilter = "tbc" },
+			{ id = 28193, seasonFilter = "tbc" },
+			{ id = 27873, seasonFilter = "tbc" },
+			{ id = 28207, seasonFilter = "tbc" },
+			{ id = 28194, seasonFilter = "tbc" },
+			{ id = 28190, seasonFilter = "tbc" },
+			{ id = 30531, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29253, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29247, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 29356, seasonFilter = "tbc", difficulty = "heroic" },
+			{ id = 33858, seasonFilter = "tbc", difficulty = "heroic" },
 		},
-		sharedLoot = {
-			{ id = 27842, seasonFilter = "tbc" }, -- Grand Scepter of the Nexus-Kings (Heroic)
-			{ id = 27843, seasonFilter = "tbc" }, -- Wand of the Seer (Heroic)
-			{ id = 27844, seasonFilter = "tbc" }, -- Dragonbone Wand (Heroic)
-			{ id = 27531, seasonFilter = "tbc" }, -- Cord of Sanctification (Normal)
-			{ id = 27532, seasonFilter = "tbc" }, -- Treads of Ethereal Tracking (Normal)
-			{ id = 27533, seasonFilter = "tbc" }, -- Pendant of the Epoch (Normal)
-		},
-		rareLoot = {
-			{ id = 28064, seasonFilter = "tbc" }, -- Reins of the Bronze Drake (Heroic) - Rare mount drop
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
-		extremelyRareLost = {},
+		extremelyRareLoot = {},
 		npcs = { 17881 },
 		overview = {
 			"Aeonus is the final boss of The Black Morass and leader of the infinite dragonflight assault on this timeline. This climactic encounter represents the last desperate attempt to prevent the Dark Portal's opening. Aeonus combines powerful dragonkin abilities with time manipulation and summoned allies.",

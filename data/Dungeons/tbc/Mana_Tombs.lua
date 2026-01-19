@@ -168,7 +168,6 @@ InstanceService.AddDungeon({
 			{ id = 30584, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 30585, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 30583, seasonFilter = "tbc", difficulty = "heroic" },
-			{ id = 23572, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 31882, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 31910, seasonFilter = "tbc", difficulty = "heroic" },
 			{ id = 28490, seasonFilter = "tbc", difficulty = "heroic" },

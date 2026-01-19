@@ -72,7 +72,7 @@ InstanceService.AddRaid({
 	},
 	{
 		name = "Lady Sarevess",
-		encounterID = 4837,
+		encounterID = 4831,
 		portrait = 607682,
 		loot = {
 			{ id = 888, seasonFilter = "all" },

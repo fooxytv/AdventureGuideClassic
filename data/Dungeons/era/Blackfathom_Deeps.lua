@@ -94,7 +94,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Lady Sarevess",
 		defeated = 0,
-		encounterID = 4837,
+		encounterID = 4831,
 		portrait = 607682,
 		loot = {
 			{ id = 888, seasonFilter = "all" },
