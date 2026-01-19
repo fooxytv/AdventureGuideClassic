@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 WishlistService = {}
 
+-- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
+local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
+
 -- Get character-specific key for SavedVariables
 local function GetCharacterKey()
     local name = UnitName("player")
@@ -54,7 +57,7 @@ function WishlistService.AddItem(itemID, itemLink, itemName, sourceBoss, sourceI
 
     -- Get item info if not provided
     if not itemName and itemLink then
-        itemName = C_Item.GetItemInfo(itemLink)
+        itemName = GetItemInfoCompat(itemLink)
     end
 
     SavedVariables.Wishlists[charKey][itemID] = {

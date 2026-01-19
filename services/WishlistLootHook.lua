@@ -15,6 +15,11 @@ local BORDER_COLOR = {0, 0.8, 0}
 local ICON_SIZE = 32
 local ICON_OFFSET = 7
 local DEBUG_SHOW_ALL = false
+local DEBUG_LOG = false
+
+-- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
+local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
+local GetItemInfoInstantCompat = C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant
 
 local function CreateGlowFrame(lootButton, index)
     if glowFrames[index] then
@@ -97,7 +102,7 @@ end
 local function GetLootSlotItemID(slot)
     local lootLink = GetLootSlotLink(slot)
     if lootLink then
-        local itemID = C_Item.GetItemInfoInstant(lootLink)
+        local itemID = GetItemInfoInstantCompat(lootLink)
         return itemID
     end
     return nil
@@ -126,7 +131,7 @@ local function CheckLootWindow()
                 end
             end
             if itemID then
-                local itemName = C_Item.GetItemInfo(itemID)
+                local itemName = GetItemInfoCompat(itemID)
                 if itemName then
                     table.insert(wishlistItems, { name = itemName, id = itemID })
                 end

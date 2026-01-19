@@ -1,5 +1,8 @@
 select(2, ...).SetupGlobalFacade()
 
+-- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
+local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
+
 AdventureGuideClassicEventToastManager = AdventureGuideClassicEventToastManager or {}
 
 function AdventureGuideClassicEventToastManager:CreateToastFrame()
@@ -258,7 +261,7 @@ end
 -- Usage in chat: /run TestWishlistToastCustom(itemID)
 _G.TestWishlistToastCustom = function(itemID)
 	itemID = itemID or 6948
-	local itemName = C_Item.GetItemInfo(itemID) or C_Item.GetItemInfo(itemID) or "Unknown Item"
+	local itemName = GetItemInfoCompat(itemID) or "Unknown Item"
 	AdventureGuideClassicEventToastManager:ShowWishlistToast("Wishlist Item Found!", itemName, itemID, true)
 	print("Testing wishlist toast for item: " .. itemName)
 end

@@ -9,6 +9,17 @@ select(2, ...).SetupGlobalFacade()
 local component = UI.CreateComponent("Loot")
 local EquipMapping = GetEquipMapping()
 local Colors = GetColorMapping()
+
+-- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
+local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
+local function RequestLoadItemDataCompat(itemId)
+    if C_Item and C_Item.RequestLoadItemDataByID then
+        C_Item.RequestLoadItemDataByID(itemId)
+    else
+        GetItemInfo(itemId)
+    end
+end
+
 local components
 local lootContainer
 local lootScrollBox
@@ -86,7 +97,7 @@ local function HideItemPreview()
 end
 
 local function ProcessItemData(itemId)
-	local itemName, itemLink, itemQuality, _, _, itemType, itemSubType, _, itemEquipLoc, itemIcon = C_Item.GetItemInfo(itemId)
+	local itemName, itemLink, itemQuality, _, _, itemType, itemSubType, _, itemEquipLoc, itemIcon = GetItemInfoCompat(itemId)
 	if itemName then
 		return {
 			isHeader = false,
@@ -298,6 +309,10 @@ function component.Init(components_)
 end
 
 local function OnItemDataLoadResult(event, itemId, success)
+	-- GET_ITEM_INFO_RECEIVED doesn't have a success param, treat as success
+	if event == "GET_ITEM_INFO_RECEIVED" then
+		success = true
+	end
 	if success and pendingItemIds[itemId] then
 		pendingItemIds[itemId] = nil
 		component.Show()
@@ -305,7 +320,12 @@ local function OnItemDataLoadResult(event, itemId, success)
 end
 
 local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+-- TBC+ uses ITEM_DATA_LOAD_RESULT, Classic Era uses GET_ITEM_INFO_RECEIVED
+if C_Item and C_Item.RequestLoadItemDataByID then
+	eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+else
+	eventFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+end
 eventFrame:SetScript("OnEvent", function(self, event, ...)
 	OnItemDataLoadResult(event, ...)
 end)
@@ -322,7 +342,7 @@ function component.Show()
 			dataProvider:Insert(lootItem)
 		else
 			pendingItemIds[itemId] = true
-			C_Item.RequestLoadItemDataByID(itemId)
+			RequestLoadItemDataCompat(itemId)
 		end
 	end
 	local lootCategories = {
@@ -341,7 +361,7 @@ function component.Show()
 					dataProvider:Insert(lootItem)
 				else
 					pendingItemIds[itemId] = true
-					C_Item.RequestLoadItemDataByID(itemId)
+					RequestLoadItemDataCompat(itemId)
 				end
 			end
 		end

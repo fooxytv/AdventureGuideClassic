@@ -8,28 +8,47 @@ select(2, ...).SetupGlobalFacade()
 
 SearchService = {}
 
+-- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
+local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
+local function RequestLoadItemDataCompat(itemId)
+    if C_Item and C_Item.RequestLoadItemDataByID then
+        C_Item.RequestLoadItemDataByID(itemId)
+    else
+        -- On Classic Era, GetItemInfo triggers a server request if not cached
+        GetItemInfo(itemId)
+    end
+end
+
 -- Cache for item names (populated as items are queried)
 local itemNameCache = {}
 local pendingItemLoads = {}
 local searchCallback = nil
 local lastSearchText = ""
 
--- Register for item data load events
+-- Register for item data load events (TBC+ uses ITEM_DATA_LOAD_RESULT, Classic Era uses GET_ITEM_INFO_RECEIVED)
 local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+if C_Item and C_Item.RequestLoadItemDataByID then
+    eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+else
+    eventFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+end
 eventFrame:SetScript("OnEvent", function(self, event, itemId, success)
-	if success and pendingItemLoads[itemId] then
-		local itemName = C_Item.GetItemInfo(itemId)
-		if itemName then
-			itemNameCache[itemId] = itemName
-		end
-		pendingItemLoads[itemId] = nil
+    -- GET_ITEM_INFO_RECEIVED doesn't have a success param, treat as success if we get the event
+    if event == "GET_ITEM_INFO_RECEIVED" then
+        success = true
+    end
+    if success and pendingItemLoads[itemId] then
+        local itemName = GetItemInfoCompat(itemId)
+        if itemName then
+            itemNameCache[itemId] = itemName
+        end
+        pendingItemLoads[itemId] = nil
 
-		-- If we have a pending search callback and no more pending loads, re-run search
-		if searchCallback and next(pendingItemLoads) == nil then
-			searchCallback(lastSearchText)
-		end
-	end
+        -- If we have a pending search callback and no more pending loads, re-run search
+        if searchCallback and next(pendingItemLoads) == nil then
+            searchCallback(lastSearchText)
+        end
+    end
 end)
 
 -- Search instances by name (synchronous)
@@ -93,7 +112,7 @@ function SearchService.SearchLoot(searchText, callback)
 						if lootTable then
 							for _, item in ipairs(lootTable) do
 								if item.id then
-									local itemName = itemNameCache[item.id] or C_Item.GetItemInfo(item.id)
+									local itemName = itemNameCache[item.id] or GetItemInfoCompat(item.id)
 
 									if itemName then
 										itemNameCache[item.id] = itemName
@@ -108,7 +127,7 @@ function SearchService.SearchLoot(searchText, callback)
 											end
 
 											if not found then
-												local _, itemLink, itemQuality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(item.id)
+												local _, itemLink, itemQuality, _, _, _, _, _, _, itemIcon = GetItemInfoCompat(item.id)
 												table.insert(results, {
 													type = "loot",
 													name = itemName,
@@ -126,7 +145,7 @@ function SearchService.SearchLoot(searchText, callback)
 										-- Item not cached, request load
 										if not pendingItemLoads[item.id] then
 											pendingItemLoads[item.id] = true
-											C_Item.RequestLoadItemDataByID(item.id)
+											RequestLoadItemDataCompat(item.id)
 										end
 									end
 								end
