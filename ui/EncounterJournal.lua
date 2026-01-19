@@ -60,7 +60,6 @@ function component.Init(components_)
         GameTooltip:Hide()
     end)
 
-
     EncounterJournal.title = _G[addonName .. "_EncounterJournalTitleText"]
     EncounterJournal.title:SetText("Adventure Guide")
     EncounterJournal.portrait = _G[addonName .. "_EncounterJournalPortrait"]
@@ -69,7 +68,6 @@ function component.Init(components_)
     mask:SetAllPoints(EncounterJournal.portrait)
     mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     EncounterJournal.portrait:AddMaskTexture(mask)
-    -- Allow the window to be moved with last position saved account-wide
     if (SavedVariables.EncounterJournalLocation) then
         EncounterJournal:ClearAllPoints()
         EncounterJournal:SetPoint(unpack(SavedVariables.EncounterJournalLocation))
@@ -122,9 +120,15 @@ function UI.ToggleEncounterJournal()
         UI.Init()
         initialized = true
     end
+
+    local wasHidden = not EncounterJournal:IsShown()
     EncounterJournal:SetShown(not EncounterJournal:IsShown())
-    if (AdventureGuideNavigationService.GetEncounter()) then
--- todo: switch to correct view
+    if wasHidden and EncounterJournal:IsShown() then
+        local autoNavigated = AdventureGuideNavigationService.AutoNavigateToCurrentInstance(components)
+        if not autoNavigated and AdventureGuideNavigationService.GetEncounter() then
+            components.DynamicContentScroller.ShowOverview()
+        end
+    elseif AdventureGuideNavigationService.GetEncounter() then
         components.DynamicContentScroller.ShowOverview()
     end
 end

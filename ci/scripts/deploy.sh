@@ -1,21 +1,22 @@
 #!/bin/bash
 
-if [[ -d "/e" ]]; then
-    ostype="windows"
+# Load .env file for all environments
+if [ -f .env ]; then
+    # Strip quotes and carriage returns from values when exporting
+    while IFS='=' read -r key value || [ -n "$key" ]; do
+        # Skip comments and empty lines
+        [[ "$key" =~ ^#.*$ ]] && continue
+        [[ -z "$key" ]] && continue
+        # Remove carriage returns, surrounding quotes
+        key=$(echo "$key" | tr -d '\r')
+        value=$(echo "$value" | tr -d '\r')
+        value="${value%\"}"
+        value="${value#\"}"
+        export "$key=$value"
+    done < .env
 else
-    ostype="linux"
-    
-    if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
-    else
-        echo "Error: .env file not found."
-        exit 1
-    fi
-
-    if [ -z "$wow_addons_dir" ]; then
-        echo "Error: wow_addons_dir is not set in the .env file."
-        exit 1
-    fi
+    echo "Error: .env file not found."
+    exit 1
 fi
 
 # Locate .toc file
@@ -43,35 +44,41 @@ zip_file="ci/dist/${addon_name}-${version}.zip"
 echo "Zip file will be: '$zip_file'"
 
 local_deploy() {
-    if [ "$ostype" == "windows" ]; then
-        wow_addons_dir="/e/Program Files/World of Warcraft/_classic_era_/Interface/AddOns"
-        echo "Copying $zip_file to \"$wow_addons_dir/$addon_name\"..."
-        unzip -o "$zip_file" -d "$wow_addons_dir/$addon_name"
-        echo "Done."
-    else
-        echo "Copying $zip_file to "$wow_addons_dir/$addon_name"..."
-        unzip -o "$zip_file" -d "$wow_addons_dir/$addon_name"
-        echo "Done."
+    if [ -z "$wow_addons_dir_era" ]; then
+        echo "Error: wow_addons_dir_era is not set in .env file."
+        exit 1
     fi
+    echo "Copying $zip_file to \"$wow_addons_dir_era/$addon_name\"..."
+    unzip -o "$zip_file" -d "$wow_addons_dir_era/$addon_name"
+    echo "Done."
 }
 
 ptr_deploy() {
-    if [ "$ostype" == "windows" ]; then
-        wow_addons_dir_ptr="/e/Program Files/World of Warcraft/_classic_era_ptr_/Interface/AddOns"
-        echo "Copying $zip_file to \"$wow_addons_dir_ptr/$addon_name\"..."
-        unzip -o "$zip_file" -d "$wow_addons_dir_ptr/$addon_name"
-        echo "Done."
-    else
-        echo "Copying $zip_file to "$wow_addons_dir_ptr/$addon_name"..."
-        unzip -o "$zip_file" -d "$wow_addons_dir_ptr/$addon_name"
-        echo "Done."
+    if [ -z "$wow_addons_dir_ptr" ]; then
+        echo "Error: wow_addons_dir_ptr is not set in .env file."
+        exit 1
     fi
+    echo "Copying $zip_file to \"$wow_addons_dir_ptr/$addon_name\"..."
+    unzip -o "$zip_file" -d "$wow_addons_dir_ptr/$addon_name"
+    echo "Done."
+}
+
+tbc_deploy() {
+    if [ -z "$wow_addons_dir_tbc" ]; then
+        echo "Error: wow_addons_dir_tbc is not set in .env file."
+        exit 1
+    fi
+    echo "Copying $zip_file to \"$wow_addons_dir_tbc/$addon_name\"..."
+    unzip -o "$zip_file" -d "$wow_addons_dir_tbc/$addon_name"
+    echo "Done."
 }
 
 if [ "$1" == "local" ] || [ "$1" == "lcl" ]; then
     local_deploy
 elif [ "$1" == "ptr" ]; then
     ptr_deploy
+elif [ "$1" == "tbc" ]; then
+    tbc_deploy
 else
     echo "Error: Invalid argument. Use 'local' or 'lcl', or 'ptr' to deploy."
     exit 1

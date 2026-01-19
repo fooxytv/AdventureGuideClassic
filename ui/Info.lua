@@ -7,8 +7,10 @@ Programming by: TomCat / TomCat's Gaming
 select(2, ...).SetupGlobalFacade()
 
 local component = UI.CreateComponent("Info")
+local components
 
-function component.Init()
+function component.Init(components_)
+	components = components_
 	local info = CreateFrame("Frame", nil, EncounterJournal.encounter)
 	EncounterJournal.encounter.info = info
 	info:SetSize(785, 425)
@@ -59,6 +61,75 @@ function component.Init()
 	instanceButtonBorderHighlight:SetTexCoord(0.50585938, 0.63085938, 0.02246094, 0.08203125)
 	info.instanceButton:SetHighlightTexture(instanceButtonBorderHighlight, "ADD")
 	--todo: set OnClick
+
+	-- Create difficulty dropdown (Normal/Heroic) for TBC dungeons
+	info.difficultyDropdown = CreateFrame("Frame", "EncounterInfoDifficultyDropdown", info, "UIDropDownMenuTemplate")
+	info.difficultyDropdown:SetPoint("TOPRIGHT", info, "TOPRIGHT", 5, -12)
+	info.difficultyDropdown:SetScale(0.9)
+	info.difficultyDropdown:SetFrameStrata("DIALOG")
+	info.difficultyDropdown:SetFrameLevel(100)
+
+	-- Initialize difficulty dropdown
+	UIDropDownMenu_SetWidth(info.difficultyDropdown, 100)
+	UIDropDownMenu_SetText(info.difficultyDropdown, "Normal")
+
+	-- Hide by default (only show for TBC dungeons)
+	info.difficultyDropdown:Hide()
+
+	local function OnDifficultyClick(self)
+		InstanceService.SetDifficulty(self.value)
+		UIDropDownMenu_SetText(info.difficultyDropdown, self:GetText())
+		CloseDropDownMenus()
+		-- Trigger loot refresh
+		if components and components.Loot and components.Loot.Show then
+			components.Loot.Show()
+		end
+	end
+
+	local function InitializeDifficultyDropdown(self, level)
+		local info = UIDropDownMenu_CreateInfo()
+		local currentDifficulty = InstanceService.GetDifficulty()
+
+		-- Normal option
+		info.text = "Normal"
+		info.value = "normal"
+		info.func = OnDifficultyClick
+		info.checked = (currentDifficulty == "normal")
+		UIDropDownMenu_AddButton(info)
+
+		-- Heroic option
+		info.text = "Heroic"
+		info.value = "heroic"
+		info.func = OnDifficultyClick
+		info.checked = (currentDifficulty == "heroic")
+		UIDropDownMenu_AddButton(info)
+	end
+
+	UIDropDownMenu_Initialize(info.difficultyDropdown, InitializeDifficultyDropdown)
+end
+
+function component.UpdateDifficultyDropdown(instance)
+	local info = EncounterJournal.encounter.info
+	if not info or not info.difficultyDropdown then return end
+
+	-- Check if this is a TBC dungeon
+	local isTBC = select(4, GetBuildInfo()) >= 20000
+	local instanceFilter = instance.seasonFilter or "all"
+
+	if isTBC and instanceFilter == "tbc" then
+		-- Show difficulty dropdown for TBC dungeons
+		info.difficultyDropdown:Show()
+		-- Update text to current difficulty
+		local difficulty = InstanceService.GetDifficulty()
+		if difficulty == "normal" then
+			UIDropDownMenu_SetText(info.difficultyDropdown, "Normal")
+		elseif difficulty == "heroic" then
+			UIDropDownMenu_SetText(info.difficultyDropdown, "Heroic")
+		end
+	else
+		-- Hide for non-TBC or Era dungeons
+		info.difficultyDropdown:Hide()
+	end
 end
 
 UI.Add(component)

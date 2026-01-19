@@ -113,41 +113,10 @@ function component.Init(components_)
 		isAbilitiesTabSelected = false
 		isModelTabSelected = false
 	end)
-	-- questTab = AddTab("Quests")
-    -- EncounterJournal.encounter.info.questTab = questTab
-    -- questTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
-	-- questTab.selected:ClearAllPoints()
-	-- questTab.unselected:ClearAllPoints()
-    -- questTab.selected:SetTexture("interface/gossipframe/AvailableQuestIcon")
-	-- questTab.selected:SetSize(25, 25)
-    -- questTab.unselected:SetTexture("interface/gossipframe/AvailableQuestIcon")
-	-- questTab.unselected:SetSize(25, 25)
-	-- questTab.selected:SetPoint("CENTER", questTab, "CENTER")
-    -- questTab.unselected:SetPoint("CENTER", questTab, "CENTER")
-    -- questTab.selected:SetDrawLayer("OVERLAY")
-    -- questTab.unselected:SetDrawLayer("OVERLAY")
-	-- questTab:SetScript("OnEnter", function (self)
-	-- 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
-	-- 	GameTooltip:AddLine("Quest")
-	-- 	GameTooltip:Show()
-	-- end)
-	-- questTab:SetScript("OnLeave", function (self)
-	-- 	GameTooltip:Hide()
-	-- end)
-	-- questTab:SetScript("OnClick", function()
-	-- 	--tab.onclickFunc()
-	-- 	--PanelTemplates_Tab_OnClick(tab, EncounterJournal.encounter.info)
-	-- 	--PanelTemplates_SetTab(EncounterJournal.encounter.info, tabIdx)
-	-- 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-	-- 	isOverviewTabSelected = false
-	-- 	isLootTabSelected = false
-	-- 	isQuestTabSelected = true
-	-- 	isAbilitiesTabSelected = false
-	-- 	isModelTabSelected = false
-	-- end)
+
 	-- abilitiesTab = AddTab("Abilities")
 	-- EncounterJournal.encounter.info.abilitiesTab = abilitiesTab
-	-- abilitiesTab:SetPoint("TOP", questTab, "BOTTOM", 0, 2)
+	-- abilitiesTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
 	-- abilitiesTab.unselected:SetTexCoord(0.904296875, 0.99609375, 0.70703125, 0.748046875)
 	-- abilitiesTab.selected:SetTexCoord(0.806640625, 0.8984375, 0.70703125, 0.748046875)
 	-- abilitiesTab:SetScript("OnEnter", function (self)
@@ -162,28 +131,12 @@ function component.Init(components_)
 	-- 	selectedTab = abilitiesTab
 	-- 	components.DynamicContentScroller.ShowAbilities()
 	-- 	component.Refresh()
-	-- 	--tab.onclickFunc()
-	-- 	--PanelTemplates_Tab_OnClick(tab, EncounterJournal.encounter.info)
-	-- 	--PanelTemplates_SetTab(EncounterJournal.encounter.info, tabIdx)
 	-- 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 	-- 	isOverviewTabSelected = false
 	-- 	isLootTabSelected = false
 	-- 	isQuestTabSelected = false
 	-- 	isAbilitiesTabSelected = true
 	-- 	isModelTabSelected = false
-	-- end)
-	-- modelTab = AddTab("Model")
-	-- EncounterJournal.encounter.info.modelTab = modelTab
-	-- modelTab:SetPoint("TOP", abilitiesTab, "BOTTOM", 0, 2)
-	-- modelTab.unselected:SetTexCoord(0.90234375, 1, 0.662109375, 0.705078125)
-	-- modelTab.selected:SetTexCoord(0.8046875, 0.900390625, 0.662109375, 0.705078125)
-	-- modelTab:SetScript("OnEnter", function (self)
-	-- 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
-	-- 	GameTooltip:AddLine("Model")
-	-- 	GameTooltip:Show()
-	-- end)
-	-- modelTab:SetScript("OnLeave", function (self)
-	-- 	GameTooltip:Hide()
 	-- end)
 end
 
@@ -255,19 +208,11 @@ function component.Refresh()
 			disableTab(lootTab)
 		end
 	end
-	-- disableTab(questTab)
 	-- if (selectedTab ~= abilitiesTab) then
 	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
 	-- 		unselectTab(abilitiesTab)
 	-- 	else
 	-- 		disableTab(abilitiesTab)
-	-- 	end
-	-- end
-	-- if (selectedTab ~= modelTab) then
-	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
-	-- 		unselectTab(modelTab)
-	-- 	else
-	-- 		disableTab(modelTab)
 	-- 	end
 	-- end
 end

@@ -16,6 +16,12 @@ local globalFacade = { }
 globalFacade.addonName, globalFacade.addon = ...
 globalFacade.CreateFrame = CreateFrameProxy
 
+-- Cache Blizzard scroll APIs to protect against other addons overwriting them
+-- This prevents conflicts with addons like Zygor that may pollute the global namespace
+globalFacade.ScrollUtil = ScrollUtil
+globalFacade.CreateDataProvider = CreateDataProvider
+globalFacade.CreateScrollBoxListLinearView = CreateScrollBoxListLinearView
+
 globalFacade._G = _G
 globalFacade.__G = globalFacade
 globalFacade.SavedVariablesName = ("%s_Account"):format(globalFacade.addonName)
