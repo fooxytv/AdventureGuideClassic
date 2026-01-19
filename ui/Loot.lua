@@ -14,8 +14,6 @@ local lootContainer
 local lootScrollBox
 local previewFrame
 local rotationSpeed = 0.5
-
--- Track pending item loads and current encounter for smart refreshing
 local pendingItemIds = {}
 local currentEncounterId = nil
 
@@ -27,17 +25,13 @@ local function truncateText(text, maxLength)
 	end
 end
 
--- Create the preview frame for Ctrl+hover item preview
 local function CreatePreviewFrame()
 	if previewFrame then return previewFrame end
-
 	local frame = CreateFrame("Frame", "ItemPreviewFrame", UIParent, "BackdropTemplate")
 	frame:SetSize(200, 280)
 	frame:SetFrameStrata("TOOLTIP")
 	frame:SetFrameLevel(1000)
 	frame:Hide()
-
-	-- Set backdrop to pure black to match GameTooltip
 	frame:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -48,71 +42,49 @@ local function CreatePreviewFrame()
 	})
 	frame:SetBackdropColor(0, 0, 0, 0.95)
 	frame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
-
-	-- Model frame - use DressUpModel for item preview
 	frame.model = CreateFrame("DressUpModel", nil, frame)
 	frame.model:SetSize(190, 260)
 	frame.model:SetPoint("CENTER", 0, 5)
-
-	-- Camera orbit animation - positioned to fit taller races like Tauren/Draenei
 	frame.cameraAngle = 0
 	local cameraDistance = 1.8
 	local cameraHeight = 0.7
 	frame:SetScript("OnUpdate", function(self, elapsed)
 		self.cameraAngle = self.cameraAngle + (rotationSpeed * elapsed)
-		-- Calculate camera position orbiting around the character
 		local x = math.cos(self.cameraAngle) * cameraDistance
 		local y = math.sin(self.cameraAngle) * cameraDistance
 		self.model:SetCustomCamera(1)
 		self.model:SetCameraPosition(x, y, cameraHeight)
 		self.model:SetCameraTarget(0, 0, cameraHeight)
 	end)
-
 	previewFrame = frame
 	return frame
 end
 
--- Show preview frame below tooltip
 local function ShowItemPreview(itemLink, anchorFrame)
 	if not itemLink then return end
-
 	local frame = CreatePreviewFrame()
-
-	-- Position below the tooltip
 	frame:ClearAllPoints()
 	frame:SetPoint("TOP", GameTooltip, "BOTTOM", 0, -5)
-
-	-- Show frame (needs to be visible for TryOn to work)
 	frame:Show()
-
-	-- Set unit and undress
 	frame.model:SetUnit("player")
 	frame.model:Undress()
-
-	-- Undress all slots
 	for slot = 1, 19 do
 		frame.model:UndressSlot(slot)
 	end
-
-	-- Try on the item with a small delay to let undress complete
 	C_Timer.After(0.15, function()
 		if frame.model and frame:IsShown() then
 			frame.model:TryOn(itemLink)
 		end
 	end)
-
-	-- Reset camera angle
 	frame.cameraAngle = 0
 end
 
--- Hide preview frame
 local function HideItemPreview()
 	if previewFrame then
 		previewFrame:Hide()
 	end
 end
 
--- Helper function to process a single item and return loot data (or nil if not cached)
 local function ProcessItemData(itemId)
 	local itemName, itemLink, itemQuality, _, _, itemType, itemSubType, _, itemEquipLoc, itemIcon = C_Item.GetItemInfo(itemId)
 	if itemName then
@@ -130,7 +102,6 @@ local function ProcessItemData(itemId)
 	return nil
 end
 
--- Shared button OnUpdate handler for Ctrl key detection
 local function ButtonOnUpdate(self, elapsed)
 	if self.checkCtrl then
 		local isCtrlDown = IsControlKeyDown()
@@ -144,13 +115,11 @@ local function ButtonOnUpdate(self, elapsed)
 	end
 end
 
--- Shared button OnEnter handler
 local function ButtonOnEnter(self)
 	local lootItem = self.lootItem
 	if lootItem and lootItem.link then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetHyperlink(lootItem.link)
-		-- Add wishlist hint to tooltip
 		if lootItem.itemId then
 			if WishlistService and WishlistService.IsOnWishlist(lootItem.itemId) then
 				GameTooltip:AddLine(" ")
@@ -161,8 +130,6 @@ local function ButtonOnEnter(self)
 			end
 		end
 		GameTooltip:Show()
-
-		-- Set up Ctrl key tracking
 		self.checkCtrl = true
 		self.wasCtrlDown = false
 		self.lootItemLink = lootItem.link
@@ -170,7 +137,6 @@ local function ButtonOnEnter(self)
 	end
 end
 
--- Shared button OnLeave handler
 local function ButtonOnLeave(self)
 	self.checkCtrl = false
 	self.wasCtrlDown = false
@@ -179,19 +145,15 @@ local function ButtonOnLeave(self)
 	GameTooltip_Hide()
 end
 
--- Shared button OnClick handler
 local function ButtonOnClick(self, mouseButton)
 	local lootItem = self.lootItem
 	if not lootItem then return end
-
 	if mouseButton == "RightButton" and IsShiftKeyDown() then
-		-- Toggle wishlist (Shift + Right-click)
 		if lootItem.itemId and WishlistService then
 			local currentEncounter = AdventureGuideNavigationService.GetEncounter()
 			local currentInstance = AdventureGuideNavigationService.GetInstance()
 			local sourceBoss = currentEncounter and currentEncounter.name or "Unknown"
 			local sourceInstance = currentInstance and currentInstance.name or "Unknown"
-
 			local success, wasAdded = WishlistService.ToggleItem(
 				lootItem.itemId,
 				lootItem.link,
@@ -199,7 +161,6 @@ local function ButtonOnClick(self, mouseButton)
 				sourceBoss,
 				sourceInstance
 			)
-
 			if success then
 				if wasAdded then
 					self.wishlistStar:Show()
@@ -208,7 +169,6 @@ local function ButtonOnClick(self, mouseButton)
 					self.wishlistStar:Hide()
 					print("|cffff9900[AGC]|r Removed from Wishlist:", lootItem.link)
 				end
-				-- Refresh tooltip
 				GameTooltip:Hide()
 				ButtonOnEnter(self)
 			end
@@ -238,7 +198,6 @@ function component.Init(components_)
 	EncounterJournal.encounter.LootScrollBar = lootScrollBar
 	lootScrollBar:SetPoint("TOPLEFT", lootScrollBox, "TOPRIGHT", 5, -5)
 	lootScrollBar:SetPoint("BOTTOMLEFT", lootScrollBox, "BOTTOMRIGHT", 5, 5)
-
 	local function LootButtonInitializer(button, lootItem)
 		if not button.initialized then
 			button.icon = button:CreateTexture()
@@ -279,21 +238,16 @@ function component.Init(components_)
 			button.slot:SetFont("Fonts\\FRIZQT__.TTF", 10)
 			button.headerText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 			button.headerText:SetPoint("LEFT", 5, -7)
-			-- Wishlist star icon
 			button.wishlistStar = button:CreateTexture(nil, "OVERLAY")
 			button.wishlistStar:SetSize(16, 16)
 			button.wishlistStar:SetPoint("TOPRIGHT", button.icon, "TOPRIGHT", 2, 2)
 			button.wishlistStar:SetTexture("Interface\\COMMON\\ReputationStar")
-			button.wishlistStar:SetTexCoord(0, 0.5, 0, 0.5) -- Yellow star
+			button.wishlistStar:SetTexCoord(0, 0.5, 0, 0.5)
 			button.wishlistStar:Hide()
-			-- Register for right-click
 			button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 			button.initialized = true
 		end
-
-		-- Store loot item reference on button for shared handlers
 		button.lootItem = lootItem
-
 		if lootItem.isHeader then
 			button.headerText:SetText(lootItem.text)
 			button.headerText:Show()
@@ -326,15 +280,11 @@ function component.Init(components_)
 			button.name:SetTextColor(color.r, color.g, color.b)
 			button.iconBorder:SetVertexColor(color.r, color.g, color.b)
 			button.iconOverlay:SetVertexColor(color.r, color.g, color.b)
-
-			-- Show wishlist star if item is on wishlist
 			if lootItem.itemId and WishlistService and WishlistService.IsOnWishlist(lootItem.itemId) then
 				button.wishlistStar:Show()
 			else
 				button.wishlistStar:Hide()
 			end
-
-			-- Use shared handlers instead of creating new functions
 			button:SetScript("OnEnter", ButtonOnEnter)
 			button:SetScript("OnLeave", ButtonOnLeave)
 			button:SetScript("OnClick", ButtonOnClick)
@@ -347,7 +297,6 @@ function component.Init(components_)
 	ScrollUtil.InitScrollBoxListWithScrollBar(lootScrollBox, lootScrollBar, lootView)
 end
 
--- Handle item data load results - only refresh if the item is one we're waiting for
 local function OnItemDataLoadResult(event, itemId, success)
 	if success and pendingItemIds[itemId] then
 		pendingItemIds[itemId] = nil
@@ -363,16 +312,10 @@ end)
 
 function component.Show()
 	if not lootScrollBox then return end
-
 	local encounterLoot = AdventureGuideNavigationService.GetEncounterLoot()
 	if not encounterLoot then return end
-
-	-- Clear pending items for fresh load
 	wipe(pendingItemIds)
-
 	local dataProvider = CreateDataProvider()
-
-	-- Process main loot
 	for _, itemId in ipairs(encounterLoot.loot or {}) do
 		local lootItem = ProcessItemData(itemId)
 		if lootItem then
@@ -382,15 +325,12 @@ function component.Show()
 			C_Item.RequestLoadItemDataByID(itemId)
 		end
 	end
-
-	-- Process categorized loot
 	local lootCategories = {
 		{ loot = encounterLoot.sharedLoot, headerTitle = "Shared Loot" },
 		{ loot = encounterLoot.rareLoot, headerTitle = "Rare Loot" },
 		{ loot = encounterLoot.veryRareLoot, headerTitle = "Very Rare" },
 		{ loot = encounterLoot.extremelyRareLoot, headerTitle = "Extremely Rare" },
 	}
-
 	for _, category in ipairs(lootCategories) do
 		local categoryLoot = category.loot
 		if categoryLoot and #categoryLoot > 0 then

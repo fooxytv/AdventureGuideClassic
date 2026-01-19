@@ -65,7 +65,6 @@ function CollapsibleSectionWidgetTypeMixin:Construct(parent)
 		table.insert(button.icons, iconFrame)
 		iconFrame:SetSize(32, 32)
 		iconFrame.icon = iconFrame:CreateTexture(nil, "OVERLAY")
-		-- iconFrame.icon:SetTexture(I.UIEJIcons)
 		iconFrame.icon:SetPoint("CENTER")
 		iconFrame.icon:SetSize(32, 32)
 		iconFrame:SetScript("OnEnter", function(self)
@@ -105,7 +104,6 @@ function CollapsibleSectionWidgetTypeMixin:Construct(parent)
 	button.middleHighlight:ClearAllPoints()
 	button.middleHighlight:SetPoint("LEFT", button.leftHighlight, "RIGHT", -32, 0)
 	button.middleHighlight:SetPoint("RIGHT", button.rightHighlight, "LEFT", 32, 0)
-	-- Expanded state textures (SelectUp)
 	button.eLeft = button:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-PaperHeader-SelectUp-Left")
 	button.eLeft:ClearAllPoints()
 	button.eLeft:SetPoint("LEFT", -1, -1)
@@ -117,8 +115,6 @@ function CollapsibleSectionWidgetTypeMixin:Construct(parent)
 	button.eMid:ClearAllPoints()
 	button.eMid:SetPoint("LEFT", button.eLeft, "RIGHT", -32, 0)
 	button.eMid:SetPoint("RIGHT", button.eRight, "LEFT", 32, 0)
-
-	-- Collapsed state textures (UnSelectUp) - created manually with texcoords
 	button.cLeft = button:CreateTexture(nil, "BACKGROUND")
 	button.cLeft:SetTexture("Interface\\EncounterJournal\\UI-EncounterJournalTextures")
 	button.cLeft:SetSize(64, 29)
@@ -143,33 +139,20 @@ function CollapsibleSectionWidgetTypeMixin:Construct(parent)
 	button.cMid:SetPoint("LEFT", button.eLeft, "RIGHT", -32, 0)
 	button.cMid:SetPoint("RIGHT", button.eRight, "LEFT", 32, 0)
 	button.cMid:Hide()
-
-	-- Initialize expanded state
 	frame.isExpanded = true
-
-	-- Add click handler to toggle expand/collapse
 	button:SetScript("OnClick", function(self)
 		local parentFrame = self:GetParent()
 		parentFrame.isExpanded = not parentFrame.isExpanded
 		CollapsibleSectionWidgetTypeMixin:UpdateExpandedState(parentFrame)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end)
-
-	--frame.text = frame:CreateFontString(nil, "ARTWORK", "GameFontBlack")
-	--frame.text:SetJustifyH("LEFT")
-	--frame.text:SetPoint("TOPLEFT", 2, -8)
-	--frame.text:SetPoint("RIGHT", -12, -8)
-	--frame.text:SetTextColor(0.25, 0.1484375, 0.02, 1)
-	--frame.text:SetWordWrap(true)
 	return frame
 end
 
 function CollapsibleSectionWidgetTypeMixin:SetContents(widget, contents, bulleted)
 	self:SetAnchors(widget)
-	--local height = 32
 	for idx, contentPart in ipairs(contents) do
 		if (type(contentPart) == "string") then
-			-- todo: replace tokens and convert into a table
 			contentPart = { text = contentPart}
 			contents[idx] = contentPart
 		end
@@ -178,7 +161,6 @@ function CollapsibleSectionWidgetTypeMixin:SetContents(widget, contents, bullete
 		else
 			local child = type:Acquire(widget)
 			type:SetContents(child, contentPart, bulleted)
-			--height = height + child:GetHeight()
 		end
 	end
 	local height = widget:GetTop() - widget.widgets[#widget.widgets]:GetBottom()
@@ -186,7 +168,6 @@ function CollapsibleSectionWidgetTypeMixin:SetContents(widget, contents, bullete
 	widget:Show()
 end
 
--- Override Acquire to reset expanded state when getting widget from pool
 function CollapsibleSectionWidgetTypeMixin:Acquire(parent)
 	local widget = WidgetTypeMixin.Acquire(self, parent)
 	widget.isExpanded = true
@@ -194,52 +175,42 @@ function CollapsibleSectionWidgetTypeMixin:Acquire(parent)
 	return widget
 end
 
--- Update the visual state and height when expanding/collapsing
 function CollapsibleSectionWidgetTypeMixin:UpdateExpandedState(widget)
 	if widget.isExpanded then
 		widget.button.expandedIcon:SetText("-")
-		-- Show expanded textures, hide collapsed textures
 		widget.button.eLeft:Show()
 		widget.button.eMid:Show()
 		widget.button.eRight:Show()
 		widget.button.cLeft:Hide()
 		widget.button.cMid:Hide()
 		widget.button.cRight:Hide()
-		-- Show children
 		for _, child in ipairs(widget.widgets) do
 			child:Show()
 		end
-		-- Recalculate height based on children
 		if #widget.widgets > 0 then
 			local height = widget:GetTop() - widget.widgets[#widget.widgets]:GetBottom()
 			widget:SetHeight(height)
 		end
 	else
 		widget.button.expandedIcon:SetText("+")
-		-- Show collapsed textures, hide expanded textures
 		widget.button.eLeft:Hide()
 		widget.button.eMid:Hide()
 		widget.button.eRight:Hide()
 		widget.button.cLeft:Show()
 		widget.button.cMid:Show()
 		widget.button.cRight:Show()
-		-- Hide children
 		for _, child in ipairs(widget.widgets) do
 			child:Hide()
 		end
-		-- Set height to just the button (24px)
 		widget:SetHeight(24)
 	end
 
-	-- Trigger parent height recalculation
 	CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(widget)
 end
 
--- Cascade height updates to parent widgets
 function CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(widget)
 	local parent = widget:GetParent()
 	if parent and parent.widgets and #parent.widgets > 0 then
-		-- Find the last visible widget
 		local lastVisible = nil
 		for i = #parent.widgets, 1, -1 do
 			if parent.widgets[i]:IsShown() then
@@ -247,11 +218,9 @@ function CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(widget)
 				break
 			end
 		end
-
 		if lastVisible and parent.type and parent.type.name ~= "Root" then
 			local height = parent:GetTop() - lastVisible:GetBottom()
 			parent:SetHeight(height)
-			-- Recursively update grandparent
 			CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(parent)
 		end
 	end

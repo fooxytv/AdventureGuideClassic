@@ -68,7 +68,6 @@ function component.Init(components_)
     mask:SetAllPoints(EncounterJournal.portrait)
     mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
     EncounterJournal.portrait:AddMaskTexture(mask)
-    -- Allow the window to be moved with last position saved account-wide
     if (SavedVariables.EncounterJournalLocation) then
         EncounterJournal:ClearAllPoints()
         EncounterJournal:SetPoint(unpack(SavedVariables.EncounterJournalLocation))
@@ -124,8 +123,6 @@ function UI.ToggleEncounterJournal()
 
     local wasHidden = not EncounterJournal:IsShown()
     EncounterJournal:SetShown(not EncounterJournal:IsShown())
-
-    -- When opening the journal, try to auto-navigate to current instance
     if wasHidden and EncounterJournal:IsShown() then
         local autoNavigated = AdventureGuideNavigationService.AutoNavigateToCurrentInstance(components)
         if not autoNavigated and AdventureGuideNavigationService.GetEncounter() then
