@@ -92,9 +92,112 @@ function component.Init(components_)
 	instance.mapButton:SetScript("OnMouseUp", function(self)
 		self.texture:SetTexCoord(0.125, 0.875, 0.0, 0.5)
 	end)
+
+	-- LFG Button (next to map button)
+	instance.lfgButton = CreateFrame("Button", nil, instance, "UIPanelButtonTemplate")
+	instance.lfgButton:SetSize(40, 24)
+	instance.lfgButton:SetPoint("LEFT", instance.mapButton, "RIGHT", 45, 0)
+	instance.lfgButton:SetFrameStrata("HIGH")
+	instance.lfgButton:SetFrameLevel(100)
+	instance.lfgButton:EnableMouse(true)
+	instance.lfgButton:RegisterForClicks("LeftButtonDown")
+	instance.lfgButton.shadow = instance.lfgButton:CreateTexture(nil, "BACKGROUND")
+	instance.lfgButton.shadow:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
+	instance.lfgButton.shadow:SetTexCoord(0.00195313, 0.33593750, 0.85253906, 0.90136719)
+	instance.lfgButton.shadow:SetPoint("LEFT", -3, 5)
+	instance.lfgButton.shadow:SetSize(171, 50)
+	instance.lfgButton.texture = instance.lfgButton:CreateTexture(nil, "ARTWORK")
+	instance.lfgButton.texture:SetTexture("Interface\\LFGFrame\\LFGIcon-ReturntoKarazhan")
+	instance.lfgButton.texture:SetSize(32, 32)
+	instance.lfgButton.texture:SetPoint("RIGHT", 2, 0)
+	instance.lfgButton.highlight = instance.lfgButton:CreateTexture(nil, "HIGHLIGHT")
+	instance.lfgButton.highlight:SetTexture("Interface\\BUTTONS\\ButtonHilight-Square")
+	instance.lfgButton.highlight:SetBlendMode("ADD")
+	instance.lfgButton.highlight:SetSize(36, 25)
+	instance.lfgButton.highlight:SetPoint("CENTER")
+	instance.lfgButton.text = instance.lfgButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	instance.lfgButton.text:SetPoint("LEFT", instance.lfgButton.texture, "RIGHT", 4, 0)
+	instance.lfgButton.text:SetJustifyH("LEFT")
+	instance.lfgButton.text:SetText("Find\nGroup")
+	instance.lfgButton:SetScript("OnClick", function()
+		component.OpenLFGForInstance()
+	end)
+	instance.lfgButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Find Group")
+		GameTooltip:AddLine("Open the Looking For Group tool to find or create a group for this dungeon.", 1, 1, 1, true)
+		GameTooltip:Show()
+	end)
+	instance.lfgButton:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+
 	local scrollBox = instance.loreScrollingFont:GetScrollBox();
 	ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, instance.loreScrollBar);
 	instance:Hide()
+end
+
+-- Find LFG activity ID by matching instance name
+local function FindActivityIDForInstance(instanceName)
+	if not C_LFGList or not C_LFGList.GetAvailableActivities then
+		return nil
+	end
+
+	-- Category IDs: 2 = Dungeons, 3 = Raids (may vary by client version)
+	local categories = C_LFGList.GetAvailableCategories and C_LFGList.GetAvailableCategories() or {2, 3}
+
+	for _, categoryID in ipairs(categories) do
+		local activities = C_LFGList.GetAvailableActivities(categoryID)
+		if activities then
+			for _, activityID in ipairs(activities) do
+				local activityInfo = C_LFGList.GetActivityInfoTable and C_LFGList.GetActivityInfoTable(activityID)
+				if activityInfo and activityInfo.fullName then
+					-- Check if the activity name contains our instance name (case-insensitive)
+					if activityInfo.fullName:lower():find(instanceName:lower(), 1, true) or
+					   instanceName:lower():find(activityInfo.fullName:lower(), 1, true) then
+						return activityID, categoryID
+					end
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+-- Open LFG tool for the current instance
+function component.OpenLFGForInstance()
+	local instanceName = component.frame.title:GetText()
+	if not instanceName then
+		print("|cffff9900[AGC]|r No instance selected")
+		return
+	end
+
+	-- Check if LFG is available
+	if not PVEFrame then
+		print("|cffff9900[AGC]|r Looking For Group tool is not available")
+		return
+	end
+
+	-- Try to find the activity ID for this instance
+	local activityID, categoryID = FindActivityIDForInstance(instanceName)
+
+	-- Open the PVE/LFG frame
+	if PVEFrame_ShowFrame then
+		PVEFrame_ShowFrame("GroupFinderFrame")
+	else
+		ShowUIPanel(PVEFrame)
+	end
+
+	-- If we found an activity, try to pre-select it
+	if activityID and C_LFGList and C_LFGList.SetSearchToActivity then
+		C_Timer.After(0.1, function()
+			C_LFGList.SetSearchToActivity(activityID)
+			print("|cff00ff00[AGC]|r LFG opened for: " .. instanceName)
+		end)
+	else
+		print("|cff00ff00[AGC]|r LFG opened - search for: " .. instanceName)
+	end
 end
 
 function component.Show(instance)

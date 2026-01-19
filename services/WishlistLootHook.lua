@@ -15,7 +15,7 @@ local BORDER_COLOR = {0, 0.8, 0}
 local ICON_SIZE = 32
 local ICON_OFFSET = 7
 local DEBUG_SHOW_ALL = false
-local DEBUG_LOG = true  -- TEMP: Enable to diagnose issue
+local DEBUG_LOG = false
 
 -- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
@@ -113,21 +113,11 @@ local function CheckLootWindow()
     local foundWishlistItem = false
     local wishlistItems = {}
 
-    if DEBUG_LOG then
-        print("|cffff00ff[AGC Debug]|r === CheckLootWindow START ===")
-        print("|cffff00ff[AGC Debug]|r DEBUG_SHOW_ALL =", tostring(DEBUG_SHOW_ALL))
-        print("|cffff00ff[AGC Debug]|r WishlistService exists =", tostring(WishlistService ~= nil))
-        print("|cffff00ff[AGC Debug]|r numLootItems =", numLootItems)
-    end
-
     for slot = 1, numLootItems do
         local itemID = GetLootSlotItemID(slot)
-        local wsExists = WishlistService ~= nil
-        local isOnWishlistResult = wsExists and WishlistService.IsOnWishlist(itemID)
-        local isOnWishlist = itemID and wsExists and isOnWishlistResult
+        local isOnWishlist = itemID and WishlistService and WishlistService.IsOnWishlist(itemID)
         if DEBUG_LOG then
-            print("|cffff00ff[AGC Debug]|r Slot", slot, "- itemID:", tostring(itemID), "wsExists:", tostring(wsExists), "isOnWishlistResult:", tostring(isOnWishlistResult), "final isOnWishlist:", tostring(isOnWishlist))
-            print("|cffff00ff[AGC Debug]|r Condition result: DEBUG_SHOW_ALL or isOnWishlist =", tostring(DEBUG_SHOW_ALL or isOnWishlist))
+            print("|cffff00ff[AGC Debug]|r Slot", slot, "- itemID:", tostring(itemID), "isOnWishlist:", tostring(isOnWishlist))
         end
         if DEBUG_SHOW_ALL or isOnWishlist then
             foundWishlistItem = true
