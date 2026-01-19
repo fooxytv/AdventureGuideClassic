@@ -21,18 +21,18 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 21216,
 		portrait = 1385741,
 		loot = {
-			{ id = 30047, seasonFilter = "tbc" }, -- Luminescent Rod of the Naaru
-			{ id = 30050, seasonFilter = "tbc" }, -- Robes of the Cleansing Flame
-			{ id = 30055, seasonFilter = "tbc" }, -- Pauldrons of the Wardancer
-			{ id = 30054, seasonFilter = "tbc" }, -- Ranger-General's Chestguard
-			{ id = 30056, seasonFilter = "tbc" }, -- Robe of Hateful Echoes
-			{ id = 30048, seasonFilter = "tbc" }, -- Blessed Totem of Pure Water
-			{ id = 30049, seasonFilter = "tbc" }  -- Fathomstone
+			{ id = 30047, seasonFilter = "tbc" },
+			{ id = 30050, seasonFilter = "tbc" },
+			{ id = 30055, seasonFilter = "tbc" },
+			{ id = 30054, seasonFilter = "tbc" },
+			{ id = 30056, seasonFilter = "tbc" },
+			{ id = 30048, seasonFilter = "tbc" },
+			{ id = 30049, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
-			{ id = 30244, seasonFilter = "tbc" }, -- Helm of the Fallen Champion (Tier 5)
-			{ id = 30249, seasonFilter = "tbc" }, -- Helm of the Fallen Defender (Tier 5)
-			{ id = 30237, seasonFilter = "tbc" }  -- Helm of the Fallen Hero (Tier 5)
+			{ id = 30244, seasonFilter = "tbc" },
+			{ id = 30249, seasonFilter = "tbc" },
+			{ id = 30237, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -75,18 +75,18 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 21217,
 		portrait = 1385768,
 		loot = {
-			{ id = 30665, seasonFilter = "tbc" }, -- Fathomstone
-			{ id = 30054, seasonFilter = "tbc" }, -- Cord of Screaming Terrors
-			{ id = 30064, seasonFilter = "tbc" }, -- Mallet of the Tides
-			{ id = 30062, seasonFilter = "tbc" }, -- Grove-Bands of Remulos
-			{ id = 30060, seasonFilter = "tbc" }, -- Boots of Effortless Striking
-			{ id = 30063, seasonFilter = "tbc" }, -- Libram of the Lightbringer
-			{ id = 30065, seasonFilter = "tbc" }  -- Serpentshrine Shuriken
+			{ id = 30665, seasonFilter = "tbc" },
+			{ id = 30054, seasonFilter = "tbc" },
+			{ id = 30064, seasonFilter = "tbc" },
+			{ id = 30062, seasonFilter = "tbc" },
+			{ id = 30060, seasonFilter = "tbc" },
+			{ id = 30063, seasonFilter = "tbc" },
+			{ id = 30065, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
-			{ id = 30244, seasonFilter = "tbc" }, -- Helm of the Fallen Champion (Tier 5)
-			{ id = 30249, seasonFilter = "tbc" }, -- Helm of the Fallen Defender (Tier 5)
-			{ id = 30237, seasonFilter = "tbc" }  -- Helm of the Fallen Hero (Tier 5)
+			{ id = 30244, seasonFilter = "tbc" },
+			{ id = 30249, seasonFilter = "tbc" },
+			{ id = 30237, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -129,18 +129,18 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 21215,
 		portrait = 1385751,
 		loot = {
-			{ id = 30056, seasonFilter = "tbc" }, -- Coral-Barbed Shoulderpads
-			{ id = 30054, seasonFilter = "tbc" }, -- Tsunami Talisman
-			{ id = 30051, seasonFilter = "tbc" }, -- Girdle of the Invulnerable
-			{ id = 30057, seasonFilter = "tbc" }, -- Vestments of the Sea-Witch
-			{ id = 30091, seasonFilter = "tbc" }, -- True-Aim Stalker Bands
-			{ id = 30095, seasonFilter = "tbc" }, -- Ring of Sundered Souls
-			{ id = 30096, seasonFilter = "tbc" }  -- Girdle of the Tidal Call
+			{ id = 30056, seasonFilter = "tbc" },
+			{ id = 30054, seasonFilter = "tbc" },
+			{ id = 30051, seasonFilter = "tbc" },
+			{ id = 30057, seasonFilter = "tbc" },
+			{ id = 30091, seasonFilter = "tbc" },
+			{ id = 30095, seasonFilter = "tbc" },
+			{ id = 30096, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
-			{ id = 30245, seasonFilter = "tbc" }, -- Gloves of the Fallen Champion (Tier 5)
-			{ id = 30250, seasonFilter = "tbc" }, -- Gloves of the Fallen Defender (Tier 5)
-			{ id = 30238, seasonFilter = "tbc" }  -- Gloves of the Fallen Hero (Tier 5)
+			{ id = 30245, seasonFilter = "tbc" },
+			{ id = 30250, seasonFilter = "tbc" },
+			{ id = 30238, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -183,18 +183,18 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 21214,
 		portrait = 1385729,
 		loot = {
-			{ id = 30663, seasonFilter = "tbc" }, -- Fathom-Brooch of the Tidewalker
-			{ id = 30665, seasonFilter = "tbc" }, -- Frayed Tether of the Drowned
-			{ id = 30621, seasonFilter = "tbc" }, -- Tidewalker Greatstaff
-			{ id = 30627, seasonFilter = "tbc" }, -- Tide-Stomper's Greaves
-			{ id = 30100, seasonFilter = "tbc" }, -- Soul-Strider Boots
-			{ id = 30101, seasonFilter = "tbc" }, -- Bloodsea Brigand's Vest
-			{ id = 30090, seasonFilter = "tbc" }  -- World Breaker
+			{ id = 30663, seasonFilter = "tbc" },
+			{ id = 30665, seasonFilter = "tbc" },
+			{ id = 30621, seasonFilter = "tbc" },
+			{ id = 30627, seasonFilter = "tbc" },
+			{ id = 30100, seasonFilter = "tbc" },
+			{ id = 30101, seasonFilter = "tbc" },
+			{ id = 30090, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
-			{ id = 30245, seasonFilter = "tbc" }, -- Gloves of the Fallen Champion (Tier 5)
-			{ id = 30250, seasonFilter = "tbc" }, -- Gloves of the Fallen Defender (Tier 5)
-			{ id = 30238, seasonFilter = "tbc" }  -- Gloves of the Fallen Hero (Tier 5)
+			{ id = 30245, seasonFilter = "tbc" },
+			{ id = 30250, seasonFilter = "tbc" },
+			{ id = 30238, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -237,18 +237,18 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 21213,
 		portrait = 1385756,
 		loot = {
-			{ id = 30052, seasonFilter = "tbc" }, -- Pauldrons of the Argent Sentinel
-			{ id = 30050, seasonFilter = "tbc" }, -- Girdle of the Tidewalker
-			{ id = 30627, seasonFilter = "tbc" }, -- Tsunami Talisman
-			{ id = 30085, seasonFilter = "tbc" }, -- Chain of the Twilight Owl
-			{ id = 30081, seasonFilter = "tbc" }, -- Warboots of Obliteration
-			{ id = 30068, seasonFilter = "tbc" }, -- Girdle of the Tidal Call
-			{ id = 30084, seasonFilter = "tbc" }  -- Razor-Scale Battlecloak
+			{ id = 30052, seasonFilter = "tbc" },
+			{ id = 30050, seasonFilter = "tbc" },
+			{ id = 30627, seasonFilter = "tbc" },
+			{ id = 30085, seasonFilter = "tbc" },
+			{ id = 30081, seasonFilter = "tbc" },
+			{ id = 30068, seasonFilter = "tbc" },
+			{ id = 30084, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
-			{ id = 30246, seasonFilter = "tbc" }, -- Shoulders of the Fallen Champion (Tier 5)
-			{ id = 30251, seasonFilter = "tbc" }, -- Shoulders of the Fallen Defender (Tier 5)
-			{ id = 30239, seasonFilter = "tbc" }  -- Shoulders of the Fallen Hero (Tier 5)
+			{ id = 30246, seasonFilter = "tbc" },
+			{ id = 30251, seasonFilter = "tbc" },
+			{ id = 30239, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -291,21 +291,21 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 21212,
 		portrait = 1385750,
 		loot = {
-			{ id = 30082, seasonFilter = "tbc" }, -- Fang of Vashj
-			{ id = 30107, seasonFilter = "tbc" }, -- Vestments of the Sea-Witch
-			{ id = 30109, seasonFilter = "tbc" }, -- Coral Band of the Revived
-			{ id = 30106, seasonFilter = "tbc" }, -- Krakken-Heart Breastplate
-			{ id = 30102, seasonFilter = "tbc" }, -- Krakken-Heart Breastplate
-			{ id = 30108, seasonFilter = "tbc" }, -- Lightfathom Scepter
-			{ id = 30104, seasonFilter = "tbc" }  -- Cobra-Lash Boots
+			{ id = 30082, seasonFilter = "tbc" },
+			{ id = 30107, seasonFilter = "tbc" },
+			{ id = 30109, seasonFilter = "tbc" },
+			{ id = 30106, seasonFilter = "tbc" },
+			{ id = 30102, seasonFilter = "tbc" },
+			{ id = 30108, seasonFilter = "tbc" },
+			{ id = 30104, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
-			{ id = 30247, seasonFilter = "tbc" }, -- Leggings of the Fallen Champion (Tier 5)
-			{ id = 30252, seasonFilter = "tbc" }, -- Leggings of the Fallen Defender (Tier 5)
-			{ id = 30240, seasonFilter = "tbc" }  -- Leggings of the Fallen Hero (Tier 5)
+			{ id = 30247, seasonFilter = "tbc" },
+			{ id = 30252, seasonFilter = "tbc" },
+			{ id = 30240, seasonFilter = "tbc" }
 		},
 		rareLoot = {
-			{ id = 30183, seasonFilter = "tbc" }  -- Vashj's Vial Remnant (Quest item for Black Temple attunement)
+			{ id = 30183, seasonFilter = "tbc" }
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
