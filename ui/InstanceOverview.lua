@@ -94,31 +94,20 @@ function component.Init(components_)
 	end)
 
 	-- LFG Button (next to map button)
-	instance.lfgButton = CreateFrame("Button", nil, instance, "UIPanelButtonTemplate")
-	instance.lfgButton:SetSize(40, 24)
-	instance.lfgButton:SetPoint("LEFT", instance.mapButton, "RIGHT", 45, 0)
+	instance.lfgButton = CreateFrame("Button", nil, instance)
+	instance.lfgButton:SetSize(32, 32)
+	instance.lfgButton:SetPoint("LEFT", instance.mapButton, "RIGHT", 50, 0)
 	instance.lfgButton:SetFrameStrata("HIGH")
 	instance.lfgButton:SetFrameLevel(100)
 	instance.lfgButton:EnableMouse(true)
-	instance.lfgButton:RegisterForClicks("LeftButtonDown")
-	instance.lfgButton.shadow = instance.lfgButton:CreateTexture(nil, "BACKGROUND")
-	instance.lfgButton.shadow:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
-	instance.lfgButton.shadow:SetTexCoord(0.00195313, 0.33593750, 0.85253906, 0.90136719)
-	instance.lfgButton.shadow:SetPoint("LEFT", -3, 5)
-	instance.lfgButton.shadow:SetSize(171, 50)
-	instance.lfgButton.texture = instance.lfgButton:CreateTexture(nil, "ARTWORK")
-	instance.lfgButton.texture:SetTexture("Interface\\LFGFrame\\LFGIcon-ReturntoKarazhan")
-	instance.lfgButton.texture:SetSize(32, 32)
-	instance.lfgButton.texture:SetPoint("RIGHT", 2, 0)
+	instance.lfgButton:RegisterForClicks("LeftButtonUp")
+	instance.lfgButton.icon = instance.lfgButton:CreateTexture(nil, "ARTWORK")
+	instance.lfgButton.icon:SetTexture("Interface/LFGFRAME/UI-LFG-PORTRAIT")
+	instance.lfgButton.icon:SetAllPoints()
 	instance.lfgButton.highlight = instance.lfgButton:CreateTexture(nil, "HIGHLIGHT")
-	instance.lfgButton.highlight:SetTexture("Interface\\BUTTONS\\ButtonHilight-Square")
+	instance.lfgButton.highlight:SetTexture("Interface/BUTTONS/ButtonHilight-Square")
 	instance.lfgButton.highlight:SetBlendMode("ADD")
-	instance.lfgButton.highlight:SetSize(36, 25)
-	instance.lfgButton.highlight:SetPoint("CENTER")
-	instance.lfgButton.text = instance.lfgButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	instance.lfgButton.text:SetPoint("LEFT", instance.lfgButton.texture, "RIGHT", 4, 0)
-	instance.lfgButton.text:SetJustifyH("LEFT")
-	instance.lfgButton.text:SetText("Find\nGroup")
+	instance.lfgButton.highlight:SetAllPoints()
 	instance.lfgButton:SetScript("OnClick", function()
 		component.OpenLFGForInstance()
 	end)
@@ -173,31 +162,38 @@ function component.OpenLFGForInstance()
 		return
 	end
 
-	-- Check if LFG is available
-	if not PVEFrame then
+	-- Use ToggleLFGFrame if available (handles both Vanilla and TBC styles)
+	if ToggleLFGFrame then
+		ToggleLFGFrame()
+	-- Fallback: Check the premade group finder style
+	elseif C_LFGList and C_LFGList.GetPremadeGroupFinderStyle then
+		local style = C_LFGList.GetPremadeGroupFinderStyle()
+		if style == Enum.PremadeGroupFinderStyle.Vanilla then
+			-- Vanilla style
+			if ToggleLFGParentFrame then
+				ToggleLFGParentFrame()
+			elseif ShowLFGParentFrame then
+				ShowLFGParentFrame()
+			end
+		else
+			-- TBC/Classic style
+			if PVEFrame_ToggleFrame then
+				PVEFrame_ToggleFrame()
+			elseif PVEFrame_ShowFrame then
+				PVEFrame_ShowFrame("GroupFinderFrame")
+			end
+		end
+	-- Last resort fallbacks
+	elseif PVEFrame_ToggleFrame then
+		PVEFrame_ToggleFrame()
+	elseif ToggleLFGParentFrame then
+		ToggleLFGParentFrame()
+	else
 		print("|cffff9900[AGC]|r Looking For Group tool is not available")
 		return
 	end
 
-	-- Try to find the activity ID for this instance
-	local activityID, categoryID = FindActivityIDForInstance(instanceName)
-
-	-- Open the PVE/LFG frame
-	if PVEFrame_ShowFrame then
-		PVEFrame_ShowFrame("GroupFinderFrame")
-	else
-		ShowUIPanel(PVEFrame)
-	end
-
-	-- If we found an activity, try to pre-select it
-	if activityID and C_LFGList and C_LFGList.SetSearchToActivity then
-		C_Timer.After(0.1, function()
-			C_LFGList.SetSearchToActivity(activityID)
-			print("|cff00ff00[AGC]|r LFG opened for: " .. instanceName)
-		end)
-	else
-		print("|cff00ff00[AGC]|r LFG opened - search for: " .. instanceName)
-	end
+	print("|cff00ff00[AGC]|r LFG opened - search for: " .. instanceName)
 end
 
 function component.Show(instance)
