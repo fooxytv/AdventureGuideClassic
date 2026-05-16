@@ -34,14 +34,32 @@ end
 
 local function Anchor()
     if not button then return end
-    local rightmost = HelpMicroButton or MainMenuMicroButton or CharacterMicroButton
-    if not rightmost then return end
-    button:SetParent(rightmost:GetParent() or UIParent)
-    button:SetFrameStrata(rightmost:GetFrameStrata())
-    button:SetFrameLevel(rightmost:GetFrameLevel())
-    button:SetSize(rightmost:GetSize())
+    local anchor = QuestLogMicroButton
+    if not anchor then return end
+
+    button:SetParent(anchor:GetParent() or UIParent)
+    button:SetFrameStrata(anchor:GetFrameStrata())
+    button:SetFrameLevel(anchor:GetFrameLevel())
+    button:SetSize(anchor:GetSize())
     button:ClearAllPoints()
-    button:SetPoint("LEFT", rightmost, "RIGHT", -3, 0)
+    button:SetPoint("LEFT", anchor, "RIGHT", -3, 0)
+
+    -- Blizzard chain-anchors microbuttons (each anchored to its predecessor),
+    -- so re-anchoring just the immediate next button to ours pulls the rest along.
+    if type(MICRO_BUTTONS) ~= "table" then return end
+    local foundQuest = false
+    for _, name in ipairs(MICRO_BUTTONS) do
+        if foundQuest then
+            local next = _G[name]
+            if next then
+                next:ClearAllPoints()
+                next:SetPoint("LEFT", button, "RIGHT", -3, 0)
+                break
+            end
+        elseif name == "QuestLogMicroButton" then
+            foundQuest = true
+        end
+    end
 end
 
 function MicroButton.Init()
