@@ -4,7 +4,7 @@
 
 ## Interface: 20505
 ## Title: AdventureGuideClassic
-## Version: 1.5.2-alpha.6195e55
+## Version: 1.5.3-alpha.b6553f8
 ## Notes: Provides a dungeon and raid journal for Classic WoW
 ## DefaultState: enabled
 ## SavedVariables: AdventureGuideClassic_Account
