@@ -76,6 +76,7 @@ jobs:
           CHANGELOG="## $CURRENT_TAG"$'\n\n'"$COMMITS"
 
           # Save to file (handles multi-line content)
+          mkdir -p ci/dist
           echo "$CHANGELOG" > ci/dist/changelog.md
 
           # Also save to environment for the upload step
