@@ -13,23 +13,80 @@ on:
       game_versions:
         description: "Game Version(s)"
         required: false
-        default: 1.15.6
+        default: 1.15.8
+
 jobs:
   publish-addon:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for changelog generation
 
       - name: Set up scripts
         run: |
           chmod +x ./ci/scripts/lint.sh
           chmod +x ./ci/scripts/package.sh
           chmod +x ./ci/scripts/repackage.sh
+          chmod +x ./ci/scripts/version.sh
 
       # - name: Lint
       #   run: |
       #     ./ci/scripts/lint.sh
+
+      - name: Sync version from tag to .toc files
+        run: |
+          # Get version from tag (strip 'v' prefix if present)
+          TAG_VERSION="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG_VERSION#v}"
+
+          echo "Syncing version: $VERSION"
+
+          # Update all .toc files with the tag version
+          for toc_file in *.toc; do
+            if [ -f "$toc_file" ]; then
+              sed -i "s/^## Version:.*/## Version: $VERSION/" "$toc_file"
+              echo "Updated $toc_file with version: $VERSION"
+            fi
+          done
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          # Get the current tag
+          CURRENT_TAG="${GITHUB_REF#refs/tags/}"
+
+          # Get the previous tag
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          echo "Current tag: $CURRENT_TAG"
+          echo "Previous tag: $PREVIOUS_TAG"
+
+          # Generate changelog from commits
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "Generating changelog from $PREVIOUS_TAG to $CURRENT_TAG"
+            COMMITS=$(git log --pretty=format:"- %s" "$PREVIOUS_TAG".."$CURRENT_TAG" --no-merges)
+          else
+            echo "No previous tag found, generating changelog from all commits"
+            COMMITS=$(git log --pretty=format:"- %s" --no-merges -20)
+          fi
+
+          # Build changelog with version header
+          CHANGELOG="## $CURRENT_TAG"$'\n\n'"$COMMITS"
+
+          # Save to file (handles multi-line content)
+          echo "$CHANGELOG" > ci/dist/changelog.md
+
+          # Also save to environment for the upload step
+          {
+            echo 'CHANGELOG<<EOF'
+            echo "$CHANGELOG"
+            echo 'EOF'
+          } >> $GITHUB_ENV
+
+          echo "Generated changelog:"
+          cat ci/dist/changelog.md
 
       - name: Package
         run: |
@@ -48,7 +105,7 @@ jobs:
           if [ -z "$ZIP_FILE" ]; then
             echo "No matching artifact found."
             exit 1
-          fi 
+          fi
 
           echo "Found artifact: $ZIP_FILE"
           echo "ZIP_PATH=$ZIP_FILE" >> $GITHUB_ENV
@@ -60,8 +117,8 @@ jobs:
           project_id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
           game_endpoint: "wow"
           token: ${{ secrets.CURSEFORGE_TOKEN }}
-          release_type: ${{ github.event.inputs.release_type }}
-          changelog: "- Publish test to CurseForge from GitHub Actions." # Data within this changelog.txt file should be automatically generated
+          release_type: ${{ github.event.inputs.release_type || 'release' }}
+          changelog: ${{ env.CHANGELOG }}
           changelog_type: "markdown"
-          game_versions: ${{ github.event.inputs.game_versions }} # This needs to be a parameter so it's configurable or automatically generated
+          game_versions: ${{ github.event.inputs.game_versions }}
 

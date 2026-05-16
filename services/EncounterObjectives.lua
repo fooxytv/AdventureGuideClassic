@@ -2,9 +2,6 @@ select(2, ...).SetupGlobalFacade()
 
 local EncounterObjective = {}
 AdventureObjectives = AdventureObjectives or {}
-
--- Debug output toggle (orange messages)
--- Enable with: /run AGC_ToggleDebug() or /run AdventureGuideClassic_DebugEvents = true
 AdventureGuideClassic_DebugEvents = AdventureGuideClassic_DebugEvents or false
 
 local function DebugPrint(...)
@@ -13,40 +10,31 @@ local function DebugPrint(...)
     end
 end
 
--- Debounce tracking to prevent duplicate triggers
 local recentlyDefeated = {}
 local DEBOUNCE_TIME = 5 -- seconds
 
--- Extract NPC ID from GUID
--- GUID format: "Creature-0-XXXX-XXXX-XXXX-NPCID-SPAWNID"
 local function GetNpcIdFromGuid(guid)
     if not guid then return nil end
     local npcId = select(6, strsplit("-", guid))
     return npcId and tonumber(npcId)
 end
 
--- Check if this is a creature GUID (not player, pet, etc.)
 local function IsCreatureGuid(guid)
     if not guid then return false end
     return guid:match("^Creature%-") ~= nil
 end
 
--- Build a lookup table of NPC IDs for the current dungeon
--- Uses InstanceService (encounterID field contains the NPC ID)
 local function BuildNpcLookup(dungeonName)
     local lookup = {}
 
-    -- Check dungeons (encounterID field is the NPC ID)
     local instanceDungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(instanceDungeons) do
         if dungeon.name == dungeonName then
             for i, encounter in ipairs(dungeon) do
                 if type(encounter) == "table" and encounter.name then
-                    -- encounterID in dungeon data is the NPC ID
                     if encounter.encounterID then
                         lookup[encounter.encounterID] = encounter
                     end
-                    -- Name-based lookup as fallback
                     lookup[encounter.name] = encounter
                 end
             end
@@ -54,7 +42,6 @@ local function BuildNpcLookup(dungeonName)
         end
     end
 
-    -- Also check raids
     local instanceRaids = InstanceService.GetRaids()
     for _, raid in ipairs(instanceRaids) do
         if raid.name == dungeonName then
@@ -96,7 +83,6 @@ function EncounterObjective.CheckEncounterDefeated(bossName)
     if not bossName then return end
     local dungeonName = GetInstanceInfo()
 
-    -- Check dungeons
     local dungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(dungeons) do
         if dungeon.name == dungeonName then
@@ -112,7 +98,6 @@ function EncounterObjective.CheckEncounterDefeated(bossName)
         end
     end
 
-    -- Check raids
     local raids = InstanceService.GetRaids()
     for _, raid in ipairs(raids) do
         if raid.name == dungeonName then
@@ -134,7 +119,6 @@ function EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
         return
     end
 
-    -- Update in InstanceService dungeons
     local instanceDungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(instanceDungeons) do
         if dungeon.name == dungeonName then
@@ -147,7 +131,6 @@ function EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
         end
     end
 
-    -- Update in InstanceService raids
     local instanceRaids = InstanceService.GetRaids()
     for _, raid in ipairs(instanceRaids) do
         if raid.name == dungeonName then
@@ -166,7 +149,6 @@ function EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
     end
 end
 
--- Trigger the defeat notification with debouncing
 local function TriggerDefeatNotification(encounterName)
     DebugPrint("TriggerDefeatNotification called for:", encounterName)
 
@@ -174,7 +156,7 @@ local function TriggerDefeatNotification(encounterName)
     local now = GetTime()
     if recentlyDefeated[encounterName] and (now - recentlyDefeated[encounterName]) < DEBOUNCE_TIME then
         DebugPrint("Debounced, skipping")
-        return false -- Already triggered recently
+        return false
     end
     recentlyDefeated[encounterName] = now
 
@@ -186,9 +168,7 @@ local function TriggerDefeatNotification(encounterName)
     return true
 end
 
--- Helper to find and update encounter in InstanceService data directly
 local function MarkEncounterDefeatedInInstanceData(dungeonName, encounterName)
-    -- Check dungeons
     local instanceDungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(instanceDungeons) do
         if dungeon.name == dungeonName then
@@ -203,7 +183,6 @@ local function MarkEncounterDefeatedInInstanceData(dungeonName, encounterName)
         end
     end
 
-    -- Check raids
     local instanceRaids = InstanceService.GetRaids()
     for _, raid in ipairs(instanceRaids) do
         if raid.name == dungeonName then
@@ -221,10 +200,9 @@ local function MarkEncounterDefeatedInInstanceData(dungeonName, encounterName)
     return false
 end
 
--- Handle ENCOUNTER_END (most reliable for supported encounters)
 local function OnEncounterEnd(encounterID, encounterName, difficultyID, groupSize, success)
     if not success or success == 0 then
-        return -- Only trigger on successful boss kills
+        return
     end
 
     local dungeonName = GetInstanceInfo()
@@ -233,8 +211,6 @@ local function OnEncounterEnd(encounterID, encounterName, difficultyID, groupSiz
 
     local npcLookup = BuildNpcLookup(dungeonName)
     local encounter = nil
-
-    -- Try to find by encounterID first, then by name
     if encounterID and npcLookup[encounterID] then
         encounter = npcLookup[encounterID]
     elseif encounterName and npcLookup[encounterName] then
@@ -248,7 +224,6 @@ local function OnEncounterEnd(encounterID, encounterName, difficultyID, groupSiz
     end
 end
 
--- Handle BOSS_KILL event (fires in some Classic content)
 local function OnBossKill(encounterID, encounterName)
     local dungeonName = GetInstanceInfo()
 
@@ -270,9 +245,7 @@ local function OnBossKill(encounterID, encounterName)
     end
 end
 
--- Handle UNIT_DIED from combat log (fallback for older content)
 local function OnUnitDied(destGUID, destName)
-    -- Only process creature deaths
     if not IsCreatureGuid(destGUID) then
         return
     end
@@ -289,31 +262,23 @@ local function OnUnitDied(destGUID, destName)
     local npcLookup = BuildNpcLookup(dungeonName)
     local encounter = nil
 
-    -- Try NPC ID match first (most reliable)
     if npcId and npcLookup[npcId] then
         encounter = npcLookup[npcId]
         DebugPrint("Found by NPC ID:", encounter.name)
-    -- Fall back to name matching
     elseif destName and npcLookup[destName] then
         encounter = npcLookup[destName]
         DebugPrint("Found by name:", encounter.name)
     end
 
     if encounter then
-        -- Update the defeated flag directly in InstanceService data
         MarkEncounterDefeatedInInstanceData(dungeonName, encounter.name)
-
-        -- Trigger the refresh flag for the UI
         _G.AdventureGuideClassic_UI_Encounters_Refresh = true
-
-        -- Show notification
         TriggerDefeatNotification(encounter.name)
     else
         DebugPrint("No encounter match found for:", destName)
     end
 end
 
--- Handle UPDATE_MOUSEOVER_UNIT to help identify boss NPC IDs (debug helper)
 local function DebugPrintMouseoverNpcId()
     if not AdventureGuideClassic_DebugEvents then return end
     local guid = UnitGUID("mouseover")
@@ -326,11 +291,8 @@ local function DebugPrintMouseoverNpcId()
     end
 end
 
--- Reset all encounters for a dungeon/raid
 local function ResetEncountersForInstance(instanceName)
     local found = false
-
-    -- Reset in InstanceService dungeons
     local instanceDungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(instanceDungeons) do
         if dungeon.name == instanceName then
@@ -345,7 +307,6 @@ local function ResetEncountersForInstance(instanceName)
         end
     end
 
-    -- Reset in InstanceService raids
     local instanceRaids = InstanceService.GetRaids()
     for _, raid in ipairs(instanceRaids) do
         if raid.name == instanceName then
@@ -368,9 +329,7 @@ local function ResetEncountersForInstance(instanceName)
     return found
 end
 
--- Reset ALL dungeon/raid encounters (for "Reset all instances")
 local function ResetAllEncounters()
-    -- Reset all dungeons
     local instanceDungeons = InstanceService.GetDungeons()
     for _, dungeon in ipairs(instanceDungeons) do
         for i = 1, #dungeon do
@@ -381,7 +340,6 @@ local function ResetAllEncounters()
         end
     end
 
-    -- Reset all raids
     local instanceRaids = InstanceService.GetRaids()
     for _, raid in ipairs(instanceRaids) do
         for i = 1, #raid do
@@ -396,10 +354,7 @@ local function ResetAllEncounters()
     DebugPrint("All instance encounters have been reset")
 end
 
--- Handle instance reset system messages
 local function OnSystemMessage(message)
-    -- Check for instance reset messages
-    -- English: "has been reset" or "All instances have been reset"
     if message and (message:find("has been reset") or message:find("have been reset")) then
         DebugPrint("Detected instance reset")
         ResetAllEncounters()
@@ -434,8 +389,6 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
     end
 end)
 
--- Global function to toggle debug output
--- Usage: /run AGC_ToggleDebug()
 _G.AGC_ToggleDebug = function()
     AdventureGuideClassic_DebugEvents = not AdventureGuideClassic_DebugEvents
     if AdventureGuideClassic_DebugEvents then
@@ -445,14 +398,10 @@ _G.AGC_ToggleDebug = function()
     end
 end
 
--- Global function to manually reset all encounters
--- Usage: /run AGC_ResetAllEncounters()
 _G.AGC_ResetAllEncounters = function()
     ResetAllEncounters()
 end
 
--- Global function to reset a specific instance's encounters
--- Usage: /run AGC_ResetInstance("Ragefire Chasm")
 _G.AGC_ResetInstance = function(instanceName)
     if instanceName then
         ResetEncountersForInstance(instanceName)
@@ -461,7 +410,6 @@ _G.AGC_ResetInstance = function(instanceName)
     end
 end
 
--- Clean up old debounce entries periodically
 C_Timer.NewTicker(30, function()
     local now = GetTime()
     for name, time in pairs(recentlyDefeated) do

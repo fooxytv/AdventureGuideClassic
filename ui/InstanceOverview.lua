@@ -79,8 +79,8 @@ function component.Init(components_)
 			if not DungeonMapFrame then
 				DungeonMap:CreateDungeonMapFrame()
 			end
-			DungeonMap:LoadTiledMap(defaultMapID)
 			MapNavBar.SetDungeonInfo(instanceName, dungeonInfo.location)
+			DungeonMap:LoadTiledMap(defaultMapID)
 			DungeonMapFrame:Show()
 		else
 			print("ERROR: No map data found for instance ->", instanceName)

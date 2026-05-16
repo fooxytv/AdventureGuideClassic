@@ -7,7 +7,6 @@ Programming by: TomCat / TomCat's Gaming
 select(2, ...).SetupGlobalFacade()
 
 local handlers = {
-	--todo: replace with real spell/npc link colors
 	["spell"] = {
 		tokenizer = function(data)
 			local spellName = GetSpellInfo(data)

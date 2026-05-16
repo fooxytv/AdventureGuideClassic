@@ -2,7 +2,28 @@
 
 set -euo pipefail
 
-toc_file=$(find "$(pwd)" -name "*.toc" | head -n 1)
+# Find all .toc files in the current directory
+mapfile -t toc_files < <(find "$(pwd)" -maxdepth 1 -name "*.toc")
+
+if [[ ${#toc_files[@]} -eq 0 ]]; then
+    echo "No .toc files found."
+    exit 1
+fi
+
+# Use the main .toc file (without suffix) for reading current version
+main_toc_file=""
+for f in "${toc_files[@]}"; do
+    if [[ "$(basename "$f")" == "AdventureGuideClassic.toc" ]]; then
+        main_toc_file="$f"
+        break
+    fi
+done
+
+# Fallback to first file if main not found
+if [[ -z "$main_toc_file" ]]; then
+    main_toc_file="${toc_files[0]}"
+fi
+
 bump_type="${1:-none}"
 pre_release_type="${2:-}"
 commit_hash=$(git rev-parse --short HEAD)
@@ -32,16 +53,26 @@ increment_version() {
 }
 
 get_version_from_toc() {
-    awk -F': ' '/^## Version:/ {print $2}' "$toc_file"
+    local file=$1
+    awk -F': ' '/^## Version:/ {print $2}' "$file" | tr -d '\r'
 }
 
 update_toc_version() {
     local new_version=$1
-    sed -i.bak "s/^## Version:.*/## Version: $new_version/" "$toc_file"
-    echo "Updated $toc_file with new version: $new_version" >&2
+    local file=$2
+    sed -i.bak "s/^## Version:.*/## Version: $new_version/" "$file"
+    rm -f "${file}.bak"
+    echo "Updated $file with new version: $new_version" >&2
 }
 
-current_version=$(get_version_from_toc)
+update_all_toc_files() {
+    local new_version=$1
+    for toc_file in "${toc_files[@]}"; do
+        update_toc_version "$new_version" "$toc_file"
+    done
+}
+
+current_version=$(get_version_from_toc "$main_toc_file")
 if [[ -z "$current_version" ]]; then
     echo "No version found in .toc file."
     exit 1
@@ -61,5 +92,5 @@ if [[ "$pre_release_type" == "alpha" || "$pre_release_type" == "beta" ]]; then
     new_version="$new_version-$pre_release_type.$commit_hash"
 fi
 
-update_toc_version "$new_version"
+update_all_toc_files "$new_version"
 echo "$new_version"

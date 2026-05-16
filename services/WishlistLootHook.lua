@@ -17,7 +17,6 @@ local ICON_OFFSET = 7
 local DEBUG_SHOW_ALL = false
 local DEBUG_LOG = false
 
--- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 local GetItemInfoInstantCompat = C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant
 

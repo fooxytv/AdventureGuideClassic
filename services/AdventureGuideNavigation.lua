@@ -146,7 +146,6 @@ function AdventureGuideNavigationService.SetInstances(ref)
 	instances = ref
 end
 
--- Usage: /run AGC_DebugLootFilter()
 _G.AGC_DebugLootFilter = function()
 	local activeSeason = C_Seasons and C_Seasons.GetActiveSeason and C_Seasons.GetActiveSeason() or 0
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or "none"

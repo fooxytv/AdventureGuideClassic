@@ -20,6 +20,8 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 644,
 		portrait = 607777,
+		level = 18,
+		mapPosition = { mapID = "TheDeadmines1", x = 0.30, y = 0.30 },
 		loot = {
 			{ id = 872, filter = "classic" },
 			{ id = 5187, filter = "tbc" }
@@ -54,6 +56,8 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 642,
 		portrait = I.UIEJBossSneedsShredder,
+		level = 19,
+		mapPosition = { mapID = "TheDeadmines1", x = 0.45, y = 0.45 },
 		loot = {
 			{ id = 5194, seasonFilter = "all" },
 			{ id = 5195, seasonFilter = "all" },
@@ -89,6 +93,8 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 1763,
 		portrait = I.UIEJBossGilnid,
+		level = 20,
+		mapPosition = { mapID = "TheDeadmines1", x = 0.65, y = 0.55 },
 		loot = {
 			{ id = 5199, seasonFilter = "all" },
 			{ id = 1156, seasonFilter = "all" }
@@ -123,6 +129,8 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 646,
 		portrait = I.UIEJBossMrSmite,
+		level = 20,
+		mapPosition = { mapID = "TheDeadmines1", x = 0.50, y = 0.78 },
 		loot = {
 			{ id = 7230, seasonFilter = "all" },
 			{ id = 5196, seasonFilter = "all" },
@@ -158,6 +166,8 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 647,
 		portrait = I.UIEJBossCaptainGreenSkin,
+		level = 20,
+		mapPosition = { mapID = "TheDeadmines2", x = 0.40, y = 0.50 },
 		loot = {
 			{ id = 5201, seasonFilter = "all" },
 			{ id = 5200, seasonFilter = "all" },
@@ -193,6 +203,8 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 639,
 		portrait = I.UIEJBossEdwinVanCleef,
+		level = 20,
+		mapPosition = { mapID = "TheDeadmines2", x = 0.60, y = 0.40 },
 		loot = {
 			{ id = 5193, seasonFilter = "all" },
 			{ id = 5202, seasonFilter = "all" },
@@ -229,6 +241,8 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 645,
 		portrait = 522210,
+		level = 20,
+		mapPosition = { mapID = "TheDeadmines2", x = 0.55, y = 0.65 },
 		loot = {
 			{ id = 5198, seasonFilter = "all" },
 			{ id = 5197, seasonFilter = "all" }

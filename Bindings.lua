@@ -10,18 +10,15 @@ local frame = CreateFrame("FRAME")
 
 local updateCount = 0
 
--- Work-around for Blizzard issues:
---   API doesn't reliably set the default keybind according to Bindings.xml
---   API doesn't reliably report back on GetBindingKey or GetBindingByKey until the 2nd frame after load
-
 frame:SetScript("OnUpdate", function()
     if (not InCombatLockdown()) then
         updateCount = updateCount + 1
         if (updateCount == 2) then
             local bindingKey = GetBindingKey("TOGGLE_ADVENTUREGUIDECLASSIC")
             if (not bindingKey) then
-                local command = GetBindingByKey("SHIFT-J")
-                if (not command) then
+                local getBindingByKey = (C_KeyBindings and C_KeyBindings.GetBindingByKey) or GetBindingByKey
+                local command = getBindingByKey("SHIFT-J")
+                if (not command or command == "") then
                     SetBinding("SHIFT-J", "TOGGLE_ADVENTUREGUIDECLASSIC")
                 end
             end

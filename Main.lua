@@ -13,6 +13,7 @@ local function OnEvent(_, event, arg1)
         _G[SavedVariablesName] = _G[SavedVariablesName] or { }
         SavedVariables = _G[SavedVariablesName]
         MinimapButton.Init()
+        MicroButton.Init()
         frame:UnregisterEvent("ADDON_LOADED")
     end
 end

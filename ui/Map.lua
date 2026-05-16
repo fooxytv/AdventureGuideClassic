@@ -212,6 +212,7 @@ function DungeonMap:LoadTiledMap(mapID)
                     end
                     DungeonMapFrame.playerMarker:ClearAllPoints()
                     DungeonMapFrame.playerMarker:SetPoint("CENTER", DungeonMapFrame.mapContainer, "CENTER", mapData.defaultX * totalWidth, -mapData.defaultY * totalHeight)
+                    DungeonMap:RenderBossMarkers(mapID, scaledWidth, scaledHeight)
                     return
                 end
             end
@@ -220,6 +221,55 @@ function DungeonMap:LoadTiledMap(mapID)
         end
     end
     print("ERROR: No valid map found for MapID ->", mapID)
+end
+
+local SKULL_TEXTURE = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
+local MARKER_SIZE = 22
+
+local function CreateBossMarker(parent)
+    local marker = CreateFrame("Button", nil, parent)
+    marker:SetSize(MARKER_SIZE, MARKER_SIZE)
+    marker.icon = marker:CreateTexture(nil, "OVERLAY")
+    marker.icon:SetTexture(SKULL_TEXTURE)
+    marker.icon:SetAllPoints()
+    marker:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(self.bossName, 1, 1, 1)
+        if self.bossLevel then
+            GameTooltip:AddLine("Level " .. tostring(self.bossLevel), 0.7, 0.7, 0.7)
+        end
+        GameTooltip:Show()
+    end)
+    marker:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    return marker
+end
+
+function DungeonMap:RenderBossMarkers(mapID, scaledWidth, scaledHeight)
+    local container = DungeonMapFrame.mapContainer
+    container.bossMarkers = container.bossMarkers or {}
+    for _, m in ipairs(container.bossMarkers) do m:Hide() end
+    local instanceName = DungeonMapFrame.currentDungeon
+    if not instanceName or not InstanceService.GetInstanceByName then return end
+    local instance = InstanceService.GetInstanceByName(instanceName)
+    if not instance then return end
+    local visibleIndex = 0
+    for _, boss in ipairs(instance) do
+        local pos = boss.mapPosition
+        if pos and pos.mapID == mapID then
+            visibleIndex = visibleIndex + 1
+            local marker = container.bossMarkers[visibleIndex]
+            if not marker then
+                marker = CreateBossMarker(container)
+                container.bossMarkers[visibleIndex] = marker
+            end
+            marker.bossName = boss.name
+            marker.bossLevel = boss.level
+            marker:ClearAllPoints()
+            marker:SetPoint("CENTER", container, "TOPLEFT", pos.x * scaledWidth, -pos.y * scaledHeight)
+            marker:SetFrameLevel(container:GetFrameLevel() + 5)
+            marker:Show()
+        end
+    end
 end
 
 function MapNavBar.SetDungeonInfo(instanceName, location)
