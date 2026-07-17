@@ -2,7 +2,7 @@
 # All rights reserved.
 # Programming by: TomCat / TomCat's Gaming
 
-## Interface: 20505
+## Interface: 20506
 ## Title: AdventureGuideClassic
 ## Version: 1.6.1-alpha.d337da2
 ## Notes: Provides a dungeon and raid journal for Classic WoW
