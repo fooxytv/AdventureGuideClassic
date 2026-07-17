@@ -120,7 +120,11 @@ function component.Init(components_)
 		button:Show()
 	end
 	local view = CreateScrollBoxListGridView(4, 4, 0, 0, 0, 15, 15)
-	view:SetElementExtent(96)
+	if view.SetElementSize then
+		view:SetElementSize(174, 96)
+	else
+		view:SetElementExtent(96)
+	end
 
 	view:SetElementInitializer("AdventureGuideInstanceButtonTemplate", Initializer)
 	view:SetElementResetter(function(button) button:Hide() end)
