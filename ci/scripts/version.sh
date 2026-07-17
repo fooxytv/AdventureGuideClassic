@@ -78,13 +78,14 @@ if [[ -z "$current_version" ]]; then
     exit 1
 fi
 
-if [[ "$bump_type" == "none" ]]; then
-    >&2 echo "Skipping version bump. Using existing version: $current_version"
-    echo "$current_version" | tr -d '\r'
-    exit 0
-fi
-
 base_version=$(echo "$current_version" | sed 's/-.*//')
+
+# bump_type "none" keeps the current X.Y.Z but still strips any prerelease suffix
+# (e.g. promoting 1.6.0-alpha.abc123 -> 1.6.0) and writes it back to the .toc files.
+# increment_version is a no-op for "none", so this falls through the normal path.
+if [[ "$bump_type" == "none" ]]; then
+    >&2 echo "No version bump; normalizing to release version: $base_version"
+fi
 
 new_version=$(increment_version "$base_version" "$bump_type")
 
