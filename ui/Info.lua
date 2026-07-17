@@ -62,25 +62,21 @@ function component.Init(components_)
 	info.instanceButton:SetHighlightTexture(instanceButtonBorderHighlight, "ADD")
 	--todo: set OnClick
 
-	-- Create difficulty dropdown (Normal/Heroic) for TBC dungeons
 	info.difficultyDropdown = CreateFrame("Frame", "EncounterInfoDifficultyDropdown", info, "UIDropDownMenuTemplate")
 	info.difficultyDropdown:SetPoint("TOPRIGHT", info, "TOPRIGHT", 5, -12)
 	info.difficultyDropdown:SetScale(0.9)
 	info.difficultyDropdown:SetFrameStrata("DIALOG")
 	info.difficultyDropdown:SetFrameLevel(100)
 
-	-- Initialize difficulty dropdown
 	UIDropDownMenu_SetWidth(info.difficultyDropdown, 100)
 	UIDropDownMenu_SetText(info.difficultyDropdown, "Normal")
 
-	-- Hide by default (only show for TBC dungeons)
 	info.difficultyDropdown:Hide()
 
 	local function OnDifficultyClick(self)
 		InstanceService.SetDifficulty(self.value)
 		UIDropDownMenu_SetText(info.difficultyDropdown, self:GetText())
 		CloseDropDownMenus()
-		-- Trigger loot refresh
 		if components and components.Loot and components.Loot.Show then
 			components.Loot.Show()
 		end
@@ -90,14 +86,11 @@ function component.Init(components_)
 		local info = UIDropDownMenu_CreateInfo()
 		local currentDifficulty = InstanceService.GetDifficulty()
 
-		-- Normal option
 		info.text = "Normal"
 		info.value = "normal"
 		info.func = OnDifficultyClick
 		info.checked = (currentDifficulty == "normal")
 		UIDropDownMenu_AddButton(info)
-
-		-- Heroic option
 		info.text = "Heroic"
 		info.value = "heroic"
 		info.func = OnDifficultyClick
@@ -111,15 +104,11 @@ end
 function component.UpdateDifficultyDropdown(instance)
 	local info = EncounterJournal.encounter.info
 	if not info or not info.difficultyDropdown then return end
-
-	-- Check if this is a TBC dungeon
 	local isTBC = select(4, GetBuildInfo()) >= 20000
 	local instanceFilter = instance.seasonFilter or "all"
 
 	if isTBC and instanceFilter == "tbc" then
-		-- Show difficulty dropdown for TBC dungeons
 		info.difficultyDropdown:Show()
-		-- Update text to current difficulty
 		local difficulty = InstanceService.GetDifficulty()
 		if difficulty == "normal" then
 			UIDropDownMenu_SetText(info.difficultyDropdown, "Normal")
@@ -127,7 +116,6 @@ function component.UpdateDifficultyDropdown(instance)
 			UIDropDownMenu_SetText(info.difficultyDropdown, "Heroic")
 		end
 	else
-		-- Hide for non-TBC or Era dungeons
 		info.difficultyDropdown:Hide()
 	end
 end

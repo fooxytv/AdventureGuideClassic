@@ -29,7 +29,10 @@ mkdir -p "$temp_dir/$addon_name"
 echo "Extracting $existing_zip to $temp_dir/$addon_name..."
 unzip -q "$existing_zip" -d "$temp_dir/$addon_name"
 
-output_zip="$(pwd)/$dist_dir/${version_build}.zip"
+# Remove the original zip so we can write the repackaged contents back under the same name
+rm -f "$existing_zip"
+
+output_zip="$(pwd)/$dist_dir/${addon_name}-${version_build}.zip"
 echo "Creating new ZIP file: $output_zip"
 cd "$temp_dir"
 zip -r "$output_zip" "$addon_name"

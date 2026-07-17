@@ -89,6 +89,17 @@
     <Script file="data/Raids/tbc/Sunwell_Plateau.lua" />
     <Script file="data/Raids/tbc/The_Eye.lua" />
 
+    <!-- Classic Era learnable spells by level (per class) -->
+    <Script file="data/Spells/era/Druid.lua" />
+    <Script file="data/Spells/era/Hunter.lua" />
+    <Script file="data/Spells/era/Mage.lua" />
+    <Script file="data/Spells/era/Paladin.lua" />
+    <Script file="data/Spells/era/Priest.lua" />
+    <Script file="data/Spells/era/Rogue.lua" />
+    <Script file="data/Spells/era/Shaman.lua" />
+    <Script file="data/Spells/era/Warlock.lua" />
+    <Script file="data/Spells/era/Warrior.lua" />
+
     <SimpleHTML name="AdventureGuideClassic_SampleEncounterDescription"
                 file="Interface\AddOns\AdventureGuideClassic\data\encounterDescriptions\sample.html"
                 virtual="true">

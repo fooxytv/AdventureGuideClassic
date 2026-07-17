@@ -27,7 +27,6 @@ function component.Init(components_)
 	scrollFrame.child:SetPoint("TOPLEFT")
 	scrollFrame.child:SetSize(320, 100)
 	scrollFrame:SetScrollChild(scrollFrame.child)
-	scrollFrameWrapper.child = scrollFrame.child
 	ScrollFrame_OnLoad(scrollFrame)
 	scrollFrameWrapper:Hide()
 	scrollFrameWrapper:SetScript("OnHide", function()
@@ -35,17 +34,19 @@ function component.Init(components_)
 		scrollFrame.child = Widgets.AcquireRoot(scrollFrame)
 		scrollFrame.child:SetPoint("TOPLEFT")
 		scrollFrame.child:SetSize(320, 100)
+		scrollFrame:SetScrollChild(scrollFrame.child)
 	end)
+	component.scrollFrame = scrollFrame
 end
 
 function component.ShowOverview()
 	components.EncounterFrame.SetCurrentView(component.frame)
-	component.frame.child:SetContents(AdventureGuideNavigationService.GetEncounterContent())
+	component.scrollFrame.child:SetContents(AdventureGuideNavigationService.GetEncounterContent())
 end
 
 function component.ShowAbilities()
 	components.EncounterFrame.SetCurrentView(component.frame)
-	component.frame.child:SetContents(AdventureGuideNavigationService.GetEncounter().abilities)
+	component.scrollFrame.child:SetContents(AdventureGuideNavigationService.GetEncounter().abilities)
 end
 
 UI.Add(component)

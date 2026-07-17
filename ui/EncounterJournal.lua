@@ -64,16 +64,23 @@ function component.Init(components_)
     EncounterJournal.title:SetText("Adventure Guide")
     EncounterJournal.portrait = _G[addonName .. "_EncounterJournalPortrait"]
     EncounterJournal.portrait:SetTexture("Interface\\EncounterJournal\\UI-EJ-PortraitIcon")
-    local mask = EncounterJournal:CreateMaskTexture()
-    mask:SetAllPoints(EncounterJournal.portrait)
-    mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-    EncounterJournal.portrait:AddMaskTexture(mask)
+    if (not EncounterJournal.portraitMask) then
+        local mask = EncounterJournal:CreateMaskTexture()
+        mask:SetAllPoints(EncounterJournal.portrait)
+        mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+        EncounterJournal.portrait:AddMaskTexture(mask)
+        EncounterJournal.portraitMask = mask
+    end
     if (SavedVariables.EncounterJournalLocation) then
         EncounterJournal:ClearAllPoints()
         EncounterJournal:SetPoint(unpack(SavedVariables.EncounterJournalLocation))
     else
         EncounterJournal:SetPoint("CENTER")
     end
+    EncounterJournal:SetScale(SettingsService.GetScale())
+    SettingsService.RegisterScaleListener(function(value)
+        EncounterJournal:SetScale(value)
+    end)
     EncounterJournal:RegisterForDrag("LeftButton")
     EncounterJournal:SetClampedToScreen(true)
     EncounterJournal:SetScript("OnDragStart", function(self)

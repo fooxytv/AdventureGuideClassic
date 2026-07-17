@@ -83,12 +83,10 @@ function component.Init(components_)
 	searchBox:SetAutoFocus(false)
 	navBar.searchBox = searchBox
 
-	-- Fix for placeholder text - ensure instructions show/hide properly
 	if searchBox.Instructions then
 		searchBox.Instructions:SetText("Search")
 	end
 
-	-- Create search results dropdown (same width as search box, solid dark background)
 	searchResults = CreateFrame("Frame", navBar:GetName() .. "SearchResults", navBar, "BackdropTemplate")
 	searchResults:SetSize(150, 200)
 	searchResults:SetPoint("TOPRIGHT", searchBox, "BOTTOMRIGHT", 0, 2)
@@ -105,7 +103,6 @@ function component.Init(components_)
 	searchResults:Hide()
 	navBar.searchResults = searchResults
 
-	-- Create ScrollBox for results
 	searchResultsScrollBox = CreateFrame("Frame", nil, searchResults, "WowScrollBoxList")
 	searchResultsScrollBox:SetSize(142, 180)
 	searchResultsScrollBox:SetPoint("TOPLEFT", 4, -4)
@@ -116,7 +113,6 @@ function component.Init(components_)
 	searchResultsScrollBar:SetPoint("BOTTOMLEFT", searchResultsScrollBox, "BOTTOMRIGHT", 2, 5)
 	searchResultsScrollBar:Hide()
 
-	-- Initialize ScrollBox view
 	local function SearchResultInitializer(button, result)
 		if not button.initialized then
 			button.icon = button:CreateTexture(nil, "ARTWORK")
@@ -144,7 +140,6 @@ function component.Init(components_)
 		button.result = result
 
 		if result.isHeader then
-			-- Header row
 			button.icon:Hide()
 			button.text:SetText(result.text)
 			button.text:SetTextColor(1, 0.82, 0)
@@ -156,7 +151,6 @@ function component.Init(components_)
 			button:SetScript("OnEnter", nil)
 			button:SetScript("OnLeave", nil)
 		elseif result.type == "instance" then
-			-- Instance result
 			button.icon:SetTexture(result.icon)
 			button.icon:Show()
 			button.text:SetText(result.name)
@@ -174,7 +168,6 @@ function component.Init(components_)
 			end)
 			button:SetScript("OnLeave", nil)
 		elseif result.type == "loot" then
-			-- Loot result
 			button.icon:SetTexture(result.itemIcon or "Interface\\Icons\\INV_Misc_QuestionMark")
 			button.icon:Show()
 			local qualityColor = ITEM_QUALITY_COLORS[result.itemQuality] or ITEM_QUALITY_COLORS[1]
@@ -207,11 +200,9 @@ function component.Init(components_)
 	searchView:SetElementInitializer("Button", SearchResultInitializer)
 	ScrollUtil.InitScrollBoxListWithScrollBar(searchResultsScrollBox, searchResultsScrollBar, searchView)
 
-	-- Search box event handlers
 	searchBox:SetScript("OnTextChanged", function(self, userInput)
 		local text = self:GetText()
 
-		-- Handle placeholder text visibility
 		if self.Instructions then
 			if text ~= "" then
 				self.Instructions:Hide()
@@ -220,14 +211,12 @@ function component.Init(components_)
 			end
 		end
 
-		-- Always check if text is empty to hide dropdown (handles X button click)
 		if text == "" then
 			component.HideSearchResults()
 			SearchService.ClearSearch()
 			return
 		end
 
-		-- Trigger search on user input
 		if userInput then
 			component.OnSearchTextChanged(text)
 		end
@@ -280,9 +269,7 @@ function component.Reset()
 	NavBar_Reset(component.frame)
 end
 
--- Search functionality
 function component.OnSearchTextChanged(text)
-	-- Cancel any pending debounce timer
 	if searchDebounceTimer then
 		searchDebounceTimer:Cancel()
 		searchDebounceTimer = nil
@@ -294,7 +281,6 @@ function component.OnSearchTextChanged(text)
 		return
 	end
 
-	-- Short debounce (100ms) to avoid excessive searches while typing quickly
 	searchDebounceTimer = C_Timer.NewTimer(0.1, function()
 		component.ExecuteSearch(text)
 	end)
@@ -302,7 +288,6 @@ end
 
 function component.ExecuteSearch(text)
 	local instanceResults, lootResults = SearchService.Search(text, function(searchText)
-		-- Callback for when async items finish loading - re-run search
 		if searchBox:GetText() == searchText then
 			component.ExecuteSearch(searchText)
 		end
@@ -316,7 +301,6 @@ function component.DisplaySearchResults(instanceResults, lootResults)
 	local count = 0
 	local totalItems = 0
 
-	-- Add instance results with header
 	if #instanceResults > 0 then
 		dataProvider:Insert({ isHeader = true, text = "Instances" })
 		totalItems = totalItems + 1
@@ -329,7 +313,6 @@ function component.DisplaySearchResults(instanceResults, lootResults)
 		end
 	end
 
-	-- Add loot results with header
 	if #lootResults > 0 and count < MAX_SEARCH_RESULTS then
 		dataProvider:Insert({ isHeader = true, text = "Loot" })
 		totalItems = totalItems + 1
@@ -343,7 +326,6 @@ function component.DisplaySearchResults(instanceResults, lootResults)
 	end
 
 	if count > 0 then
-		-- Dynamically size the dropdown based on number of items
 		local itemHeight = 32
 		local padding = 8
 		local maxHeight = 300
@@ -366,29 +348,22 @@ end
 
 function component.OnSearchResultClick(result)
 	if result.type == "instance" then
-		-- Navigate to instance
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
 		components.EncounterFrame.ShowInstanceInfo(result.instance)
 	elseif result.type == "loot" then
-		-- Navigate to the instance and encounter with that loot
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
 		AdventureGuideNavigationService.SetEncounter(result.encounter)
 		components.EncounterFrame.ShowInstanceInfo(result.instance)
-
-		-- Set NavBar to show the encounter
 		component.SetInstance(result.instance)
 		component.SetEncounter(result.encounter.encounterID)
 		component.Refresh(result.encounter.name)
-
-		-- Show the loot view
 		if components.Loot and components.Loot.Show then
 			components.Loot.Show()
 		end
 	end
 
-	-- Clear search and hide results
 	if searchBox then
 		searchBox:SetText("")
 		searchBox:ClearFocus()

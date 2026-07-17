@@ -142,7 +142,6 @@ function AdventureObjectives:LoadEncounters(dungeonName)
         end
     end
 
-    -- Check InstanceService raids if not found in dungeons
     if not encounters then
         local raids = InstanceService.GetRaids()
         for _, raid in ipairs(raids) do

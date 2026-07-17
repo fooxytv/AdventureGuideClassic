@@ -24,12 +24,10 @@ function WidgetTypeMixin:Acquire(parent)
 	return widget
 end
 
--- should be overridden with a function that starts with the ConstructDefault call
 function WidgetTypeMixin:Construct(parent)
 	return self:ConstructDefault("Frame", nil, parent)
 end
 
--- do not override
 function WidgetTypeMixin:ConstructDefault(frameType, name, parent, template, id)
 	local frame = CreateFrame(frameType, name, parent, template, id)
 	frame.widgetType = self
@@ -42,7 +40,6 @@ function WidgetTypeMixin:ConstructDefault(frameType, name, parent, template, id)
 	return frame
 end
 
--- do no toverride
 function WidgetTypeMixin:Release(widget)
 	if (widget.widgets) then
 		while(#widget.widgets > 0) do
@@ -55,7 +52,6 @@ function WidgetTypeMixin:Release(widget)
 	table.insert(self.pool, widget)
 end
 
--- do not override
 function WidgetTypeMixin:SetAnchors(widget)
 	widget:ClearAllPoints()
 	local parent = widget:GetParent()
@@ -84,12 +80,10 @@ function WidgetTypeMixin:SetAnchors(widget)
 	end
 end
 
--- should be overridden
 function WidgetTypeMixin:SetContents(widget, content)
 
 end
 
--- should be overridden
 function WidgetTypeMixin:IsTypeFor()
 	return false
 end

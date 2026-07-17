@@ -36,6 +36,9 @@ local function truncateText(text, maxLength)
 	end
 end
 
+local PREVIEW_ZOOM = 0
+local PREVIEW_CAM_DISTANCE_SCALE = 1
+
 local function CreatePreviewFrame()
 	if previewFrame then return previewFrame end
 	local frame = CreateFrame("Frame", "ItemPreviewFrame", UIParent, "BackdropTemplate")
@@ -57,15 +60,10 @@ local function CreatePreviewFrame()
 	frame.model:SetSize(190, 260)
 	frame.model:SetPoint("CENTER", 0, 5)
 	frame.cameraAngle = 0
-	local cameraDistance = 1.8
-	local cameraHeight = 0.7
+	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
 	frame:SetScript("OnUpdate", function(self, elapsed)
 		self.cameraAngle = self.cameraAngle + (rotationSpeed * elapsed)
-		local x = math.cos(self.cameraAngle) * cameraDistance
-		local y = math.sin(self.cameraAngle) * cameraDistance
-		self.model:SetCustomCamera(1)
-		self.model:SetCameraPosition(x, y, cameraHeight)
-		self.model:SetCameraTarget(0, 0, cameraHeight)
+		self.model:SetRotation(self.cameraAngle)
 	end)
 	previewFrame = frame
 	return frame
@@ -74,10 +72,15 @@ end
 local function ShowItemPreview(itemLink, anchorFrame)
 	if not itemLink then return end
 	local frame = CreatePreviewFrame()
+	if SettingsService and SettingsService.GetScale then
+		frame:SetScale(SettingsService.GetScale())
+	end
 	frame:ClearAllPoints()
 	frame:SetPoint("TOP", GameTooltip, "BOTTOM", 0, -5)
 	frame:Show()
 	frame.model:SetUnit("player")
+	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
+	frame.model:SetPortraitZoom(PREVIEW_ZOOM)
 	frame.model:Undress()
 	for slot = 1, 19 do
 		frame.model:UndressSlot(slot)
@@ -309,7 +312,6 @@ function component.Init(components_)
 end
 
 local function OnItemDataLoadResult(event, itemId, success)
-	-- GET_ITEM_INFO_RECEIVED doesn't have a success param, treat as success
 	if event == "GET_ITEM_INFO_RECEIVED" then
 		success = true
 	end
@@ -320,7 +322,6 @@ local function OnItemDataLoadResult(event, itemId, success)
 end
 
 local eventFrame = CreateFrame("Frame")
--- TBC+ uses ITEM_DATA_LOAD_RESULT, Classic Era uses GET_ITEM_INFO_RECEIVED
 if C_Item and C_Item.RequestLoadItemDataByID then
 	eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 else

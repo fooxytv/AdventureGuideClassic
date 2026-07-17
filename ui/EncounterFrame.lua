@@ -32,7 +32,6 @@ function component.ShowInstanceInfo(instance)
 	components.NavBar.SetEncounter()
 	components.NavBar.Refresh()
 	components.InfoTabs.Refresh()
-	-- Update difficulty dropdown visibility
 	components.Info.UpdateDifficultyDropdown(instance)
 end
 

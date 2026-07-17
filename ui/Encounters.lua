@@ -12,10 +12,8 @@ local encountersScrollBox
 local sharedHighlightFrame
 
 local function EncounterButton_OnClick(self)
-	-- Prevent clicking the same encounter multiple times
 	local currentEncounter = AdventureGuideNavigationService.GetEncounter()
 	if currentEncounter and currentEncounter.encounterID == self.encounter.encounterID then
-		-- Same encounter already selected, skip to avoid formatting bugs
 		return
 	end
 
@@ -31,18 +29,16 @@ local function EncounterButton_OnClick(self)
 	sharedHighlightFrame:SetAllPoints(self)
 	sharedHighlightFrame:Show()
 
-	--todo: Switch to correct view - this needs to be moved to a separate function
 	local selectedTabName = components.InfoTabs.GetSelectedTabName()
 	if selectedTabName == "Overview" then
-		-- Workaround: Show loot briefly to initialize scroll, but keep it invisible
 		local lootContainer = EncounterJournal.encounter.LootContainer
 		if lootContainer then
-			lootContainer:SetAlpha(0) -- Make invisible
+			lootContainer:SetAlpha(0)
 		end
 		components.Loot.Show()
-		C_Timer.After(0.001, function() -- Reduced to 0.001 for faster execution
+		C_Timer.After(0.001, function()
 			if lootContainer then
-				lootContainer:SetAlpha(1) -- Restore visibility
+				lootContainer:SetAlpha(1)
 			end
 			components.DynamicContentScroller.ShowOverview()
 			components.InfoTabs.Refresh()
@@ -158,16 +154,12 @@ function component.SetInstance(instance, dungeonName)
 	end
 end
 
--- Public function to trigger encounter refresh (call this instead of setting a global flag)
 function component.RefreshEncounters()
-	-- Get the currently viewed instance in the Adventure Guide UI
 	local currentInstance = AdventureGuideNavigationService.GetInstance()
 
 	if currentInstance and currentInstance.name then
-		-- Refresh the currently viewed instance
 		component.SetInstance(currentInstance, currentInstance.name)
 	else
-		-- Fallback: try to refresh based on physical instance location
 		local instanceName = GetInstanceInfo()
 		if instanceName and instanceName ~= "" then
 			local dungeons = InstanceService.GetDungeons()
@@ -178,7 +170,6 @@ function component.RefreshEncounters()
 				end
 			end
 
-			-- Also check raids
 			local raids = InstanceService.GetRaids()
 			for _, raid in ipairs(raids) do
 				if raid.name == instanceName then
@@ -190,8 +181,6 @@ function component.RefreshEncounters()
 	end
 end
 
--- Legacy support: Check global flag once on a short timer if something sets it
--- This avoids the OnUpdate every-frame overhead while maintaining backwards compatibility
 local function CheckLegacyRefreshFlag()
 	if _G.AdventureGuideClassic_UI_Encounters_Refresh then
 		_G.AdventureGuideClassic_UI_Encounters_Refresh = false
@@ -199,7 +188,6 @@ local function CheckLegacyRefreshFlag()
 	end
 end
 
--- Only check the legacy flag periodically (every 0.5 seconds) instead of every frame
 C_Timer.NewTicker(0.5, CheckLegacyRefreshFlag)
 
 UI.Add(component)

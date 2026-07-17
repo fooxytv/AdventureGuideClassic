@@ -83,8 +83,8 @@ function widgetType:SetContents(widget, contents, bulleted)
 	end
 	widget.text:SetPoint("TOPLEFT", 2 + offset, -8)
 	widget.bullet:SetShown(bulleted)
-	widget.text:SetText(TokenizedTextService.ReplaceTokens(contents.text))
 	self:SetAnchors(widget)
+	widget.text:SetText(TokenizedTextService.ReplaceTokens(contents.text))
 	widget:SetHeight(widget.text:GetStringHeight() + 12)
 	widget:Show()
 end
