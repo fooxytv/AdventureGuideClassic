@@ -39,6 +39,34 @@ local baseZoom, zoom = 1.0, 1.0
 ]]
 local BACKGROUND_ALPHA = 0.25
 
+local function NotifyTuner()
+	if components and components.ModelTuner then
+		components.ModelTuner.Refresh()
+	end
+end
+
+--[[
+	Re-applies the preset a moment after the model is set.
+
+	Camera and transform calls made straight after SetDisplayInfo are dropped
+	while the model is still streaming in, which left the model showing something
+	other than the numbers the preset actually holds -- so a saved preset looked
+	like it had not taken, and tuning it again started from the wrong picture.
+	OnModelLoaded covers the streaming case but does not fire for a model the
+	client already has cached, so a short settle is needed as well. The loot
+	preview waits 0.15s before TryOn for the same reason.
+]]
+local function ReapplyAfterLoad(preset)
+	C_Timer.After(0.1, function()
+		-- Only if nothing else has taken over the frame in the meantime.
+		if creatureModel and currentPreset == preset then
+			component.ApplyPreset(preset)
+			NotifyTuner()
+		end
+	end)
+end
+
+
 --[[
 	Shows a creature by its display id.
 
@@ -59,6 +87,7 @@ function component.SetDisplay(displayId, title)
 	creatureModel:SetDisplayInfo(displayId)
 	creatureModel:SetPortraitZoom(0)
 	component.ApplyPreset(currentPreset)
+	ReapplyAfterLoad(currentPreset)
 	-- A per-creature title wins over the encounter name, so the several models
 	-- of one encounter can be named individually.
 	local displayTitle = ModelPresetService.GetTitle(displayId, currentEncounterId) or title
@@ -109,12 +138,6 @@ end
 ]]
 function component.SupportsTilt()
 	return creatureModel ~= nil and creatureModel.SetPitch ~= nil
-end
-
-local function NotifyTuner()
-	if components and components.ModelTuner then
-		components.ModelTuner.Refresh()
-	end
 end
 
 -- Creature sizes vary far too much for one framing to suit all of them, so the
