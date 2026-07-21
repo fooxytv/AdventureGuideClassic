@@ -18,6 +18,18 @@ local ROTATION_SPEED = 0.02
 local baseZoom, zoom = 1.0, 1.0
 
 --[[
+	How strongly the instance art shows behind the model.
+
+	Blizzard's journal gets two separate images from EJ_GetInstanceInfo: bgImage
+	for behind the model and loreImage for the lore page. bgImage is a dim,
+	purpose-made backdrop, which is why their XML sets no alpha on it. Our data
+	carries only the one image, the vivid splash the instance overview shows
+	behind its lore text, so it is faded here to sit back behind the creature
+	rather than compete with it.
+]]
+local BACKGROUND_ALPHA = 0.25
+
+--[[
 	Shows a creature by its display id.
 
 	PlayerModel/SetDisplayInfo is what AtlasLoot uses on these clients; a
@@ -119,6 +131,7 @@ function component.Init(components_)
 	model.dungeonBG:SetSize(394, 425)
 	model.dungeonBG:SetPoint("BOTTOMLEFT", 0, -2)
 	model.dungeonBG:SetTexCoord(0.76953125, 0, 0, 0.830078125)
+	model.dungeonBG:SetAlpha(BACKGROUND_ALPHA)
 
 	creatureModel = CreateFrame("PlayerModel", nil, model)
 	creatureModel:SetPoint("TOPLEFT", 8, -8)
@@ -198,12 +211,12 @@ function component.Show()
 	local displayIds = CreatureModelService.GetDisplayIds(encounter.encounterID)
 	if not displayIds then return false end
 
-	-- The instance art behind the model, as the retail journal shows. This is
-	-- the same image the instance overview uses for its lore background.
+	-- The instance art behind the model, as the retail journal shows. Faded, see
+	-- BACKGROUND_ALPHA. Falls back to the journal's own default backdrop, which
+	-- is what Blizzard's XML starts from, when an instance has no art.
 	local instance = AdventureGuideNavigationService.GetInstance()
-	if instance and instance.splash then
-		modelContainer.dungeonBG:SetTexture(instance.splash)
-	end
+	modelContainer.dungeonBG:SetTexture((instance and instance.splash)
+		or "Interface\\EncounterJournal\\UI-EJ-BACKGROUND-Default")
 
 	components.CreatureButtons.SetCreatures(displayIds, encounter.name)
 	component.SetDisplay(displayIds[1], encounter.name)
