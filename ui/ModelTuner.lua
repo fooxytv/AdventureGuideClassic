@@ -70,6 +70,16 @@ local function AddRow(parent, index, field, label)
 
 	local function Nudge(direction)
 		local step = STEPS[field] * direction
+		--[[
+			Position steps scale with the creature. They are in model units, so half
+			a unit is a real shift on a gnoll and invisible on Ragnaros, whose model
+			is sixty units tall. Zoom, facing, tilt and size are ratios and stay
+			fixed.
+		]]
+		if field == "x" or field == "y" or field == "z" then
+			local height = CreatureModelService.GetHeight(CurrentDisplayId())
+			if height and height > 6 then step = step * (height / 6) end
+		end
 		-- Shift for coarse adjustment, since scale ranges over an order of
 		-- magnitude while positions are usually a nudge or two.
 		if IsShiftKeyDown() then step = step * 5 end
