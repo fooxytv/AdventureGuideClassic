@@ -11,10 +11,11 @@ local component = UI.CreateComponent("ModelFrame")
 local components
 local modelContainer, creatureModel, currentDisplayId
 
--- Camera limits for the mouse-wheel zoom. 1 is the framing SetPortraitZoom picks.
-local DEFAULT_ZOOM, MIN_ZOOM, MAX_ZOOM, ZOOM_STEP = 1.0, 0.4, 4.0, 0.15
+-- The wheel adjusts the camera around whatever preset the creature's size gives
+-- it, so the bounds are relative to that rather than absolute.
+local MIN_ZOOM_FACTOR, MAX_ZOOM_FACTOR, ZOOM_STEP = 0.35, 3.0, 0.12
 local ROTATION_SPEED = 0.02
-local zoom = DEFAULT_ZOOM
+local baseZoom, zoom = 1.0, 1.0
 
 --[[
 	Shows a creature by its display id.
@@ -23,15 +24,17 @@ local zoom = DEFAULT_ZOOM
 	ModelScene actor would need the retail uiModelSceneID, which carries the
 	camera framing and only comes from real EJ data we do not have.
 
-	SetPortraitZoom is what keeps this usable. Without it the model is shown at
-	its own native camera, so anything large -- dragons, Magtheridon, C'Thun --
-	fills the frame and spills out of it. Zooming to 0 frames the whole creature
-	against its own bounds instead, which adapts per model.
+	SetPortraitZoom(0) frames the creature against its own bounds rather than its
+	native camera, and on top of that the camera is pulled back in proportion to
+	the model's real height, which CreatureModelService knows from the game's own
+	model data. Without that the big ones -- Supremus, Ragnaros, the Lurker Below
+	-- overflow the frame, since creature heights span roughly 0.9 to 66.
 ]]
 function component.SetDisplay(displayId, title)
 	if not creatureModel or not displayId then return end
 	currentDisplayId = displayId
-	zoom = DEFAULT_ZOOM
+	baseZoom = CreatureModelService.GetCameraScale(displayId)
+	zoom = baseZoom
 	creatureModel:SetDisplayInfo(displayId)
 	creatureModel:SetPortraitZoom(0)
 	creatureModel:SetCamDistanceScale(zoom)
@@ -49,7 +52,9 @@ local function SetupModelControls(model)
 	model:EnableMouse(true)
 	model:EnableMouseWheel(true)
 	model:SetScript("OnMouseWheel", function(self, delta)
-		zoom = math.max(MIN_ZOOM, math.min(MAX_ZOOM, zoom - delta * ZOOM_STEP))
+		local step = baseZoom * ZOOM_STEP
+		zoom = math.max(baseZoom * MIN_ZOOM_FACTOR,
+			math.min(baseZoom * MAX_ZOOM_FACTOR, zoom - delta * step))
 		self:SetCamDistanceScale(zoom)
 	end)
 	model:SetScript("OnMouseDown", function(self, button)

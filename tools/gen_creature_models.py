@@ -26,6 +26,7 @@ from atlasloot_tool import parse_atlasloot, parse_user, match_brace, SOURCES
 
 AG_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 OUT = os.path.join(AG_ROOT, "data", "CreatureModels.lua")
+HEIGHTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "creature_heights.tsv")
 
 # The npcs value copy-pasted across 156 encounters; not real data for any of them.
 PLACEHOLDER = {2135, 12456, 12314}
@@ -44,6 +45,11 @@ rather than npc id: AtlasLoot lists one entry per distinct creature, while npcID
 carries extra ids for heroic copies of the same creature, so the two do not line
 up one to one.
 Source: AtlasLootClassic DungeonsAndRaids data.
+
+The second table is each creature's model height in world units, used to pull the
+camera back for the big ones. Creature heights span roughly 0.9 (Pusillin) to 66
+(Supremus), so a single camera framing cannot suit all of them.
+Source: wago.tools DB2 export, see tools/creature_heights.tsv.
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -147,7 +153,23 @@ def main():
             rows.append((enc, f"\t[{enc}] = {{ {ids} }},"))
 
     rows.sort()
-    body = HEADER + "\n".join(r[1] for r in rows) + "\n})\n"
+
+    # Model heights, for the camera. Only the displays we actually reference.
+    used = set()
+    for _, line in rows:
+        used.update(int(x) for x in re.findall(r'\d+', line.split("{", 1)[1]))
+    heights = []
+    if os.path.exists(HEIGHTS):
+        for line in open(HEIGHTS, encoding="utf-8"):
+            if line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) == 2 and int(parts[0]) in used:
+                heights.append(f"\t[{parts[0]}] = {parts[1]},")
+    missing = len(used) - len(heights)
+
+    body = HEADER + "\n".join(r[1] for r in rows) + "\n}, {\n" + "\n".join(sorted(
+        heights, key=lambda h: int(re.search(r'\[(\d+)\]', h).group(1)))) + "\n})\n"
     if not args.dry_run:
         with open(OUT, "w", encoding="utf-8", newline="\r\n") as fh:
             fh.write(body)
@@ -155,7 +177,10 @@ def main():
     print(f"npcs corrected : {total_fixed}")
     print(f"npcs cleared   : {total_cleared} (placeholder with no AtlasLoot match)")
     print(f"files skipped  : {skipped}")
-    print(f"{OUT}: {len(rows)} encounters with display ids")
+    print(f"{OUT}: {len(rows)} encounters with display ids, {len(heights)} model heights")
+    if missing:
+        print(f"  [warn] {missing} display id(s) have no height; regenerate "
+              f"{os.path.basename(HEIGHTS)} (see tools/README.md)")
     if no_display:
         print(f"  [note] {len(no_display)} matched encounters have no DisplayIDs")
 

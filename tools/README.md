@@ -82,6 +82,35 @@ attach the wrong model to half the heroic encounters.
 
 Use `--skip` to leave files with uncommitted work alone.
 
+### creature_heights.tsv
+
+`displayID <TAB> height`, the model height in world units, used to pull the
+camera back for large creatures. Heights span roughly 0.9 (Pusillin) to 66
+(Supremus), so no single camera framing suits every model.
+
+Computed from the game's own tables, exported by wago.tools:
+
+```
+height = (CreatureModelData.GeoBox_5 - CreatureModelData.GeoBox_2)
+       *  CreatureModelData.ModelScale
+       *  CreatureDisplayInfo.CreatureModelScale
+```
+
+To rebuild after adding encounters, download both tables for a current build and
+re-join them on `CreatureDisplayInfo.ModelID`:
+
+```
+https://wago.tools/db2/CreatureDisplayInfo/csv?build=<build>
+https://wago.tools/db2/CreatureModelData/csv?build=<build>
+```
+
+Build ids come from `https://wago.tools/api/builds`. The Era build only covers
+Era creatures, so TBC displays need a later Classic build as well; the committed
+file was built from `5.5.4.68806` with `1.15.9.68808` filling the gaps.
+
+The camera curve itself lives in `services/CreatureModelService.lua`, not here —
+tune `BASELINE_HEIGHT` there rather than regenerating this file.
+
 ## item_meta.tsv
 
 The filter reads item quality/class/slot from `tools/item_meta.tsv`:
