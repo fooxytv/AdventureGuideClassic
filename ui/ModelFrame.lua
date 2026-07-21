@@ -286,6 +286,13 @@ function component.GetEncounterId()
 	return currentEncounterId
 end
 
+-- The name an encounter shows by default, so the tuner can tell an edited title
+-- from one that merely repeats it.
+function component.GetEncounterName()
+	local encounter = AdventureGuideNavigationService.GetEncounter()
+	return encounter and encounter.name or nil
+end
+
 --[[
 	The live preset table.
 

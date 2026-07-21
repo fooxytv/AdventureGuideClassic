@@ -147,9 +147,17 @@ local function CreatePanel()
 	titleBox:SetAutoFocus(false)
 	titleBox:SetScript("OnTextChanged", function(self, userInput)
 		if not userInput then return end
-		panel.preset.title = self:GetText()
+		local text = self:GetText()
+		--[[
+			Only store a title that differs from the encounter's own name. Every
+			title saved so far merely repeated it, which overrides the default with
+			the same string and, worse, pins a name to a model that other bosses
+			share.
+		]]
+		if text == components.ModelFrame.GetEncounterName() then text = "" end
+		panel.preset.title = text
 		ModelPresetService.SaveTitle(CurrentDisplayId(),
-			components.ModelFrame.GetEncounterId(), self:GetText())
+			components.ModelFrame.GetEncounterId(), text)
 		components.ModelFrame.ApplyPreset(panel.preset)
 	end)
 	titleBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
@@ -289,8 +297,11 @@ function component.Refresh()
 	end
 	-- Only write the box when it is not being typed into, or the caret jumps.
 	if not panel.titleBox:HasFocus() then
+		-- Shows the name currently displayed, so an unchanged box means agreement
+		-- with the encounter rather than an empty override.
 		panel.titleBox:SetText(ModelPresetService.GetTitle(displayId,
-			components.ModelFrame.GetEncounterId()) or "")
+			components.ModelFrame.GetEncounterId())
+			or components.ModelFrame.GetEncounterName() or "")
 	end
 end
 
@@ -300,6 +311,13 @@ function component.OnDisplayChanged(displayId)
 	-- Share the viewer's table rather than taking a copy, so wheel and drag
 	-- changes are part of what Save writes.
 	panel.preset = components.ModelFrame.GetPreset() or ModelPresetService.Get(displayId)
+	--[[
+		Drop focus before refreshing. A focused box is deliberately left alone so
+		typing is not fought, but that meant moving to another boss left the
+		previous one's name sitting in it, ready to be written against the new
+		encounter -- which is how Nefarian came to be called Ragnaros.
+	]]
+	panel.titleBox:ClearFocus()
 	component.Refresh()
 end
 
