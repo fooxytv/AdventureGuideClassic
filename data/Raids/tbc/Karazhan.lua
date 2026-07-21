@@ -20,10 +20,10 @@ InstanceService.AddRaid({
 		encounterID = 16179,
 		portrait = 1385766,
 		loot = {
-			{ id = 30538, seasonFilter = "tbc" }, -- Drape of the Dark Reavers
-			{ id = 30539, seasonFilter = "tbc" }, -- Boots of Elusion
-			{ id = 30540, seasonFilter = "tbc" }, -- Gloves of the Fallen Champion
-			{ id = 30541, seasonFilter = "tbc" }  -- Cord of Nature's Sustenance
+			{ id = 30675, seasonFilter = "tbc" },
+			{ id = 30676, seasonFilter = "tbc" },
+			{ id = 30677, seasonFilter = "tbc" },
+			{ id = 30678, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -70,18 +70,22 @@ InstanceService.AddRaid({
 		encounterID = 15550,
 		portrait = 1378965,
 		loot = {
-			{ id = 28477, seasonFilter = "tbc" }, -- Harbinger Bands
-			{ id = 28507, seasonFilter = "tbc" }, -- Handwraps of Flowing Thought
-			{ id = 28453, seasonFilter = "tbc" }, -- Bracers of the White Stag
-			{ id = 28508, seasonFilter = "tbc" }, -- Gloves of Saintly Blessings
-			{ id = 28506, seasonFilter = "tbc" }, -- Gloves of Dexterous Manipulation
-			{ id = 28454, seasonFilter = "tbc" }, -- Stalker's War Bands
-			{ id = 28503, seasonFilter = "tbc" }, -- Whirlwind Bracers
-			{ id = 28455, seasonFilter = "tbc" }  -- Shard Encrusted Shackles
+			{ id = 28477, seasonFilter = "tbc" },
+			{ id = 28507, seasonFilter = "tbc" },
+			{ id = 28508, seasonFilter = "tbc" },
+			{ id = 28453, seasonFilter = "tbc" },
+			{ id = 28506, seasonFilter = "tbc" },
+			{ id = 28503, seasonFilter = "tbc" },
+			{ id = 28454, seasonFilter = "tbc" },
+			{ id = 28502, seasonFilter = "tbc" },
+			{ id = 28505, seasonFilter = "tbc" },
+			{ id = 28509, seasonFilter = "tbc" },
+			{ id = 28510, seasonFilter = "tbc" },
+			{ id = 28504, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {
-			{ id = 30480, seasonFilter = "tbc" }  -- Fiery Warhorse's Reins (Mount)
+			{ id = 30480, seasonFilter = "tbc" }
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -119,12 +123,18 @@ InstanceService.AddRaid({
 		encounterID = 15687,
 		portrait = 1378999,
 		loot = {
-			{ id = 28567, seasonFilter = "tbc" }, -- Belt of Gale Force
-			{ id = 28569, seasonFilter = "tbc" }, -- Boots of Valiance
-			{ id = 28565, seasonFilter = "tbc" }, -- Nethershard Girdle
-			{ id = 28566, seasonFilter = "tbc" }, -- Crimson Girdle of the Indomitable
-			{ id = 28570, seasonFilter = "tbc" }, -- Shadow-Cloak of Dalaran
-			{ id = 28568, seasonFilter = "tbc" }  -- Idol of the Avian Heart
+			{ id = 28529, seasonFilter = "tbc" },
+			{ id = 28570, seasonFilter = "tbc" },
+			{ id = 28565, seasonFilter = "tbc" },
+			{ id = 28545, seasonFilter = "tbc" },
+			{ id = 28567, seasonFilter = "tbc" },
+			{ id = 28566, seasonFilter = "tbc" },
+			{ id = 28569, seasonFilter = "tbc" },
+			{ id = 28530, seasonFilter = "tbc" },
+			{ id = 28528, seasonFilter = "tbc" },
+			{ id = 28525, seasonFilter = "tbc" },
+			{ id = 28568, seasonFilter = "tbc" },
+			{ id = 28524, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -166,11 +176,18 @@ InstanceService.AddRaid({
 		encounterID = 16457,
 		portrait = 1378997,
 		loot = {
-			{ id = 28514, seasonFilter = "tbc" }, -- Bracers of Maliciousness
-			{ id = 28517, seasonFilter = "tbc" }, -- Bands of Righteousness
-			{ id = 28519, seasonFilter = "tbc" }, -- Gloves of Quickening
-			{ id = 28515, seasonFilter = "tbc" }, -- Bands of Nefarious Deeds
-			{ id = 28518, seasonFilter = "tbc" }  -- Iron Gauntlets of the Maiden
+			{ id = 28511, seasonFilter = "tbc" },
+			{ id = 28515, seasonFilter = "tbc" },
+			{ id = 28517, seasonFilter = "tbc" },
+			{ id = 28514, seasonFilter = "tbc" },
+			{ id = 28521, seasonFilter = "tbc" },
+			{ id = 28520, seasonFilter = "tbc" },
+			{ id = 28519, seasonFilter = "tbc" },
+			{ id = 28512, seasonFilter = "tbc" },
+			{ id = 28518, seasonFilter = "tbc" },
+			{ id = 28516, seasonFilter = "tbc" },
+			{ id = 28523, seasonFilter = "tbc" },
+			{ id = 28522, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -213,10 +230,24 @@ InstanceService.AddRaid({
 		encounterID = 16812,
 		portrait = 1385758,
 		loot = {
-			{ id = 28572, seasonFilter = "tbc" }, -- Beastmaw Pauldrons
-			{ id = 28573, seasonFilter = "tbc" }, -- Ribbon of Sacrifice
-			{ id = 28574, seasonFilter = "tbc" }, -- Wicked Witch's Hat
-			{ id = 28575, seasonFilter = "tbc" }  -- Eternium Greathelm
+			{ id = 28586, seasonFilter = "tbc" },
+			{ id = 28585, seasonFilter = "tbc" },
+			{ id = 28587, seasonFilter = "tbc" },
+			{ id = 28588, seasonFilter = "tbc" },
+			{ id = 28594, seasonFilter = "tbc" },
+			{ id = 28591, seasonFilter = "tbc" },
+			{ id = 28589, seasonFilter = "tbc" },
+			{ id = 28593, seasonFilter = "tbc" },
+			{ id = 28590, seasonFilter = "tbc" },
+			{ id = 28592, seasonFilter = "tbc" },
+			{ id = 28582, seasonFilter = "tbc" },
+			{ id = 28583, seasonFilter = "tbc" },
+			{ id = 28584, seasonFilter = "tbc" },
+			{ id = 28581, seasonFilter = "tbc" },
+			{ id = 28578, seasonFilter = "tbc" },
+			{ id = 28579, seasonFilter = "tbc" },
+			{ id = 28572, seasonFilter = "tbc" },
+			{ id = 28573, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -256,10 +287,15 @@ InstanceService.AddRaid({
 		encounterID = 15691,
 		portrait = 1379020,
 		loot = {
-			{ id = 28612, seasonFilter = "tbc" }, -- Pauldrons of the Solace-Giver
-			{ id = 28631, seasonFilter = "tbc" }, -- Dragon-Quake Shoulderguards
-			{ id = 28621, seasonFilter = "tbc" }, -- Wrynn Dynasty Greaves
-			{ id = 28647, seasonFilter = "tbc" }  -- Garona's Signet Ring
+			{ id = 28612, seasonFilter = "tbc" },
+			{ id = 28647, seasonFilter = "tbc" },
+			{ id = 28631, seasonFilter = "tbc" },
+			{ id = 28621, seasonFilter = "tbc" },
+			{ id = 28649, seasonFilter = "tbc" },
+			{ id = 28633, seasonFilter = "tbc" },
+			{ id = 29757, seasonFilter = "tbc" },
+			{ id = 29758, seasonFilter = "tbc" },
+			{ id = 29756, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -302,12 +338,18 @@ InstanceService.AddRaid({
 		encounterID = 15688,
 		portrait = 1379017,
 		loot = {
-			{ id = 28785, seasonFilter = "tbc" }, -- The Lightning Capacitor
-			{ id = 28789, seasonFilter = "tbc" }, -- Eye of the Dead
-			{ id = 28793, seasonFilter = "tbc" }, -- Band of Crimson Fury
-			{ id = 28792, seasonFilter = "tbc" }, -- A'dal's Signet of Defense
-			{ id = 28797, seasonFilter = "tbc" }, -- Brute Cloak of the Ogre-Magi
-			{ id = 28799, seasonFilter = "tbc" }  -- Belt of the Blaze
+			{ id = 28660, seasonFilter = "tbc" },
+			{ id = 28653, seasonFilter = "tbc" },
+			{ id = 28652, seasonFilter = "tbc" },
+			{ id = 28654, seasonFilter = "tbc" },
+			{ id = 28655, seasonFilter = "tbc" },
+			{ id = 28656, seasonFilter = "tbc" },
+			{ id = 28662, seasonFilter = "tbc" },
+			{ id = 28661, seasonFilter = "tbc" },
+			{ id = 28785, seasonFilter = "tbc" },
+			{ id = 28657, seasonFilter = "tbc" },
+			{ id = 28658, seasonFilter = "tbc" },
+			{ id = 28659, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -350,12 +392,18 @@ InstanceService.AddRaid({
 		encounterID = 16524,
 		portrait = 1379012,
 		loot = {
-			{ id = 28672, seasonFilter = "tbc" }, -- Drape of the Dark Reavers
-			{ id = 28673, seasonFilter = "tbc" }, -- Titan-Forged Shoulders of the Innocent
-			{ id = 28674, seasonFilter = "tbc" }, -- Pauldrons of the Justice-Seeker
-			{ id = 28675, seasonFilter = "tbc" }, -- Shining Chain of the Afterworld
-			{ id = 28726, seasonFilter = "tbc" }, -- Mantle of the Mind Flayer
-			{ id = 28727, seasonFilter = "tbc" }  -- Pendant of the Violet Eye
+			{ id = 28672, seasonFilter = "tbc" },
+			{ id = 28726, seasonFilter = "tbc" },
+			{ id = 28670, seasonFilter = "tbc" },
+			{ id = 28663, seasonFilter = "tbc" },
+			{ id = 28669, seasonFilter = "tbc" },
+			{ id = 28671, seasonFilter = "tbc" },
+			{ id = 28666, seasonFilter = "tbc" },
+			{ id = 28674, seasonFilter = "tbc" },
+			{ id = 28675, seasonFilter = "tbc" },
+			{ id = 28727, seasonFilter = "tbc" },
+			{ id = 28728, seasonFilter = "tbc" },
+			{ id = 28673, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -398,12 +446,18 @@ InstanceService.AddRaid({
 		encounterID = 15689,
 		portrait = 1379002,
 		loot = {
-			{ id = 28732, seasonFilter = "tbc" }, -- Cowl of Defiance
-			{ id = 28733, seasonFilter = "tbc" }, -- Girdle of Truth
-			{ id = 28734, seasonFilter = "tbc" }, -- Jewel-Collar of the Archmage
-			{ id = 28735, seasonFilter = "tbc" }, -- Pantaloons of Repentence
-			{ id = 28741, seasonFilter = "tbc" }, -- Shrooud of the Incarnate
-			{ id = 28742, seasonFilter = "tbc" }  -- Mantle of Abrahmis
+			{ id = 28744, seasonFilter = "tbc" },
+			{ id = 28742, seasonFilter = "tbc" },
+			{ id = 28732, seasonFilter = "tbc" },
+			{ id = 28741, seasonFilter = "tbc" },
+			{ id = 28735, seasonFilter = "tbc" },
+			{ id = 28740, seasonFilter = "tbc" },
+			{ id = 28743, seasonFilter = "tbc" },
+			{ id = 28733, seasonFilter = "tbc" },
+			{ id = 28731, seasonFilter = "tbc" },
+			{ id = 28730, seasonFilter = "tbc" },
+			{ id = 28734, seasonFilter = "tbc" },
+			{ id = 28729, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -446,10 +500,18 @@ InstanceService.AddRaid({
 		encounterID = 16816,
 		portrait = 1385725,
 		loot = {
-			{ id = 28745, seasonFilter = "tbc" }, -- Battlescar Boots
-			{ id = 28746, seasonFilter = "tbc" }, -- Fiend Slayer Boots
-			{ id = 28747, seasonFilter = "tbc" }, -- Girdle of the Lightbearer
-			{ id = 28748, seasonFilter = "tbc" }  -- Ring of Recurrence
+			{ id = 28756, seasonFilter = "tbc" },
+			{ id = 28755, seasonFilter = "tbc" },
+			{ id = 28750, seasonFilter = "tbc" },
+			{ id = 28752, seasonFilter = "tbc" },
+			{ id = 28751, seasonFilter = "tbc" },
+			{ id = 28746, seasonFilter = "tbc" },
+			{ id = 28748, seasonFilter = "tbc" },
+			{ id = 28747, seasonFilter = "tbc" },
+			{ id = 28745, seasonFilter = "tbc" },
+			{ id = 28753, seasonFilter = "tbc" },
+			{ id = 28749, seasonFilter = "tbc" },
+			{ id = 28754, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},
@@ -492,22 +554,24 @@ InstanceService.AddRaid({
 		encounterID = 15690,
 		portrait = 1379006,
 		loot = {
-			{ id = 28765, seasonFilter = "tbc" }, -- Stainless Cloak of the Pure Hearted
-			{ id = 28766, seasonFilter = "tbc" }, -- Ruby Drape of the Mysticant
-			{ id = 28762, seasonFilter = "tbc" }, -- Adornment of Stolen Souls
-			{ id = 28763, seasonFilter = "tbc" }, -- Jade Ring of the Everliving
-			{ id = 28757, seasonFilter = "tbc" }, -- Ring of a Thousand Marks
-			{ id = 28764, seasonFilter = "tbc" }  -- Farstrider Wildercloak
+			{ id = 28765, seasonFilter = "tbc" },
+			{ id = 28766, seasonFilter = "tbc" },
+			{ id = 28764, seasonFilter = "tbc" },
+			{ id = 28762, seasonFilter = "tbc" },
+			{ id = 28763, seasonFilter = "tbc" },
+			{ id = 28757, seasonFilter = "tbc" },
+			{ id = 28770, seasonFilter = "tbc" },
+			{ id = 28768, seasonFilter = "tbc" },
+			{ id = 28767, seasonFilter = "tbc" },
+			{ id = 28773, seasonFilter = "tbc" },
+			{ id = 28771, seasonFilter = "tbc" },
+			{ id = 28772, seasonFilter = "tbc" },
+			{ id = 29760, seasonFilter = "tbc" },
+			{ id = 29761, seasonFilter = "tbc" },
+			{ id = 29759, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
-		rareLoot = {
-			{ id = 28767, seasonFilter = "tbc" }, -- The Decapitator
-			{ id = 28768, seasonFilter = "tbc" }, -- Malchazeen
-			{ id = 28770, seasonFilter = "tbc" }, -- Nathrezim Mindblade
-			{ id = 28771, seasonFilter = "tbc" }, -- Light's Justice
-			{ id = 28772, seasonFilter = "tbc" }, -- Sunfury Bow of the Phoenix
-			{ id = 28773, seasonFilter = "tbc" }  -- Gorehowl
-		},
+		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = { 15690, 17646 },
@@ -547,18 +611,18 @@ InstanceService.AddRaid({
 		encounterID = 17225,
 		portrait = 1379003,
 		loot = {
-			{ id = 28602, seasonFilter = "tbc" }, -- Robe of the Elder Scribes
-			{ id = 28601, seasonFilter = "tbc" }, -- Chestguard of the Conniver
-			{ id = 28600, seasonFilter = "tbc" }, -- Stonebough Jerkin
-			{ id = 28599, seasonFilter = "tbc" }, -- Scaled Breastplate of Carnage
-			{ id = 28597, seasonFilter = "tbc" }, -- Panzar'Thar Breastplate
-			{ id = 28603, seasonFilter = "tbc" }, -- Talisman of Nightbane
-			{ id = 28604, seasonFilter = "tbc" }, -- Nightstaff of the Everliving
-			{ id = 28606, seasonFilter = "tbc" }, -- Shield of Impenetrable Darkness
-			{ id = 28608, seasonFilter = "tbc" }, -- Ironstriders of Urgency
-			{ id = 28609, seasonFilter = "tbc" }, -- Emberspur Talisman
-			{ id = 28610, seasonFilter = "tbc" }, -- Ferocious Swift-Kickers
-			{ id = 28611, seasonFilter = "tbc" }  -- Dragonheart Flameshield
+			{ id = 28602, seasonFilter = "tbc" },
+			{ id = 28600, seasonFilter = "tbc" },
+			{ id = 28601, seasonFilter = "tbc" },
+			{ id = 28599, seasonFilter = "tbc" },
+			{ id = 28610, seasonFilter = "tbc" },
+			{ id = 28597, seasonFilter = "tbc" },
+			{ id = 28608, seasonFilter = "tbc" },
+			{ id = 28609, seasonFilter = "tbc" },
+			{ id = 28603, seasonFilter = "tbc" },
+			{ id = 28604, seasonFilter = "tbc" },
+			{ id = 28611, seasonFilter = "tbc" },
+			{ id = 28606, seasonFilter = "tbc" }
 		},
 		sharedLoot = {},
 		rareLoot = {},

@@ -21,20 +21,17 @@ InstanceService.AddRaid({
 		encounterID = 18831,
 		portrait = 1378985,
 		loot = {
-			{ id = 28801, seasonFilter = "tbc" }, -- Malefic Mask of the Shadows
-			{ id = 28800, seasonFilter = "tbc" }, -- Hammer of the Naaru
-			{ id = 28795, seasonFilter = "tbc" }, -- Bladespire Warbands
-			{ id = 28796, seasonFilter = "tbc" }, -- Malefic Girdle
-			{ id = 28797, seasonFilter = "tbc" }, -- Cloak of the Pit Stalker
-			{ id = 28810, seasonFilter = "tbc" }, -- Bloodmaw Magus-Blade
-			{ id = 29763, seasonFilter = "tbc" }, -- Karazhan Signet Ring
-			{ id = 28799, seasonFilter = "tbc" }  -- Belt of Divine Inspiration
+			{ id = 28797, seasonFilter = "tbc" },
+			{ id = 28799, seasonFilter = "tbc" },
+			{ id = 28796, seasonFilter = "tbc" },
+			{ id = 28801, seasonFilter = "tbc" },
+			{ id = 28795, seasonFilter = "tbc" },
+			{ id = 28800, seasonFilter = "tbc" },
+			{ id = 29763, seasonFilter = "tbc" },
+			{ id = 29764, seasonFilter = "tbc" },
+			{ id = 29762, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 29764, seasonFilter = "tbc" }, -- Leggings of the Fallen Champion (Tier 4 token)
-			{ id = 29765, seasonFilter = "tbc" }, -- Leggings of the Fallen Defender (Tier 4 token)
-			{ id = 29766, seasonFilter = "tbc" }  -- Leggings of the Fallen Hero (Tier 4 token)
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -97,26 +94,25 @@ InstanceService.AddRaid({
 		encounterID = 19044,
 		portrait = 1378982,
 		loot = {
-			{ id = 28830, seasonFilter = "tbc" }, -- Dragonspine Trophy
-			{ id = 28815, seasonFilter = "tbc" }, -- Cowl of Nature's Breath
-			{ id = 28824, seasonFilter = "tbc" }, -- Gauntlets of Martial Perfection
-			{ id = 28822, seasonFilter = "tbc" }, -- Teeth of Gruul
-			{ id = 28828, seasonFilter = "tbc" }, -- Gronn-Stitched Girdle
-			{ id = 28827, seasonFilter = "tbc" }, -- Gauntlets of Cruel Intention
-			{ id = 28823, seasonFilter = "tbc" }, -- Axe of the Gronn Lords
-			{ id = 28825, seasonFilter = "tbc" }, -- Aldori Legacy Defender
-			{ id = 28810, seasonFilter = "tbc" }, -- Windshear Boots
-			{ id = 28826, seasonFilter = "tbc" }, -- Shuriken of Negation
-			{ id = 28804, seasonFilter = "tbc" }  -- Collar of Cho'gall
+			{ id = 28804, seasonFilter = "tbc" },
+			{ id = 28803, seasonFilter = "tbc" },
+			{ id = 28828, seasonFilter = "tbc" },
+			{ id = 28827, seasonFilter = "tbc" },
+			{ id = 28810, seasonFilter = "tbc" },
+			{ id = 28824, seasonFilter = "tbc" },
+			{ id = 28822, seasonFilter = "tbc" },
+			{ id = 28823, seasonFilter = "tbc" },
+			{ id = 28830, seasonFilter = "tbc" },
+			{ id = 29766, seasonFilter = "tbc" },
+			{ id = 29767, seasonFilter = "tbc" },
+			{ id = 29765, seasonFilter = "tbc" },
+			{ id = 28802, seasonFilter = "tbc" },
+			{ id = 28794, seasonFilter = "tbc" },
+			{ id = 28825, seasonFilter = "tbc" },
+			{ id = 28826, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 29764, seasonFilter = "tbc" }, -- Leggings of the Fallen Champion (Tier 4 token)
-			{ id = 29765, seasonFilter = "tbc" }, -- Leggings of the Fallen Defender (Tier 4 token)
-			{ id = 29766, seasonFilter = "tbc" }  -- Leggings of the Fallen Hero (Tier 4 token)
-		},
-		rareLoot = {
-			{ id = 32837, seasonFilter = "tbc" }  -- Warglaive of the Defender (very rare drop)
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = { 19044 },

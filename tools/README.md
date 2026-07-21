@@ -1,0 +1,65 @@
+# tools/
+
+## atlasloot_tool.py
+
+Fills and audits boss loot in `data/` against a local AtlasLootClassic checkout.
+
+### Setup
+
+Expects **AllAtlasLoot** as a sibling checkout of this repo:
+
+```
+workspaces/home-projects/
+  AdventureGuideClassic/     <- this repo
+  AllAtlasLoot/              <- https://github.com/hobbs11/AtlasLootClassic (or your fork)
+```
+
+Override via `AL_ROOT` / `AG_ROOT` at the top of the script.
+
+### Usage
+
+```bash
+python tools/atlasloot_tool.py audit    data/Raids/tbc/Sunwell_Plateau.lua --prefer tbc
+python tools/atlasloot_tool.py generate data/Raids/tbc/Sunwell_Plateau.lua --prefer tbc
+python tools/atlasloot_tool.py apply    data/Raids/tbc/Sunwell_Plateau.lua --prefer tbc
+python tools/atlasloot_tool.py apply    data/Raids/tbc/Sunwell_Plateau.lua --prefer tbc --force
+```
+
+- `audit` — report per boss what AtlasLoot has that we don't, and vice versa.
+- `generate` — print the loot arrays without touching the file.
+- `apply` — write them in. By default only fills bosses whose `loot` is still the
+  empty `{}` placeholder, so it can't clobber curated data.
+- `--force` — also overwrite non-empty loot blocks. Existing ids survive only if
+  they pass the gear filter *and* AtlasLoot lists them in that instance's
+  unassigned pool (Trash, Patterns). An id parked on the wrong boss is dropped.
+
+`--prefer` is inferred from the path (`tbc` for `data/**/tbc/**`, else `all`).
+
+Bosses are joined on `encounterID == AtlasLoot npcID`, falling back to name. Where
+the guide models an encounter differently from AtlasLoot (Karazhan's Opera Hall,
+Black Temple's Reliquary of Souls) the `ALIASES` table maps it across.
+
+### Gear filter
+
+Only real, equippable gear goes into the guide. An item is kept when it is a
+tier-set token (AtlasLoot `Token.lua`, `type = 6`) **or** it is a Weapon/Armor
+class item of common quality or better with a real inventory slot.
+
+That deliberately excludes greys, Badge of Justice and other currency,
+recipes/designs/patterns, quest and attunement items, and fishing junk.
+
+### item_meta.tsv
+
+The filter reads item quality/class/slot from `tools/item_meta.tsv`:
+
+```
+itemID <TAB> quality <TAB> classID <TAB> equipSlot <TAB> name
+```
+
+`classID` is `-1` when the item has no subclass line (trinkets, rings, cloaks);
+`equipSlot` is empty for anything not equippable. Sourced from
+`https://nether.wowhead.com/tbc/tooltip/item/<id>` — note `www.wowhead.com`
+returns 403 to scripted requests, so use the `nether` host.
+It's committed so the tool runs offline and gives reproducible results. To add
+ids, append rows; anything missing from the file is treated as not-gear and
+dropped, so regenerate before adding a new instance.

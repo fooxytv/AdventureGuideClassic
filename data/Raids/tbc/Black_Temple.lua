@@ -21,18 +21,22 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 22887,
 		portrait = 1378986,
 		loot = {
-			{ id = 32236, seasonFilter = "tbc" },
-			{ id = 32234, seasonFilter = "tbc" },
-			{ id = 32232, seasonFilter = "tbc" },
-			{ id = 32237, seasonFilter = "tbc" },
-			{ id = 32238, seasonFilter = "tbc" },
 			{ id = 32239, seasonFilter = "tbc" },
 			{ id = 32240, seasonFilter = "tbc" },
-			{ id = 32241, seasonFilter = "tbc" }
+			{ id = 32377, seasonFilter = "tbc" },
+			{ id = 32241, seasonFilter = "tbc" },
+			{ id = 32234, seasonFilter = "tbc" },
+			{ id = 32242, seasonFilter = "tbc" },
+			{ id = 32232, seasonFilter = "tbc" },
+			{ id = 32243, seasonFilter = "tbc" },
+			{ id = 32245, seasonFilter = "tbc" },
+			{ id = 32238, seasonFilter = "tbc" },
+			{ id = 32247, seasonFilter = "tbc" },
+			{ id = 32237, seasonFilter = "tbc" },
+			{ id = 32236, seasonFilter = "tbc" },
+			{ id = 32248, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
-			{ id = 32524, seasonFilter = "tbc" },
-			{ id = 32525, seasonFilter = "tbc" },
 			{ id = 32526, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
@@ -78,18 +82,23 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 22898,
 		portrait = 1379016,
 		loot = {
-			{ id = 32254, seasonFilter = "tbc" },
-			{ id = 32252, seasonFilter = "tbc" },
-			{ id = 32255, seasonFilter = "tbc" },
 			{ id = 32256, seasonFilter = "tbc" },
-			{ id = 32257, seasonFilter = "tbc" },
+			{ id = 32252, seasonFilter = "tbc" },
+			{ id = 32259, seasonFilter = "tbc" },
+			{ id = 32251, seasonFilter = "tbc" },
 			{ id = 32258, seasonFilter = "tbc" },
-			{ id = 32259, seasonFilter = "tbc" }
+			{ id = 32250, seasonFilter = "tbc" },
+			{ id = 32260, seasonFilter = "tbc" },
+			{ id = 32261, seasonFilter = "tbc" },
+			{ id = 32257, seasonFilter = "tbc" },
+			{ id = 32254, seasonFilter = "tbc" },
+			{ id = 32262, seasonFilter = "tbc" },
+			{ id = 32255, seasonFilter = "tbc" },
+			{ id = 32253, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
 			{ id = 32527, seasonFilter = "tbc" },
-			{ id = 32528, seasonFilter = "tbc" },
-			{ id = 32529, seasonFilter = "tbc" }
+			{ id = 32528, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -134,19 +143,22 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 22841,
 		portrait = 1379011,
 		loot = {
-			{ id = 32275, seasonFilter = "tbc" },
 			{ id = 32273, seasonFilter = "tbc" },
 			{ id = 32270, seasonFilter = "tbc" },
+			{ id = 32513, seasonFilter = "tbc" },
+			{ id = 32265, seasonFilter = "tbc" },
+			{ id = 32271, seasonFilter = "tbc" },
+			{ id = 32264, seasonFilter = "tbc" },
+			{ id = 32275, seasonFilter = "tbc" },
 			{ id = 32276, seasonFilter = "tbc" },
-			{ id = 32277, seasonFilter = "tbc" },
+			{ id = 32279, seasonFilter = "tbc" },
 			{ id = 32278, seasonFilter = "tbc" },
-			{ id = 32279, seasonFilter = "tbc" }
+			{ id = 32263, seasonFilter = "tbc" },
+			{ id = 32268, seasonFilter = "tbc" },
+			{ id = 32266, seasonFilter = "tbc" },
+			{ id = 32361, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 32530, seasonFilter = "tbc" },
-			{ id = 32531, seasonFilter = "tbc" },
-			{ id = 32532, seasonFilter = "tbc" }
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -192,19 +204,20 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 22871,
 		portrait = 1379018,
 		loot = {
-			{ id = 32353, seasonFilter = "tbc" },
-			{ id = 32352, seasonFilter = "tbc" },
-			{ id = 32350, seasonFilter = "tbc" },
-			{ id = 32354, seasonFilter = "tbc" },
-			{ id = 32355, seasonFilter = "tbc" },
-			{ id = 32356, seasonFilter = "tbc" },
-			{ id = 32348, seasonFilter = "tbc" }
+			{ id = 32323, seasonFilter = "tbc" },
+			{ id = 32329, seasonFilter = "tbc" },
+			{ id = 32327, seasonFilter = "tbc" },
+			{ id = 32324, seasonFilter = "tbc" },
+			{ id = 32328, seasonFilter = "tbc" },
+			{ id = 32510, seasonFilter = "tbc" },
+			{ id = 32280, seasonFilter = "tbc" },
+			{ id = 32512, seasonFilter = "tbc" },
+			{ id = 32330, seasonFilter = "tbc" },
+			{ id = 32348, seasonFilter = "tbc" },
+			{ id = 32326, seasonFilter = "tbc" },
+			{ id = 32325, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 32533, seasonFilter = "tbc" },
-			{ id = 32534, seasonFilter = "tbc" },
-			{ id = 32535, seasonFilter = "tbc" }
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -252,18 +265,23 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 22948,
 		portrait = 1378983,
 		loot = {
-			{ id = 32276, seasonFilter = "tbc" },
-			{ id = 32278, seasonFilter = "tbc" },
-			{ id = 32273, seasonFilter = "tbc" },
-			{ id = 32280, seasonFilter = "tbc" },
+			{ id = 32337, seasonFilter = "tbc" },
+			{ id = 32338, seasonFilter = "tbc" },
+			{ id = 32340, seasonFilter = "tbc" },
+			{ id = 32339, seasonFilter = "tbc" },
+			{ id = 32334, seasonFilter = "tbc" },
+			{ id = 32342, seasonFilter = "tbc" },
+			{ id = 32333, seasonFilter = "tbc" },
+			{ id = 32341, seasonFilter = "tbc" },
+			{ id = 32335, seasonFilter = "tbc" },
+			{ id = 32501, seasonFilter = "tbc" },
 			{ id = 32269, seasonFilter = "tbc" },
-			{ id = 32271, seasonFilter = "tbc" },
-			{ id = 32272, seasonFilter = "tbc" }
+			{ id = 32344, seasonFilter = "tbc" },
+			{ id = 32343, seasonFilter = "tbc" }
 		},
 		sharedLoot = {
 			{ id = 32527, seasonFilter = "tbc" },
-			{ id = 32528, seasonFilter = "tbc" },
-			{ id = 32529, seasonFilter = "tbc" }
+			{ id = 32528, seasonFilter = "tbc" }
 		},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -313,19 +331,21 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 23418,
 		portrait = 1385764,
 		loot = {
-			{ id = 32325, seasonFilter = "tbc" },
-			{ id = 32328, seasonFilter = "tbc" },
-			{ id = 32329, seasonFilter = "tbc" },
-			{ id = 32330, seasonFilter = "tbc" },
-			{ id = 32326, seasonFilter = "tbc" },
-			{ id = 32327, seasonFilter = "tbc" },
-			{ id = 32331, seasonFilter = "tbc" }
+			{ id = 32353, seasonFilter = "tbc" },
+			{ id = 32351, seasonFilter = "tbc" },
+			{ id = 32347, seasonFilter = "tbc" },
+			{ id = 32352, seasonFilter = "tbc" },
+			{ id = 32517, seasonFilter = "tbc" },
+			{ id = 32346, seasonFilter = "tbc" },
+			{ id = 32354, seasonFilter = "tbc" },
+			{ id = 32345, seasonFilter = "tbc" },
+			{ id = 32349, seasonFilter = "tbc" },
+			{ id = 32362, seasonFilter = "tbc" },
+			{ id = 32350, seasonFilter = "tbc" },
+			{ id = 32332, seasonFilter = "tbc" },
+			{ id = 32363, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 32521, seasonFilter = "tbc" },
-			{ id = 32522, seasonFilter = "tbc" },
-			{ id = 32523, seasonFilter = "tbc" }
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -381,19 +401,17 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 22947,
 		portrait = 1379000,
 		loot = {
-			{ id = 32377, seasonFilter = "tbc" },
-			{ id = 32363, seasonFilter = "tbc" },
-			{ id = 32366, seasonFilter = "tbc" },
 			{ id = 32367, seasonFilter = "tbc" },
+			{ id = 32366, seasonFilter = "tbc" },
+			{ id = 32365, seasonFilter = "tbc" },
+			{ id = 32370, seasonFilter = "tbc" },
 			{ id = 32368, seasonFilter = "tbc" },
 			{ id = 32369, seasonFilter = "tbc" },
-			{ id = 32370, seasonFilter = "tbc" }
+			{ id = 31101, seasonFilter = "tbc" },
+			{ id = 31103, seasonFilter = "tbc" },
+			{ id = 31102, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 32333, seasonFilter = "tbc" },
-			{ id = 32334, seasonFilter = "tbc" },
-			{ id = 32335, seasonFilter = "tbc" }
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -449,19 +467,17 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 23426,
 		portrait = 1385743,
 		loot = {
+			{ id = 32331, seasonFilter = "tbc" },
 			{ id = 32519, seasonFilter = "tbc" },
 			{ id = 32518, seasonFilter = "tbc" },
+			{ id = 32376, seasonFilter = "tbc" },
+			{ id = 32373, seasonFilter = "tbc" },
 			{ id = 32505, seasonFilter = "tbc" },
-			{ id = 32517, seasonFilter = "tbc" },
-			{ id = 32516, seasonFilter = "tbc" },
-			{ id = 32515, seasonFilter = "tbc" },
-			{ id = 32514, seasonFilter = "tbc" }
+			{ id = 31098, seasonFilter = "tbc" },
+			{ id = 31100, seasonFilter = "tbc" },
+			{ id = 31099, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 32536, seasonFilter = "tbc" },
-			{ id = 32537, seasonFilter = "tbc" },
-			{ id = 32538, seasonFilter = "tbc" }
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -518,20 +534,25 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 22917,
 		portrait = 1378987,
 		loot = {
-			{ id = 32837, seasonFilter = "tbc" },
-			{ id = 32838, seasonFilter = "tbc" },
+			{ id = 32524, seasonFilter = "tbc" },
+			{ id = 32525, seasonFilter = "tbc" },
+			{ id = 32235, seasonFilter = "tbc" },
+			{ id = 32521, seasonFilter = "tbc" },
+			{ id = 32497, seasonFilter = "tbc" },
 			{ id = 32483, seasonFilter = "tbc" },
 			{ id = 32496, seasonFilter = "tbc" },
+			{ id = 32837, seasonFilter = "tbc" },
+			{ id = 32838, seasonFilter = "tbc" },
+			{ id = 31089, seasonFilter = "tbc" },
+			{ id = 31091, seasonFilter = "tbc" },
+			{ id = 31090, seasonFilter = "tbc" },
+			{ id = 32471, seasonFilter = "tbc" },
 			{ id = 32500, seasonFilter = "tbc" },
-			{ id = 32493, seasonFilter = "tbc" },
-			{ id = 32494, seasonFilter = "tbc" },
-			{ id = 32495, seasonFilter = "tbc" }
+			{ id = 32374, seasonFilter = "tbc" },
+			{ id = 32375, seasonFilter = "tbc" },
+			{ id = 32336, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 32521, seasonFilter = "tbc" },
-			{ id = 32522, seasonFilter = "tbc" },
-			{ id = 32523, seasonFilter = "tbc" }
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
