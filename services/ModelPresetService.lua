@@ -56,12 +56,27 @@ function ModelPresetService.Get(displayId)
 			y = saved.y or 0,
 			z = saved.z or 0,
 			facing = saved.facing or 0,
+			title = saved.title,
 		}
 	end
 	return {
 		scale = CreatureModelService.GetCameraScale(displayId),
 		x = 0, y = 0, z = 0, facing = 0,
 	}
+end
+
+--[[
+	The name to show for a creature, or nil to fall back to the encounter name.
+
+	An encounter that shows several creatures labels them all with the encounter
+	name, so Majordomo Executus' three models all read "Majordomo Executus". A
+	title override names them individually.
+]]
+function ModelPresetService.GetTitle(displayId)
+	local preset = displayId and ModelPresetService.Get(displayId)
+	local title = preset and preset.title
+	if title and title ~= "" then return title end
+	return nil
 end
 
 function ModelPresetService.Save(displayId, preset)
@@ -73,6 +88,7 @@ function ModelPresetService.Save(displayId, preset)
 		y = preset.y ~= 0 and preset.y or nil,
 		z = preset.z ~= 0 and preset.z or nil,
 		facing = preset.facing ~= 0 and preset.facing or nil,
+		title = (preset.title and preset.title ~= "") and preset.title or nil,
 	}
 	return true
 end
@@ -108,6 +124,7 @@ function ModelPresetService.Export()
 		if p.y then table.insert(parts, ("y = %.2f"):format(p.y)) end
 		if p.z then table.insert(parts, ("z = %.2f"):format(p.z)) end
 		if p.facing then table.insert(parts, ("facing = %.2f"):format(p.facing)) end
+		if p.title then table.insert(parts, ("title = %q"):format(p.title)) end
 		table.insert(lines, ("\t[%d] = { %s },"):format(displayId, table.concat(parts, ", ")))
 	end
 	table.insert(lines, "})")

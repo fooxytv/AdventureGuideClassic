@@ -49,8 +49,11 @@ function component.SetDisplay(displayId, title)
 	creatureModel:SetDisplayInfo(displayId)
 	creatureModel:SetPortraitZoom(0)
 	component.ApplyPreset(currentPreset)
-	if title then
-		modelContainer.imageTitle:SetText(title)
+	-- A per-creature title wins over the encounter name, so the several models
+	-- of one encounter can be named individually.
+	local displayTitle = ModelPresetService.GetTitle(displayId) or title
+	if displayTitle then
+		modelContainer.imageTitle:SetText(displayTitle)
 	end
 	modelContainer.modelDisplayId:SetText(tostring(displayId))
 	if components and components.ModelTuner then
@@ -63,6 +66,9 @@ end
 function component.ApplyPreset(preset)
 	if not creatureModel or not preset then return end
 	currentPreset = preset
+	if preset.title and preset.title ~= "" then
+		modelContainer.imageTitle:SetText(preset.title)
+	end
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
 	creatureModel:SetCamDistanceScale(zoom)

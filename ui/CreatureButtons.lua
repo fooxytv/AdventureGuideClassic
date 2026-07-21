@@ -34,9 +34,12 @@ local function ButtonOnClick(self)
 end
 
 local function ButtonOnEnter(self)
-	if not self.creatureName then return end
+	-- Prefer a per-creature title, so the buttons of a multi-creature encounter
+	-- are not all labelled with the encounter name.
+	local name = ModelPresetService.GetTitle(self.displayId) or self.creatureName
+	if not name then return end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetText(self.creatureName, 1, 1, 1)
+	GameTooltip:SetText(name, 1, 1, 1)
 	GameTooltip:Show()
 end
 

@@ -15,6 +15,7 @@ local components
 local panel
 
 local ROW_HEIGHT = 22
+local ROWS_TOP = 62      -- below the title edit box
 local STEPS = {
 	scale  = 0.1,
 	x      = 0.5,
@@ -37,7 +38,7 @@ end
 local function AddRow(parent, index, field, label)
 	local row = CreateFrame("Frame", nil, parent)
 	row:SetSize(230, ROW_HEIGHT)
-	row:SetPoint("TOPLEFT", 12, -34 - (index * ROW_HEIGHT))
+	row:SetPoint("TOPLEFT", 12, -ROWS_TOP - (index * ROW_HEIGHT))
 
 	local name = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	name:SetPoint("LEFT", 0, 0)
@@ -83,7 +84,7 @@ end
 local function CreatePanel()
 	if panel then return panel end
 	panel = CreateFrame("Frame", "AGCModelTuner", UIParent, "BackdropTemplate")
-	panel:SetSize(254, 232)
+	panel:SetSize(254, 262)
 	panel:SetPoint("CENTER", 300, 0)
 	panel:SetFrameStrata("DIALOG")
 	panel:SetMovable(true)
@@ -110,6 +111,28 @@ local function CreatePanel()
 	panel.subtitle:SetWidth(230)
 	panel.subtitle:SetJustifyH("LEFT")
 
+	--[[
+		Per-creature name. An encounter that shows several creatures labels them
+		all with the encounter name, so this is how the individual ones get named.
+		Left empty, the encounter name is used as before.
+	]]
+	local titleLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	titleLabel:SetPoint("TOPLEFT", 12, -42)
+	titleLabel:SetText("Title")
+
+	local titleBox = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
+	titleBox:SetSize(168, 18)
+	titleBox:SetPoint("TOPLEFT", 68, -40)
+	titleBox:SetAutoFocus(false)
+	titleBox:SetScript("OnTextChanged", function(self, userInput)
+		if not userInput then return end
+		panel.preset.title = self:GetText()
+		components.ModelFrame.ApplyPreset(panel.preset)
+	end)
+	titleBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+	titleBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+	panel.titleBox = titleBox
+
 	AddRow(panel, 0, "scale", "Zoom")
 	AddRow(panel, 1, "x", "Depth")
 	AddRow(panel, 2, "y", "Side")
@@ -119,7 +142,7 @@ local function CreatePanel()
 	local function AddButton(text, index, onClick)
 		local button = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 		button:SetSize(74, 20)
-		button:SetPoint("TOPLEFT", 12 + (index * 78), -158)
+		button:SetPoint("TOPLEFT", 12 + (index * 78), -ROWS_TOP - (5 * ROW_HEIGHT) - 8)
 		button:SetText(text)
 		button:SetScript("OnClick", onClick)
 		return button
@@ -150,10 +173,11 @@ local function CreatePanel()
 	end)
 
 	panel.hint = panel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	panel.hint:SetPoint("TOPLEFT", 12, -184)
+	panel.hint:SetPoint("TOPLEFT", 12, -ROWS_TOP - (5 * ROW_HEIGHT) - 34)
 	panel.hint:SetWidth(230)
 	panel.hint:SetJustifyH("LEFT")
-	panel.hint:SetText("Hold Shift for larger steps. Export prints pasteable Lua.")
+	panel.hint:SetText("Hold Shift for larger steps. Title names one creature of "
+		.. "a multi-creature encounter. Export prints pasteable Lua.")
 
 	local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
 	close:SetPoint("TOPRIGHT", 0, 0)
@@ -213,6 +237,10 @@ function component.Refresh()
 	end
 	for _, row in ipairs(panel.rows) do
 		row.value:SetText(("%.2f"):format(panel.preset[row.field] or 0))
+	end
+	-- Only write the box when it is not being typed into, or the caret jumps.
+	if not panel.titleBox:HasFocus() then
+		panel.titleBox:SetText(panel.preset.title or "")
 	end
 end
 
