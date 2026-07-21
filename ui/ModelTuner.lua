@@ -270,7 +270,9 @@ end
 -- Called when the viewer changes creature, so the panel tracks what is on screen.
 function component.OnDisplayChanged(displayId)
 	if not panel or not panel:IsShown() then return end
-	panel.preset = ModelPresetService.Get(displayId)
+	-- Share the viewer's table rather than taking a copy, so wheel and drag
+	-- changes are part of what Save writes.
+	panel.preset = components.ModelFrame.GetPreset() or ModelPresetService.Get(displayId)
 	component.Refresh()
 end
 
@@ -282,7 +284,8 @@ function component.Toggle()
 	end
 	panel:Show()
 	local displayId = CurrentDisplayId()
-	panel.preset = displayId and ModelPresetService.Get(displayId)
+	panel.preset = (displayId and components.ModelFrame.GetPreset())
+		or (displayId and ModelPresetService.Get(displayId))
 		or { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0, modelScale = 1 }
 	component.Refresh()
 end

@@ -111,6 +111,12 @@ function component.SupportsTilt()
 	return creatureModel ~= nil and creatureModel.SetPitch ~= nil
 end
 
+local function NotifyTuner()
+	if components and components.ModelTuner then
+		components.ModelTuner.Refresh()
+	end
+end
+
 -- Creature sizes vary far too much for one framing to suit all of them, so the
 -- wheel zooms and dragging turns the model, as the dressing room does.
 local function SetupModelControls(model)
@@ -119,6 +125,8 @@ local function SetupModelControls(model)
 	model:SetScript("OnMouseWheel", function(self, delta)
 		zoom = math.max(MIN_ZOOM, math.min(MAX_ZOOM, zoom * (1 - delta * ZOOM_RATE)))
 		self:SetCamDistanceScale(zoom)
+		if currentPreset then currentPreset.scale = zoom end
+		NotifyTuner()
 	end)
 	model:SetScript("OnMouseDown", function(self, button)
 		local _, y = GetCursorPosition()
@@ -131,10 +139,6 @@ local function SetupModelControls(model)
 			self.tiltStartY = y
 			self.tiltStartPitch = currentPreset and currentPreset.pitch or 0
 		end
-	end)
-	model:SetScript("OnMouseUp", function(self)
-		self.isRotating = false
-		self.isTilting = false
 	end)
 	model:SetScript("OnHide", function(self)
 		self.isRotating = false
@@ -155,7 +159,9 @@ local function SetupModelControls(model)
 	model:SetScript("OnUpdate", function(self)
 		if self.isRotating then
 			local x = GetCursorPosition()
-			self:SetFacing(self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED)
+			local facing = self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED
+			self:SetFacing(facing)
+			if currentPreset then currentPreset.facing = facing end
 		elseif self.isTilting then
 			local _, y = GetCursorPosition()
 			local pitch = self.tiltStartPitch + (y - self.tiltStartY) * TILT_SPEED
@@ -163,6 +169,11 @@ local function SetupModelControls(model)
 			if currentPreset then currentPreset.pitch = pitch end
 			self:SetPitch(pitch)
 		end
+	end)
+	model:SetScript("OnMouseUp", function(self)
+		if self.isRotating or self.isTilting then NotifyTuner() end
+		self.isRotating = false
+		self.isTilting = false
 	end)
 end
 
@@ -172,6 +183,17 @@ end
 
 function component.GetEncounterId()
 	return currentEncounterId
+end
+
+--[[
+	The live preset table.
+
+	The tuner works on this object directly rather than a copy, so that wheel
+	zoom and drag-tilt land in the same place as its own controls. Saving used to
+	write whatever the buttons last set, discarding anything done with the mouse.
+]]
+function component.GetPreset()
+	return currentPreset
 end
 
 function component.Init(components_)
