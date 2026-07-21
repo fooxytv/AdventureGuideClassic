@@ -25,6 +25,10 @@ local ROTATION_SPEED = 0.02
 -- Tilt is clamped short of straight up or down, past which the model is edge-on
 -- and there is nothing useful to see.
 local TILT_SPEED, MAX_TILT = 0.012, 1.2
+-- Model units per pixel of drag, for a creature around six units tall. Scaled up
+-- for larger models, as the tuner's position steps are, since these are
+-- distances in model space rather than ratios.
+local PAN_SPEED = 0.02
 local baseZoom, zoom = 1.0, 1.0
 
 --[[
@@ -38,6 +42,18 @@ local baseZoom, zoom = 1.0, 1.0
 	rather than compete with it.
 ]]
 local BACKGROUND_ALPHA = 0.25
+
+--[[
+	How far a drag or a step should move a given creature.
+
+	Positions are in model units, so a fixed amount is a shove on a gnoll and
+	imperceptible on Ragnaros at sixty units tall.
+]]
+local function PositionScale(displayId)
+	local height = displayId and CreatureModelService.GetHeight(displayId)
+	if height and height > 6 then return height / 6 end
+	return 1
+end
 
 local function NotifyTuner()
 	if components and components.ModelTuner then
@@ -192,16 +208,25 @@ local function SetupModelControls(model)
 		NotifyTuner()
 	end)
 	model:SetScript("OnMouseDown", function(self, button)
-		local _, y = GetCursorPosition()
-		if button == "LeftButton" then
+		local cursorX, cursorY = GetCursorPosition()
+		if button == "LeftButton" then self.leftDown = true end
+		if button == "RightButton" then self.rightDown = true end
+		ReleasePreset()
+		if self.leftDown and self.rightDown then
+			-- Both buttons: move the creature around the frame freely, which beats
+			-- stepping Side and Height one click at a time.
+			self.isRotating, self.isTilting = false, false
+			self.isPanning = true
+			self.panStartX, self.panStartY = cursorX, cursorY
+			self.panSide = currentPreset and currentPreset.y or 0
+			self.panHeight = currentPreset and currentPreset.z or 0
+		elseif button == "LeftButton" then
 			self.isRotating = true
-			ReleasePreset()
-			self.rotateStartX = GetCursorPosition()
+			self.rotateStartX = cursorX
 			self.rotateStartFacing = self:GetFacing()
 		elseif button == "RightButton" and component.SupportsTilt() then
 			self.isTilting = true
-			ReleasePreset()
-			self.tiltStartY = y
+			self.tiltStartY = cursorY
 			self.tiltStartPitch = currentPreset and currentPreset.pitch or 0
 		end
 	end)
@@ -222,7 +247,15 @@ local function SetupModelControls(model)
 				enforceUntil = 0
 			end
 		end
-		if self.isRotating then
+		if self.isPanning and currentPreset then
+			local cursorX, cursorY = GetCursorPosition()
+			local speed = PAN_SPEED * PositionScale(currentDisplayId)
+			-- Drag right moves right and drag up moves up: model space y runs the
+			-- opposite way to the screen, hence the negated horizontal delta.
+			currentPreset.y = self.panSide - (cursorX - self.panStartX) * speed
+			currentPreset.z = self.panHeight + (cursorY - self.panStartY) * speed
+			self:SetPosition(currentPreset.x or 0, currentPreset.y, currentPreset.z)
+		elseif self.isRotating then
 			local x = GetCursorPosition()
 			local facing = self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED
 			self:SetFacing(facing)
@@ -235,10 +268,13 @@ local function SetupModelControls(model)
 			self:SetPitch(pitch)
 		end
 	end)
-	model:SetScript("OnMouseUp", function(self)
-		if self.isRotating or self.isTilting then NotifyTuner() end
-		self.isRotating = false
-		self.isTilting = false
+	model:SetScript("OnMouseUp", function(self, button)
+		if button == "LeftButton" then self.leftDown = false end
+		if button == "RightButton" then self.rightDown = false end
+		if not (self.leftDown and self.rightDown) then self.isPanning = false end
+		if not self.leftDown then self.isRotating = false end
+		if not self.rightDown then self.isTilting = false end
+		NotifyTuner()
 	end)
 end
 

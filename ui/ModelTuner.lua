@@ -80,9 +80,10 @@ local function AddRow(parent, index, field, label)
 			local height = CreatureModelService.GetHeight(CurrentDisplayId())
 			if height and height > 6 then step = step * (height / 6) end
 		end
-		-- Shift for coarse adjustment, since scale ranges over an order of
-		-- magnitude while positions are usually a nudge or two.
+		-- Shift coarse, Ctrl fine. The position steps scale with the creature, so
+		-- on the largest models a single click is already a sizeable move.
 		if IsShiftKeyDown() then step = step * 5 end
+		if IsControlKeyDown() then step = step * 0.2 end
 		panel.preset[field] = (panel.preset[field] or 0) + step
 		if field == "scale" and panel.preset.scale < MIN_CAMERA_SCALE then
 			panel.preset.scale = MIN_CAMERA_SCALE
@@ -208,8 +209,8 @@ local function CreatePanel()
 	panel.hint:SetPoint("TOPLEFT", 12, -ROWS_TOP - (rowCount * ROW_HEIGHT) - 34)
 	panel.hint:SetWidth(230)
 	panel.hint:SetJustifyH("LEFT")
-	panel.hint:SetText("Hold Shift for larger steps. Title names one creature of "
-		.. "a multi-creature encounter. Export prints pasteable Lua.")
+	panel.hint:SetText("Shift bigger steps, Ctrl finer. In the frame: drag to turn, "
+		.. "right-drag to tilt, both buttons to move, wheel to zoom.")
 
 	local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
 	close:SetPoint("TOPRIGHT", 0, 0)
