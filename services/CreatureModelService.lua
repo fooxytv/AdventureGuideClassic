@@ -13,9 +13,10 @@ local displaysByEncounter = {}   -- [encounterID] = { creatureDisplayID, ... }
 local heightByDisplay = {}       -- [creatureDisplayID] = model height in world units
 
 --[[
-	Camera tuning. Creature heights run from about 0.9 (Pusillin) to 66
-	(Supremus), so one framing cannot suit every model and the camera is pulled
-	back in proportion to height.
+	Camera tuning. Heights are of the model as the frame actually renders it,
+	which is not the size the creature appears in the world: the game multiplies
+	many of them when spawning, and the model frame does not. Hakkar is 2.9 units
+	here and 20 in the world, Supremus 4.2 against 66.
 
 	BASELINE is the height that needs no correction -- roughly a humanoid boss.
 	The exponent softens the curve: pulling back in strict proportion would leave

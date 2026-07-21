@@ -93,8 +93,14 @@ Computed from the game's own tables, exported by wago.tools:
 ```
 height = (CreatureModelData.GeoBox_5 - CreatureModelData.GeoBox_2)
        *  CreatureModelData.ModelScale
-       *  CreatureDisplayInfo.CreatureModelScale
 ```
+
+`CreatureDisplayInfo.CreatureModelScale` is deliberately **not** applied. It is
+what the game multiplies a creature by when spawning it in the world, but the
+model frame renders the base model without it, so including it pulled the camera
+back by up to 7x on creatures like Hakkar and Supremus. Measured against 78
+hand-tuned presets, dropping it improves the fit from 0.699 to 0.595 rms in log
+space.
 
 To rebuild after adding encounters, download both tables for a current build and
 re-join them on `CreatureDisplayInfo.ModelID`:
