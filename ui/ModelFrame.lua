@@ -15,6 +15,9 @@ local modelContainer, creatureModel, currentDisplayId, currentPreset
 -- it, so the bounds are relative to that rather than absolute.
 local MIN_ZOOM_FACTOR, MAX_ZOOM_FACTOR, ZOOM_STEP = 0.35, 3.0, 0.12
 local ROTATION_SPEED = 0.02
+-- Tilt is clamped short of straight up or down, past which the model is edge-on
+-- and there is nothing useful to see.
+local TILT_SPEED, MAX_TILT = 0.012, 1.2
 local baseZoom, zoom = 1.0, 1.0
 
 --[[
@@ -74,6 +77,21 @@ function component.ApplyPreset(preset)
 	creatureModel:SetCamDistanceScale(zoom)
 	creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
 	creatureModel:SetFacing(preset.facing or 0)
+	if creatureModel.SetPitch then
+		creatureModel:SetPitch(preset.pitch or 0)
+	end
+end
+
+--[[
+	Whether this client can tilt a model.
+
+	SetPitch is a model transform like SetFacing, so it composes with the framing
+	we already apply, but Blizzard only ships the Lua that uses it on retail. Ask
+	the frame rather than assume, so the tuner can leave the control out on a
+	client that has no such method instead of erroring on click.
+]]
+function component.SupportsTilt()
+	return creatureModel ~= nil and creatureModel.SetPitch ~= nil
 end
 
 -- Creature sizes vary far too much for one framing to suit all of them, so the
@@ -88,17 +106,24 @@ local function SetupModelControls(model)
 		self:SetCamDistanceScale(zoom)
 	end)
 	model:SetScript("OnMouseDown", function(self, button)
+		local _, y = GetCursorPosition()
 		if button == "LeftButton" then
 			self.isRotating = true
 			self.rotateStartX = GetCursorPosition()
 			self.rotateStartFacing = self:GetFacing()
+		elseif button == "RightButton" and component.SupportsTilt() then
+			self.isTilting = true
+			self.tiltStartY = y
+			self.tiltStartPitch = currentPreset and currentPreset.pitch or 0
 		end
 	end)
 	model:SetScript("OnMouseUp", function(self)
 		self.isRotating = false
+		self.isTilting = false
 	end)
 	model:SetScript("OnHide", function(self)
 		self.isRotating = false
+		self.isTilting = false
 	end)
 	-- The camera can be set before the model has finished streaming in, which
 	-- leaves the framing at the creature's native scale. Re-apply once it lands.
@@ -108,12 +133,20 @@ local function SetupModelControls(model)
 		if currentPreset then
 			self:SetPosition(currentPreset.x or 0, currentPreset.y or 0, currentPreset.z or 0)
 			self:SetFacing(currentPreset.facing or 0)
+			if self.SetPitch then self:SetPitch(currentPreset.pitch or 0) end
 		end
 	end)
 	model:SetScript("OnUpdate", function(self)
-		if not self.isRotating then return end
-		local x = GetCursorPosition()
-		self:SetFacing(self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED)
+		if self.isRotating then
+			local x = GetCursorPosition()
+			self:SetFacing(self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED)
+		elseif self.isTilting then
+			local _, y = GetCursorPosition()
+			local pitch = self.tiltStartPitch + (y - self.tiltStartY) * TILT_SPEED
+			pitch = math.max(-MAX_TILT, math.min(MAX_TILT, pitch))
+			if currentPreset then currentPreset.pitch = pitch end
+			self:SetPitch(pitch)
+		end
 	end)
 end
 

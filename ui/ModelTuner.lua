@@ -16,12 +16,14 @@ local panel
 
 local ROW_HEIGHT = 22
 local ROWS_TOP = 62      -- below the title edit box
+local rowCount = 5       -- 6 when the client supports tilt
 local STEPS = {
 	scale  = 0.1,
 	x      = 0.5,
 	y      = 0.5,
 	z      = 0.5,
 	facing = 0.1,
+	pitch  = 0.05,
 }
 
 local function CurrentDisplayId()
@@ -100,7 +102,7 @@ local function CreatePanel()
 	})
 	panel:SetBackdropColor(0, 0, 0, 0.9)
 	panel.rows = {}
-	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0 }
+	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0 }
 
 	panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	panel.title:SetPoint("TOPLEFT", 12, -10)
@@ -138,11 +140,17 @@ local function CreatePanel()
 	AddRow(panel, 2, "y", "Side")
 	AddRow(panel, 3, "z", "Height")
 	AddRow(panel, 4, "facing", "Facing")
+	-- Only offered where the client can actually tilt a model.
+	if components.ModelFrame.SupportsTilt() then
+		AddRow(panel, 5, "pitch", "Tilt")
+		rowCount = 6
+	end
+	panel:SetHeight(ROWS_TOP + (rowCount * ROW_HEIGHT) + 70)
 
 	local function AddButton(text, index, onClick)
 		local button = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 		button:SetSize(74, 20)
-		button:SetPoint("TOPLEFT", 12 + (index * 78), -ROWS_TOP - (5 * ROW_HEIGHT) - 8)
+		button:SetPoint("TOPLEFT", 12 + (index * 78), -ROWS_TOP - (rowCount * ROW_HEIGHT) - 8)
 		button:SetText(text)
 		button:SetScript("OnClick", onClick)
 		return button
@@ -173,7 +181,7 @@ local function CreatePanel()
 	end)
 
 	panel.hint = panel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	panel.hint:SetPoint("TOPLEFT", 12, -ROWS_TOP - (5 * ROW_HEIGHT) - 34)
+	panel.hint:SetPoint("TOPLEFT", 12, -ROWS_TOP - (rowCount * ROW_HEIGHT) - 34)
 	panel.hint:SetWidth(230)
 	panel.hint:SetJustifyH("LEFT")
 	panel.hint:SetText("Hold Shift for larger steps. Title names one creature of "
@@ -260,7 +268,7 @@ function component.Toggle()
 	panel:Show()
 	local displayId = CurrentDisplayId()
 	panel.preset = displayId and ModelPresetService.Get(displayId)
-		or { scale = 1, x = 0, y = 0, z = 0, facing = 0 }
+		or { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0 }
 	component.Refresh()
 end
 
