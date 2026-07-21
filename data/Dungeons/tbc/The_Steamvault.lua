@@ -31,7 +31,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17797 },
+		npcs = { 17797, 20629 },
 		overview = {
 			"Hydromancer Thespia is the first boss of The Steamvault. Once a skilled water mage overseeing the pumping operations, she has been corrupted by dark magic. She wields devastating water and frost abilities while summoning water elementals to aid her in combat. Her mastery over water makes her a dangerous opponent in the flooded chambers of Coilfang Reservoir.",
 			{ heading = "Overview" },
@@ -82,7 +82,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17796, 17951 },
+		npcs = { 17796, 20630 },
 		overview = {
 			"Mekgineer Steamrigger is a brilliant but twisted gnome engineer who controls three massive steam ragers in the pumping chamber. This encounter is one of the most mechanically complex in TBC dungeons, requiring careful positioning and add management. Steamrigger himself fights from a distance while his mechanical creations assault the party with devastating attacks.",
 			{ heading = "Overview" },
@@ -147,7 +147,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17798, 17917 },
+		npcs = { 17798, 20633 },
 		overview = {
 			"Warlord Kalithresh is the final boss of The Steamvault and the naga commander overseeing Coilfang's pumping operations. This powerful warrior wields both physical might and water magic. His command over the reservoir's power makes him a formidable opponent, especially when he channels the waters to protect himself and devastate his enemies.",
 			{ heading = "Overview" },

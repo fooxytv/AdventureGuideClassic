@@ -89,6 +89,9 @@
     <Script file="data/Raids/tbc/Sunwell_Plateau.lua" />
     <Script file="data/Raids/tbc/The_Eye.lua" />
 
+    <!-- Creature display ids per encounter, for the model viewer -->
+    <Script file="data/CreatureModels.lua" />
+
     <!-- Tier-set token -> per-class set piece, for the loot preview -->
     <Script file="data/TierTokens.lua" />
 

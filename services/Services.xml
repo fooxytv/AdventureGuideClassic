@@ -15,4 +15,5 @@
     <Script file="services/SpellsByLevelService.lua" />
     <Script file="services/TierTokenService.lua" />
     <Script file="services/LootFilterService.lua" />
+    <Script file="services/CreatureModelService.lua" />
 </Ui>

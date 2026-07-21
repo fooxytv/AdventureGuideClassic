@@ -151,7 +151,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18805, 18806, 18925 },
+		npcs = { 18805 },
 		overview = {
 			"High Astromancer Solarian is Kael'thas's chief astromancer who commands devastating arcane forces. This encounter alternates between boss phases and agent phases, requiring strong AoE damage and precise raid awareness. The fight culminates in a void phase where Solarian transforms and summons adds that must be killed before they reach her.",
 			{ heading = "Overview" },
@@ -213,7 +213,7 @@ select(2, ...).SetupGlobalFacade()
 		extremelyRareLoot = {
 			{ id = 32458, seasonFilter = "tbc" }
 		},
-		npcs = { 19622, 20063, 20064, 20065, 20066 },
+		npcs = { 19622 },
 		overview = {
 			"Kael'thas Sunstrider, the fallen prince of the blood elves, serves as the final boss of The Eye. This is one of the longest and most complex encounters in The Burning Crusade, featuring five distinct phases over 15-20 minutes. Players must defeat four advisors, collect legendary weapons, survive gravity lapses, and execute perfect coordination throughout.",
 			{ heading = "Overview" },

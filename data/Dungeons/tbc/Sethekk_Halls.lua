@@ -33,7 +33,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18472 },
+		npcs = { 18472, 20690 },
 		overview = {
 			"Darkweaver Syth is the first boss encounter in Sethekk Halls, a powerful arakkoa sorcerer who wields devastating arcane and elemental magic. He summons elemental adds throughout the fight that must be dealt with quickly. This encounter teaches players the importance of add management and ranged positioning.",
 			{ heading = "Overview" },
@@ -146,7 +146,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18473 },
+		npcs = { 18473, 20706 },
 		overview = {
 			"Talon King Ikiss is the final boss of Sethekk Halls, a powerful arakkoa sorcerer who serves as leader of the Sethekk death cult. This fight features arcane magic, polymorph mechanics, and a deadly mana detonation ability that requires careful positioning and awareness. The encounter becomes significantly more dangerous on Heroic difficulty.",
 			{ heading = "Overview" },

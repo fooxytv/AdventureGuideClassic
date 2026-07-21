@@ -31,7 +31,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17976 },
+		npcs = { 17976, 21551 },
 		overview = {
 			"Commander Sarannis is a blood elf officer who oversees the Botanica's security forces. She summons waves of Bloodwarder and Sunseeker adds throughout the fight, testing your group's ability to manage multiple targets while maintaining damage on the boss. Her arcane powers and tactical command make her a challenging first encounter in this dungeon.",
 			{ heading = "Overview" },
@@ -85,7 +85,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17975, 19953, 19949, 19920 },
+		npcs = { 17975, 21558 },
 		overview = {
 			"High Botanist Freywinn is the mastermind behind the Botanica's twisted experiments. This brilliant but corrupt blood elf botanist surrounds himself with three different types of seedling adds that he summons throughout the encounter. Each type of seedling has unique abilities, from healing Freywinn to exploding on death. Managing these adds while dealing with Freywinn's nature magic is the key to victory.",
 			{ heading = "Overview" },
@@ -142,7 +142,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17978 },
+		npcs = { 17978, 21581 },
 		overview = {
 			"Thorngrin the Tender is a massive bog beast who tends to the Botanica's most aggressive plant specimens. This straightforward encounter tests your group's ability to handle heavy melee damage and nature-based area effects. While mechanically simple, Thorngrin hits incredibly hard and his {spell:34670} ability can quickly overwhelm unprepared groups.",
 			{ heading = "Overview" },
@@ -194,7 +194,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17980, 19905 },
+		npcs = { 17980, 21559 },
 		overview = {
 			"Laj is a unique plant creature that surrounds itself with Thorn Lasher adds and teleports around the room. This encounter combines add management with positioning awareness as Laj becomes immune to damage while protected by its Thorn Flayers. Learning to quickly clear the adds and reposition for Laj's teleports is essential for success.",
 			{ heading = "Overview" },
@@ -261,7 +261,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17977, 19920 },
+		npcs = { 17977, 21582 },
 		overview = {
 			"Warp Splinter is an ancient treant that has been corrupted and warped by the blood elves' experiments. As the final boss of the Botanica, this massive treant combines heavy damage output with add management and powerful arcane magic. His signature {spell:34716} ability and periodic Treant summons make this an intense encounter that tests all aspects of your group's coordination.",
 			{ heading = "Overview" },

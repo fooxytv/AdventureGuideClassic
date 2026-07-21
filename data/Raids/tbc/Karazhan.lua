@@ -29,7 +29,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 16179, 16180, 16181 },
+		npcs = { 16179 },
 		overview = {
 			"The Servant's Quarters is an optional encounter in Karazhan's basement. One of three random bosses spawns after clearing all trash in the area within 30 minutes: Hyakiss the Lurker (spider), Rokad the Ravager (hound), or Shadikith the Glider (bat). Each boss has unique mechanics but is relatively straightforward.",
 			{ heading = "Overview" },
@@ -140,7 +140,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 15687, 19872, 19873, 19874, 19875, 19876, 19877 },
+		npcs = { 15687 },
 		overview = {
 			"Moroes is Karazhan's loyal steward who never abandoned his post even after death. He fights alongside four randomly selected guests from a pool of six possible adds. Each combination presents different challenges with unique abilities. Moroes periodically vanishes and garrotes random players, requiring careful coordination.",
 			{ heading = "Overview" },
@@ -355,7 +355,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 15688, 17229, 17267, 17248 },
+		npcs = { 15688 },
 		overview = {
 			"Terestian Illhoof is a demonic satyr warlock who has taken residence in Karazhan's library. He fights alongside his loyal imp Kil'rek and continuously summons lesser imps through a Fiendish Portal. The fight's central mechanic is Sacrifice, which chains a random player and requires immediate add-swapping to free them.",
 			{ heading = "Overview" },
@@ -409,7 +409,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 16524, 17167 },
+		npcs = { 16524 },
 		overview = {
 			"The Shade of Aran is the ghostly echo of Medivh's father, Guardian Aran. This arcane gauntlet tests the raid's ability to follow precise mechanics while maintaining DPS. Every 30 seconds, Aran casts one of three special abilities that require specific positioning. The fight demands perfect execution - a single mistake on Flame Wreath will wipe the raid.",
 			{ heading = "Overview" },
@@ -574,7 +574,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 15690, 17646 },
+		npcs = { 15690 },
 		overview = {
 			"Prince Malchezaar is the final boss of Karazhan, a powerful eredar who has taken over Medivh's tower. The fight has three phases with escalating mechanics: Phase 1 is straightforward tanking, Phase 2 adds axe weapons that attack the raid, and Phase 3 dramatically increases infernal spawn rate. The signature mechanic is Enfeeble, which reduces five random players to 1 HP.",
 			{ heading = "Overview" },
@@ -628,7 +628,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17225, 17261 },
+		npcs = { 17225 },
 		overview = {
 			"Nightbane is an optional boss summoned on Karazhan's terrace after completing a quest chain. The fight alternates between ground phases (tank and spank with positioning mechanics) and air phases (add management and avoidance). The dragon flies up at 75%, 50%, and 25% health, requiring the raid to kill Restless Skeletons while avoiding massive damage.",
 			{ heading = "Overview" },

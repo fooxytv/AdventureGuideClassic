@@ -30,7 +30,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 9025 },
 		overview = {
 			"Lord Roccor is the first boss of Blackrock Depths, and is a powerful fire elemental. He is known for his destructive capabilities and his control over flames, Lord Roccor is a formidable adversary. He is believed to have been summoned and bound to the fortress by the Dark Iron dwarves, harnessing his fiery power for their own purposes.",
 			{ heading = "Overview" },
@@ -66,7 +66,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 9016 },
 		overview = {
 			"Bael'Gar is a fearsome fire elemental that lurks within Blackrock Depths. Known for his destructive capabilities and affinity for fire magic, Bael'Gar is a formidable adversary. He is believed to have been summoned and bound to the depths by the Dark Iron dwarves, harnessing his fiery power for their own purposes.",
 			{ heading = "Overview" },
@@ -102,7 +102,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 9319 },
 		overview = {
 			"Houndmaster Grebmar is a loyal servant of the Dark Iron dwarves and the master of a pack of ferocious hounds within Blackrock Depths. He is known for his ruthless training methods and his unwavering loyalty to Emperor Dagran Thaurissan. Grebmar's responsibility includes overseeing the fortress's canine defenders and ensuring their readiness to protect their masters.",
 			{ heading = "Overview" },
@@ -138,7 +138,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 9018 },
 		overview = {
 			"High Interrogator Gerstahn is a powerful sorceress and a prominent member of the Dark Iron clan within Blackrock Depths. She is known for her expertise in dark magic and her role in extracting information from captives. Gerstahn's allegiance to Emperor Dagran Thaurissan and her mastery of the arcane arts make her a formidable figure within the fortress.",
 			{ heading = "Overview" },
@@ -429,7 +429,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 9543 },
+		npcs = { 9537, 12944, 9543, 9499 },
 		overview = {
 			"Ribbly Screwspigot is a goblin known for his shrewd business dealings and his establishment of the Grim Guzzler tavern within Blackrock Depths. While not a traditional boss, Ribbly plays a unique role in the fortress. He is known for his ties to various factions and his ability to broker deals even within the depths of Blackrock.",
 			{ heading = "Overview" },
@@ -464,7 +464,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 9537 },
+		npcs = { 9537, 12944, 9543, 9499 },
 		overview = {
 			"Hurley Blackbreath is a formidable Dark Iron dwarf and one of the key figures in the Grim Guzzler tavern within Blackrock Depths. Known for his formidable combat skills and his penchant for violence, Hurley is a feared enforcer within the fortress. His role includes maintaining order within the tavern and dealing with unruly patrons.",
 			{ heading = "Overview" },
@@ -498,7 +498,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 9499 },
+		npcs = { 9537, 12944, 9543, 9499 },
 		overview = {
 			"Plugger Spazzring is a goblin known for his control over the bar and various services within the Grim Guzzler tavern in Blackrock Depths. While not a traditional boss, Plugger plays a unique role in the fortress. He is a master of brewing and serves as the tavern's brewmaster, offering drinks and concoctions to patrons.",
 			{ heading = "Overview" },
@@ -811,7 +811,7 @@ InstanceService.AddDungeon({
 			{ id = 11684, seasonFilter = "restricted" }
 		},
 		extremelyRareLoot = {},
-		npcs = { 8929 },
+		npcs = { 9019 },
 		overview = {
 			"Emperor Dagran Thaurissan is the sovereign ruler of the Dark Iron dwarves within Blackrock Depths, an imposing fortress. He is a significant figure in the lore, known for his role in sparking the War of Three Hammers. Thaurissan united the Dark Iron clan and claimed leadership, seeking to unite all dwarves under his rule.",
 			{ heading = "Overview" },

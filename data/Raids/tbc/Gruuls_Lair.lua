@@ -35,7 +35,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18831, 18832, 18834, 18835, 18836 },
+		npcs = { 18831 },
 		overview = {
 			"The ogre leader of Gruul's forces, Maulgar commands an elite council of powerful ogres who guard the entrance to the gronn's inner sanctum. This is a complex multi-tank council fight requiring careful positioning, interrupt rotations, and precise kill order execution.",
 			{ heading = "Overview" },

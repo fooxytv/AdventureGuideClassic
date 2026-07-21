@@ -76,13 +76,22 @@ def parse_atlasloot(path):
                 nm = re.search(r'name\s*=\s*AL\["([^"]+)"\]', entry) or \
                      re.search(r'name\s*=\s*"([^"]+)"', entry)
                 name = nm.group(1) if nm else None
-                npcids = set()
+                npcids, npcorder = set(), []
                 nm2 = re.search(r'npcID\s*=\s*\{([^}]*)\}', entry)
                 if nm2:
-                    npcids = set(int(x) for x in re.findall(r'\d+', nm2.group(1)))
+                    npcorder = [int(x) for x in re.findall(r'\d+', nm2.group(1))]
                 else:
                     nm3 = re.search(r'npcID\s*=\s*(\d+)', entry)
-                    if nm3: npcids = {int(nm3.group(1))}
+                    if nm3: npcorder = [int(nm3.group(1))]
+                npcids = set(npcorder)
+                # DisplayIDs = {{23404},{23428}} -- one inner list per npcID, in order.
+                displayids = []
+                dm = re.search(r'DisplayIDs\s*=\s*\{', entry)
+                if dm:
+                    dstart = entry.find('{', dm.end() - 1)
+                    dbody = entry[dstart + 1:match_brace(entry, dstart) - 1]
+                    for inner in re.finditer(r'\{([^}]*)\}', dbody):
+                        displayids.append([int(x) for x in re.findall(r'\d+', inner.group(1))])
                 is_extra = 'ExtraList' in entry and re.search(r'ExtraList\s*=\s*true', entry)
                 # per-difficulty item lists: [XXX_DIFF] = { {slot,id}, ... }
                 # items come ONLY from inside difficulty tables, so npcID={a,b}/DisplayIDs
@@ -98,6 +107,7 @@ def parse_atlasloot(path):
                     for i in ids:
                         if i not in seen: seen.add(i); items.append(i)
                 bosses.append({"name": name, "npcids": npcids, "inst": inst,
+                               "npcorder": npcorder, "displayids": displayids,
                                "items": items, "diffs": diffs, "extra": bool(is_extra)})
                 i = j
             else:
@@ -122,11 +132,25 @@ def parse_droprate(path):
 def parse_user(path):
     """Return list of bosses: {name, encounterID, ids:set[int]} in file order."""
     s = open(path, encoding='utf-8').read()
-    # boss entries begin at one indent level on their own line: tab OR 4 spaces
-    # (some entries in a few files are space-indented instead of tabbed).
+    # Anchor on encounterID and walk back to the '{' that opens its entry, rather
+    # than matching a fixed indent. Files do not agree on indentation -- Blackrock
+    # Spire nests its encounters a level deeper -- and an indent-based match
+    # silently returned nothing for those files rather than failing loudly.
     bosses = []
-    for m in re.finditer(r'\n(?:\t| {4})\{', s):
-        st = m.end()-1
+    seen = set()
+    for m in re.finditer(r'\bencounterID\s*=\s*\d+', s):
+        depth, i = 0, m.start()
+        while i > 0:
+            c = s[i]
+            if c == '}':
+                depth += 1
+            elif c == '{':
+                if depth == 0: break
+                depth -= 1
+            i -= 1
+        if i <= 0 or i in seen: continue
+        seen.add(i)
+        st = i
         en = match_brace(s, st)
         entry = s[st:en]
         nm = re.search(r'name\s*=\s*"([^"]+)"', entry)

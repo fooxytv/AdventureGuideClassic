@@ -36,7 +36,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17381 },
+		npcs = { 17381, 18621 },
 		overview = {
 			"The Maker is a massive fel reaver constructed to help process prisoners into fel orcs. This mechanical monstrosity uses alchemical weapons and mind control to dominate its victims. Though not as deadly as the later bosses, The Maker serves as a good introduction to the dangers within the Blood Furnace.",
 			{ heading = "Overview" },
@@ -88,7 +88,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17380 },
+		npcs = { 17380, 18601 },
 		overview = {
 			"Broggok is a massive poison-spewing monstrosity imprisoned within the Blood Furnace. Before engaging Broggok, players must defeat four waves of Fel Orc prisoners who are released from their cells. Once freed, Broggok unleashes devastating poison attacks that require constant movement and careful positioning.",
 			{ heading = "Overview" },
@@ -155,7 +155,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17377, 17653 },
+		npcs = { 17377, 18607 },
 		overview = {
 			"Keli'dan the Breaker is the final boss of the Blood Furnace and the jailer of the pit lord Magtheridon. Surrounded by five Shadowmoon Channelers who empower him, Keli'dan wields devastating shadow and fire magic. His signature ability forces him into a brief period of invulnerability while he channels a massive fire nova that will kill unprepared groups.",
 			{ heading = "Overview" },

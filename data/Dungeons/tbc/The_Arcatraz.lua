@@ -31,7 +31,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 20870 },
+		npcs = { 20870, 21626 },
 		overview = {
 			"Zereketh the Unbound is a voidlord imprisoned by the naaru in the Arcatraz. This ethereal creature wields devastating arcane and shadow magic, draining the life essence of those who dare challenge him.",
 			{ heading = "Overview" },
@@ -82,7 +82,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 20885, 20886 },
+		npcs = { 20885, 21590 },
 		overview = {
 			"Dalliah the Doomsayer is a powerful eredar warlock imprisoned alongside Wrath-Scryer Soccothrates. These two enemies were once allies but now loathe each other. When engaged, both will attack the party simultaneously, creating a chaotic two-boss encounter.",
 			{ heading = "Overview" },
@@ -138,7 +138,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 20886, 20885 },
+		npcs = { 20886, 21624 },
 		overview = {
 			"Wrath-Scryer Soccothrates is a powerful eredar warlock imprisoned alongside Dalliah the Doomsayer. Despite being imprisoned together, these two former allies now despise each other. When engaged, both will attack the party simultaneously, making this a challenging dual encounter.",
 			{ heading = "Overview" },
@@ -205,7 +205,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 20912, 21806, 21806, 21805 },
+		npcs = { 20912, 21599 },
 		overview = {
 			"Harbinger Skyriss is the final boss of the Arcatraz, a powerful eredar warlock who has masterminded a prison break. He commands devastating shadow magic and summons powerful illusions throughout the encounter. This is one of the most challenging 5-player encounters in The Burning Crusade.",
 			{ heading = "Overview" },

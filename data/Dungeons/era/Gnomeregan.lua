@@ -27,7 +27,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Grubbis is a vile trogg who has taken residence within the irradiated depths of Gnomeregan. He is notorious for his relentless pursuit of discarded technology and his propensity for causing havoc. Grubbis's presence within the irradiated tunnels is a grim reminder of the troggs' intrusion into the once-great gnome city.",
 			{ heading = "Overview" },

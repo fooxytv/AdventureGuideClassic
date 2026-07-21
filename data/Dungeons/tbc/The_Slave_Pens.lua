@@ -37,7 +37,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17941, 17940 },
+		npcs = { 17941, 19893 },
 		overview = {
 			"Mennu the Betrayer is a Broken draenei who has forsaken his people to serve the naga of Coilfang Reservoir. As the first boss of The Slave Pens, he commands the power of corrupted water magic and shamanic totems. The fight is straightforward but requires awareness of totems and consistent interrupts.",
 			{ heading = "Overview" },
@@ -96,7 +96,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17991, 21696 },
+		npcs = { 17991, 19895 },
 		overview = {
 			"Rokmar the Crackler is a massive bog lord who guards the central caverns of The Slave Pens. This encounter tests the party's ability to manage adds while maintaining damage on the boss. Rokmar summons Lesser Bog Creatures throughout the fight that must be controlled, and his grievous wounds require careful healing management.",
 			{ heading = "Overview" },
@@ -165,7 +165,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17942 },
+		npcs = { 17942, 19894 },
 		overview = {
 			"Quagmirran is the final boss of The Slave Pens, a powerful bog lord who has claimed dominion over the deepest waters of the reservoir. This encounter features a devastating poison cloud ability and a protective acid geyser shield. The fight requires careful positioning and strong awareness of environmental hazards.",
 			{ heading = "Overview" },

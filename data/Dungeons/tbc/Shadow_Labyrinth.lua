@@ -32,7 +32,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18731 },
+		npcs = { 18731, 20636 },
 		overview = {
 			"Ambassador Hellmaw is a skeletal demon who patrols the entrance corridors of Shadow Labyrinth. He periodically makes his rounds, and engaging him during his patrol requires careful timing. Hellmaw's most dangerous ability is his AoE fear, which can cause chaotic pulls if not managed properly.",
 			{ heading = "Overview" },
@@ -98,7 +98,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18667 },
+		npcs = { 18667, 20637 },
 		overview = {
 			"Blackheart the Inciter is a mind-controlling demon who turns the party against itself. His signature ability causes players to attack their own allies, creating chaos. This fight tests the group's ability to recognize and manage mind control effects while maintaining damage on the boss.",
 			{ heading = "Overview" },
@@ -166,7 +166,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18732, 18794 },
+		npcs = { 18732, 20653 },
 		overview = {
 			"Grandmaster Vorpil is a powerful warlock of the Shadow Council who commands void travelers and draws upon shadow energy. This fight features add management, teleportation mechanics, and heavy shadow damage. The encounter takes place in a circular room where Vorpil summons Voidwalkers that spawn additional void travelers through portals.",
 			{ heading = "Overview" },
@@ -260,7 +260,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18708 },
+		npcs = { 18708, 20657 },
 		overview = {
 			"Murmur is an elemental being of pure sonic energy imprisoned within the Shadow Labyrinth. This creature of sound itself has devastating area-of-effect abilities and a unique mechanic where proximity determines damage taken. The encounter features multiple phases and requires precise positioning and timing. Murmur starts at 40% health, making this a relatively short but intense fight.",
 			{ heading = "Overview" },

@@ -44,7 +44,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 12118 },
 		overview = {
 			"Among the ranks of the flamewakers, overseers and their guards constantly jockey for higher status among the hierarchy of elementals in hopes of gaining favor with Ragnaros. Lucifron is no exception. He has clashed with Gehennas on several occasions, particularly during their incarceration within the Elemental Plane. This rivalry has now extended to the Molten Core where Lucifron quietly waits for his opportunity to capitalize on any weakness shown by the other flamewakers.",
 			{ heading = "Overview" },
@@ -109,7 +109,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 11982 },
 		overview = {
 			"A terrifying behemoth composed of igneous rock and roiling magma, Magmadar serves as the origin of the core hounds that roam the earthen halls of Molten Core. Favourred among Ragnaros's pets, Magmadar is protected by the flamewakers Lucifron and surrounded by vicious packs of ravenous hounds. It is said that while Ragnaros was imprisoned in the Elemental Plane, the Firelord would feed the remains of his captured enemies to Magmadar, who would then consume them in a fiery blaze.",
 			{ heading = "Overview" },
@@ -168,7 +168,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 12259 },
 		overview = {
 			"Gehennas and his fellow flamewakers were extricated from the Elemental Plane by Ragnaros shortly after Thaurissan accidentally summoned the Firelord. Unlike the fire elementals, who are beings of pure flame, the flamewakers are elementals composed of flesh and blood. Gehennas resides near the bottom of the Firelord's elemental hierarchy and covets the power and station of his superiors.",
 			{ heading = "Overview" },
@@ -237,7 +237,7 @@ InstanceService.AddRaid({
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 12057 },
 		overview = {
 			"Garr is described as one of the lieutenants of Ragnaros who carried out the betrayal of Lord Thunderaan, the Prince of Air and otherwise referred to as the Windseeker. During the Elemental Sundering, Ragnaros sought to consume Thunderaan, and did so by having his two lieutenants, Baron Geddon and Gar perpetrate him. Thunderaan, caught off guard, was utterly destroyed. Ragnaros almost completely consumed Thunderaan's essence, and stored the rest within a talisman of elemental binding.",
 			{ heading = "Overview" },
@@ -293,7 +293,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 12264 },
 		overview = {
 			"Shazzrah is the most talented in the realm of the arcane. Shazzrah is aware that his colleague Baron Geddon suspects the elemental Garr of treachery. The conflict between Baron Geddon and Garr suits Shazzrah well, for in fact it is Shazzrah who seeks to posses both halves of the Talisman of Elemental Binding so that he might find a way to siphon its energes for his own use.",
 			{ heading = "Overview" },
@@ -356,7 +356,7 @@ InstanceService.AddRaid({
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 12056 },
 		overview = {
 			"Baron Geddon is one of the eldest of all fire elementals, and Baron Geddon served as Ragnaros' right hand during the beginning of the war against the titans. During one of the first battles against the then-unknown titan attacks, Geddon was defeated and forced into humiliating retreat. Ragnaros immediately demoted his commander, thinking that Geddon had been defeated by an inferior foe, since the Old Gods and their lieutenants had never yet met a challenge.",
 			{ heading = "Overview" },
@@ -422,7 +422,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 11988 },
 		overview = {
 			"Golemagg the Incinerator is unrivaled for his sheer brutality and savage efficiency. So absolute is the molten behemoth's power that he has cowed two core ragers, offspring of the colossal beast Magmadar, which he now uses as pets. For this affront, he has earned Magmadar's eternal and unwavering ire, although the fearsome creature has yet to act on his savage impulses.",
 			{ heading = "Overview" },
@@ -481,7 +481,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 12098 },
 		overview = {
 			"Sulfuron Harbinger is the terrifying herald of Ragnaros himself. From the internal depths of the Molten Core, the Harbinger commands Ambassador Flamelash and the other lesser flamewakers in the outside world. Sulfuron answers only to Executus and guards the rune of Koro, one of several runes that empower the Firelord's servants. Sulfuron keeps Shazzrah in particular under close watch, believing that Shazzrah seeks to betray Ragnaros.",
 			{ heading = "Overview" },
@@ -538,7 +538,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 12018 },
 		overview = {
 			"At the top of the elemental hierarchy, just beneath Ragnaros himself, resides Majordomo Executus. This flamewaker gained his exalted status by proving to be nearly invincible in the battles that raged within the elemental plane. Rumor has it that Executus supplanted Baron Geddon, and the two have been rivals ever since. Although this rumor has yet to be confirmed, there is certainly no doubt that Ragnaros does not tolerate failure.",
 			{ heading = "Overview" },
@@ -602,7 +602,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 11502 },
 		overview = {
 			"Ragnaros the Firelord, one of the Elemental Lords, revels in destruction, often clashing with Therazane the Stonemother. He has a tenuous alliance with Al'Akir the Windlord and is the mortal enemy of Neptulon the Tidehunter. Summoned during the War of the Three Hammers by Dark Iron king Thaurisan, Ragnaros shattered the Redridge Mountains and created the Blackrock volcano. Now residing within the volcano, he enslaves the Dark Iron dwarves and seeks to ravage the world.",
 			{ heading = "Overview" },

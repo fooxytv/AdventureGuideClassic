@@ -27,7 +27,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3983 },
 		overview = {
 			"Interrogator Vishas is a sadistic member of the Scarlet Crusade known for his brutal methods of extracting information from prisoners. He plays a key role within the Scarlet Monastery, using his dark techniques to interrogate and torment those captured by the Crusade. Vishas's presence in the Monastery highlights the ruthless and fanatical nature of the Scarlet Crusade as they seek to eradicate all perceived threats.",
 			{ heading = "Overview" },
@@ -61,7 +61,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 4543 },
 		overview = {
 			"Bloodmage Thalnos is a formidable spellcaster within the Scarlet Crusade, specializing in the destructive power of fire magic. He serves as a key member of the Crusade within the Scarlet Monastery, using his fiery abilities to incinerate any who oppose the order. Thalnos's presence in the Monastery symbolizes the fanatical devotion of the Scarlet Crusade and their willingness to employ dark magic to further their cause.",
 			{ heading = "Overview" },
@@ -96,7 +96,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3974 },
 		overview = {
 			"Houndmaster Loksey is a ruthless enforcer of the Scarlet Crusade who commands the ferocious hunting hounds within the Scarlet Monastery. His skill in training and controlling the beasts is matched only by his unwavering loyalty to the Crusade's cause. Loksey's presence in the Monastery represents the Crusade's brutal methods and their use of loyal animals as weapons.",
 			{ heading = "Overview" },
@@ -132,7 +132,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 6487 },
 		overview = {
 			"Arcanist Doan is a powerful mage within the Scarlet Crusade who guards the library of the Scarlet Monastery. His extensive knowledge of arcane magic and his dedication to the Crusade's ideals have made him a crucial figure within the order. Doan's presence in the Monastery reflects the Scarlet Crusade's use of magic to further their goals.",
 			{ heading = "Overview" },
@@ -168,7 +168,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3975 },
 		overview = {
 			"Herod is a fearsome warrior who has earned a reputation for his deadly combat skills and his loyalty to the Scarlet Crusade. He serves as a champion and gladiator within the Scarlet Monastery, entertaining the Crusade's followers with brutal combat displays. Herod's presence in the Monastery represents the Crusade's martial prowess and their use of champions to maintain control.",
 			{ heading = "Overview" },
@@ -203,7 +203,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 4542 },
 		overview = {
 			"High Inquisitor Fairbanks was once a devoted member of the Scarlet Crusade but grew disillusioned with the order's extreme methods and fanaticism. He now opposes the Crusade's ideals and works to expose their corruption from within the Scarlet Monastery. Fairbanks's presence in the Monastery symbolizes the internal conflicts and dissent within the Scarlet Crusade's ranks.",
 			{ heading = "Overview" },
@@ -239,7 +239,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3976 },
 		overview = {
 			"Scarlet Commander Mograine is a high-ranking officer within the Scarlet Crusade and a member of the Mograine family, known for their involvement in the order. He holds a commanding position within the Scarlet Monastery, overseeing the Crusade's operations and enforcing its doctrine. Mograine's presence in the Monastery symbolizes the Crusade's determination to eradicate perceived threats and maintain their hold on the land.",
 			{ heading = "Overview" },
@@ -274,7 +274,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3977 },
 		overview = {
 			"High Inquisitor Whitemane is a revered and powerful figure within the Scarlet Crusade, known for her unwavering faith and formidable combat abilities. She stands as a central figure within the Scarlet Monastery, guiding the Crusade's efforts and leading their spiritual endeavors. Whitemane's presence in the Monastery represents the Crusade's religious fervor and their commitment to eradicating all who oppose them.",
 			{ heading = "Overview" },

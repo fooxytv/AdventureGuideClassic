@@ -95,7 +95,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18373, 18478 },
+		npcs = { 18373, 20306 },
 		overview = {
 			"Exarch Maladaar was once a noble leader of the draenei, overseeing the burial rites of his people. When the Shadow Council invaded Auchindoun, they corrupted and enslaved him, forcing him to command armies of undead against his will. Now he guards the deepest chambers of the crypts, forever bound to serve the darkness he once fought against.",
 			{ heading = "Overview" },

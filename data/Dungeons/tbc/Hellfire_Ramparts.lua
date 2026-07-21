@@ -36,7 +36,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17306, 17309 },
+		npcs = { 17306, 18436 },
 		overview = {
 			"Watchkeeper Gargolmar is the first guardian of Hellfire Ramparts. This massive fel orc oversees the training grounds and commands hellhounds to aid him in battle. His ferocity and the burning rage of his hounds make him a dangerous foe for unprepared adventurers.",
 			{ heading = "Overview" },
@@ -97,7 +97,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17308 },
+		npcs = { 17308, 18433 },
 		overview = {
 			"Omor the Unscarred is a powerful warlock who commands shadow magic and demonic forces. His dark sorcery can drain life from his enemies and summon fiends to overwhelm adventurers. Defeating him requires careful positioning and quick reactions to his shadow bolts and adds.",
 			{ heading = "Overview" },
@@ -164,7 +164,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17537, 17536 },
+		npcs = { 17537, 18434, 17536, 18432 },
 		overview = {
 			"Vazruden the Herald rides atop Nazan, a massive nether drake. This two-phase encounter begins with aerial assaults from the mounted duo before Vazruden dismounts for close combat. The combination of ranged fire attacks and melee strikes makes this the most challenging encounter in Hellfire Ramparts for groups new to Outland.",
 			{ heading = "Overview" },

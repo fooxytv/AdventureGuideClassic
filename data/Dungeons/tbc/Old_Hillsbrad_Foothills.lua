@@ -37,7 +37,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17848 },
+		npcs = { 17848, 20535 },
 		overview = {
 			"Lieutenant Drake is the first boss encounter in Old Hillsbrad Foothills. As a veteran officer of Durnholde Keep's garrison, he leads the defense against intruders. This straightforward encounter serves as an introduction to the instance's mechanics.",
 			{ heading = "Overview" },
@@ -93,7 +93,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17862 },
+		npcs = { 17862, 20521 },
 		overview = {
 			"Captain Skarloc is encountered after escorting Thrall through Durnholde Keep's burning barracks. As the mounted captain of Durnholde's cavalry, Skarloc presents a mounted combat challenge with both magical and physical abilities.",
 			{ heading = "Overview" },
@@ -164,7 +164,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18096 },
+		npcs = { 18096, 20531 },
 		overview = {
 			"Epoch Hunter is the final boss of Old Hillsbrad Foothills, representing the infinite dragonflight's attempt to alter the timeline. This dragonkin encounter is the most mechanically complex fight in the instance, featuring time manipulation abilities and curse effects.",
 			{ heading = "Overview" },

@@ -36,7 +36,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 24723 },
+		npcs = { 24723, 25562 },
 		overview = {
 			"Selin Fireheart is a fallen blood elf who serves Kael'thas Sunstrider. The fel energy he has consumed has altered his appearance, causing him to resemble a demon with wings and horns. He is the first boss encounter in Magister's Terrace and must be defeated to progress through the instance.",
 			{ heading = "Overview" },
@@ -120,7 +120,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 24744 },
+		npcs = { 24744, 25573 },
 		overview = {
 			"Vexallus is an arcane elemental bound within Magister's Terrace. This powerful being of pure arcane energy serves as the second boss encounter. The fight becomes progressively more dangerous as Vexallus loses health and spawns additional Pure Energy adds that empower the raid with a dangerous damage buff.",
 			{ heading = "Overview" },
@@ -207,7 +207,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 24560, 24553, 24554, 24555, 24556, 24557, 24558, 24559 },
+		npcs = { 24560, 25560 },
 		overview = {
 			"Priestess Delrissa is the third boss encounter in Magister's Terrace. This encounter is unique as Delrissa is always accompanied by four randomly selected companions from a pool of eight possible allies. Each companion has distinct abilities and class roles, making every pull potentially different. All five enemies must be defeated to complete the encounter, creating a fight that resembles a PvP arena match more than a traditional dungeon boss.",
 			{ heading = "Overview" },
@@ -316,7 +316,7 @@ InstanceService.AddDungeon({
 		extremelyRareLoot = {
 			{ id = 35513, seasonFilter = "tbc" }
 		},
-		npcs = { 24664, 24674, 24675 },
+		npcs = { 24664, 24857 },
 		overview = {
 			"Kael'thas Sunstrider, the once-proud prince of Quel'Thalas, serves as the final boss of Magister's Terrace. Though believed defeated in Tempest Keep, Kael'thas has been kept alive by a green fel crystal embedded in his chest. He now works to harness the power of the Sunwell for dark purposes. This two-phase encounter requires precise positioning, interrupt coordination, and careful management of Phoenix adds.",
 			{ heading = "Overview" },

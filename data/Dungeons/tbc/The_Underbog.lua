@@ -37,7 +37,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17770 },
+		npcs = { 17770, 20169 },
 		overview = {
 			"Hungarfen is a massive bog giant composed of fungus and plant matter, corrupted by the naga's influence in Coilfang Reservoir. As the first boss of The Underbog, Hungarfen presents a straightforward encounter focused on managing poison damage and dealing with spawning mushroom adds.",
 			{ heading = "Overview" },
@@ -115,7 +115,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18105 },
+		npcs = { 18105, 20168 },
 		overview = {
 			"Ghaz'an is a massive hydra lurking in the murky waters of The Underbog. This beast has adapted to the toxic environment, using acid and poison to overwhelm its prey. The encounter tests your group's ability to manage a soft enrage mechanic through add control.",
 			{ heading = "Overview" },
@@ -193,7 +193,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17826, 17827 },
+		npcs = { 17826, 20183 },
 		overview = {
 			"Swamplord Musel'ek is a broken draenei who has fallen under the corruption of the naga. He fights alongside his loyal pet bear, Claw. This encounter is a two-target fight requiring careful management of both Musel'ek and his companion.",
 			{ heading = "Overview" },
@@ -292,7 +292,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17882 },
+		npcs = { 17882, 20184 },
 		overview = {
 			"The Black Stalker is a massive sporebat that has grown to monstrous proportions feeding on the corrupted ecology of The Underbog. As the final boss of the dungeon, this encounter features unique levitation mechanics and spawning adds that must be managed carefully.",
 			{ heading = "Overview" },

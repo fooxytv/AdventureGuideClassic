@@ -38,7 +38,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18341 },
+		npcs = { 18341, 20267 },
 		overview = {
 			"Pandemonius is a massive armor-plated void lord and the first boss encountered in the Mana-Tombs. This encounter tests the group's ability to manage shadow damage output and handle spell reflection mechanics. All of Pandemonius's attacks deal shadow damage rather than physical, making shadow resistance valuable for tanks.",
 			{ heading = "Overview" },
@@ -94,7 +94,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18343 },
+		npcs = { 18343, 20268 },
 		overview = {
 			"Tavarok is a massive colossus who serves as the second boss in the Mana-Tombs. This encounter emphasizes positioning awareness and interrupting deadly mechanics. The fight features periodic stuns, single-target imprisonment, and on Heroic difficulty, a devastating frontal cleave that can deal over 11,000 damage.",
 			{ heading = "Overview" },
@@ -161,7 +161,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18344, 18431 },
+		npcs = { 18344, 20266 },
 		overview = {
 			"Nexus-Prince Shaffar is the final boss of the Mana-Tombs and leader of a rogue faction of ethereals. This encounter is a DPS race centered around add control, requiring the group to quickly destroy Ethereal Beacons before they spawn dangerous Ethereal Apprentices. The fight combines direct elemental damage from the prince with overwhelming add pressure if beacons are not managed properly.",
 			{ heading = "Overview" },

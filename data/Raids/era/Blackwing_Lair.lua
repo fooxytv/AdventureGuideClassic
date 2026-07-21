@@ -40,7 +40,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 12435, 12416, 12557, 12420, 12459 },
+		npcs = { 12435 },
 		overview = {
 			"Razorgore the Untamed is Nefarian's second in command and the guardian of the Black Dragonflight's eggs. This two-phase encounter requires players to mind-control Razorgore to destroy all eggs while managing waves of spawning adds.",
 			{ heading = "Overview" },
@@ -144,7 +144,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 12017, 12557 },
+		npcs = { 12017 },
 		overview = {
 			"Broodlord Lashlayer is one of Nefarian's most trusted lieutenants who guards the infamous Suppression Rooms. This encounter tests the raid's ability to navigate dangerous trash while managing a boss with powerful knockback and threat-reduction mechanics.",
 			{ heading = "Overview" },
@@ -433,7 +433,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 11583, 14302, 14605 },
+		npcs = { 11583 },
 		overview = {
 			"Nefarian, Lord of Blackwing Lair and son of Deathwing, is the final encounter of this raid. This epic three-phase battle tests every aspect of raid coordination, featuring waves of powerful drakonid adds, class-specific debilitating abilities, and a dramatic resurrection mechanic.",
 			{ heading = "Overview" },

@@ -114,6 +114,35 @@ function component.Init(components_)
 		isModelTabSelected = false
 	end)
 
+	modelTab = AddTab("Model")
+	EncounterJournal.encounter.info.modelTab = modelTab
+	modelTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
+	-- Placeholder icon: these are the coordinates the abilities tab used. The
+	-- journal atlas region for a model tab has not been identified yet.
+	modelTab.unselected:SetTexCoord(0.904296875, 0.99609375, 0.70703125, 0.748046875)
+	modelTab.selected:SetTexCoord(0.806640625, 0.8984375, 0.70703125, 0.748046875)
+	modelTab:SetScript("OnEnter", function (self)
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
+		GameTooltip:AddLine("Model")
+		GameTooltip:Show()
+	end)
+	modelTab:SetScript("OnLeave", function ()
+		GameTooltip:Hide()
+	end)
+	modelTab:SetScript("OnClick", function()
+		-- Show() reports back when the encounter has no creature displays, in
+		-- which case stay put rather than swapping to an empty frame.
+		if not components.ModelFrame.Show() then return end
+		selectedTab = modelTab
+		component.Refresh()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+		isOverviewTabSelected = false
+		isLootTabSelected = false
+		isQuestTabSelected = false
+		isAbilitiesTabSelected = false
+		isModelTabSelected = true
+	end)
+
 	-- abilitiesTab = AddTab("Abilities")
 	-- EncounterJournal.encounter.info.abilitiesTab = abilitiesTab
 	-- abilitiesTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
@@ -196,6 +225,17 @@ end
 	-- end
 -- end
 
+-- Used when a view has to fall back, e.g. moving to an encounter with no
+-- creature models while the Model tab is the selected one.
+function component.SelectOverview()
+	selectedTab = overviewTab
+	isOverviewTabSelected = true
+	isLootTabSelected = false
+	isQuestTabSelected = false
+	isAbilitiesTabSelected = false
+	isModelTabSelected = false
+end
+
 function component.Refresh()
 	selectTab(selectedTab)
 	if (selectedTab ~= overviewTab) then
@@ -206,6 +246,16 @@ function component.Refresh()
 			unselectTab(lootTab)
 		else
 			disableTab(lootTab)
+		end
+	end
+	if (selectedTab ~= modelTab) then
+		-- Only offer the tab where we actually have creature displays; plenty of
+		-- encounters have none, and an enabled tab that does nothing reads as a bug.
+		local encounter = AdventureGuideNavigationService.GetEncounter()
+		if (encounter and CreatureModelService.HasModels(encounter.encounterID)) then
+			unselectTab(modelTab)
+		else
+			disableTab(modelTab)
 		end
 	end
 	-- if (selectedTab ~= abilitiesTab) then

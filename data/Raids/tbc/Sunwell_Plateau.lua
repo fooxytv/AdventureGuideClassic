@@ -244,7 +244,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 25165, 25166 },
+		npcs = { 25166, 25165 },
 		overview = {
 			"Grand Warlock Alythess and Lady Sacrolash are eredar twins serving Kil'jaeden. Lady Sacrolash wields shadow magic while Grand Warlock Alythess commands fire. This encounter requires splitting the raid between two bosses while managing opposing elemental debuffs. The fight becomes significantly easier once the first twin dies.",
 			{ heading = "Overview" },
@@ -416,7 +416,7 @@ select(2, ...).SetupGlobalFacade()
 		extremelyRareLoot = {
 			{ id = 34347, seasonFilter = "tbc" }
 		},
-		npcs = { 25315, 25608 },
+		npcs = { 25315 },
 		overview = {
 			"Kil'jaeden the Deceiver, lord of the Burning Legion, attempts to enter Azeroth through the Sunwell. This is the final boss of Burning Crusade and one of the most epic encounters in WoW history. The fight features five phases with increasingly complex mechanics, dragon orbs that grant powerful abilities, and a platform covered in darkness. The raid must coordinate perfectly while utilizing special powers granted by the blue dragonflight.",
 			{ heading = "Overview" },

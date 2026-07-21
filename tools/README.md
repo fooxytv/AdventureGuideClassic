@@ -62,6 +62,26 @@ the piece the token actually grants. The loot entry still shows the token.
 
 Re-run it whenever the AllAtlasLoot checkout is updated.
 
+## gen_creature_models.py
+
+Corrects `npcs` in the encounter data and regenerates `data/CreatureModels.lua`:
+
+```bash
+python tools/gen_creature_models.py [--dry-run] [--skip path ...]
+```
+
+Both outputs join on `encounterID`, the one field in our data that is reliable.
+Much of `npcs` was a placeholder (`{2135, 12456, 12314}`) copy-pasted across 156
+encounters; where AtlasLoot knows the boss, the real npc ids replace it, and
+where it doesn't, the placeholder is cleared rather than left to mislead.
+
+Display ids are keyed by encounter, not by npc, because AtlasLoot lists one
+`DisplayIDs` entry per distinct creature while `npcID` also carries the heroic
+copies — 68 entries have mismatched counts, so zipping them by index would
+attach the wrong model to half the heroic encounters.
+
+Use `--skip` to leave files with uncommitted work alone.
+
 ## item_meta.tsv
 
 The filter reads item quality/class/slot from `tools/item_meta.tsv`:

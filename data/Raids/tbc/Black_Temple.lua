@@ -162,7 +162,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 22841, 23191 },
+		npcs = { 22841 },
 		overview = {
 			"The embodiment of Akama's broken spirit, kept prisoner by Illidan as insurance against the Broken leader's betrayal. The encounter features two distinct phases: defending against waves of adds while killing channelers, then burning the Shade once it becomes active.",
 			{ heading = "Overview" },
@@ -481,7 +481,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 22949, 22950, 22951, 22952 },
+		npcs = { 23426, 22949, 22950, 22951, 22952 },
 		overview = {
 			"Illidan's four most elite lieutenants, each a master of their respective combat discipline, who fight in perfect coordination. All four council members share a health pool and must be kept separated. Gathios (Paladin), Zerevor (Mage), Malande (Priest), and Veras (Rogue) each have unique deadly abilities.",
 			{ heading = "Overview" },
@@ -556,7 +556,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 22917, 23089, 23375 },
+		npcs = { 22917 },
 		overview = {
 			"The Betrayer himself, once a night elf hero who sacrificed everything for power. The climactic encounter of The Burning Crusade features five complex phases with different mechanics. This fight requires 3-4 tanks, precise Shadow Demon handling, Flame of Azzinoth management, and coordinated positioning for Maiev's traps.",
 			{ heading = "Overview" },

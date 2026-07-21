@@ -30,7 +30,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 644 },
 		overview = {
 			"Rhahk'Zor, a massive ogre, is one of the earliest challenges adventurers face within The Deadmines. Known for his immense strength and brutal tactics, he serves as a formidable guardian of the pirate-infested underground complex. Rhahk'Zor's presence in The Deadmines reflects the danger and lawlessness that have taken hold of the once-prosperous mine.",
 			{ heading = "Overview" },
@@ -67,7 +67,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 642 },
 		overview = {
 			"Sneed's Shredder, a hulking mechanical monstrosity, is a creation of the cunning engineer, Sneed. It guards the inner chambers of The Deadmines and represents the technological ingenuity of the Defias Brotherhood. Sneed's Shredder's presence in the mines reflects the combination of engineering prowess and criminal intent that fuels the pirate operation.",
 			{ heading = "Overview" },
@@ -103,7 +103,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 1763 },
 		overview = {
 			"Gilnid, a cunning and ruthless foreman, oversees the operations within The Deadmines. He is known for his sadistic methods and willingness to exploit the mine's laborers. Gilnid's presence reflects the oppressive rule of the Defias Brotherhood over their captive workers.",
 			{ heading = "Overview" },
@@ -140,7 +140,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 646 },
 		overview = {
 			"Mr. Smite is a hulking pirate enforcer who serves as the muscle behind the Defias Brotherhood's operations within The Deadmines. Known for his love of melee combat and brute force, he represents the brawn that keeps the pirates in control. Mr. Smite's presence reflects the reliance of the Defias Brotherhood on physical strength and intimidation.",
 			{ heading = "Overview" },
@@ -177,7 +177,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 647 },
 		overview = {
 			"Captain Greenskin is a notorious pirate captain who commands the pirates of The Deadmines. With a penchant for combat and leadership, he stands as a central figure in the Defias Brotherhood's hierarchy. Captain Greenskin's presence reflects the authority and danger posed by the pirate captain at the heart of the operation.",
 			{ heading = "Overview" },
@@ -215,7 +215,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 639 },
 		overview = {
 			"Edwin VanCleef, the mastermind behind the Defias Brotherhood, is the final boss of The Deadmines. Once a skilled architect who oversaw the construction of Stormwind, he turned to a life of crime after his services were undervalued. VanCleef's presence in the mines reflects the calculated and vengeful nature of the Defias Brotherhood's leader.",
 			{ heading = "Overview" },
@@ -251,7 +251,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 645 },
 		overview = {
 			"Cookie is an unusual resident of The Deadmines, a friendly and affable goblin who serves as the chef for the pirate crew. Despite his culinary skills, he remains loyal to the Defias Brotherhood's cause. Cookie's presence in the mines reflects the unexpected and quirky elements of the pirate operation.",
 			{ heading = "Overview" },

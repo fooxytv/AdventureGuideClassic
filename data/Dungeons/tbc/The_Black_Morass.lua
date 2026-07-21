@@ -32,7 +32,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17879 },
+		npcs = { 17879, 20738 },
 		overview = {
 			"Chrono Lord Deja is the first boss encounter in The Black Morass, appearing after defending several time rifts. As a member of the infinite dragonflight, Deja attempts to disrupt the opening of the Dark Portal through time manipulation abilities and summoned assistance.",
 			{ heading = "Overview" },
@@ -89,7 +89,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17880 },
+		npcs = { 17880, 20745 },
 		overview = {
 			"Temporus appears after successfully defending additional time rifts. As another agent of the infinite dragonflight, this dragonkin employs powerful haste and slow effects that dramatically alter the pace of combat, creating a unique tempo-based encounter.",
 			{ heading = "Overview" },
@@ -156,7 +156,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17881 },
+		npcs = { 17881, 20737 },
 		overview = {
 			"Aeonus is the final boss of The Black Morass and leader of the infinite dragonflight assault on this timeline. This climactic encounter represents the last desperate attempt to prevent the Dark Portal's opening. Aeonus combines powerful dragonkin abilities with time manipulation and summoned allies.",
 			{ heading = "Overview" },

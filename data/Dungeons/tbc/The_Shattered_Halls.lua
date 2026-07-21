@@ -33,7 +33,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 16807, 17084 },
+		npcs = { 16807, 20568 },
 		overview = {
 			"Grand Warlock Nethekurse is a powerful fel orc warlock who commands both shadow magic and demonic forces. He is accompanied by Lesser Shadow Fissures and demonstrates his mastery over shadow and fire magic. This encounter tests your group's ability to manage add spawns while dealing with a variety of shadow-based attacks.",
 			{ heading = "Overview" },
@@ -135,7 +135,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 16809 },
+		npcs = { 16809, 20596 },
 		overview = {
 			"Warbringer O'mrogg is a massive two-headed ogre who serves as one of Kargath Bladefist's most powerful lieutenants. His two heads constantly bicker and argue with each other, but they coordinate devastating attacks in battle. O'mrogg's unique dual-nature makes him unpredictable, as each head can cast different abilities simultaneously.",
 			{ heading = "Overview" },
@@ -200,7 +200,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 16808, 16805, 17264 },
+		npcs = { 16808, 20597 },
 		overview = {
 			"Warchief Kargath Bladefist is the brutal commander of the Shattered Hand clan and the final boss of the Shattered Halls. A legendary warrior who severed his own hand and replaced it with a deadly blade, Kargath is a master of combat who tests prisoners in his arena. This multi-phase encounter combines add management, positioning challenges, and intense single-target damage requirements.",
 			{ heading = "Overview" },

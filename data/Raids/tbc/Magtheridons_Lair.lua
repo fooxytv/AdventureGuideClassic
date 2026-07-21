@@ -41,7 +41,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 17257, 17256 },
+		npcs = { 17257 },
 		overview = {
 			"Once the ruler of Outland, Magtheridon was defeated by Illidan Stormrage and imprisoned by Illidan's servants. The fel orcs now drain his blood to create fel orcs, keeping the pit lord in eternal torment. This single-boss encounter is famous for its unique cube-clicking mechanic requiring precise raid coordination.",
 			{ heading = "Overview" },

@@ -148,7 +148,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 21215, 21857 },
+		npcs = { 21215 },
 		overview = {
 			"Leotheras the Blind is a night elf demon hunter consumed by his inner demons. He alternates every 45 seconds between Demon form (which must be kited during {spell:37640} Whirlwind) and Elf form (which is tankable). At 50% health, every raid member is banished to fight their own Inner Demon solo. At 15%, both forms merge for a final burn phase.",
 			{ heading = "Overview" },
@@ -200,7 +200,7 @@ select(2, ...).SetupGlobalFacade()
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 21214, 21966, 21965, 21964 },
+		npcs = { 21214 },
 		overview = {
 			"Fathom-Lord Karathress commands three elite guards, each with unique abilities. This council fight requires four tanks to keep all bosses separated by 30+ yards. Kill order typically: Caribdis (healer) > Tidalvess (shaman) > Sharkkis (hunter) > Karathress. As each guard dies, Karathress gains their abilities.",
 			{ heading = "Overview" },

@@ -32,7 +32,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 19219 },
+		npcs = { 19219, 21533 },
 		overview = {
 			"Mechano-Lord Capacitus is a massive mechanized construct and the first boss of The Mechanar. This encounter tests the group's ability to manage a polarity mechanic where players must alternate between positive and negative charges to avoid devastating raid-wide damage. The fight requires careful coordination and awareness of debuff status.",
 			{ heading = "Overview" },
@@ -87,7 +87,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 19221, 19167 },
+		npcs = { 19221, 21536 },
 		overview = {
 			"Nethermancer Sepethrea is a blood elf mage and the second boss of The Mechanar. This encounter is a complex multi-phase fight featuring summoned elemental adds, massive AoE fire damage, and a unique mechanic requiring ranged positioning. The fight tests the group's ability to manage dangerous adds while dealing with heavy raid damage.",
 			{ heading = "Overview" },
@@ -154,7 +154,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 19220, 21230 },
+		npcs = { 19220, 21537 },
 		overview = {
 			"Pathaleon the Calculator is the final boss of The Mechanar and overseer of Kael'thas Sunstrider's mechanized army production. This encounter features mind control mechanics, summoned adds, and devastating arcane abilities. At 20% health, Pathaleon summons three Nether Wraith adds that must be dealt with while finishing the boss.",
 			{ heading = "Overview" },
