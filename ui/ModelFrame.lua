@@ -9,7 +9,7 @@ select(2, ...).SetupGlobalFacade()
 local component = UI.CreateComponent("ModelFrame")
 
 local components
-local modelContainer, creatureModel, currentDisplayId, currentPreset
+local modelContainer, creatureModel, currentDisplayId, currentPreset, currentEncounterId
 
 -- The wheel adjusts the camera around whatever preset the creature's size gives
 -- it, so the bounds are relative to that rather than absolute.
@@ -54,7 +54,7 @@ function component.SetDisplay(displayId, title)
 	component.ApplyPreset(currentPreset)
 	-- A per-creature title wins over the encounter name, so the several models
 	-- of one encounter can be named individually.
-	local displayTitle = ModelPresetService.GetTitle(displayId) or title
+	local displayTitle = ModelPresetService.GetTitle(displayId, currentEncounterId) or title
 	if displayTitle then
 		modelContainer.imageTitle:SetText(displayTitle)
 	end
@@ -80,6 +80,16 @@ function component.ApplyPreset(preset)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
 	end
+	-- Scales the model rather than the camera. Some creatures cannot be framed by
+	-- camera distance alone: Ragnaros and Hakkar bottom out still too small, and
+	-- the largest models fall past the far clip plane before they fit.
+	if creatureModel.SetModelScale then
+		creatureModel:SetModelScale(preset.modelScale or 1)
+	end
+end
+
+function component.SupportsModelScale()
+	return creatureModel ~= nil and creatureModel.SetModelScale ~= nil
 end
 
 --[[
@@ -134,6 +144,7 @@ local function SetupModelControls(model)
 			self:SetPosition(currentPreset.x or 0, currentPreset.y or 0, currentPreset.z or 0)
 			self:SetFacing(currentPreset.facing or 0)
 			if self.SetPitch then self:SetPitch(currentPreset.pitch or 0) end
+			if self.SetModelScale then self:SetModelScale(currentPreset.modelScale or 1) end
 		end
 	end)
 	model:SetScript("OnUpdate", function(self)
@@ -152,6 +163,10 @@ end
 
 function component.GetDisplay()
 	return currentDisplayId
+end
+
+function component.GetEncounterId()
+	return currentEncounterId
 end
 
 function component.Init(components_)
@@ -249,6 +264,7 @@ function component.Show()
 	if not encounter then return false end
 	local displayIds = CreatureModelService.GetDisplayIds(encounter.encounterID)
 	if not displayIds then return false end
+	currentEncounterId = encounter.encounterID
 
 	-- The instance art behind the model, as the retail journal shows. Faded, see
 	-- BACKGROUND_ALPHA. Falls back to the journal's own default backdrop, which

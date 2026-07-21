@@ -14,6 +14,10 @@ local component = UI.CreateComponent("ModelTuner")
 local components
 local panel
 
+-- Low enough that the camera can be brought right in. The previous 0.1 was
+-- itself the wall Ragnaros and Hakkar hit: they bottom out there and are still
+-- too small, so model scale is the lever for those, not camera distance.
+local MIN_CAMERA_SCALE = 0.02
 local ROW_HEIGHT = 22
 local ROWS_TOP = 62      -- below the title edit box
 local rowCount = 5       -- 6 when the client supports tilt
@@ -24,6 +28,7 @@ local STEPS = {
 	z      = 0.5,
 	facing = 0.1,
 	pitch  = 0.05,
+	modelScale = 0.1,
 }
 
 local function CurrentDisplayId()
@@ -69,8 +74,11 @@ local function AddRow(parent, index, field, label)
 		-- magnitude while positions are usually a nudge or two.
 		if IsShiftKeyDown() then step = step * 5 end
 		panel.preset[field] = (panel.preset[field] or 0) + step
-		if field == "scale" and panel.preset.scale < 0.1 then
-			panel.preset.scale = 0.1
+		if field == "scale" and panel.preset.scale < MIN_CAMERA_SCALE then
+			panel.preset.scale = MIN_CAMERA_SCALE
+		end
+		if field == "modelScale" and panel.preset.modelScale < 0.1 then
+			panel.preset.modelScale = 0.1
 		end
 		Apply()
 	end
@@ -102,7 +110,7 @@ local function CreatePanel()
 	})
 	panel:SetBackdropColor(0, 0, 0, 0.9)
 	panel.rows = {}
-	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0 }
+	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0, modelScale = 1 }
 
 	panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	panel.title:SetPoint("TOPLEFT", 12, -10)
@@ -129,6 +137,8 @@ local function CreatePanel()
 	titleBox:SetScript("OnTextChanged", function(self, userInput)
 		if not userInput then return end
 		panel.preset.title = self:GetText()
+		ModelPresetService.SaveTitle(CurrentDisplayId(),
+			components.ModelFrame.GetEncounterId(), self:GetText())
 		components.ModelFrame.ApplyPreset(panel.preset)
 	end)
 	titleBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
@@ -144,6 +154,10 @@ local function CreatePanel()
 	if components.ModelFrame.SupportsTilt() then
 		AddRow(panel, 5, "pitch", "Tilt")
 		rowCount = 6
+	end
+	if components.ModelFrame.SupportsModelScale() then
+		AddRow(panel, rowCount, "modelScale", "Size")
+		rowCount = rowCount + 1
 	end
 	panel:SetHeight(ROWS_TOP + (rowCount * ROW_HEIGHT) + 70)
 
@@ -248,7 +262,8 @@ function component.Refresh()
 	end
 	-- Only write the box when it is not being typed into, or the caret jumps.
 	if not panel.titleBox:HasFocus() then
-		panel.titleBox:SetText(panel.preset.title or "")
+		panel.titleBox:SetText(ModelPresetService.GetTitle(displayId,
+			components.ModelFrame.GetEncounterId()) or "")
 	end
 end
 
@@ -268,7 +283,7 @@ function component.Toggle()
 	panel:Show()
 	local displayId = CurrentDisplayId()
 	panel.preset = displayId and ModelPresetService.Get(displayId)
-		or { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0 }
+		or { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0, modelScale = 1 }
 	component.Refresh()
 end
 
