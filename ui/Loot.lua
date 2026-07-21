@@ -232,7 +232,7 @@ end
 local FILTER_ROW_HEIGHT = 26
 local ALL_CLASSES = "ALL"
 local ALL_ARMOR = "ALL"
-local classDropdown, armorDropdown
+local classDropdown, armorDropdown, clearFiltersButton
 
 local function RefreshAfterFilterChange(dropdown, text)
 	UIDropDownMenu_SetText(dropdown, text)
@@ -288,9 +288,13 @@ local function InitializeArmorDropdown()
 end
 
 -- Restores the dropdown captions from saved state, so a filter kept across
--- sessions is visible rather than silently hiding loot.
+-- sessions is visible rather than silently hiding loot. Also shows the clear
+-- button only while something is actually filtered.
 local function RefreshFilterCaptions()
 	if not classDropdown then return end
+	if clearFiltersButton then
+		clearFiltersButton:SetShown(LootFilterService.IsFiltered())
+	end
 	local class = LootFilterService.GetClassFilter()
 	local label = "All Classes"
 	if class then
@@ -323,6 +327,23 @@ local function CreateFilterDropdowns(parent)
 	UIDropDownMenu_SetWidth(armorDropdown, 90)
 	UIDropDownMenu_Initialize(armorDropdown, InitializeArmorDropdown)
 
+	clearFiltersButton = CreateFrame("Button", nil, parent, "UIPanelCloseButton")
+	clearFiltersButton:SetSize(22, 22)
+	clearFiltersButton:SetPoint("LEFT", armorDropdown, "RIGHT", -6, 2)
+	clearFiltersButton:SetScript("OnClick", function()
+		LootFilterService.ClearFilters()
+		CloseDropDownMenus()
+		GameTooltip_Hide()
+		component.Show()
+	end)
+	clearFiltersButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Clear filters")
+		GameTooltip:Show()
+	end)
+	clearFiltersButton:SetScript("OnLeave", GameTooltip_Hide)
+	clearFiltersButton:Hide()
+
 	RefreshFilterCaptions()
 end
 
@@ -331,6 +352,10 @@ function component.Init(components_)
 	lootContainer = CreateFrame("Frame", nil, EncounterJournal.encounter.info)
 	lootContainer:SetSize(345, 382)
 	lootContainer:SetPoint("BOTTOMRIGHT", -5, 1)
+	-- Start hidden, as the other views do. SetCurrentView only hides the view it
+	-- is replacing, so without this the container is up from the moment the
+	-- journal loads and the filter row draws over the instance lore art.
+	lootContainer:Hide()
 	EncounterJournal.encounter.LootContainer = lootContainer
 	lootScrollBox = CreateFrame("Frame", nil, lootContainer, "WowScrollBoxList")
 	EncounterJournal.encounter.LootScrollBox = lootScrollBox
