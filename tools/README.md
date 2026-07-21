@@ -48,7 +48,21 @@ class item of common quality or better with a real inventory slot.
 That deliberately excludes greys, Badge of Justice and other currency,
 recipes/designs/patterns, quest and attunement items, and fishing junk.
 
-### item_meta.tsv
+## gen_tier_tokens.py
+
+Regenerates `data/TierTokens.lua` from AtlasLoot's `Token.lua`:
+
+```bash
+python tools/gen_tier_tokens.py
+```
+
+Maps each tier-set token to the item every class trades it for. A token has no
+appearance of its own, so `TierTokenService` uses this to dress the character in
+the piece the token actually grants. The loot entry still shows the token.
+
+Re-run it whenever the AllAtlasLoot checkout is updated.
+
+## item_meta.tsv
 
 The filter reads item quality/class/slot from `tools/item_meta.tsv`:
 

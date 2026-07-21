@@ -69,8 +69,9 @@ local function CreatePreviewFrame()
 	return frame
 end
 
-local function ShowItemPreview(itemLink, anchorFrame)
-	if not itemLink then return end
+-- previewItem is an item link, or an item id when a token resolves to a set piece.
+local function ShowItemPreview(previewItem, anchorFrame)
+	if not previewItem then return end
 	local frame = CreatePreviewFrame()
 	if SettingsService and SettingsService.GetScale then
 		frame:SetScale(SettingsService.GetScale())
@@ -87,7 +88,7 @@ local function ShowItemPreview(itemLink, anchorFrame)
 	end
 	C_Timer.After(0.15, function()
 		if frame.model and frame:IsShown() then
-			frame.model:TryOn(itemLink)
+			frame.model:TryOn(previewItem)
 		end
 	end)
 	frame.cameraAngle = 0
@@ -97,6 +98,25 @@ local function HideItemPreview()
 	if previewFrame then
 		previewFrame:Hide()
 	end
+end
+
+--[[
+	What the character model should wear when previewing a loot entry.
+
+	A tier token has no appearance of its own, so trying one on leaves the model
+	bare. Resolve tokens to the set piece the player's class trades them for. The
+	loot entry keeps showing the token; only the preview differs.
+]]
+local function GetPreviewTarget(lootItem)
+	if not lootItem then return nil end
+	if lootItem.itemId and TierTokenService and TierTokenService.IsToken(lootItem.itemId) then
+		local pieceId = TierTokenService.GetPreviewItemId(lootItem.itemId)
+		if pieceId then
+			RequestLoadItemDataCompat(pieceId)
+			return pieceId
+		end
+	end
+	return lootItem.link
 end
 
 local function ProcessItemData(itemId)
@@ -120,7 +140,7 @@ local function ButtonOnUpdate(self, elapsed)
 	if self.checkCtrl then
 		local isCtrlDown = IsControlKeyDown()
 		if isCtrlDown and not self.wasCtrlDown then
-			ShowItemPreview(self.lootItemLink, self)
+			ShowItemPreview(self.previewTarget, self)
 			self.wasCtrlDown = true
 		elseif not isCtrlDown and self.wasCtrlDown then
 			HideItemPreview()
@@ -146,7 +166,7 @@ local function ButtonOnEnter(self)
 		GameTooltip:Show()
 		self.checkCtrl = true
 		self.wasCtrlDown = false
-		self.lootItemLink = lootItem.link
+		self.previewTarget = GetPreviewTarget(lootItem)
 		self:SetScript("OnUpdate", ButtonOnUpdate)
 	end
 end
@@ -188,8 +208,11 @@ local function ButtonOnClick(self, mouseButton)
 			end
 		end
 	elseif mouseButton == "LeftButton" and IsControlKeyDown() then
-		if lootItem.link then
-			DressUpItemLink(lootItem.link)
+		local target = GetPreviewTarget(lootItem)
+		if type(target) == "number" then
+			DressUpItemLink("item:" .. target)
+		elseif target then
+			DressUpItemLink(target)
 		end
 	elseif mouseButton == "LeftButton" then
 		if lootItem.link then

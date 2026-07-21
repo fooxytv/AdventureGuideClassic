@@ -13,4 +13,5 @@
     <Script file="services/SettingsService.lua" />
     <Script file="services/SearchService.lua" />
     <Script file="services/SpellsByLevelService.lua" />
+    <Script file="services/TierTokenService.lua" />
 </Ui>
