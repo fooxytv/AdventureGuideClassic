@@ -252,10 +252,19 @@ function component.Refresh()
 		panel.subtitle:SetText("|cffff5555Open a boss on the Model tab.|r")
 	else
 		local height = CreatureModelService.GetHeight(displayId)
-		panel.subtitle:SetText(("Display %d  |cffaaaaaa(height %s%s)|r"):format(
+		-- Show the size the model actually has next to the one asked for: if they
+		-- disagree, something is overwriting it rather than it never being set.
+		local applied = components.ModelFrame.GetAppliedModelScale()
+		local wanted = panel.preset.modelScale or 1
+		local sizeNote = ""
+		if applied and math.abs(applied - wanted) > 0.01 then
+			sizeNote = ("  |cffff5555size %.2f, applied %.2f|r"):format(wanted, applied)
+		end
+		panel.subtitle:SetText(("Display %d  |cffaaaaaa(height %s%s)|r%s"):format(
 			displayId,
 			height and ("%.1f"):format(height) or "?",
-			ModelPresetService.HasOverride(displayId) and ", saved" or ""))
+			ModelPresetService.HasOverride(displayId) and ", saved" or "",
+			sizeNote))
 	end
 	for _, row in ipairs(panel.rows) do
 		row.value:SetText(("%.2f"):format(panel.preset[row.field] or 0))

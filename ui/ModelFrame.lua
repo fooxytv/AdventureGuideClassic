@@ -113,10 +113,23 @@ function component.ApplyPreset(preset)
 	-- Size first. It scales the model rather than the camera, and the camera
 	-- framing is derived from the model's size, so setting it afterwards leaves
 	-- the camera positioned for the model at its old size.
+	local sized = (preset.modelScale or 1) ~= 1
 	if creatureModel.SetModelScale then
 		creatureModel:SetModelScale(preset.modelScale or 1)
 	end
-	creatureModel:SetPortraitZoom(0)
+	--[[
+		SetPortraitZoom re-frames the camera against the model's own bounds, which
+		undoes a deliberate Size: scaling the model up only makes the bounds it
+		fits to bigger, so the creature comes back the same size on screen. It is
+		skipped once a Size is set, which is also why Size appeared to work until
+		the model settled and this ran again.
+
+		Kept for everything else, since every preset tuned so far was tuned with it
+		active and none of them set a Size.
+	]]
+	if not sized then
+		creatureModel:SetPortraitZoom(0)
+	end
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
 	creatureModel:SetCamDistanceScale(zoom)
@@ -125,6 +138,20 @@ function component.ApplyPreset(preset)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
 	end
+end
+
+--[[
+	The size the model actually has, as opposed to the one we asked for.
+
+	Reading it back is the only way to tell a setting that did not take from one
+	that was overwritten afterwards; the tuner shows it alongside the requested
+	value so the two can be compared directly.
+]]
+function component.GetAppliedModelScale()
+	if creatureModel and creatureModel.GetModelScale then
+		return creatureModel:GetModelScale()
+	end
+	return nil
 end
 
 function component.SupportsModelScale()
