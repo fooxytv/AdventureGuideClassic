@@ -56,17 +56,26 @@ end
 	client already has cached, so a short settle is needed as well. The loot
 	preview waits 0.15s before TryOn for the same reason.
 ]]
-local REAPPLY_DELAYS = { 0.05, 0.25, 0.6 }
+--[[
+	How long the preset keeps being re-asserted after a creature is shown.
 
-local function ReapplyAfterLoad(preset)
-	for _, delay in ipairs(REAPPLY_DELAYS) do
-		C_Timer.After(delay, function()
-			-- Only if nothing else has taken over the frame in the meantime.
-			if creatureModel and currentPreset == preset then
-				component.ApplyPreset(preset)
-			end
-		end)
-	end
+	Fixed delays were the wrong shape for this. A model's camera is not ready
+	until it has streamed in, and how long that takes depends on the model: the
+	small ones were settled within a frame or two while Ragnaros, one of the
+	largest, was still loading after every attempt had already fired, so his
+	native camera won afterwards. Re-asserting each frame for a couple of seconds
+	does not care how long the model takes.
+]]
+local ENFORCE_SECONDS = 2.0
+local enforceUntil = 0
+
+local function EnforcePreset()
+	enforceUntil = GetTime() + ENFORCE_SECONDS
+end
+
+-- The moment the viewer is touched it is no longer ours to override.
+local function ReleasePreset()
+	enforceUntil = 0
 end
 
 
@@ -89,7 +98,7 @@ function component.SetDisplay(displayId, title)
 	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
 	component.ApplyPreset(currentPreset)
-	ReapplyAfterLoad(currentPreset)
+	EnforcePreset()
 	-- A per-creature title wins over the encounter name, so the several models
 	-- of one encounter can be named individually.
 	local displayTitle = ModelPresetService.GetTitle(displayId, currentEncounterId) or title
@@ -179,16 +188,19 @@ local function SetupModelControls(model)
 		zoom = math.max(MIN_ZOOM, math.min(MAX_ZOOM, zoom * (1 - delta * ZOOM_RATE)))
 		self:SetCamDistanceScale(zoom)
 		if currentPreset then currentPreset.scale = zoom end
+		ReleasePreset()
 		NotifyTuner()
 	end)
 	model:SetScript("OnMouseDown", function(self, button)
 		local _, y = GetCursorPosition()
 		if button == "LeftButton" then
 			self.isRotating = true
+			ReleasePreset()
 			self.rotateStartX = GetCursorPosition()
 			self.rotateStartFacing = self:GetFacing()
 		elseif button == "RightButton" and component.SupportsTilt() then
 			self.isTilting = true
+			ReleasePreset()
 			self.tiltStartY = y
 			self.tiltStartPitch = currentPreset and currentPreset.pitch or 0
 		end
@@ -203,6 +215,13 @@ local function SetupModelControls(model)
 		if currentPreset then component.ApplyPreset(currentPreset) end
 	end)
 	model:SetScript("OnUpdate", function(self)
+		if enforceUntil > 0 and currentPreset then
+			if GetTime() < enforceUntil then
+				component.ApplyPreset(currentPreset)
+			else
+				enforceUntil = 0
+			end
+		end
 		if self.isRotating then
 			local x = GetCursorPosition()
 			local facing = self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED

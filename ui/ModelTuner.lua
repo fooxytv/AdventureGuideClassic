@@ -254,11 +254,18 @@ function component.Refresh()
 		local height = CreatureModelService.GetHeight(displayId)
 		-- Show the size the model actually has next to the one asked for: if they
 		-- disagree, something is overwriting it rather than it never being set.
+		-- Always stated, never inferred from its absence: showing nothing when the
+		-- values agree reads exactly the same as showing nothing because the client
+		-- has no GetModelScale, and those mean opposite things.
 		local applied = components.ModelFrame.GetAppliedModelScale()
 		local wanted = panel.preset.modelScale or 1
-		local sizeNote = ""
-		if applied and math.abs(applied - wanted) > 0.01 then
-			sizeNote = ("  |cffff5555size %.2f, applied %.2f|r"):format(wanted, applied)
+		local sizeNote
+		if not applied then
+			sizeNote = "  |cffaaaaaaapplied size: unreadable|r"
+		elseif math.abs(applied - wanted) > 0.01 then
+			sizeNote = ("  |cffff5555applied size %.2f, wanted %.2f|r"):format(applied, wanted)
+		else
+			sizeNote = ("  |cff55ff55applied size %.2f|r"):format(applied)
 		end
 		panel.subtitle:SetText(("Display %d  |cffaaaaaa(height %s%s)|r%s"):format(
 			displayId,
