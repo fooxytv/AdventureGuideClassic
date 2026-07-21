@@ -56,14 +56,17 @@ end
 	client already has cached, so a short settle is needed as well. The loot
 	preview waits 0.15s before TryOn for the same reason.
 ]]
+local REAPPLY_DELAYS = { 0.05, 0.25, 0.6 }
+
 local function ReapplyAfterLoad(preset)
-	C_Timer.After(0.1, function()
-		-- Only if nothing else has taken over the frame in the meantime.
-		if creatureModel and currentPreset == preset then
-			component.ApplyPreset(preset)
-			NotifyTuner()
-		end
-	end)
+	for _, delay in ipairs(REAPPLY_DELAYS) do
+		C_Timer.After(delay, function()
+			-- Only if nothing else has taken over the frame in the meantime.
+			if creatureModel and currentPreset == preset then
+				component.ApplyPreset(preset)
+			end
+		end)
+	end
 end
 
 
@@ -85,7 +88,6 @@ function component.SetDisplay(displayId, title)
 	currentDisplayId = displayId
 	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
-	creatureModel:SetPortraitZoom(0)
 	component.ApplyPreset(currentPreset)
 	ReapplyAfterLoad(currentPreset)
 	-- A per-creature title wins over the encounter name, so the several models
@@ -108,6 +110,13 @@ function component.ApplyPreset(preset)
 	if preset.title and preset.title ~= "" then
 		modelContainer.imageTitle:SetText(preset.title)
 	end
+	-- Size first. It scales the model rather than the camera, and the camera
+	-- framing is derived from the model's size, so setting it afterwards leaves
+	-- the camera positioned for the model at its old size.
+	if creatureModel.SetModelScale then
+		creatureModel:SetModelScale(preset.modelScale or 1)
+	end
+	creatureModel:SetPortraitZoom(0)
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
 	creatureModel:SetCamDistanceScale(zoom)
@@ -115,12 +124,6 @@ function component.ApplyPreset(preset)
 	creatureModel:SetFacing(preset.facing or 0)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
-	end
-	-- Scales the model rather than the camera. Some creatures cannot be framed by
-	-- camera distance alone: Ragnaros and Hakkar bottom out still too small, and
-	-- the largest models fall past the far clip plane before they fit.
-	if creatureModel.SetModelScale then
-		creatureModel:SetModelScale(preset.modelScale or 1)
 	end
 end
 
@@ -169,15 +172,8 @@ local function SetupModelControls(model)
 	end)
 	-- The camera can be set before the model has finished streaming in, which
 	-- leaves the framing at the creature's native scale. Re-apply once it lands.
-	model:SetScript("OnModelLoaded", function(self)
-		self:SetPortraitZoom(0)
-		self:SetCamDistanceScale(zoom)
-		if currentPreset then
-			self:SetPosition(currentPreset.x or 0, currentPreset.y or 0, currentPreset.z or 0)
-			self:SetFacing(currentPreset.facing or 0)
-			if self.SetPitch then self:SetPitch(currentPreset.pitch or 0) end
-			if self.SetModelScale then self:SetModelScale(currentPreset.modelScale or 1) end
-		end
+	model:SetScript("OnModelLoaded", function()
+		if currentPreset then component.ApplyPreset(currentPreset) end
 	end)
 	model:SetScript("OnUpdate", function(self)
 		if self.isRotating then
