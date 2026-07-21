@@ -11,9 +11,16 @@ local component = UI.CreateComponent("ModelFrame")
 local components
 local modelContainer, creatureModel, currentDisplayId, currentPreset, currentEncounterId
 
--- The wheel adjusts the camera around whatever preset the creature's size gives
--- it, so the bounds are relative to that rather than absolute.
-local MIN_ZOOM_FACTOR, MAX_ZOOM_FACTOR, ZOOM_STEP = 0.35, 3.0, 0.12
+--[[
+	Wheel zoom bounds.
+
+	Absolute, and multiplicative per notch. Bounding them relative to the preset
+	meant a model that started badly framed could not be wheeled out of it: at
+	Ragnaros' computed 5.96 the old 0.35x floor stopped at 2.1, nowhere near
+	close enough to see him. A fixed step is no good either across a range this
+	wide, since 0.12 is a crawl at 6.0 and a leap at 0.05.
+]]
+local MIN_ZOOM, MAX_ZOOM, ZOOM_RATE = 0.02, 24.0, 0.12
 local ROTATION_SPEED = 0.02
 -- Tilt is clamped short of straight up or down, past which the model is edge-on
 -- and there is nothing useful to see.
@@ -110,9 +117,7 @@ local function SetupModelControls(model)
 	model:EnableMouse(true)
 	model:EnableMouseWheel(true)
 	model:SetScript("OnMouseWheel", function(self, delta)
-		local step = baseZoom * ZOOM_STEP
-		zoom = math.max(baseZoom * MIN_ZOOM_FACTOR,
-			math.min(baseZoom * MAX_ZOOM_FACTOR, zoom - delta * step))
+		zoom = math.max(MIN_ZOOM, math.min(MAX_ZOOM, zoom * (1 - delta * ZOOM_RATE)))
 		self:SetCamDistanceScale(zoom)
 	end)
 	model:SetScript("OnMouseDown", function(self, button)
