@@ -20,7 +20,9 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3914,
 		portrait = I.UIEJBossRethilgore,
-		loot = {},
+		loot = {
+			{ id = 5254, seasonFilter = "all" },
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
