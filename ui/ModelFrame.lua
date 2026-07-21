@@ -11,22 +11,72 @@ local component = UI.CreateComponent("ModelFrame")
 local components
 local modelContainer, creatureModel, currentDisplayId
 
+-- Camera limits for the mouse-wheel zoom. 1 is the framing SetPortraitZoom picks.
+local DEFAULT_ZOOM, MIN_ZOOM, MAX_ZOOM, ZOOM_STEP = 1.0, 0.4, 4.0, 0.15
+local ROTATION_SPEED = 0.02
+local zoom = DEFAULT_ZOOM
+
 --[[
 	Shows a creature by its display id.
 
 	PlayerModel/SetDisplayInfo is what AtlasLoot uses on these clients; a
-	ModelScene actor would need retail-only scene ids we do not have.
+	ModelScene actor would need the retail uiModelSceneID, which carries the
+	camera framing and only comes from real EJ data we do not have.
+
+	SetPortraitZoom is what keeps this usable. Without it the model is shown at
+	its own native camera, so anything large -- dragons, Magtheridon, C'Thun --
+	fills the frame and spills out of it. Zooming to 0 frames the whole creature
+	against its own bounds instead, which adapts per model.
 ]]
 function component.SetDisplay(displayId, title)
 	if not creatureModel or not displayId then return end
 	currentDisplayId = displayId
+	zoom = DEFAULT_ZOOM
 	creatureModel:SetDisplayInfo(displayId)
+	creatureModel:SetPortraitZoom(0)
+	creatureModel:SetCamDistanceScale(zoom)
 	creatureModel:SetPosition(0, 0, 0)
 	creatureModel:SetFacing(0)
 	if title then
 		modelContainer.imageTitle:SetText(title)
 	end
 	modelContainer.modelDisplayId:SetText(tostring(displayId))
+end
+
+-- Creature sizes vary far too much for one framing to suit all of them, so the
+-- wheel zooms and dragging turns the model, as the dressing room does.
+local function SetupModelControls(model)
+	model:EnableMouse(true)
+	model:EnableMouseWheel(true)
+	model:SetScript("OnMouseWheel", function(self, delta)
+		zoom = math.max(MIN_ZOOM, math.min(MAX_ZOOM, zoom - delta * ZOOM_STEP))
+		self:SetCamDistanceScale(zoom)
+	end)
+	model:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" then
+			self.isRotating = true
+			self.rotateStartX = GetCursorPosition()
+			self.rotateStartFacing = self:GetFacing()
+		end
+	end)
+	model:SetScript("OnMouseUp", function(self)
+		self.isRotating = false
+	end)
+	model:SetScript("OnHide", function(self)
+		self.isRotating = false
+	end)
+	-- The camera can be set before the model has finished streaming in, which
+	-- leaves the framing at the creature's native scale. Re-apply once it lands.
+	model:SetScript("OnModelLoaded", function(self)
+		self:SetPortraitZoom(0)
+		self:SetCamDistanceScale(zoom)
+		self:SetPosition(0, 0, 0)
+	end)
+	model:SetScript("OnUpdate", function(self)
+		if not self.isRotating then return end
+		local x = GetCursorPosition()
+		self:SetFacing(self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED)
+	end)
 end
 
 function component.GetDisplay()
@@ -54,6 +104,7 @@ function component.Init(components_)
 	creatureModel:SetPoint("TOPLEFT", 8, -8)
 	creatureModel:SetPoint("BOTTOMRIGHT", -8, 8)
 	creatureModel:SetFrameLevel(model:GetFrameLevel() + 1)
+	SetupModelControls(creatureModel)
 
 	-- Everything from here on sits above the model.
 	local overlay = CreateFrame("Frame", nil, model)

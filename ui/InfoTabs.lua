@@ -117,10 +117,9 @@ function component.Init(components_)
 	modelTab = AddTab("Model")
 	EncounterJournal.encounter.info.modelTab = modelTab
 	modelTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
-	-- Placeholder icon: these are the coordinates the abilities tab used. The
-	-- journal atlas region for a model tab has not been identified yet.
-	modelTab.unselected:SetTexCoord(0.904296875, 0.99609375, 0.70703125, 0.748046875)
-	modelTab.selected:SetTexCoord(0.806640625, 0.8984375, 0.70703125, 0.748046875)
+	-- UI-EJ-Tab-ModelIcon-UnSelected / -Selected from Blizzard's EncounterJournal.
+	modelTab.unselected:SetTexCoord(0.90234375, 1, 0.662109375, 0.705078125)
+	modelTab.selected:SetTexCoord(0.8046875, 0.900390625, 0.662109375, 0.705078125)
 	modelTab:SetScript("OnEnter", function (self)
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
 		GameTooltip:AddLine("Model")
