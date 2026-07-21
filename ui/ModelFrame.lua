@@ -9,7 +9,7 @@ select(2, ...).SetupGlobalFacade()
 local component = UI.CreateComponent("ModelFrame")
 
 local components
-local modelContainer, creatureModel, currentDisplayId
+local modelContainer, creatureModel, currentDisplayId, currentPreset
 
 -- The wheel adjusts the camera around whatever preset the creature's size gives
 -- it, so the bounds are relative to that rather than absolute.
@@ -33,17 +33,29 @@ local baseZoom, zoom = 1.0, 1.0
 function component.SetDisplay(displayId, title)
 	if not creatureModel or not displayId then return end
 	currentDisplayId = displayId
-	baseZoom = CreatureModelService.GetCameraScale(displayId)
-	zoom = baseZoom
+	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
 	creatureModel:SetPortraitZoom(0)
-	creatureModel:SetCamDistanceScale(zoom)
-	creatureModel:SetPosition(0, 0, 0)
-	creatureModel:SetFacing(0)
+	component.ApplyPreset(currentPreset)
 	if title then
 		modelContainer.imageTitle:SetText(title)
 	end
 	modelContainer.modelDisplayId:SetText(tostring(displayId))
+	if components and components.ModelTuner then
+		components.ModelTuner.OnDisplayChanged(displayId)
+	end
+end
+
+-- Applies camera settings without reloading the model, so the tuner can nudge
+-- values and see the result immediately.
+function component.ApplyPreset(preset)
+	if not creatureModel or not preset then return end
+	currentPreset = preset
+	baseZoom = preset.scale or 1
+	zoom = baseZoom
+	creatureModel:SetCamDistanceScale(zoom)
+	creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
+	creatureModel:SetFacing(preset.facing or 0)
 end
 
 -- Creature sizes vary far too much for one framing to suit all of them, so the
@@ -75,7 +87,10 @@ local function SetupModelControls(model)
 	model:SetScript("OnModelLoaded", function(self)
 		self:SetPortraitZoom(0)
 		self:SetCamDistanceScale(zoom)
-		self:SetPosition(0, 0, 0)
+		if currentPreset then
+			self:SetPosition(currentPreset.x or 0, currentPreset.y or 0, currentPreset.z or 0)
+			self:SetFacing(currentPreset.facing or 0)
+		end
 	end)
 	model:SetScript("OnUpdate", function(self)
 		if not self.isRotating then return end
@@ -182,6 +197,13 @@ function component.Show()
 	if not encounter then return false end
 	local displayIds = CreatureModelService.GetDisplayIds(encounter.encounterID)
 	if not displayIds then return false end
+
+	-- The instance art behind the model, as the retail journal shows. This is
+	-- the same image the instance overview uses for its lore background.
+	local instance = AdventureGuideNavigationService.GetInstance()
+	if instance and instance.splash then
+		modelContainer.dungeonBG:SetTexture(instance.splash)
+	end
 
 	components.CreatureButtons.SetCreatures(displayIds, encounter.name)
 	component.SetDisplay(displayIds[1], encounter.name)

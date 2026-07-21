@@ -91,6 +91,7 @@
 
     <!-- Creature display ids per encounter, for the model viewer -->
     <Script file="data/CreatureModels.lua" />
+    <Script file="data/CreatureModelPresets.lua" />
 
     <!-- Tier-set token -> per-class set piece, for the loot preview -->
     <Script file="data/TierTokens.lua" />

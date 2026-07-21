@@ -45,7 +45,11 @@ local function ButtonOnLeave()
 end
 
 local function CreateCreatureButton()
-	local button = CreateFrame("Button", nil, EncounterJournal.encounter.info.model)
+	-- Parent to the overlay, not the model container. The overlay carries the
+	-- paper frame art and sits above the model, so a button parented below it
+	-- gets drawn underneath that art.
+	local model = EncounterJournal.encounter.info.model
+	local button = CreateFrame("Button", nil, model.overlay or model)
 	button:SetMotionScriptsWhileDisabled(true)
 	button:SetSize(SIZE_UNSELECTED, ICON_UNSELECTED)
 	button.creature = button:CreateTexture()
@@ -66,7 +70,7 @@ local function CreateCreatureButton()
 	if lastIndex == 0 then
 		-- Anchor the button itself. The previous code anchored button.creature
 		-- here, which fought with the CENTER anchor that texture already has.
-		button:SetPoint("TOPLEFT", EncounterJournal.encounter.info.model, "TOPLEFT", 3, -35)
+		button:SetPoint("TOPLEFT", model, "TOPLEFT", 3, -35)
 	else
 		button:SetPoint("TOPLEFT", creatureButtons[lastIndex], "BOTTOMLEFT", 0, 8)
 	end

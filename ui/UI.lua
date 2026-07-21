@@ -22,6 +22,10 @@ function UI.Add(component)
     end
 end
 
+function UI.GetComponent(name)
+    return components[name]
+end
+
 function UI.Init()
     frame = CreateFrame("Frame")
     for _, component in ipairs(components) do
