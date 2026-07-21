@@ -69,7 +69,7 @@ local function CreatePreviewFrame()
 	return frame
 end
 
--- previewItem is an item link, or an item id when a token resolves to a set piece.
+-- previewItem is an item link, or an item string when a token resolves to a set piece.
 local function ShowItemPreview(previewItem, anchorFrame)
 	if not previewItem then return end
 	local frame = CreatePreviewFrame()
@@ -106,6 +106,9 @@ end
 	A tier token has no appearance of its own, so trying one on leaves the model
 	bare. Resolve tokens to the set piece the player's class trades them for. The
 	loot entry keeps showing the token; only the preview differs.
+
+	Returns an item string rather than a bare id, since that is accepted by both
+	TryOn and DressUpItemLink on every client we support.
 ]]
 local function GetPreviewTarget(lootItem)
 	if not lootItem then return nil end
@@ -113,7 +116,7 @@ local function GetPreviewTarget(lootItem)
 		local pieceId = TierTokenService.GetPreviewItemId(lootItem.itemId)
 		if pieceId then
 			RequestLoadItemDataCompat(pieceId)
-			return pieceId
+			return "item:" .. pieceId
 		end
 	end
 	return lootItem.link
@@ -209,9 +212,7 @@ local function ButtonOnClick(self, mouseButton)
 		end
 	elseif mouseButton == "LeftButton" and IsControlKeyDown() then
 		local target = GetPreviewTarget(lootItem)
-		if type(target) == "number" then
-			DressUpItemLink("item:" .. target)
-		elseif target then
+		if target then
 			DressUpItemLink(target)
 		end
 	elseif mouseButton == "LeftButton" then
