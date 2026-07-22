@@ -29,6 +29,7 @@
     <Script file="ui/Info.lua" />
     <Script file="ui/ModelFrame.lua" />
     <Script file="ui/CreatureButtons.lua" />
+    <Script file="ui/ModelTuner.lua" />
     <Script file="ui/InstanceOverview.lua" />
     <Script file="ui/DynamicContentScroller.lua" />
     <Script file="ui/Encounters.lua" />

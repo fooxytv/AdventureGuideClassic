@@ -29,7 +29,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10393 },
 		overview = {
 			"Skul, the Necropolis' caretaker, is a loyal servant of the Scourge and is responsible for overseeing the undead within Stratholme. He is known for his eerie demeanor and his role as a sentinel of the cursed city. Skul's presence within Stratholme reflects the grim authority of the Scourge over the city's ruins.",
 			{ heading = "Overview" },
@@ -66,7 +66,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10558 },
 		overview = {
 			"Hearthsinger Forresten was once a renowned bard and entertainer in Stratholme before its fall. However, he succumbed to the plague and now roams the city as a tormented spirit, seeking to relive his past glory. Forresten's presence within Stratholme reflects the tragedy and despair that befell its inhabitants.",
 			{ heading = "Overview" },
@@ -103,7 +103,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10516 },
 		overview = {
 			"The Unforgiven is a vengeful spirit who dwells within Stratholme, driven by a burning desire for retribution against those he deems responsible for his suffering. His presence reflects the lingering torment and anger that permeate the cursed city.",
 			{ heading = "Overview" },
@@ -141,7 +141,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 11143 },
 		overview = {
 			"Postmaster Malown was once responsible for Stratholme's mail service before its fall to the Scourge. He has been transformed into a malevolent undead postmaster who now haunts the city's post office. Malown's presence reflects the perversion of everyday life within Stratholme by the Scourge.",
 			{ heading = "Overview" },
@@ -178,7 +178,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10808 },
 		overview = {
 			"Timmy the Cruel is a tormented child spirit who wanders the streets of Stratholme, consumed by the darkness that plagues the city. His presence reflects the tragedy of innocent lives lost during the city's fall to the Scourge.",
 			{ heading = "Overview" },
@@ -220,7 +220,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10997 },
 		overview = {
 			"Cannon Master Willey was once a skilled engineer in Stratholme, responsible for the city's defenses. In undeath, he has been transformed into a fearsome cannon master who guards the city's gates. Willey's presence reflects the militarization and fortification of Stratholme by the Scourge.",
 			{ heading = "Overview" },
@@ -257,7 +257,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10811 },
 		overview = {
 			"Archivist Galford was once a scholar and historian in Stratholme, responsible for preserving its knowledge and history. In undeath, he has been transformed into a malevolent archivist who guards the city's secrets. Galford's presence reflects the corruption of knowledge and the manipulation of history by the Scourge.",
 			{ heading = "Overview" },
@@ -304,7 +304,7 @@ InstanceService.AddDungeon({
 		},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10812, 10813 },
 		overview = {
 			"Balnazzar is a powerful dreadlord and one of the dreadlords who manipulated the events that led to Stratholme's fall. He serves as a central figure in the Scourge's control of the city and its undead inhabitants. Balnazzar's presence reflects the malevolent influence of the Nathrezim over Stratholme.",
 			{ heading = "Overview" },
@@ -342,7 +342,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10435 },
 		overview = {
 			"Magistrate Barthilas was once a lawkeeper in Stratholme, responsible for maintaining order and justice. In undeath, he has become a malevolent magistrate who enforces the twisted laws of the Scourge. Barthilas's presence reflects the perversion of justice and order within the cursed city.",
 			{ heading = "Overview" },
@@ -377,7 +377,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10809 },
 		overview = {
 			"Stonespine is a monstrous and undead giant who guards the corridors of Stratholme with brute strength. He is known for his formidable presence and his role as a sentinel of the city's depths. Stonespine's presence reflects the overwhelming power of the Scourge within the cursed city.",
 			{ heading = "Overview" },
@@ -419,7 +419,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10437 },
 		overview = {
 			"Nerub'enkan is an undead nerubian who has been twisted and enslaved by the Scourge to guard Stratholme's inner chambers. He is known for his ruthless nature and his role as a sentinel of the city's depths. Nerub'enkan's presence reflects the corruption of the nerubian race by the dark forces that control the city.",
 			{ heading = "Overview" },
@@ -452,7 +452,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 11121 },
 		overview = {
 			"The Black Guard Swordsmith is an undead blacksmith who forges deadly weapons for the Scourge within Stratholme. He is known for his skill in crafting blades of death and his role as a weapon forger. The Swordsmith's presence reflects the Scourge's relentless pursuit of arms and power within the city.",
 			{ heading = "Overview" },
@@ -494,7 +494,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10438 },
 		overview = {
 			"Maleki the Pallid is a sinister and powerful undead sorcerer who serves as a guardian of Stratholme's inner chambers. He is known for his mastery of dark magic and his role as a sentinel of the city's depths. Maleki's presence reflects the malevolent and arcane forces that infest the cursed city.",
 			{ heading = "Overview" },
@@ -536,7 +536,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10436 },
 		overview = {
 			"Baroness Anastari is an elegant and deadly undead noble who was once a prominent figure in Stratholme's aristocracy. In undeath, she has become a malevolent baroness who commands the undead with regal authority. Anastari's presence reflects the perversion of nobility and power by the Scourge.",
 			{ heading = "Overview" },
@@ -575,7 +575,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10439 },
 		overview = {
 			"Ramstein the Gorger is a monstrous and grotesque abomination who dwells within the depths of Stratholme. He is known for his insatiable appetite for flesh and his role as a guardian of the city's catacombs. Ramstein's presence reflects the grotesque and horrifying creations of the Scourge.",
 			{ heading = "Overview" },
@@ -632,7 +632,7 @@ InstanceService.AddDungeon({
 			{ id = 13505, seasonFilter = "restricted" },
 			{ id = 13335, seasonFilter = "all" },
 		},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 10440 },
 		overview = {
 			"Baron Rivendare is a powerful and ruthless undead noble who serves as the master of Stratholme. He is responsible for maintaining the Scourge's control over the cursed city. Rivendare's presence reflects the central authority of the Scourge within Stratholme.",
 			{ heading = "Overview" },

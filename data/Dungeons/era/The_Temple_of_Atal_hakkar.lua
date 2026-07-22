@@ -29,7 +29,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Atal'alarion is a powerful and vengeful spirit bound within The Temple of Atal'Hakkar. Once a guardian of the temple, he has been corrupted by dark forces and now seeks to defend it with a malevolent rage. Atal'alarion's presence within the temple signifies the tragic fall of an ancient protector.",
 			{ heading = "Overview" },
@@ -64,7 +64,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Jammal'an the Prophet is a high-ranking Atal'ai priest within The Temple of Atal'Hakkar. His mastery of shadow magic and his devotion to the dark god Hakkar make him a formidable adversary. Jammal'an's presence in the temple highlights the Atal'ai trolls' commitment to serving the bloodthirsty deity.",
 			{ heading = "Overview" },
@@ -104,7 +104,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Weaver and Dreamscythe is a malevolent entity that lurks within The Temple of Atal'Hakkar. A manifestation of the dark and twisted dreams that haunt the temple's depths, Dreamscythe embodies the surreal and nightmarish aspects of the Sunken Temple. Its presence serves as a reminder of the eerie and otherworldly forces at play.",
 			{ heading = "Overview" },
@@ -144,7 +144,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Hazzas and Morphaz is a malevolent spirit bound to The Temple of Atal'Hakkar, cursed to protect the temple's secrets for all eternity. His tormented existence and spectral powers make him a formidable adversary. Hazzas's presence within the temple underscores the tragic fate of those who become ensnared by its dark forces.",
 			{ heading = "Overview" },
@@ -183,7 +183,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"The Avatar of Hakkar is a manifestation of the bloodthirsty god Hakkar the Soulflayer within The Temple of Atal'Hakkar. Its malevolent power and insatiable hunger for blood make it a terrifying foe. The Avatar's presence in the temple signifies the dark deity's influence over its chambers.",
 			{ heading = "Overview" },
@@ -222,7 +222,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"The Shade of Eranikus is a corrupted green dragon who has fallen under the sway of the malevolent god Hakkar the Soulflayer within The Temple of Atal'Hakkar. Once a protector of nature, Eranikus's corruption has made him a formidable and tragic adversary. His presence in the temple highlights the destructive influence of Hakkar.",
 			{ heading = "Overview" },

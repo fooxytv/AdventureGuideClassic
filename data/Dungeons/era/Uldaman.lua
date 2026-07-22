@@ -130,7 +130,9 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7023,
 		portrait = 607729,
-		loot = {},
+		loot = {
+			{ id = 8053, seasonFilter = "all" },
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},

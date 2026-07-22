@@ -62,7 +62,9 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7272,
 		portrait = 607793,
-		loot = {},
+		loot = {
+			{ id = 10660, seasonFilter = "all" },
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -199,7 +201,9 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7604,
 		portrait = I.UIEJBossSergeantBly,
-		loot = {},
+		loot = {
+			{ id = 8548, seasonFilter = "all" },
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -233,7 +237,10 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 7795,
 		portrait = 607652,
-		loot = {},
+		loot = {
+			{ id = 9234, seasonFilter = "all" },
+			{ id = 10661, seasonFilter = "all" },
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},

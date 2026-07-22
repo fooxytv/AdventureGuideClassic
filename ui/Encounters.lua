@@ -47,13 +47,15 @@ local function EncounterButton_OnClick(self)
 		components.Loot.Show()
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Quest" then
-		-- todo: implement
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Abilities" then
 		components.DynamicContentScroller.ShowAbilities()
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Model" then
-		-- todo: implement
+		if not components.ModelFrame.Show() then
+			components.DynamicContentScroller.ShowOverview()
+			components.InfoTabs.SelectOverview()
+		end
 		components.InfoTabs.Refresh()
 	end
 end

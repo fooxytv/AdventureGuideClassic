@@ -29,7 +29,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Atal'alarion is a powerful and vengeful spirit bound within The Temple of Atal'Hakkar. Once a guardian of the temple, he has been corrupted by dark forces and now seeks to defend it with a malevolent rage. This 20-player raid encounter tests the raid's coordination and positioning as they manage deadly knockbacks and stacking damage buffs.",
 			{ heading = "Overview" },
@@ -67,7 +67,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Jammal'an the Prophet is a high-ranking Atal'ai priest within The Temple of Atal'Hakkar. This two-phase encounter requires managing both Jammal'an and his companion Ogom the Wretched, each with distinct abilities. The fight demands strong dispelling, interrupt coordination, and careful positioning to avoid deadly area effects.",
 			{ heading = "Overview" },
@@ -118,7 +118,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Dreamscythe and Weaver are two corrupted drakes that share a health pool in this challenging encounter. The fight takes place in an arena with a deadly hole in the center and poison surrounding the edges. This multi-phase encounter requires precise positioning and coordination to avoid being knocked into environmental hazards.",
 			{ heading = "Overview" },
@@ -162,7 +162,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"Morphaz and Hazzas present a unique two-realm encounter where the raid must battle Hazzas in the physical realm while dealing with periodic transitions to the Dream realm where Morphaz awaits. The dragons share a health pool, and players deal 100% increased damage in the Dream realm, creating a strategic push-and-pull between realms.",
 			{ heading = "Overview" },
@@ -210,7 +210,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"The Avatar of Hakkar is a manifestation of the bloodthirsty god Hakkar the Soulflayer within The Temple of Atal'Hakkar. This encounter requires careful management of spreading diseases, mind control mechanics, and a pre-boss phase where the raid must kill ritualists and a blood-powered mini-boss to summon the Avatar.",
 			{ heading = "Overview" },
@@ -259,7 +259,7 @@ InstanceService.AddRaid({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = {},
 		overview = {
 			"The Shade of Eranikus is a corrupted green dragon who has fallen under the sway of the malevolent god Hakkar the Soulflayer. Once a protector of nature, Eranikus now serves as the final and most challenging boss in the Season of Discovery Sunken Temple raid. This multi-phase encounter tests raid coordination with sleep mechanics, add waves, and devastating abilities.",
 			{ heading = "Overview" },

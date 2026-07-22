@@ -13,4 +13,8 @@
     <Script file="services/SettingsService.lua" />
     <Script file="services/SearchService.lua" />
     <Script file="services/SpellsByLevelService.lua" />
+    <Script file="services/TierTokenService.lua" />
+    <Script file="services/LootFilterService.lua" />
+    <Script file="services/CreatureModelService.lua" />
+    <Script file="services/ModelPresetService.lua" />
 </Ui>

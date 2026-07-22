@@ -61,7 +61,6 @@ function component.Init(components_)
 	instanceButtonBorderHighlight:SetTexCoord(0.50585938, 0.63085938, 0.02246094, 0.08203125)
 	info.instanceButton:SetHighlightTexture(instanceButtonBorderHighlight, "ADD")
 	--todo: set OnClick
-
 	info.difficultyDropdown = CreateFrame("Frame", "EncounterInfoDifficultyDropdown", info, "UIDropDownMenuTemplate")
 	info.difficultyDropdown:SetPoint("TOPRIGHT", info, "TOPRIGHT", 5, -12)
 	info.difficultyDropdown:SetScale(0.9)

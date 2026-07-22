@@ -27,7 +27,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3653 },
 		overview = {
 			"Kresh is a massive and territorial snapping turtle that dwells deep within the Wailing Caverns. His presence in the caverns represents the diverse array of creatures that have taken refuge in this sprawling subterranean labyrinth. Kresh's imposing size and armored shell make him a formidable resident of the Wailing Caverns, challenging those who dare to venture into his territory.",
 			{ heading = "Overview" },
@@ -61,7 +61,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3671 },
 		overview = {
 			"Lady Anacondra is a formidable naga sorceress who has established herself as a resident of the Wailing Caverns. Her presence within the caverns adds a magical dimension to the already mysterious and perilous environment. Lady Anacondra's mastery of arcane magic and serpentine nature make her a unique and dangerous adversary.",
 			{ heading = "Overview" },
@@ -99,7 +99,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3669 },
 		overview = {
 			"Lord Cobrahn is a cunning and agile naga lord who has taken up residence within the Wailing Caverns. His presence adds an element of stealth and deception to the already complex ecosystem of the caverns. Lord Cobrahn's serpentine form and venomous attacks make him a dangerous inhabitant of this underground realm.",
 			{ heading = "Overview" },
@@ -140,7 +140,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3670 },
 		overview = {
 			"Lord Pythas is a powerful naga lord who has made the Wailing Caverns his domain. His presence adds a touch of arcane mystique to the already enigmatic caverns. Lord Pythas's formidable magical abilities and commanding presence make him a noteworthy adversary within the subterranean labyrinth.",
 			{ heading = "Overview" },
@@ -175,7 +175,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3674 },
 		overview = {
 			"Skum is a monstrous murloc who resides in the watery depths of the Wailing Caverns. His presence within the caverns represents the wide array of creatures that have found refuge in its labyrinthine passages. Skum's ferocity and aquatic nature make him a formidable resident of this underground realm.",
 			{ heading = "Overview" },
@@ -211,7 +211,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3673 },
 		overview = {
 			"Lord Serpentis is a cunning naga lord who has established himself as a resident of the Wailing Caverns. His presence within the caverns adds a touch of intrigue and danger to the underground labyrinth. Lord Serpentis's serpentine form and mastery of venomous attacks make him a dangerous adversary lurking in the shadows.",
 			{ heading = "Overview" },
@@ -246,7 +246,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 5775 },
 		overview = {
 			"Verdan the Everliving is an ancient and colossal serpent who has taken root within the Wailing Caverns. His presence in the caverns signifies the enduring power of nature and the intricate web of life within this underground ecosystem. Verdan's immense size and regenerative abilities make him a legendary inhabitant of the caverns, a living testament to the forces of nature.",
 			{ heading = "Overview" },
@@ -283,7 +283,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 2135, 12456, 12314 },
+		npcs = { 3654 },
 		overview = {
 			"Mutanus the Devourer is a monstrous hydra that lurks in the watery recesses of the Wailing Caverns. His presence within the caverns represents the primal and ferocious aspects of the underground ecosystem. Mutanus's multiple heads and insatiable appetite make him a terrifying resident of this labyrinthine realm.",
 			{ heading = "Overview" },

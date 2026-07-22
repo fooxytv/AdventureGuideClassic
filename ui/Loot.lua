@@ -9,9 +9,18 @@ select(2, ...).SetupGlobalFacade()
 local component = UI.CreateComponent("Loot")
 local EquipMapping = GetEquipMapping()
 local Colors = GetColorMapping()
-
--- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
+local components
+local lootContainer
+local lootScrollBox
+local previewFrame
+local rotationSpeed = 0.5
+local pendingItemIds = {}
+local PREVIEW_ZOOM = 0
+local PREVIEW_CAM_DISTANCE_SCALE = 1
+local currentEncounterId = nil
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
+local GetItemInfoInstantCompat = C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant
+
 local function RequestLoadItemDataCompat(itemId)
     if C_Item and C_Item.RequestLoadItemDataByID then
         C_Item.RequestLoadItemDataByID(itemId)
@@ -20,14 +29,6 @@ local function RequestLoadItemDataCompat(itemId)
     end
 end
 
-local components
-local lootContainer
-local lootScrollBox
-local previewFrame
-local rotationSpeed = 0.5
-local pendingItemIds = {}
-local currentEncounterId = nil
-
 local function truncateText(text, maxLength)
 	if #text > maxLength then
 		return text:sub(1, maxLength - 3) .. "..."
@@ -35,9 +36,6 @@ local function truncateText(text, maxLength)
 		return text
 	end
 end
-
-local PREVIEW_ZOOM = 0
-local PREVIEW_CAM_DISTANCE_SCALE = 1
 
 local function CreatePreviewFrame()
 	if previewFrame then return previewFrame end
@@ -69,8 +67,8 @@ local function CreatePreviewFrame()
 	return frame
 end
 
-local function ShowItemPreview(itemLink, anchorFrame)
-	if not itemLink then return end
+local function ShowItemPreview(previewItem, anchorFrame)
+	if not previewItem then return end
 	local frame = CreatePreviewFrame()
 	if SettingsService and SettingsService.GetScale then
 		frame:SetScale(SettingsService.GetScale())
@@ -87,7 +85,7 @@ local function ShowItemPreview(itemLink, anchorFrame)
 	end
 	C_Timer.After(0.15, function()
 		if frame.model and frame:IsShown() then
-			frame.model:TryOn(itemLink)
+			frame.model:TryOn(previewItem)
 		end
 	end)
 	frame.cameraAngle = 0
@@ -99,9 +97,22 @@ local function HideItemPreview()
 	end
 end
 
+local function GetPreviewTarget(lootItem)
+	if not lootItem then return nil end
+	if lootItem.itemId and TierTokenService and TierTokenService.IsToken(lootItem.itemId) then
+		local pieceId = TierTokenService.GetPreviewItemId(lootItem.itemId)
+		if pieceId then
+			RequestLoadItemDataCompat(pieceId)
+			return "item:" .. pieceId
+		end
+	end
+	return lootItem.link
+end
+
 local function ProcessItemData(itemId)
 	local itemName, itemLink, itemQuality, _, _, itemType, itemSubType, _, itemEquipLoc, itemIcon = GetItemInfoCompat(itemId)
 	if itemName then
+		local _, _, _, _, _, classID, subclassID = GetItemInfoInstantCompat(itemId)
 		return {
 			isHeader = false,
 			itemId = itemId,
@@ -111,6 +122,9 @@ local function ProcessItemData(itemId)
 			icon = itemIcon,
 			armorType = itemSubType,
 			slot = EquipMapping[itemEquipLoc] or itemEquipLoc,
+			classID = classID,
+			subclassID = subclassID,
+			equipLoc = itemEquipLoc,
 		}
 	end
 	return nil
@@ -120,7 +134,7 @@ local function ButtonOnUpdate(self, elapsed)
 	if self.checkCtrl then
 		local isCtrlDown = IsControlKeyDown()
 		if isCtrlDown and not self.wasCtrlDown then
-			ShowItemPreview(self.lootItemLink, self)
+			ShowItemPreview(self.previewTarget, self)
 			self.wasCtrlDown = true
 		elseif not isCtrlDown and self.wasCtrlDown then
 			HideItemPreview()
@@ -146,7 +160,7 @@ local function ButtonOnEnter(self)
 		GameTooltip:Show()
 		self.checkCtrl = true
 		self.wasCtrlDown = false
-		self.lootItemLink = lootItem.link
+		self.previewTarget = GetPreviewTarget(lootItem)
 		self:SetScript("OnUpdate", ButtonOnUpdate)
 	end
 end
@@ -188,8 +202,9 @@ local function ButtonOnClick(self, mouseButton)
 			end
 		end
 	elseif mouseButton == "LeftButton" and IsControlKeyDown() then
-		if lootItem.link then
-			DressUpItemLink(lootItem.link)
+		local target = GetPreviewTarget(lootItem)
+		if target then
+			DressUpItemLink(target)
 		end
 	elseif mouseButton == "LeftButton" then
 		if lootItem.link then
@@ -198,16 +213,136 @@ local function ButtonOnClick(self, mouseButton)
 	end
 end
 
+local FILTER_ROW_HEIGHT = 26
+local ALL_CLASSES = "ALL"
+local ALL_ARMOR = "ALL"
+local classDropdown, armorDropdown, clearFiltersButton
+
+local function RefreshAfterFilterChange(dropdown, text)
+	UIDropDownMenu_SetText(dropdown, text)
+	CloseDropDownMenus()
+	component.Show()
+end
+
+local function OnClassFilterSelected(self)
+	LootFilterService.SetClassFilter(self.value ~= ALL_CLASSES and self.value or nil)
+	RefreshAfterFilterChange(classDropdown, self:GetText())
+end
+
+local function OnArmorFilterSelected(self)
+	LootFilterService.SetArmorFilter(self.value ~= ALL_ARMOR and self.value or nil)
+	RefreshAfterFilterChange(armorDropdown, self:GetText())
+end
+
+local function InitializeClassDropdown()
+	local current = LootFilterService.GetClassFilter()
+	local info = UIDropDownMenu_CreateInfo()
+	info.text = "All Classes"
+	info.value = ALL_CLASSES
+	info.func = OnClassFilterSelected
+	info.checked = (current == nil)
+	UIDropDownMenu_AddButton(info)
+	for _, class in ipairs(LootFilterService.GetClasses()) do
+		info = UIDropDownMenu_CreateInfo()
+		info.text = class.label
+		info.value = class.token
+		info.func = OnClassFilterSelected
+		info.checked = (current == class.token)
+		info.colorCode = class.colorCode
+		UIDropDownMenu_AddButton(info)
+	end
+end
+
+local function InitializeArmorDropdown()
+	local current = LootFilterService.GetArmorFilter()
+	local info = UIDropDownMenu_CreateInfo()
+	info.text = "All Armor"
+	info.value = ALL_ARMOR
+	info.func = OnArmorFilterSelected
+	info.checked = (current == nil)
+	UIDropDownMenu_AddButton(info)
+	for _, armor in ipairs(LootFilterService.GetArmorTypes()) do
+		info = UIDropDownMenu_CreateInfo()
+		info.text = armor.label
+		info.value = armor.subclass
+		info.func = OnArmorFilterSelected
+		info.checked = (current == armor.subclass)
+		UIDropDownMenu_AddButton(info)
+	end
+end
+
+-- Restores the dropdown captions from saved state, so a filter kept across
+-- sessions is visible rather than silently hiding loot. Also shows the clear
+-- button only while something is actually filtered.
+local function RefreshFilterCaptions()
+	if not classDropdown then return end
+	if clearFiltersButton then
+		clearFiltersButton:SetShown(LootFilterService.IsFiltered())
+	end
+	local class = LootFilterService.GetClassFilter()
+	local label = "All Classes"
+	if class then
+		for _, entry in ipairs(LootFilterService.GetClasses()) do
+			if entry.token == class then label = entry.label break end
+		end
+	end
+	UIDropDownMenu_SetText(classDropdown, label)
+
+	local armor = LootFilterService.GetArmorFilter()
+	label = "All Armor"
+	if armor then
+		for _, entry in ipairs(LootFilterService.GetArmorTypes()) do
+			if entry.subclass == armor then label = entry.label break end
+		end
+	end
+	UIDropDownMenu_SetText(armorDropdown, label)
+end
+
+local function CreateFilterDropdowns(parent)
+	classDropdown = CreateFrame("Frame", "AGCLootClassFilter", parent, "UIDropDownMenuTemplate")
+	-- UIDropDownMenuTemplate carries ~16px of invisible padding either side, hence
+	-- the negative x offsets used to line the widgets up with the list below.
+	classDropdown:SetPoint("TOPLEFT", parent, "TOPLEFT", -12, -2)
+	UIDropDownMenu_SetWidth(classDropdown, 100)
+	UIDropDownMenu_Initialize(classDropdown, InitializeClassDropdown)
+
+	armorDropdown = CreateFrame("Frame", "AGCLootArmorFilter", parent, "UIDropDownMenuTemplate")
+	armorDropdown:SetPoint("LEFT", classDropdown, "RIGHT", -12, 0)
+	UIDropDownMenu_SetWidth(armorDropdown, 90)
+	UIDropDownMenu_Initialize(armorDropdown, InitializeArmorDropdown)
+
+	clearFiltersButton = CreateFrame("Button", nil, parent, "UIPanelCloseButton")
+	clearFiltersButton:SetSize(22, 22)
+	clearFiltersButton:SetPoint("LEFT", armorDropdown, "RIGHT", -6, 2)
+	clearFiltersButton:SetScript("OnClick", function()
+		LootFilterService.ClearFilters()
+		CloseDropDownMenus()
+		GameTooltip_Hide()
+		component.Show()
+	end)
+	clearFiltersButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Clear filters")
+		GameTooltip:Show()
+	end)
+	clearFiltersButton:SetScript("OnLeave", GameTooltip_Hide)
+	clearFiltersButton:Hide()
+
+	RefreshFilterCaptions()
+end
+
 function component.Init(components_)
 	components = components_
 	lootContainer = CreateFrame("Frame", nil, EncounterJournal.encounter.info)
 	lootContainer:SetSize(345, 382)
 	lootContainer:SetPoint("BOTTOMRIGHT", -5, 1)
+	lootContainer:Hide()
 	EncounterJournal.encounter.LootContainer = lootContainer
 	lootScrollBox = CreateFrame("Frame", nil, lootContainer, "WowScrollBoxList")
 	EncounterJournal.encounter.LootScrollBox = lootScrollBox
-	lootScrollBox:SetSize(345, 382)
+	lootScrollBox:SetSize(345, 382 - FILTER_ROW_HEIGHT)
 	lootScrollBox:SetPoint("BOTTOMRIGHT", -20, 1)
+	CreateFilterDropdowns(lootContainer)
 	local lootScrollBar = CreateFrame("EventFrame", nil, lootContainer, "MinimalScrollBar")
 	EncounterJournal.encounter.LootScrollBar = lootScrollBar
 	lootScrollBar:SetPoint("TOPLEFT", lootScrollBox, "TOPRIGHT", 5, -5)
@@ -335,16 +470,29 @@ function component.Show()
 	if not lootScrollBox then return end
 	local encounterLoot = AdventureGuideNavigationService.GetEncounterLoot()
 	if not encounterLoot then return end
+	RefreshFilterCaptions()
 	wipe(pendingItemIds)
 	local dataProvider = CreateDataProvider()
-	for _, itemId in ipairs(encounterLoot.loot or {}) do
-		local lootItem = ProcessItemData(itemId)
-		if lootItem then
-			dataProvider:Insert(lootItem)
-		else
-			pendingItemIds[itemId] = true
-			RequestLoadItemDataCompat(itemId)
+	local shownCount = 0
+	local function Collect(itemIds)
+		local items = {}
+		for _, itemId in ipairs(itemIds or {}) do
+			local lootItem = ProcessItemData(itemId)
+			if lootItem then
+				if LootFilterService.PassesFilter(lootItem) then
+					table.insert(items, lootItem)
+				end
+			else
+				pendingItemIds[itemId] = true
+				RequestLoadItemDataCompat(itemId)
+			end
 		end
+		return items
+	end
+
+	for _, lootItem in ipairs(Collect(encounterLoot.loot)) do
+		dataProvider:Insert(lootItem)
+		shownCount = shownCount + 1
 	end
 	local lootCategories = {
 		{ loot = encounterLoot.sharedLoot, headerTitle = "Shared Loot" },
@@ -353,19 +501,18 @@ function component.Show()
 		{ loot = encounterLoot.extremelyRareLoot, headerTitle = "Extremely Rare" },
 	}
 	for _, category in ipairs(lootCategories) do
-		local categoryLoot = category.loot
-		if categoryLoot and #categoryLoot > 0 then
+		local items = Collect(category.loot)
+		if #items > 0 then
 			dataProvider:Insert({ isHeader = true, text = category.headerTitle })
-			for _, itemId in ipairs(categoryLoot) do
-				local lootItem = ProcessItemData(itemId)
-				if lootItem then
-					dataProvider:Insert(lootItem)
-				else
-					pendingItemIds[itemId] = true
-					RequestLoadItemDataCompat(itemId)
-				end
+			for _, lootItem in ipairs(items) do
+				dataProvider:Insert(lootItem)
+				shownCount = shownCount + 1
 			end
 		end
+	end
+
+	if shownCount == 0 and not next(pendingItemIds) and LootFilterService.IsFiltered() then
+		dataProvider:Insert({ isHeader = true, text = "No loot matches this filter" })
 	end
 
 	lootScrollBox:SetDataProvider(dataProvider)

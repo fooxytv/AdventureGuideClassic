@@ -10,15 +10,48 @@ local component = UI.CreateComponent("CreatureButtons")
 
 local components
 local creatureButtons
+local selectedButton
+local SIZE_SELECTED, ICON_SELECTED = 64, 61
+local SIZE_UNSELECTED, ICON_UNSELECTED = 50, 49
+
+local function SelectButton(button)
+	if selectedButton and selectedButton ~= button then
+		selectedButton:Enable()
+	end
+	selectedButton = button
+	button:Disable()
+	components.ModelFrame.SetDisplay(button.displayId, button.creatureName)
+end
+
+local function ButtonOnClick(self)
+	if self.displayId then
+		SelectButton(self)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	end
+end
+
+local function ButtonOnEnter(self)
+	local name = ModelPresetService.GetTitle(self.displayId, components.ModelFrame.GetEncounterId())
+		or self.creatureName
+	if not name then return end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	GameTooltip:SetText(name, 1, 1, 1)
+	GameTooltip:Show()
+end
+
+local function ButtonOnLeave()
+	GameTooltip:Hide()
+end
 
 local function CreateCreatureButton()
-	local button = CreateFrame("BUTTON", nil, EncounterJournal.encounter.info)
-	button:SetSize(64, 61)
+	local model = EncounterJournal.encounter.info.model
+	local button = CreateFrame("Button", nil, model.overlay or model)
+	button:SetMotionScriptsWhileDisabled(true)
+	button:SetSize(SIZE_UNSELECTED, ICON_UNSELECTED)
 	button.creature = button:CreateTexture()
 	button.creature:SetDrawLayer("BACKGROUND", 6)
-	button.creature:SetSize(40, 40)
+	button.creature:SetSize(30, 30)
 	button.creature:SetPoint("CENTER")
-
 	local creatureButtonBorder = button:CreateTexture()
 	creatureButtonBorder:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
 	creatureButtonBorder:SetTexCoord(0.50585938, 0.63085938, 0.02246094, 0.08203125)
@@ -28,47 +61,50 @@ local function CreateCreatureButton()
 	creatureButtonBorderHighlight:SetTexCoord(0.50585938, 0.63085938, 0.02246094, 0.08203125)
 	button:SetHighlightTexture(creatureButtonBorderHighlight, "ADD")
 	local lastIndex = #creatureButtons
-	if (lastIndex == 0) then
-		button.creature:SetPoint("TOPLEFT", EncounterJournal.encounter.info.model, 3, -35)
+	if lastIndex == 0 then
+		button:SetPoint("TOPLEFT", model, "TOPLEFT", 3, -35)
 	else
 		button:SetPoint("TOPLEFT", creatureButtons[lastIndex], "BOTTOMLEFT", 0, 8)
 	end
+	button:SetScript("OnShow", function(self)
+		self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2)
+	end)
+	button:SetScript("OnDisable", function(self)
+		self:SetSize(SIZE_SELECTED, ICON_SELECTED)
+		self.creature:SetSize(40, 40)
+	end)
+	button:SetScript("OnEnable", function(self)
+		self:SetSize(SIZE_UNSELECTED, ICON_UNSELECTED)
+		self.creature:SetSize(30, 30)
+	end)
+	button:SetScript("OnClick", ButtonOnClick)
+	button:SetScript("OnEnter", ButtonOnEnter)
+	button:SetScript("OnLeave", ButtonOnLeave)
+	button:Hide()
 	creatureButtons[lastIndex + 1] = button
---[[
-	<Scripts>
-		<OnShow>
-			self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-			self:Disable();
-			self:Enable();
-		</OnShow>
-		<OnDisable>
-			self:SetSize(64, 61);
-			self.creature:SetSize(40, 40);
-		</OnDisable>
-		<OnEnable>
-			self:SetSize(50, 49);
-			self.creature:SetSize(30, 30);
-		</OnEnable>
-		<OnClick>
-			EncounterJournal_DisplayCreature(self);
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-		</OnClick>
-		<OnEnter>
+	return button
+end
 
-			if self.name then
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(self.name,1,1,1);
-				if self.description then
-					GameTooltip:AddLine(self.description, nil, nil, nil, true);
-				end
-				GameTooltip:Show();
-			end
-		</OnEnter>
-		<OnLeave>
-			GameTooltip:Hide();
-		</OnLeave>
-	</Scripts>
-]]
+function component.SetCreatures(displayIds, encounterName)
+	selectedButton = nil
+	local wanted = (#displayIds > 1) and #displayIds or 0
+	for index = 1, math.max(wanted, #creatureButtons) do
+		local button = creatureButtons[index]
+		if index <= wanted then
+			button.displayId = displayIds[index]
+			button.creatureName = encounterName
+			SetPortraitTextureFromCreatureDisplayID(button.creature, displayIds[index])
+			button:Enable()
+			button:Show()
+		elseif button then
+			button.displayId = nil
+			button.creatureName = nil
+			button:Hide()
+		end
+	end
+	if wanted > 0 then
+		SelectButton(creatureButtons[1])
+	end
 end
 
 function component.Init(components_)
@@ -84,62 +120,5 @@ function component.Init(components_)
 	})
 	EncounterJournal.encounter.info.creatureButtons = creatureButtons
 end
-
---[[
-<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentArray="creatureButtons">
-	<Anchors>
-		<Anchor point="TOPLEFT" relativeTo="$parentModelFrame" x="3" y="-35"/>
-	</Anchors>
-</Button>
-<Button name="EncounterCreatureButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
-	<Size x="64" y="61"/>
-	<Layers>
-		<Layer level="BACKGROUND" textureSubLevel="6">
-			<Texture name="$parentCreature" parentKey="creature">
-				<Size x="40" y="40"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
-				</Anchors>
-			</Texture>
-		</Layer>
-	</Layers>
-	<NormalTexture inherits="UI-EJ-BossModelButton"/>
-	<HighlightTexture inherits="UI-EJ-BossModelButton" alphaMode="ADD"/>
-	<Scripts>
-		<OnShow>
-			self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-			self:Disable();
-			self:Enable();
-		</OnShow>
-		<OnDisable>
-			self:SetSize(64, 61);
-			self.creature:SetSize(40, 40);
-		</OnDisable>
-		<OnEnable>
-			self:SetSize(50, 49);
-			self.creature:SetSize(30, 30);
-		</OnEnable>
-		<OnClick>
-			EncounterJournal_DisplayCreature(self);
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
-		</OnClick>
-		<OnEnter>
-
-			if self.name then
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(self.name,1,1,1);
-				if self.description then
-					GameTooltip:AddLine(self.description, nil, nil, nil, true);
-				end
-				GameTooltip:Show();
-			end
-		</OnEnter>
-		<OnLeave>
-			GameTooltip:Hide();
-		</OnLeave>
-	</Scripts>
-</Button>
-
-]]
 
 UI.Add(component)

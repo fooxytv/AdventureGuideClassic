@@ -89,6 +89,13 @@
     <Script file="data/Raids/tbc/Sunwell_Plateau.lua" />
     <Script file="data/Raids/tbc/The_Eye.lua" />
 
+    <!-- Creature display ids per encounter, for the model viewer -->
+    <Script file="data/CreatureModels.lua" />
+    <Script file="data/CreatureModelPresets.lua" />
+
+    <!-- Tier-set token -> per-class set piece, for the loot preview -->
+    <Script file="data/TierTokens.lua" />
+
     <!-- Classic Era learnable spells by level (per class) -->
     <Script file="data/Spells/era/Druid.lua" />
     <Script file="data/Spells/era/Hunter.lua" />

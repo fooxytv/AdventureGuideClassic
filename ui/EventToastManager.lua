@@ -7,7 +7,6 @@ local IS_ERA = select(4, GetBuildInfo()) < 20000
 
 local function GetLevelUpSpells(level)
 	if not IS_ERA or not SpellsByLevelService then return {} end
-	-- Opt-in: the learnable-spell row is suppressed unless the player enables it.
 	if not (SettingsService and SettingsService.GetLevelUpSpellsEnabled
 		and SettingsService.GetLevelUpSpellsEnabled()) then
 		return {}
@@ -155,7 +154,6 @@ function AdventureGuideClassicEventToastManager:CreateToastFrame()
 	frame.spellTray.header:SetPoint("TOP", frame.spellTray, "TOP", 0, -6)
 	frame.spellTray.header:SetTextColor(1, 0.82, 0)
 	frame.spellTray.icons = {}
-
 	self.frame = frame
 end
 
@@ -222,12 +220,10 @@ local function LayoutSpellTray(frame, spells)
 
 	local height = topPad + rows * SPELL_ICON_SIZE + (rows - 1) * SPELL_ICON_GAP + 10
 	tray:SetHeight(height)
-
 	local newHeight = 116 + height
 	frame.background:SetSize(400, newHeight)
 	frame.background:ClearAllPoints()
 	frame.background:SetPoint("CENTER", frame, "CENTER", 0, (16 - height) / 2)
-
 	tray:Show()
 	return height
 end

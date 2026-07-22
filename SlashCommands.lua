@@ -13,6 +13,14 @@ SlashCmdList["ADVENTUREGUIDECLASSIC"] = function(message)
 		UI.ToggleEncounterJournal()
 	elseif (message == "button") then
 		MinimapButton.Toggle()
+	elseif (message == "modeltune") then
+		-- Developer aid for dialling in the model viewer camera; see ui/ModelTuner.lua.
+		local tuner = UI.GetComponent and UI.GetComponent("ModelTuner")
+		if tuner and tuner.Toggle then
+			tuner.Toggle()
+		else
+			print("|cffff5555[AGC]|r ModelTuner is not available on this client.")
+		end
 	else
 		--todo: print usage instructions to the console
 	end

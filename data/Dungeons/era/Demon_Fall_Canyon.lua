@@ -19,7 +19,7 @@ InstanceService.AddDungeon({
 		name = "Grimroot",
 		defeated = 0,
 		encounterID = 226923,
-		portrait = 521744,
+		portrait = 607785,
 		loot = {
 			{ id = 228079, seasonFilter = "exclusive" },
 			{ id = 228080, seasonFilter = "exclusive" },
@@ -65,7 +65,7 @@ InstanceService.AddDungeon({
 		name = "The Destructor's Wraith",
 		defeated = 0,
 		encounterID = 228022,
-		portrait = 521744,
+		portrait = I.UIEJBossDestructorsWraith,
 		loot = {
 			{ id = 228074, seasonFilter = "exclusive" },
 			{ id = 228075, seasonFilter = "exclusive" },
@@ -111,7 +111,7 @@ InstanceService.AddDungeon({
 		name = "Zilbagob",
 		defeated = 0,
 		encounterID = 226922,
-		portrait = 521744,
+		portrait = I.UIEJBossZilbagob,
 		loot = {
 			{ id = 228084, seasonFilter = "exclusive" },
 			{ id = 228085, seasonFilter = "exclusive" },
@@ -157,7 +157,7 @@ InstanceService.AddDungeon({
 		name = "Azgaloth",
 		defeated = 0,
 		encounterID = 232632,
-		portrait = 521744,
+		portrait = I.UIEJBossAzgaloth,
 		loot = {
 			{ id = 231460, seasonFilter = "exclusive" },
 			{ id = 231910, seasonFilter = "exclusive" },
@@ -203,7 +203,7 @@ InstanceService.AddDungeon({
 		name = "Pyranis",
 		defeated = 0,
 		encounterID = 227140,
-		portrait = 521744,
+		portrait = I.UIEJBossPyranis,
 		loot = {
 			{ id = 228089, seasonFilter = "exclusive" },
 			{ id = 228090, seasonFilter = "exclusive" },
@@ -249,7 +249,7 @@ InstanceService.AddDungeon({
 		name = "Diathorus the Seeker",
 		defeated = 0,
 		encounterID = 227019,
-		portrait = 521744,
+		portrait = I.UIEJBossDiathorus,
 		loot = {
 			{ id = 228094, seasonFilter = "exclusive" },
 			{ id = 228103, seasonFilter = "exclusive" },
@@ -295,7 +295,7 @@ InstanceService.AddDungeon({
 		name = "Hellscream's Phantom",
 		defeated = 0,
 		encounterID = 227028,
-		portrait = 521744,
+		portrait = I.UIEJBossHellscreamPhantom,
 		loot = {
 			{ id = 228108, seasonFilter = "exclusive" },
 			{ id = 228109, seasonFilter = "exclusive" },

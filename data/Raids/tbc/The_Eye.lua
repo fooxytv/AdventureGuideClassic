@@ -20,23 +20,22 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 19514,
 		portrait = 1385712,
 		loot = {
-			{ id = 29376, seasonFilter = "tbc" }, -- Talisman of the Sun King
-			{ id = 29352, seasonFilter = "tbc" }, -- Nethervoid Cloak
-			{ id = 29279, seasonFilter = "tbc" }, -- Phoenix-Ring of Rebirth
-			{ id = 29374, seasonFilter = "tbc" }, -- Nether Vortex
-			{ id = 29317, seasonFilter = "tbc" }, -- Band of Al'ar
-			{ id = 29355, seasonFilter = "tbc" }, -- Helm of the Fell Champion
-			{ id = 29356, seasonFilter = "tbc" }, -- Helm of the Vanquished Champion
-			{ id = 29359, seasonFilter = "tbc" }  -- Helm of the Vanquished Defender
+			{ id = 29925, seasonFilter = "tbc" },
+			{ id = 29918, seasonFilter = "tbc" },
+			{ id = 29947, seasonFilter = "tbc" },
+			{ id = 29921, seasonFilter = "tbc" },
+			{ id = 29922, seasonFilter = "tbc" },
+			{ id = 29920, seasonFilter = "tbc" },
+			{ id = 30448, seasonFilter = "tbc" },
+			{ id = 30447, seasonFilter = "tbc" },
+			{ id = 29923, seasonFilter = "tbc" },
+			{ id = 32944, seasonFilter = "tbc" },
+			{ id = 29948, seasonFilter = "tbc" },
+			{ id = 29924, seasonFilter = "tbc" },
+			{ id = 29949, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 30236, seasonFilter = "tbc" }, -- Helm of the Fallen Champion
-			{ id = 30237, seasonFilter = "tbc" }, -- Helm of the Fallen Defender
-			{ id = 30238, seasonFilter = "tbc" }  -- Helm of the Fallen Hero
-		},
-		rareLoot = {
-			{ id = 32458, seasonFilter = "tbc" }  -- Ashes of Al'ar (Mount)
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = { 19514 },
@@ -79,19 +78,18 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 19516,
 		portrait = 1385772,
 		loot = {
-			{ id = 29370, seasonFilter = "tbc" }, -- Void Star Talisman
-			{ id = 29348, seasonFilter = "tbc" }, -- Fel-Steel Warhelm
-			{ id = 29328, seasonFilter = "tbc" }, -- Girdle of Zaetar
-			{ id = 29373, seasonFilter = "tbc" }, -- Band of Eternity
-			{ id = 30619, seasonFilter = "tbc" }, -- Fel Reaver Piston
-			{ id = 29346, seasonFilter = "tbc" }, -- Netherstrike Breastplate
-			{ id = 29347, seasonFilter = "tbc" }  -- Translucent Spellthread Necklace
+			{ id = 29986, seasonFilter = "tbc" },
+			{ id = 29984, seasonFilter = "tbc" },
+			{ id = 29985, seasonFilter = "tbc" },
+			{ id = 29983, seasonFilter = "tbc" },
+			{ id = 32515, seasonFilter = "tbc" },
+			{ id = 30619, seasonFilter = "tbc" },
+			{ id = 30450, seasonFilter = "tbc" },
+			{ id = 30248, seasonFilter = "tbc" },
+			{ id = 30249, seasonFilter = "tbc" },
+			{ id = 30250, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 30240, seasonFilter = "tbc" }, -- Gloves of the Fallen Champion
-			{ id = 30241, seasonFilter = "tbc" }, -- Gloves of the Fallen Defender
-			{ id = 30239, seasonFilter = "tbc" }  -- Gloves of the Fallen Hero
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
@@ -135,23 +133,25 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 18805,
 		portrait = 1385739,
 		loot = {
-			{ id = 29362, seasonFilter = "tbc" }, -- Solarian's Sapphire Pin
-			{ id = 29344, seasonFilter = "tbc" }, -- Robes of the Astromancer
-			{ id = 29337, seasonFilter = "tbc" }, -- Boots of the Nexus Warden
-			{ id = 29366, seasonFilter = "tbc" }, -- Nether Vortex
-			{ id = 29361, seasonFilter = "tbc" }, -- Wristbands of Divine Influence
-			{ id = 29345, seasonFilter = "tbc" }, -- Vambraces of Ending
-			{ id = 29350, seasonFilter = "tbc" }  -- Torc of the Sethekk Prophet
+			{ id = 29977, seasonFilter = "tbc" },
+			{ id = 29972, seasonFilter = "tbc" },
+			{ id = 29966, seasonFilter = "tbc" },
+			{ id = 29976, seasonFilter = "tbc" },
+			{ id = 29951, seasonFilter = "tbc" },
+			{ id = 29965, seasonFilter = "tbc" },
+			{ id = 29950, seasonFilter = "tbc" },
+			{ id = 32267, seasonFilter = "tbc" },
+			{ id = 30446, seasonFilter = "tbc" },
+			{ id = 30449, seasonFilter = "tbc" },
+			{ id = 29962, seasonFilter = "tbc" },
+			{ id = 29981, seasonFilter = "tbc" },
+			{ id = 29982, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 30249, seasonFilter = "tbc" }, -- Shoulders of the Fallen Champion
-			{ id = 30250, seasonFilter = "tbc" }, -- Shoulders of the Fallen Defender
-			{ id = 30248, seasonFilter = "tbc" }  -- Shoulders of the Fallen Hero
-		},
+		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = { 18805, 18806, 18925 },
+		npcs = { 18805 },
 		overview = {
 			"High Astromancer Solarian is Kael'thas's chief astromancer who commands devastating arcane forces. This encounter alternates between boss phases and agent phases, requiring strong AoE damage and precise raid awareness. The fight culminates in a void phase where Solarian transforms and summons adds that must be killed before they reach her.",
 			{ heading = "Overview" },
@@ -191,25 +191,29 @@ select(2, ...).SetupGlobalFacade()
 		encounterID = 19622,
 		portrait = 607669,
 		loot = {
-			{ id = 29992, seasonFilter = "tbc" }, -- Royal Cloak of the Sunstriders
-			{ id = 29989, seasonFilter = "tbc" }, -- Sunshower Light Cloak
-			{ id = 29990, seasonFilter = "tbc" }, -- Crown of the Sun
-			{ id = 29991, seasonFilter = "tbc" }, -- Sunhawk Leggings
-			{ id = 29993, seasonFilter = "tbc" }, -- Twinblade of the Phoenix
-			{ id = 29994, seasonFilter = "tbc" }, -- The Nexus Key
-			{ id = 30018, seasonFilter = "tbc" }  -- Hauberk of the War Bringer
+			{ id = 29992, seasonFilter = "tbc" },
+			{ id = 29989, seasonFilter = "tbc" },
+			{ id = 29994, seasonFilter = "tbc" },
+			{ id = 29990, seasonFilter = "tbc" },
+			{ id = 29987, seasonFilter = "tbc" },
+			{ id = 29995, seasonFilter = "tbc" },
+			{ id = 29991, seasonFilter = "tbc" },
+			{ id = 29998, seasonFilter = "tbc" },
+			{ id = 29997, seasonFilter = "tbc" },
+			{ id = 29993, seasonFilter = "tbc" },
+			{ id = 29996, seasonFilter = "tbc" },
+			{ id = 29988, seasonFilter = "tbc" },
+			{ id = 30236, seasonFilter = "tbc" },
+			{ id = 30237, seasonFilter = "tbc" },
+			{ id = 30238, seasonFilter = "tbc" }
 		},
-		sharedLoot = {
-			{ id = 30245, seasonFilter = "tbc" }, -- Leggings of the Fallen Champion
-			{ id = 30246, seasonFilter = "tbc" }, -- Leggings of the Fallen Defender
-			{ id = 30247, seasonFilter = "tbc" }  -- Leggings of the Fallen Hero
-		},
-		rareLoot = {
-			{ id = 29434, seasonFilter = "tbc" }  -- Verdant Sphere (Quest Item - Tier 6 Attunement)
-		},
+		sharedLoot = {},
+		rareLoot = {},
 		veryRareLoot = {},
-		extremelyRareLoot = {},
-		npcs = { 19622, 20063, 20064, 20065, 20066 },
+		extremelyRareLoot = {
+			{ id = 32458, seasonFilter = "tbc" }
+		},
+		npcs = { 19622 },
 		overview = {
 			"Kael'thas Sunstrider, the fallen prince of the blood elves, serves as the final boss of The Eye. This is one of the longest and most complex encounters in The Burning Crusade, featuring five distinct phases over 15-20 minutes. Players must defeat four advisors, collect legendary weapons, survive gravity lapses, and execute perfect coordination throughout.",
 			{ heading = "Overview" },

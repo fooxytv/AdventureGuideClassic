@@ -400,7 +400,7 @@ InstanceService.AddDungeon({
 			rareLoot = {},
 			veryRareLoot = {},
 			extremelyRareLoot = {},
-			npcs = { 10264 },
+			npcs = { 9816 },
 			overview = {
 				"Solakar Flamewreath, a formidable spellcaster, guards the Father Flame in Upper Blackrock Spire.",
 				{ heading = "Overview" },
@@ -436,7 +436,7 @@ InstanceService.AddDungeon({
 			rareLoot = {},
 			veryRareLoot = {},
 			extremelyRareLoot = {},
-			npcs = { 10899 },
+			npcs = { 10339 },
 			overview = {
 				"Goraluk Anvilcrack, a key Blackrock orc in Upper Blackrock Spire, is an optional melee boss.",
 				{ heading = "Overview" },
@@ -487,7 +487,7 @@ InstanceService.AddDungeon({
 				{ id = 12590, seasonFilter = "restricted" }
 			},
 			extremelyRareLoot = {},
-			npcs = { 10429, 10339 },
+			npcs = { 10429 },
 			overview = {
 				"Warchief Rend Blackhand, a central figure in Upper Blackrock Spire, presents a complex encounter.",
 				{ heading = "Overview" },

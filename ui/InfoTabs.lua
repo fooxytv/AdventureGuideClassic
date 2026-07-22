@@ -10,8 +10,6 @@ local component = UI.CreateComponent("InfoTabs")
 local components
 local overviewTab, lootTab, questTab, abilitiesTab, modelTab
 local selectedTab
-
--- Track the selected tab
 local isOverviewTabSelected = true
 local isLootTabSelected = false
 local isQuestTabSelected = false
@@ -114,6 +112,31 @@ function component.Init(components_)
 		isModelTabSelected = false
 	end)
 
+	modelTab = AddTab("Model")
+	EncounterJournal.encounter.info.modelTab = modelTab
+	modelTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
+	modelTab.unselected:SetTexCoord(0.90234375, 1, 0.662109375, 0.705078125)
+	modelTab.selected:SetTexCoord(0.8046875, 0.900390625, 0.662109375, 0.705078125)
+	modelTab:SetScript("OnEnter", function (self)
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
+		GameTooltip:AddLine("Model")
+		GameTooltip:Show()
+	end)
+	modelTab:SetScript("OnLeave", function ()
+		GameTooltip:Hide()
+	end)
+	modelTab:SetScript("OnClick", function()
+		if not components.ModelFrame.Show() then return end
+		selectedTab = modelTab
+		component.Refresh()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+		isOverviewTabSelected = false
+		isLootTabSelected = false
+		isQuestTabSelected = false
+		isAbilitiesTabSelected = false
+		isModelTabSelected = true
+	end)
+
 	-- abilitiesTab = AddTab("Abilities")
 	-- EncounterJournal.encounter.info.abilitiesTab = abilitiesTab
 	-- abilitiesTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
@@ -196,6 +219,15 @@ end
 	-- end
 -- end
 
+function component.SelectOverview()
+	selectedTab = overviewTab
+	isOverviewTabSelected = true
+	isLootTabSelected = false
+	isQuestTabSelected = false
+	isAbilitiesTabSelected = false
+	isModelTabSelected = false
+end
+
 function component.Refresh()
 	selectTab(selectedTab)
 	if (selectedTab ~= overviewTab) then
@@ -206,6 +238,14 @@ function component.Refresh()
 			unselectTab(lootTab)
 		else
 			disableTab(lootTab)
+		end
+	end
+	if (selectedTab ~= modelTab) then
+		local encounter = AdventureGuideNavigationService.GetEncounter()
+		if (encounter and CreatureModelService.HasModels(encounter.encounterID)) then
+			unselectTab(modelTab)
+		else
+			disableTab(modelTab)
 		end
 	end
 	-- if (selectedTab ~= abilitiesTab) then
