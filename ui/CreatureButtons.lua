@@ -11,9 +11,6 @@ local component = UI.CreateComponent("CreatureButtons")
 local components
 local creatureButtons
 local selectedButton
-
--- Matches the retail journal: the selected button is the large one. Selection is
--- marked by disabling the button, which is what drives the size swap.
 local SIZE_SELECTED, ICON_SELECTED = 64, 61
 local SIZE_UNSELECTED, ICON_UNSELECTED = 50, 49
 
@@ -34,8 +31,6 @@ local function ButtonOnClick(self)
 end
 
 local function ButtonOnEnter(self)
-	-- Prefer a per-creature title, so the buttons of a multi-creature encounter
-	-- are not all labelled with the encounter name.
 	local name = ModelPresetService.GetTitle(self.displayId, components.ModelFrame.GetEncounterId())
 		or self.creatureName
 	if not name then return end
@@ -49,9 +44,6 @@ local function ButtonOnLeave()
 end
 
 local function CreateCreatureButton()
-	-- Parent to the overlay, not the model container. The overlay carries the
-	-- paper frame art and sits above the model, so a button parented below it
-	-- gets drawn underneath that art.
 	local model = EncounterJournal.encounter.info.model
 	local button = CreateFrame("Button", nil, model.overlay or model)
 	button:SetMotionScriptsWhileDisabled(true)
@@ -60,7 +52,6 @@ local function CreateCreatureButton()
 	button.creature:SetDrawLayer("BACKGROUND", 6)
 	button.creature:SetSize(30, 30)
 	button.creature:SetPoint("CENTER")
-
 	local creatureButtonBorder = button:CreateTexture()
 	creatureButtonBorder:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
 	creatureButtonBorder:SetTexCoord(0.50585938, 0.63085938, 0.02246094, 0.08203125)
@@ -69,16 +60,12 @@ local function CreateCreatureButton()
 	creatureButtonBorderHighlight:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
 	creatureButtonBorderHighlight:SetTexCoord(0.50585938, 0.63085938, 0.02246094, 0.08203125)
 	button:SetHighlightTexture(creatureButtonBorderHighlight, "ADD")
-
 	local lastIndex = #creatureButtons
 	if lastIndex == 0 then
-		-- Anchor the button itself. The previous code anchored button.creature
-		-- here, which fought with the CENTER anchor that texture already has.
 		button:SetPoint("TOPLEFT", model, "TOPLEFT", 3, -35)
 	else
 		button:SetPoint("TOPLEFT", creatureButtons[lastIndex], "BOTTOMLEFT", 0, 8)
 	end
-
 	button:SetScript("OnShow", function(self)
 		self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2)
 	end)
@@ -94,18 +81,10 @@ local function CreateCreatureButton()
 	button:SetScript("OnEnter", ButtonOnEnter)
 	button:SetScript("OnLeave", ButtonOnLeave)
 	button:Hide()
-
 	creatureButtons[lastIndex + 1] = button
 	return button
 end
 
---[[
-	Populates the creature buttons for an encounter and selects the first.
-
-	Buttons are reused between encounters, so leftovers from a longer one are
-	hidden rather than destroyed. An encounter with a single creature shows no
-	buttons at all, since there is nothing to switch between.
-]]
 function component.SetCreatures(displayIds, encounterName)
 	selectedButton = nil
 	local wanted = (#displayIds > 1) and #displayIds or 0

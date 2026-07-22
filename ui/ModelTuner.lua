@@ -13,14 +13,10 @@ local component = UI.CreateComponent("ModelTuner")
 
 local components
 local panel
-
--- Low enough that the camera can be brought right in. The previous 0.1 was
--- itself the wall Ragnaros and Hakkar hit: they bottom out there and are still
--- too small, so model scale is the lever for those, not camera distance.
 local MIN_CAMERA_SCALE = 0.02
 local ROW_HEIGHT = 22
-local ROWS_TOP = 62      -- below the title edit box
-local rowCount = 5       -- 6 when the client supports tilt
+local ROWS_TOP = 62
+local rowCount = 5
 local STEPS = {
 	scale  = 0.1,
 	x      = 0.5,
@@ -46,42 +42,29 @@ local function AddRow(parent, index, field, label)
 	local row = CreateFrame("Frame", nil, parent)
 	row:SetSize(230, ROW_HEIGHT)
 	row:SetPoint("TOPLEFT", 12, -ROWS_TOP - (index * ROW_HEIGHT))
-
 	local name = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	name:SetPoint("LEFT", 0, 0)
 	name:SetWidth(50)
 	name:SetJustifyH("LEFT")
 	name:SetText(label)
-
 	local minus = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
 	minus:SetSize(22, 18)
 	minus:SetPoint("LEFT", 52, 0)
 	minus:SetText("-")
-
 	local value = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	value:SetPoint("LEFT", minus, "RIGHT", 4, 0)
 	value:SetWidth(52)
 	value:SetJustifyH("CENTER")
-
 	local plus = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
 	plus:SetSize(22, 18)
 	plus:SetPoint("LEFT", value, "RIGHT", 4, 0)
 	plus:SetText("+")
-
 	local function Nudge(direction)
 		local step = STEPS[field] * direction
-		--[[
-			Position steps scale with the creature. They are in model units, so half
-			a unit is a real shift on a gnoll and invisible on Ragnaros, whose model
-			is sixty units tall. Zoom, facing, tilt and size are ratios and stay
-			fixed.
-		]]
 		if field == "x" or field == "y" or field == "z" then
 			local height = CreatureModelService.GetHeight(CurrentDisplayId())
 			if height and height > 6 then step = step * (height / 6) end
 		end
-		-- Shift coarse, Ctrl fine. The position steps scale with the creature, so
-		-- on the largest models a single click is already a sizeable move.
 		if IsShiftKeyDown() then step = step * 5 end
 		if IsControlKeyDown() then step = step * 0.2 end
 		panel.preset[field] = (panel.preset[field] or 0) + step
@@ -131,12 +114,6 @@ local function CreatePanel()
 	panel.subtitle:SetPoint("TOPLEFT", 12, -26)
 	panel.subtitle:SetWidth(230)
 	panel.subtitle:SetJustifyH("LEFT")
-
-	--[[
-		Per-creature name. An encounter that shows several creatures labels them
-		all with the encounter name, so this is how the individual ones get named.
-		Left empty, the encounter name is used as before.
-	]]
 	local titleLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	titleLabel:SetPoint("TOPLEFT", 12, -42)
 	titleLabel:SetText("Title")
@@ -148,12 +125,6 @@ local function CreatePanel()
 	titleBox:SetScript("OnTextChanged", function(self, userInput)
 		if not userInput then return end
 		local text = self:GetText()
-		--[[
-			Only store a title that differs from the encounter's own name. Every
-			title saved so far merely repeated it, which overrides the default with
-			the same string and, worse, pins a name to a model that other bosses
-			share.
-		]]
 		if text == components.ModelFrame.GetEncounterName() then text = "" end
 		panel.preset.title = text
 		ModelPresetService.SaveTitle(CurrentDisplayId(),
@@ -163,13 +134,11 @@ local function CreatePanel()
 	titleBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
 	titleBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 	panel.titleBox = titleBox
-
 	AddRow(panel, 0, "scale", "Zoom")
 	AddRow(panel, 1, "x", "Depth")
 	AddRow(panel, 2, "y", "Side")
 	AddRow(panel, 3, "z", "Height")
 	AddRow(panel, 4, "facing", "Facing")
-	-- Only offered where the client can actually tilt a model.
 	if components.ModelFrame.SupportsTilt() then
 		AddRow(panel, 5, "pitch", "Tilt")
 		rowCount = 6
@@ -228,7 +197,6 @@ local function CreatePanel()
 	return panel
 end
 
--- A selectable edit box is the only reliable way to get text out of the client.
 function component.ShowExport(text)
 	if not panel.exportFrame then
 		local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
@@ -271,11 +239,6 @@ function component.Refresh()
 		panel.subtitle:SetText("|cffff5555Open a boss on the Model tab.|r")
 	else
 		local height = CreatureModelService.GetHeight(displayId)
-		-- Show the size the model actually has next to the one asked for: if they
-		-- disagree, something is overwriting it rather than it never being set.
-		-- Always stated, never inferred from its absence: showing nothing when the
-		-- values agree reads exactly the same as showing nothing because the client
-		-- has no GetModelScale, and those mean opposite things.
 		local applied = components.ModelFrame.GetAppliedModelScale()
 		local wanted = panel.preset.modelScale or 1
 		local sizeNote
@@ -295,28 +258,16 @@ function component.Refresh()
 	for _, row in ipairs(panel.rows) do
 		row.value:SetText(("%.2f"):format(panel.preset[row.field] or 0))
 	end
-	-- Only write the box when it is not being typed into, or the caret jumps.
 	if not panel.titleBox:HasFocus() then
-		-- Shows the name currently displayed, so an unchanged box means agreement
-		-- with the encounter rather than an empty override.
 		panel.titleBox:SetText(ModelPresetService.GetTitle(displayId,
 			components.ModelFrame.GetEncounterId())
 			or components.ModelFrame.GetEncounterName() or "")
 	end
 end
 
--- Called when the viewer changes creature, so the panel tracks what is on screen.
 function component.OnDisplayChanged(displayId)
 	if not panel or not panel:IsShown() then return end
-	-- Share the viewer's table rather than taking a copy, so wheel and drag
-	-- changes are part of what Save writes.
 	panel.preset = components.ModelFrame.GetPreset() or ModelPresetService.Get(displayId)
-	--[[
-		Drop focus before refreshing. A focused box is deliberately left alone so
-		typing is not fought, but that meant moving to another boss left the
-		previous one's name sitting in it, ready to be written against the new
-		encounter -- which is how Nefarian came to be called Ragnaros.
-	]]
 	panel.titleBox:ClearFocus()
 	component.Refresh()
 end

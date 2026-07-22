@@ -9,10 +9,18 @@ select(2, ...).SetupGlobalFacade()
 local component = UI.CreateComponent("Loot")
 local EquipMapping = GetEquipMapping()
 local Colors = GetColorMapping()
-
--- API compatibility: Classic Era uses global functions, TBC+ uses C_Item namespace
+local components
+local lootContainer
+local lootScrollBox
+local previewFrame
+local rotationSpeed = 0.5
+local pendingItemIds = {}
+local PREVIEW_ZOOM = 0
+local PREVIEW_CAM_DISTANCE_SCALE = 1
+local currentEncounterId = nil
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 local GetItemInfoInstantCompat = C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant
+
 local function RequestLoadItemDataCompat(itemId)
     if C_Item and C_Item.RequestLoadItemDataByID then
         C_Item.RequestLoadItemDataByID(itemId)
@@ -21,14 +29,6 @@ local function RequestLoadItemDataCompat(itemId)
     end
 end
 
-local components
-local lootContainer
-local lootScrollBox
-local previewFrame
-local rotationSpeed = 0.5
-local pendingItemIds = {}
-local currentEncounterId = nil
-
 local function truncateText(text, maxLength)
 	if #text > maxLength then
 		return text:sub(1, maxLength - 3) .. "..."
@@ -36,9 +36,6 @@ local function truncateText(text, maxLength)
 		return text
 	end
 end
-
-local PREVIEW_ZOOM = 0
-local PREVIEW_CAM_DISTANCE_SCALE = 1
 
 local function CreatePreviewFrame()
 	if previewFrame then return previewFrame end
@@ -70,7 +67,6 @@ local function CreatePreviewFrame()
 	return frame
 end
 
--- previewItem is an item link, or an item string when a token resolves to a set piece.
 local function ShowItemPreview(previewItem, anchorFrame)
 	if not previewItem then return end
 	local frame = CreatePreviewFrame()
@@ -101,16 +97,6 @@ local function HideItemPreview()
 	end
 end
 
---[[
-	What the character model should wear when previewing a loot entry.
-
-	A tier token has no appearance of its own, so trying one on leaves the model
-	bare. Resolve tokens to the set piece the player's class trades them for. The
-	loot entry keeps showing the token; only the preview differs.
-
-	Returns an item string rather than a bare id, since that is accepted by both
-	TryOn and DressUpItemLink on every client we support.
-]]
 local function GetPreviewTarget(lootItem)
 	if not lootItem then return nil end
 	if lootItem.itemId and TierTokenService and TierTokenService.IsToken(lootItem.itemId) then
@@ -126,8 +112,6 @@ end
 local function ProcessItemData(itemId)
 	local itemName, itemLink, itemQuality, _, _, itemType, itemSubType, _, itemEquipLoc, itemIcon = GetItemInfoCompat(itemId)
 	if itemName then
-		-- Numeric class/subclass for filtering: itemSubType is localised, so
-		-- comparing it against "Plate" would break on a non-English client.
 		local _, _, _, _, _, classID, subclassID = GetItemInfoInstantCompat(itemId)
 		return {
 			isHeader = false,
@@ -352,15 +336,10 @@ function component.Init(components_)
 	lootContainer = CreateFrame("Frame", nil, EncounterJournal.encounter.info)
 	lootContainer:SetSize(345, 382)
 	lootContainer:SetPoint("BOTTOMRIGHT", -5, 1)
-	-- Start hidden, as the other views do. SetCurrentView only hides the view it
-	-- is replacing, so without this the container is up from the moment the
-	-- journal loads and the filter row draws over the instance lore art.
 	lootContainer:Hide()
 	EncounterJournal.encounter.LootContainer = lootContainer
 	lootScrollBox = CreateFrame("Frame", nil, lootContainer, "WowScrollBoxList")
 	EncounterJournal.encounter.LootScrollBox = lootScrollBox
-	-- The filter row sits above the list, inside the loot container, so it is
-	-- shown and hidden along with the loot view.
 	lootScrollBox:SetSize(345, 382 - FILTER_ROW_HEIGHT)
 	lootScrollBox:SetPoint("BOTTOMRIGHT", -20, 1)
 	CreateFilterDropdowns(lootContainer)
@@ -491,18 +470,10 @@ function component.Show()
 	if not lootScrollBox then return end
 	local encounterLoot = AdventureGuideNavigationService.GetEncounterLoot()
 	if not encounterLoot then return end
-	-- Init runs before ADDON_LOADED populates SavedVariables, so the captions are
-	-- resynced here rather than only at creation.
 	RefreshFilterCaptions()
 	wipe(pendingItemIds)
 	local dataProvider = CreateDataProvider()
 	local shownCount = 0
-
-	--[[
-		Resolve a category to the loot items that survive the filter, requesting
-		anything not yet cached. Collecting before inserting is what lets a
-		category header be skipped when the filter empties it out.
-	]]
 	local function Collect(itemIds)
 		local items = {}
 		for _, itemId in ipairs(itemIds or {}) do
@@ -540,8 +511,6 @@ function component.Show()
 		end
 	end
 
-	-- Only claim there is nothing once everything has actually loaded, otherwise
-	-- the message flashes up while item data is still arriving.
 	if shownCount == 0 and not next(pendingItemIds) and LootFilterService.IsFiltered() then
 		dataProvider:Insert({ isHeader = true, text = "No loot matches this filter" })
 	end

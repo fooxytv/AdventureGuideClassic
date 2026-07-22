@@ -9,8 +9,6 @@ select(2, ...).SetupGlobalFacade()
 local component = UI.CreateComponent("Settings")
 local components
 local settingsPanel
-
--- Constants for layout
 local SETTINGS_LEFT_PADDING = 16
 local SETTINGS_ROW_HEIGHT = 36
 local SETTINGS_CHECKBOX_WIDTH = 300
@@ -28,14 +26,11 @@ local function CreateOptionsSlider(parent, name, label, description, rowIndex, m
 	local row = CreateFrame("Frame", "AGCSettings" .. name .. "Row", parent)
 	row:SetSize(360, SLIDER_ROW_HEIGHT)
 	row:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -rowIndex * SLIDER_ROW_HEIGHT)
-
 	local labelText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	labelText:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
 	labelText:SetText(label)
-
 	local valueText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	valueText:SetPoint("LEFT", labelText, "RIGHT", 8, 0)
-
 	local slider = CreateFrame("Slider", "AGCSettings" .. name .. "Slider", row, "OptionsSliderTemplate")
 	slider:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", 0, -8)
 	slider:SetWidth(220)
@@ -45,26 +40,21 @@ local function CreateOptionsSlider(parent, name, label, description, rowIndex, m
 	SetSliderLabel(slider, "Low", tostring(minValue))
 	SetSliderLabel(slider, "High", tostring(maxValue))
 	SetSliderLabel(slider, "Text", "")
-
 	local descText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	descText:SetPoint("LEFT", slider, "RIGHT", 12, 0)
 	descText:SetText(description)
 	descText:SetTextColor(0.6, 0.6, 0.6)
 	descText:SetJustifyH("LEFT")
-
 	local function Refresh()
 		local v = getValue()
 		slider:SetValue(v)
 		valueText:SetText(string.format("%.2fx", v))
 	end
-
 	slider:SetScript("OnValueChanged", function(self, value)
 		valueText:SetText(string.format("%.2fx", value))
 		setValue(value)
 	end)
-
 	Refresh()
-
 	row.slider = slider
 	row.Refresh = Refresh
 	return row
@@ -75,14 +65,11 @@ local function CreateToastPositionRow(parent, name, label, toastType, rowIndex)
 	local row = CreateFrame("Frame", "AGCSettings" .. name .. "PositionRow", parent)
 	row:SetSize(500, ROW_HEIGHT)
 	row:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -rowIndex * ROW_HEIGHT)
-
 	local labelText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	labelText:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
 	labelText:SetText(label)
-
 	local valueText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	valueText:SetPoint("LEFT", labelText, "RIGHT", 8, 0)
-
 	local scaleMin, scaleMax = SettingsService.GetScaleBounds()
 	local slider = CreateFrame("Slider", "AGCSettings" .. name .. "ScaleSlider", row, "OptionsSliderTemplate")
 	slider:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", 0, -10)
@@ -93,16 +80,13 @@ local function CreateToastPositionRow(parent, name, label, toastType, rowIndex)
 	SetSliderLabel(slider, "Low", tostring(scaleMin))
 	SetSliderLabel(slider, "High", tostring(scaleMax))
 	SetSliderLabel(slider, "Text", "")
-
 	local unlockBtn = CreateFrame("Button", "AGCSettings" .. name .. "UnlockBtn", row, "UIPanelButtonTemplate")
 	unlockBtn:SetSize(120, 22)
 	unlockBtn:SetPoint("LEFT", slider, "RIGHT", 16, 0)
-
 	local resetBtn = CreateFrame("Button", "AGCSettings" .. name .. "ResetBtn", row, "UIPanelButtonTemplate")
 	resetBtn:SetSize(70, 22)
 	resetBtn:SetPoint("LEFT", unlockBtn, "RIGHT", 4, 0)
 	resetBtn:SetText("Reset")
-
 	local function RefreshUnlockText()
 		if AdventureGuideClassicEventToastManager:IsPreviewing(toastType) then
 			unlockBtn:SetText("Lock Position")
@@ -110,19 +94,16 @@ local function CreateToastPositionRow(parent, name, label, toastType, rowIndex)
 			unlockBtn:SetText("Unlock Position")
 		end
 	end
-
 	local function Refresh()
 		local v = SettingsService.GetToastScale(toastType)
 		slider:SetValue(v)
 		valueText:SetText(string.format("%.2fx", v))
 		RefreshUnlockText()
 	end
-
 	slider:SetScript("OnValueChanged", function(self, value)
 		valueText:SetText(string.format("%.2fx", value))
 		SettingsService.SetToastScale(toastType, value)
 	end)
-
 	unlockBtn:SetScript("OnClick", function(self)
 		local mgr = AdventureGuideClassicEventToastManager
 		if mgr:IsPreviewing(toastType) then
@@ -133,7 +114,6 @@ local function CreateToastPositionRow(parent, name, label, toastType, rowIndex)
 		end
 		RefreshUnlockText()
 	end)
-
 	resetBtn:SetScript("OnClick", function()
 		SettingsService.ResetToastPosition(toastType)
 		if AdventureGuideClassicEventToastManager:IsPreviewing(toastType) then
@@ -142,9 +122,7 @@ local function CreateToastPositionRow(parent, name, label, toastType, rowIndex)
 			RefreshUnlockText()
 		end
 	end)
-
 	Refresh()
-
 	row.slider = slider
 	row.unlockBtn = unlockBtn
 	row.resetBtn = resetBtn

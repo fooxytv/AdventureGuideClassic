@@ -10,8 +10,6 @@ local component = UI.CreateComponent("InfoTabs")
 local components
 local overviewTab, lootTab, questTab, abilitiesTab, modelTab
 local selectedTab
-
--- Track the selected tab
 local isOverviewTabSelected = true
 local isLootTabSelected = false
 local isQuestTabSelected = false
@@ -117,7 +115,6 @@ function component.Init(components_)
 	modelTab = AddTab("Model")
 	EncounterJournal.encounter.info.modelTab = modelTab
 	modelTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
-	-- UI-EJ-Tab-ModelIcon-UnSelected / -Selected from Blizzard's EncounterJournal.
 	modelTab.unselected:SetTexCoord(0.90234375, 1, 0.662109375, 0.705078125)
 	modelTab.selected:SetTexCoord(0.8046875, 0.900390625, 0.662109375, 0.705078125)
 	modelTab:SetScript("OnEnter", function (self)
@@ -129,8 +126,6 @@ function component.Init(components_)
 		GameTooltip:Hide()
 	end)
 	modelTab:SetScript("OnClick", function()
-		-- Show() reports back when the encounter has no creature displays, in
-		-- which case stay put rather than swapping to an empty frame.
 		if not components.ModelFrame.Show() then return end
 		selectedTab = modelTab
 		component.Refresh()
@@ -224,8 +219,6 @@ end
 	-- end
 -- end
 
--- Used when a view has to fall back, e.g. moving to an encounter with no
--- creature models while the Model tab is the selected one.
 function component.SelectOverview()
 	selectedTab = overviewTab
 	isOverviewTabSelected = true
@@ -248,8 +241,6 @@ function component.Refresh()
 		end
 	end
 	if (selectedTab ~= modelTab) then
-		-- Only offer the tab where we actually have creature displays; plenty of
-		-- encounters have none, and an enabled tab that does nothing reads as a bug.
 		local encounter = AdventureGuideNavigationService.GetEncounter()
 		if (encounter and CreatureModelService.HasModels(encounter.encounterID)) then
 			unselectTab(modelTab)
