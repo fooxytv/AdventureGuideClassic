@@ -112,10 +112,17 @@ def main() -> int:
     # rglob rather than a flat glob: ui/ nests widgets/ and mappings/, and
     # data/ nests a file per dungeon and raid. lib/ is vendored, tools/ is
     # Python tooling, ci/ is this script -- all excluded, matching .luacheckrc.
-    skip = {".git", "ci", "lib", "tools"}
+    #
+    # .lua and .luarocks are the toolchain the CI actions unpack into the
+    # workspace, so they only exist on the runner. .lua is a *directory* whose
+    # name ends in .lua, which rglob("*.lua") matches and read_text() then dies
+    # on with IsADirectoryError -- green locally, red in CI. lint.sh excludes
+    # the same two for the same reason. The is_file() guard makes any other
+    # directory named *.lua harmless too.
+    skip = {".git", "ci", "lib", "tools", ".lua", ".luarocks"}
     sources = sorted(
         path for path in ROOT.rglob("*.lua")
-        if not skip.intersection(path.relative_to(ROOT).parts)
+        if path.is_file() and not skip.intersection(path.relative_to(ROOT).parts)
     )
 
     for path in sources:

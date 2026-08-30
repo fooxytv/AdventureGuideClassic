@@ -5,3 +5,7 @@ ci/dist/
 code/
 .claude/
 CLAUDE.md
+
+# Unpacked by the CI Lua/LuaRocks actions into the workspace.
+.lua/
+.luarocks/
