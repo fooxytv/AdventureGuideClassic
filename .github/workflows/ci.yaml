@@ -72,3 +72,11 @@ jobs:
         run: |
           python -m pip install --quiet luaparser
           python ci/scripts/check_globals.py
+
+      # Checks that the talent window still satisfies the naming contract
+      # Blizzard's TalentFrame_Update resolves by global name -- a mismatch is
+      # a nil index in game and invisible to luacheck. lua is already on the
+      # runner from the setup step above.
+      - name: Talent window contract
+        timeout-minutes: 2
+        run: lua ci/tests/talent_contract_test.lua

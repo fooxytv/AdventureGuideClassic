@@ -36,7 +36,7 @@ globals = {
     -- rather than read_globals because the addon builds its entire frame tree
     -- onto it, and SlashCmdList because it registers handlers into it -- both
     -- are writes, and read_globals would reject them as read-only.
-    "EncounterJournal", "SlashCmdList",
+    "EncounterJournal", "SlashCmdList", "TalentWindow",
     "AdventureGuideClassicEventToastManager", "DungeonMapFrame", "DungeonMap",
     "MapNavBar", "CollapsibleSectionWidgetTypeMixin", "WidgetTypeMixin",
 
@@ -93,6 +93,17 @@ read_globals = {
     -- `if Settings and Settings.RegisterCanvasLayoutCategory` guard, for
     -- clients predating the Settings API.
     "InterfaceOptions_AddCategory", "InterfaceOptionsFrame_OpenToCategory",
+
+    -- Talent API. The globals GetTalentInfo/GetTalentTabInfo are deliberately
+    -- absent: on this client they are deprecated shims in
+    -- Blizzard_DeprecatedSpecialization that only exist when the
+    -- loadDeprecationFallbacks CVar is set. C_SpecializationInfo is the live
+    -- API. TalentFrame_Update and the MAX_NUM_* constants come from
+    -- Blizzard_FrameXML, which is always loaded.
+    "C_SpecializationInfo", "TalentFrame_Update", "LearnTalent",
+    "GetNumTalentTabs", "GetNumTalents",
+    "MAX_TALENT_TABS", "MAX_NUM_TALENTS",
+    "MAX_NUM_BRANCH_TEXTURES", "MAX_NUM_ARROW_TEXTURES",
 
     -- Unit, item and world queries
     "GetBuildInfo", "GetInstanceInfo", "GetRealmName", "GetTime",
