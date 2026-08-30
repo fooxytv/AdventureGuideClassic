@@ -31,9 +31,29 @@ jobs:
           chmod +x ./ci/scripts/repackage.sh
           chmod +x ./ci/scripts/version.sh
 
-      # - name: Lint
-      #   run: |
-      #     ./ci/scripts/lint.sh
+      # Lua and LuaRocks come from these actions rather than apt: an
+      # apt-get update hang is a stalled release, not just a stalled check.
+      - name: Set up Lua
+        timeout-minutes: 3
+        uses: leafo/gh-actions-lua@v13
+        with:
+          luaVersion: "5.4"
+
+      - name: Set up LuaRocks
+        timeout-minutes: 3
+        uses: leafo/gh-actions-luarocks@v6
+
+      - name: Lint
+        timeout-minutes: 6
+        run: |
+          luarocks install luacheck
+          ./ci/scripts/lint.sh
+
+      - name: Check globals
+        timeout-minutes: 4
+        run: |
+          python -m pip install --quiet luaparser
+          python ci/scripts/check_globals.py
 
       - name: Sync version from tag to .toc files
         run: |

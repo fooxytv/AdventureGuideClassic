@@ -1,0 +1,74 @@
+name: "CI - AdventureGuideClassic"
+
+# Checks only. Nothing here packages or publishes.
+#
+# The release workflow (main.yaml) runs the same gates before uploading, but it
+# only fires on a v*.*.* tag -- so without this the first time anyone sees a
+# lint failure is halfway through a release, with the CurseForge upload already
+# committed to. This runs them on every push instead.
+on:
+  push:
+    branches: ["**"]
+    # Tag pushes are already covered by the release workflow.
+    tags-ignore: ["**"]
+
+# A newer push makes an in-flight run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    # These gates take about a minute. Anything approaching this is stuck, not
+    # slow. Sized to clear the per-step budgets below so it only fires as a
+    # backstop for something they miss.
+    timeout-minutes: 16
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up scripts
+        run: chmod +x ./ci/scripts/lint.sh
+
+      # Lua and LuaRocks come from these actions rather than apt. In the sister
+      # repo `apt-get update` hung silently for 48 minutes on one run -- not
+      # failing, so no retry could beat it -- and took the lint gate with it.
+      # Nothing here needs a system package, so nothing here uses apt.
+      - name: Set up Lua
+        timeout-minutes: 3
+        uses: leafo/gh-actions-lua@v13
+        with:
+          # 5.4 is only what luacheck itself runs on; the addon is 5.1 and
+          # .luacheckrc sets `std = "lua51"` to match.
+          luaVersion: "5.4"
+
+      - name: Set up LuaRocks
+        timeout-minutes: 3
+        uses: leafo/gh-actions-luarocks@v6
+
+      - name: Lint
+        timeout-minutes: 4
+        run: |
+          # luarocks.org is a network fetch, so it keeps a bounded retry: a
+          # stalled host hangs rather than failing, and a bare `||` would wait
+          # on it until the step budget ran out.
+          retry() {
+            for attempt in 1 2; do
+              timeout 60 "$@" && return 0
+              echo "attempt $attempt failed: $*"
+              sleep 5
+            done
+            return 1
+          }
+          retry luarocks install luacheck
+          ./ci/scripts/lint.sh
+
+      # Every file setfenv's itself into a facade table that falls through to
+      # _G, so a mistyped API name resolves to nil instead of raising. This is
+      # what turns .luacheckrc from documentation into a typo catcher.
+      - name: Check globals
+        timeout-minutes: 4
+        run: |
+          python -m pip install --quiet luaparser
+          python ci/scripts/check_globals.py
