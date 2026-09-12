@@ -134,7 +134,7 @@ Checks every registered uiMapID against the client's own map data. The ids are
 hand-entered, and a wrong one fails silently (the suggestion still renders, it just
 points at the wrong map), so this is the cheap way to catch a typo.
 ]]
-function AGC_VerifyZoneMapIDs()
+_G.AGC_VerifyZoneMapIDs = function()
 	if not (C_Map and C_Map.GetMapInfo) then
 		print("|cffff5555[AGC]|r C_Map.GetMapInfo unavailable on this client.")
 		return
@@ -155,7 +155,7 @@ function AGC_VerifyZoneMapIDs()
 	print(("|cff33ff99[AGC]|r checked %d zone map ids, %d problems."):format(checked, problems))
 end
 
-function AGC_ZonesForLevel(level, faction)
+_G.AGC_ZonesForLevel = function(level, faction)
 	level = level or PlayerContextService.GetLevel()
 	faction = faction or PlayerContextService.GetFaction()
 	local matches = ZoneService.GetZonesForLevel(level, faction)

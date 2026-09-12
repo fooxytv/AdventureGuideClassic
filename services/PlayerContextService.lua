@@ -174,7 +174,7 @@ Refresh(true)
 
 -- Debug helpers (see todo.md) -------------------------------------------------
 
-function AGC_DumpPlayerContext()
+_G.AGC_DumpPlayerContext = function()
 	print("|cff33ff99[AGC]|r player context:")
 	for _, key in ipairs({ "level", "maxLevel", "class", "faction", "race",
 	                       "zone", "zoneName", "inInstance" }) do
@@ -185,7 +185,7 @@ end
 
 -- Preview which instances a character would be offered at an arbitrary level,
 -- without having to level one there.
-function AGC_InstancesForLevel(level, faction)
+_G.AGC_InstancesForLevel = function(level, faction)
 	level = level or PlayerContextService.GetLevel()
 	faction = faction or PlayerContextService.GetFaction()
 	print(("|cff33ff99[AGC]|r instances in range at level %d (%s):"):format(level, tostring(faction)))

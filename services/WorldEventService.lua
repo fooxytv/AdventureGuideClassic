@@ -44,7 +44,11 @@ function WorldEventService.GetToday()
 		elseif C_DateAndTime.GetTodaysDate then
 			info = C_DateAndTime.GetTodaysDate()
 		end
-		if info and info.month and info.monthDay and info.year then
+		-- Require actual numbers, not merely present fields: a malformed or stubbed
+		-- table would otherwise reach time() and throw.
+		if info and type(info.year) == "number"
+			and type(info.month) == "number"
+			and type(info.monthDay) == "number" then
 			-- Derive the weekday from the date rather than trusting info.weekday to be
 			-- present. Defaulting it would silently shift the Darkmoon Faire by days.
 			return WorldEventService.MakeDate(info.year, info.month, info.monthDay)
@@ -197,7 +201,7 @@ end
 
 -- Debug helpers (see todo.md) -------------------------------------------------
 
-function AGC_ActiveEvents(year, month, day)
+_G.AGC_ActiveEvents = function(year, month, day)
 	local today
 	if year and month and day then
 		today = WorldEventService.MakeDate(year, month, day)

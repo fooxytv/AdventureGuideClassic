@@ -22,6 +22,11 @@
 /run AGC_ActiveEvents()
 /run AGC_ActiveEvents(2026, 10, 20)
 
+NOTE: every file calls SetupGlobalFacade(), which setfenv's the chunk into the
+addon's facade table. A bare `function Foo()` therefore lands on the facade, NOT
+in _G, and /run cannot see it. Declare chat-reachable helpers as
+`_G.Foo = function() ... end`.
+
 
   Loot Filters
 

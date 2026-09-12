@@ -54,6 +54,8 @@ local function BuildEventCards(today)
 		local shortSubtitle
 		if daysLeft == 1 then
 			shortSubtitle = "Ends today"
+		elseif daysLeft == 2 then
+			shortSubtitle = "Ends tomorrow"
 		elseif daysLeft then
 			shortSubtitle = ("Ends in %d days"):format(daysLeft - 1)
 		else
@@ -187,7 +189,7 @@ end
 
 -- Debug helpers (see todo.md) -------------------------------------------------
 
-function AGC_TestSuggestionsAt(level, faction)
+_G.AGC_TestSuggestionsAt = function(level, faction)
 	level = level or PlayerContextService.GetLevel()
 	faction = faction or PlayerContextService.GetFaction()
 	local cards = SuggestedContentService.GetSuggestions(level, faction)
