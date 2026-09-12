@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Onyxia's Lair",
+	levelRange = { min = 60, max = 60 },
+	recommendedLevel = 60,
+	continent = "Kalimdor",
 	instanceID = 249,
 	thumbnail = 1378999,
 	icon = 134153,

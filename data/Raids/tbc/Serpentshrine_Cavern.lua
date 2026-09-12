@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddRaid({
 	name = "Serpentshrine Cavern",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 548,
 	thumbnail = 608199,
 	icon = 136356,

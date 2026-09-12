@@ -8,6 +8,10 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Stormwind Stockade",
+	levelRange = { min = 22, max = 30 },
+	recommendedLevel = 25,
+	faction = "Alliance",
+	continent = "Eastern Kingdoms",
 	instanceID = 238,
 	thumbnail = 608223,
 	icon = 136358,

@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddRaid({
 	name = "The Eye",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 550,
 	thumbnail = 608218,
 	icon = 136362,

@@ -107,6 +107,13 @@
     <Script file="data/Spells/era/Warlock.lua" />
     <Script file="data/Spells/era/Warrior.lua" />
 
+    <!-- Levelling zones, for Suggested Content -->
+    <Script file="data/Zones/era.lua" />
+    <Script file="data/Zones/tbc.lua" />
+
+    <!-- Holidays and the Darkmoon Faire, for Suggested Content -->
+    <Script file="data/WorldEvents.lua" />
+
     <SimpleHTML name="AdventureGuideClassic_SampleEncounterDescription"
                 file="Interface\AddOns\AdventureGuideClassic\data\encounterDescriptions\sample.html"
                 virtual="true">

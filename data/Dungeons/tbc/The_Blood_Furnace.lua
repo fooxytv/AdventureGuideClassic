@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "The Blood Furnace",
+	levelRange = { min = 60, max = 63 },
+	recommendedLevel = 61,
+	continent = "Outland",
 	instanceID = 542,
 	thumbnail = 608207,
 	icon = 136350,

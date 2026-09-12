@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Blackfathom Deeps",
+	levelRange = { min = 20, max = 30 },
+	recommendedLevel = 24,
+	continent = "Kalimdor",
 	instanceID = 227,
 	thumbnail = 608195,
 	icon = 136325,

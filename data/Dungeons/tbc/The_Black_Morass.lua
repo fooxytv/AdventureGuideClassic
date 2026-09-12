@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "The Black Morass",
+	levelRange = { min = 68, max = 70 },
+	recommendedLevel = 70,
+	continent = "Kalimdor",
 	instanceID = 269,
 	thumbnail = 608198,
 	icon = 136350,

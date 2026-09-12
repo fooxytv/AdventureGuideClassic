@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Scholomance",
+	levelRange = { min = 55, max = 60 },
+	recommendedLevel = 58,
+	continent = "Eastern Kingdoms",
 	instanceID = 246,
 	thumbnail = 608215,
 	icon = 136355,

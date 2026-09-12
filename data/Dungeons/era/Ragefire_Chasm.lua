@@ -8,6 +8,10 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Ragefire Chasm",
+	levelRange = { min = 13, max = 18 },
+	recommendedLevel = 15,
+	faction = "Horde",
+	continent = "Kalimdor",
 	instanceID = 226,
 	thumbnail = 608211,
 	icon = 136350,

@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "The Temple of Atal'hakkar",
+	levelRange = { min = 50, max = 50 },
+	recommendedLevel = 50,
+	continent = "Eastern Kingdoms",
 	instanceID = 237,
 	thumbnail = 608217,
 	icon = 136360,

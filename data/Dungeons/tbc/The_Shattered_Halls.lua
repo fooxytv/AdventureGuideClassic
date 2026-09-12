@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "The Shattered Halls",
+	levelRange = { min = 69, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 540,
 	thumbnail = 608207,
 	icon = 136350,

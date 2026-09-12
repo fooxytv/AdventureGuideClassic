@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Blackfathom Deeps",
+	levelRange = { min = 25, max = 25 },
+	recommendedLevel = 25,
+	continent = "Kalimdor",
 	instanceID = 227,
 	thumbnail = 608195,
 	icon = 136325,

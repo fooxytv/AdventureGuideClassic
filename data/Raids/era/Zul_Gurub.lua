@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Zul'Gurub",
+	levelRange = { min = 60, max = 60 },
+	recommendedLevel = 60,
+	continent = "Eastern Kingdoms",
 	instanceID = 745,
 	thumbnail = 522364,
 	icon = 136369,

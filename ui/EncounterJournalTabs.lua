@@ -50,11 +50,10 @@ end
 function component.Init(components_)
     components = components_
     EncounterJournal.Tabs = tabs
-    -- EncounterJournal.suggestTab = AddTab("Suggest", "Suggested Content", function()
-    --    --todo: Create suggested content tab
-    -- end)
-    -- EncounterJournal.suggestTab:Disable()
-    -- EncounterJournal.suggestTab:EnableMouse(false)
+    EncounterJournal.suggestTab = AddTab("Suggest", "Suggested Content", function()
+        AdventureGuideNavigationService.Reset()
+        components.SuggestedContent.Show()
+    end)
     EncounterJournal.dungeonsTab = AddTab("Dungeon", "Dungeons", function()
         AdventureGuideNavigationService.Reset()
         AdventureGuideNavigationService.SetInstances(InstanceService.GetDungeons())
@@ -67,7 +66,11 @@ function component.Init(components_)
         components.InstanceSelect.SetTitle(RAIDS)
         components.InstanceSelect.Show()
     end)
-    EncounterJournal.Tabs[1]:GetScript("OnClick")()
+    -- Suggested Content is tab 1 so it reads first, as it does on retail, but the
+    -- window still opens on Dungeons unless the user opts in -- existing users
+    -- shouldn't have the addon change behaviour under them after an update.
+    local defaultTab = SettingsService.IsSuggestedContentDefaultTab() and 1 or 2
+    EncounterJournal.Tabs[defaultTab]:GetScript("OnClick")()
 end
 
 UI.Add(component)

@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Magister's Terrace",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Eastern Kingdoms",
 	instanceID = 585,
 	thumbnail = 608208,
 	icon = 136350,

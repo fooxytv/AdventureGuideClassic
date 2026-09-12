@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "The Slave Pens",
+	levelRange = { min = 61, max = 64 },
+	recommendedLevel = 62,
+	continent = "Outland",
 	instanceID = 547,
 	thumbnail = 608199,
 	icon = 136350,

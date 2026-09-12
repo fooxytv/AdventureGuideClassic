@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Blackrock Depths",
+	levelRange = { min = 52, max = 60 },
+	recommendedLevel = 55,
+	continent = "Eastern Kingdoms",
 	instanceID = 228,
 	thumbnail = 608196,
 	icon = 136326,

@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Magtheridon's Lair",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 544,
 	thumbnail = 1396585,
 	icon = 136340,

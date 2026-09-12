@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Mana-Tombs",
+	levelRange = { min = 63, max = 66 },
+	recommendedLevel = 64,
+	continent = "Outland",
 	instanceID = 557,
 	thumbnail = 608193,
 	icon = 136350,

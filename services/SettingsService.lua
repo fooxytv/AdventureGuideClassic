@@ -21,6 +21,19 @@ local defaults = {
 	-- Learnable-spell row on the level-up toast. Off by default while the data is
 	-- still being validated; opt-in from the settings panel.
 	LevelUpSpells = false,
+	-- Open the Adventure Guide on the Suggested Content tab instead of Dungeons.
+	-- Off by default so existing users keep the behaviour they're used to.
+	SuggestedContentDefaultTab = false,
+	-- Levelling guide window. Shown/unlocked/1.0 scale, advancing automatically and
+	-- dropping waypoints, since all of that is the expected behaviour once a user has
+	-- opted into following a guide at all.
+	Guide = {
+		Show = true,
+		Locked = false,
+		Scale = 1.0,
+		AutoAdvance = true,
+		Waypoints = true,
+	},
 }
 local SCALE_MIN = 0.5
 local SCALE_MAX = 1.5
@@ -39,6 +52,9 @@ local function EnsureSettings()
 	end
 	if not SavedVariables.Settings.ToastPositions then
 		SavedVariables.Settings.ToastPositions = {}
+	end
+	if not SavedVariables.Settings.Guide then
+		SavedVariables.Settings.Guide = {}
 	end
 end
 
@@ -179,4 +195,88 @@ end
 
 function SettingsService.RegisterToastListener(callback)
 	table.insert(toastListeners, callback)
+end
+
+-- Suggested Content -----------------------------------------------------------
+
+function SettingsService.IsSuggestedContentDefaultTab()
+	EnsureSettings()
+	local value = SavedVariables.Settings.SuggestedContentDefaultTab
+	if value == nil then return defaults.SuggestedContentDefaultTab end
+	return value
+end
+
+function SettingsService.SetSuggestedContentDefaultTab(enabled)
+	EnsureSettings()
+	SavedVariables.Settings.SuggestedContentDefaultTab = enabled
+end
+
+-- Levelling guide window ------------------------------------------------------
+
+local guideListeners = {}
+
+local function NotifyGuideListeners(key, value)
+	for _, listener in ipairs(guideListeners) do
+		listener(key, value)
+	end
+end
+
+local function GetGuideSetting(key)
+	EnsureSettings()
+	local value = SavedVariables.Settings.Guide[key]
+	if value == nil then return defaults.Guide[key] end
+	return value
+end
+
+local function SetGuideSetting(key, value)
+	EnsureSettings()
+	SavedVariables.Settings.Guide[key] = value
+	NotifyGuideListeners(key, value)
+end
+
+function SettingsService.IsGuideShown()
+	return GetGuideSetting("Show")
+end
+
+function SettingsService.SetGuideShown(shown)
+	SetGuideSetting("Show", shown)
+end
+
+function SettingsService.IsGuideLocked()
+	return GetGuideSetting("Locked")
+end
+
+function SettingsService.SetGuideLocked(locked)
+	SetGuideSetting("Locked", locked)
+end
+
+-- Deliberately separate from GetScale(): the guide window is a different size and
+-- sits in a different part of the screen, so it gets its own scale.
+function SettingsService.GetGuideScale()
+	return ClampScale(GetGuideSetting("Scale"))
+end
+
+function SettingsService.SetGuideScale(value)
+	SetGuideSetting("Scale", ClampScale(value))
+end
+
+function SettingsService.IsGuideAutoAdvanceEnabled()
+	return GetGuideSetting("AutoAdvance")
+end
+
+function SettingsService.SetGuideAutoAdvanceEnabled(enabled)
+	SetGuideSetting("AutoAdvance", enabled)
+end
+
+function SettingsService.IsGuideWaypointsEnabled()
+	return GetGuideSetting("Waypoints")
+end
+
+function SettingsService.SetGuideWaypointsEnabled(enabled)
+	SetGuideSetting("Waypoints", enabled)
+end
+
+-- callback(key, value) where key is one of Show/Locked/Scale/AutoAdvance/Waypoints
+function SettingsService.RegisterGuideListener(callback)
+	table.insert(guideListeners, callback)
 end

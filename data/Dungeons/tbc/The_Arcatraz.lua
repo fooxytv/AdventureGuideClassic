@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "The Arcatraz",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 552,
 	thumbnail = 608218,
 	icon = 136350,

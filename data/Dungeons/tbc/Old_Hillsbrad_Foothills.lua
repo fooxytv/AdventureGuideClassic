@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "Old Hillsbrad Foothills",
+	levelRange = { min = 66, max = 69 },
+	recommendedLevel = 68,
+	continent = "Kalimdor",
 	instanceID = 560,
 	thumbnail = 608198,
 	icon = 136350,

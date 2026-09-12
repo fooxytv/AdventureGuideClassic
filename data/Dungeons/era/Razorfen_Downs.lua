@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Razorfen Downs",
+	levelRange = { min = 33, max = 40 },
+	recommendedLevel = 37,
+	continent = "Kalimdor",
 	instanceID = 233,
 	thumbnail = 608212,
 	icon = 136352,

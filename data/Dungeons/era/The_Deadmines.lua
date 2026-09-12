@@ -8,6 +8,10 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "The Deadmines",
+	levelRange = { min = 15, max = 25 },
+	recommendedLevel = 18,
+	faction = "Alliance",
+	continent = "Eastern Kingdoms",
 	instanceID = 63,
 	thumbnail = 522352,
 	icon = 136332,

@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddRaid({
 	name = "Black Temple",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 564,
 	thumbnail = 1396579,
 	icon = 136328,

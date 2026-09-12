@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Karazhan",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Eastern Kingdoms",
 	instanceID = 532,
 	thumbnail = 1396584,
 	icon = 136343,

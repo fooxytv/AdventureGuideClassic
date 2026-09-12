@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Temple of Ahn'Qiraj",
+	levelRange = { min = 60, max = 60 },
+	recommendedLevel = 60,
+	continent = "Kalimdor",
 	instanceID = 744,
 	thumbnail = 1396593,
 	icon = 136321,

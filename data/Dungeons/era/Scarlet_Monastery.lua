@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Scarlet Monastery",
+	levelRange = { min = 28, max = 45 },
+	recommendedLevel = 34,
+	continent = "Eastern Kingdoms",
 	instanceID = 316,
 	thumbnail = 608214,
 	icon = 136354,

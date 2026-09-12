@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Stratholme",
+	levelRange = { min = 55, max = 60 },
+	recommendedLevel = 58,
+	continent = "Eastern Kingdoms",
 	instanceID = 236,
 	thumbnail = 608216,
 	icon = 136359,

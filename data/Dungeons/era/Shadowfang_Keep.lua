@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Shadowfang Keep",
+	levelRange = { min = 18, max = 25 },
+	recommendedLevel = 22,
+	continent = "Eastern Kingdoms",
 	instanceID = 64,
 	thumbnail = 522358,
 	icon = 136357,

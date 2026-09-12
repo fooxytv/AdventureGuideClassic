@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Blackrock Spire",
+	levelRange = { min = 55, max = 60 },
+	recommendedLevel = 58,
+	continent = "Eastern Kingdoms",
 	instanceID = 229,
 	thumbnail = 608197,
 	icon = 136327,

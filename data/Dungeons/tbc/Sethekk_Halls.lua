@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "Sethekk Halls",
+	levelRange = { min = 65, max = 68 },
+	recommendedLevel = 67,
+	continent = "Outland",
 	instanceID = 556,
 	thumbnail = 608193,
 	icon = 136350,

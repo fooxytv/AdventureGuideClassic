@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "The Underbog",
+	levelRange = { min = 62, max = 65 },
+	recommendedLevel = 63,
+	continent = "Outland",
 	instanceID = 546,
 	thumbnail = 608199,
 	icon = 136350,

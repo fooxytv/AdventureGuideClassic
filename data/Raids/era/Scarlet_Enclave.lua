@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Scarlet Enclave",
+	levelRange = { min = 60, max = 60 },
+	recommendedLevel = 60,
+	continent = "Eastern Kingdoms",
 	instanceID = 227,
 	thumbnail = I.UIEJDungeonButtonScarletEnclave,
 	icon = 136354,

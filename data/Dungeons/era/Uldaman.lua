@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Uldaman",
+	levelRange = { min = 37, max = 45 },
+	recommendedLevel = 41,
+	continent = "Eastern Kingdoms",
 	instanceID = 239,
 	thumbnail = 608225,
 	icon = 136363,

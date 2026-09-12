@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
  InstanceService.AddDungeon({
 	name = "Shadow Labyrinth",
+	levelRange = { min = 69, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 555,
 	thumbnail = 608193,
 	icon = 136350,

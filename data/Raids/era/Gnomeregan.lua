@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Gnomeregan",
+	levelRange = { min = 40, max = 40 },
+	recommendedLevel = 40,
+	continent = "Eastern Kingdoms",
 	instanceID = 231,
 	thumbnail = 608202,
 	icon = 136336,

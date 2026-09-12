@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Naxxramas",
+	levelRange = { min = 60, max = 60 },
+	recommendedLevel = 60,
+	continent = "Eastern Kingdoms",
 	instanceID = 746,
 	thumbnail = 1396587,
 	icon = 136347,

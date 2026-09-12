@@ -40,17 +40,25 @@ function InstanceService.SetDifficulty(difficulty)
 	SavedVariables.Difficulty = difficulty
 end
 
-local function ShouldIncludeInstance(instance)
-	local activeSeason = C_Seasons.GetActiveSeason()
+local function GetActiveSeason()
+	if C_Seasons and C_Seasons.GetActiveSeason then
+		return C_Seasons.GetActiveSeason()
+	end
+	return nil
+end
+
+--[[
+Rules imposed by the client itself: which expansion we're running on and whether a
+season is active. These are facts about the game, not preferences, so nothing may
+opt out of them.
+]]
+local function PassesClientRules(instance)
+	local activeSeason = GetActiveSeason()
 	local filterType = instance.seasonFilter or "all"
 	local isTBC = IsBurningCrusade()
-	local userFilter = InstanceService.GetExpansionFilter()
 
 	if instance.season ~= nil then
 		if instance.season and activeSeason ~= 2 then
-			return false
-		end
-		if userFilter == "tbc" then
 			return false
 		end
 		return true
@@ -60,16 +68,6 @@ local function ShouldIncludeInstance(instance)
 		return false
 	end
 
-	if userFilter == "classic" then
-		if filterType == "tbc" then
-			return false
-		end
-	elseif userFilter == "tbc" then
-		if filterType ~= "tbc" then
-			return false
-		end
-	end
-
 	if filterType == "exclusive" and activeSeason ~= 2 then
 		return false
 	elseif filterType == "restricted" and activeSeason == 2 then
@@ -77,6 +75,32 @@ local function ShouldIncludeInstance(instance)
 	end
 
 	return true
+end
+
+--[[
+The user's Classic/Burning Crusade dropdown on the Dungeons and Raids tabs. This is a
+browsing preference, so anything answering "what can this character actually do right
+now?" (Suggested Content) must skip it and use GetAllDungeons/GetAllRaids instead.
+]]
+local function PassesUserFilter(instance)
+	local userFilter = InstanceService.GetExpansionFilter()
+	local filterType = instance.seasonFilter or "all"
+
+	if instance.season ~= nil then
+		return userFilter ~= "tbc"
+	end
+
+	if userFilter == "classic" then
+		return filterType ~= "tbc"
+	elseif userFilter == "tbc" then
+		return filterType == "tbc"
+	end
+
+	return true
+end
+
+local function ShouldIncludeInstance(instance)
+	return PassesClientRules(instance) and PassesUserFilter(instance)
 end
 
 function InstanceService.GetDungeons()
@@ -97,6 +121,50 @@ function InstanceService.GetRaids()
 		end
 	end
 	return filteredRaids
+end
+
+--[[
+Every dungeon/raid valid on this client, ignoring the user's expansion dropdown.
+Suggested Content uses these so a browsing preference can't change what the addon
+recommends; level gating is the caller's job.
+]]
+function InstanceService.GetAllDungeons()
+	local result = { }
+	for _, dungeon in ipairs(dungeons) do
+		if PassesClientRules(dungeon) then
+			table.insert(result, dungeon)
+		end
+	end
+	return result
+end
+
+function InstanceService.GetAllRaids()
+	local result = { }
+	for _, raid in ipairs(raids) do
+		if PassesClientRules(raid) then
+			table.insert(result, raid)
+		end
+	end
+	return result
+end
+
+--[[
+Instances whose level range overlaps [minLevel, maxLevel], optionally restricted to a
+faction. An instance with no levelRange is skipped rather than guessed at.
+]]
+function InstanceService.GetInstancesForLevelRange(instanceList, minLevel, maxLevel, faction)
+	local result = { }
+	for _, instance in ipairs(instanceList) do
+		local range = instance.levelRange
+		if range and range.min and range.max then
+			if range.min <= maxLevel and range.max >= minLevel then
+				if (not faction) or (not instance.faction) or instance.faction == faction then
+					table.insert(result, instance)
+				end
+			end
+		end
+	end
+	return result
 end
 
 function InstanceService.GetInstanceByName(name)

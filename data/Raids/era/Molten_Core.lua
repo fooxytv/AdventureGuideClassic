@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Molten Core",
+	levelRange = { min = 60, max = 60 },
+	recommendedLevel = 60,
+	continent = "Eastern Kingdoms",
 	instanceID = 741,
 	thumbnail = 1396586,
 	icon = 136346,

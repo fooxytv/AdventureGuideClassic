@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Gnomeregan",
+	levelRange = { min = 24, max = 34 },
+	recommendedLevel = 29,
+	continent = "Eastern Kingdoms",
 	instanceID = 231,
 	thumbnail = 608202,
 	icon = 136336,

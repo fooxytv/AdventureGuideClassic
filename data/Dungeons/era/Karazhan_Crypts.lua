@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Karazhan Crypts",
+	levelRange = { min = 60, max = 60 },
+	recommendedLevel = 60,
+	continent = "Eastern Kingdoms",
 	instanceID = 227,
 	thumbnail = I.UIEJDungeonButtonKarazhanCrypts,
 	icon = 527422,

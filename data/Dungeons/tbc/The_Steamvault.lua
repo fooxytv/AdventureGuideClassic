@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "The Steamvault",
+	levelRange = { min = 69, max = 70 },
+	recommendedLevel = 70,
+	continent = "Outland",
 	instanceID = 545,
 	thumbnail = 608199,
 	icon = 136350,

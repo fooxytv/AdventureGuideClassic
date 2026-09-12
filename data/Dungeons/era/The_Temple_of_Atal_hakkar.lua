@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "The Temple of Atal'hakkar",
+	levelRange = { min = 45, max = 55 },
+	recommendedLevel = 50,
+	continent = "Eastern Kingdoms",
 	instanceID = 237,
 	thumbnail = 608217,
 	icon = 136360,

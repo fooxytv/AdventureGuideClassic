@@ -8,6 +8,10 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Wailing Caverns",
+	levelRange = { min = 15, max = 25 },
+	recommendedLevel = 19,
+	faction = "Horde",
+	continent = "Kalimdor",
 	instanceID = 240,
 	thumbnail = 608229,
 	icon = 136364,

@@ -12,6 +12,15 @@
 /run TestBossDefeatedToastCustom("Custom Boss Name")
 /run TestWishlistToast()
 /run TestWishlistToastCustom(itemID)
+/run AGC_DumpPlayerContext()
+/run AGC_InstancesForLevel(24)
+/run AGC_InstancesForLevel(24, "Alliance")
+/run AGC_ZonesForLevel(24)
+/run AGC_TestSuggestionsAt(24)
+/run AGC_TestSuggestionsAt(24, "Horde")
+/run AGC_VerifyZoneMapIDs()
+/run AGC_ActiveEvents()
+/run AGC_ActiveEvents(2026, 10, 20)
 
 
   Loot Filters

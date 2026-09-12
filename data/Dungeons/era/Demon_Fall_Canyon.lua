@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Demon Fall Canyon",
+	levelRange = { min = 55, max = 60 },
+	recommendedLevel = 60,
+	continent = "Kalimdor",
 	instanceID = 227,
 	thumbnail = I.UIEJDungeonButtonDemonFallCanyon,
 	icon = 527422,

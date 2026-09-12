@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Zul'Farrak",
+	levelRange = { min = 42, max = 50 },
+	recommendedLevel = 45,
+	continent = "Kalimdor",
 	instanceID = 241,
 	thumbnail = 608230,
 	icon = 136368,

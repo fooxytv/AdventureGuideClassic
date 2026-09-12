@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Maraudon",
+	levelRange = { min = 30, max = 40 },
+	recommendedLevel = 35,
+	continent = "Kalimdor",
 	instanceID = 232,
 	thumbnail = 608209,
 	icon = 136345,

@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Hellfire Ramparts",
+	levelRange = { min = 59, max = 62 },
+	recommendedLevel = 60,
+	continent = "Outland",
 	instanceID = 543,
 	thumbnail = 608207,
 	icon = 608207,

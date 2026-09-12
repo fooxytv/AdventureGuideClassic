@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Dire Maul",
+	levelRange = { min = 55, max = 60 },
+	recommendedLevel = 57,
+	continent = "Kalimdor",
 	instanceID = 230,
 	thumbnail = 608200,
 	icon = 136333,

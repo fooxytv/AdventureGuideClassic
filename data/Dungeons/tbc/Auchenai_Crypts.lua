@@ -7,6 +7,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "Auchenai Crypts",
+	levelRange = { min = 64, max = 67 },
+	recommendedLevel = 65,
+	continent = "Outland",
 	instanceID = 558,
 	thumbnail = 608193,
 	icon = 136350,

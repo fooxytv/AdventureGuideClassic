@@ -8,6 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "The Battle for Mount Hyjal",
+	levelRange = { min = 70, max = 70 },
+	recommendedLevel = 70,
+	continent = "Kalimdor",
 	instanceID = 534,
 	thumbnail = 608198,
 	icon = 136330,
