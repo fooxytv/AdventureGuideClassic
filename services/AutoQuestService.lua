@@ -26,6 +26,13 @@ the two clients differ and neither can be assumed.
 
 AutoQuestService = { }
 
+local verbose = false
+
+local function Trace(fmt, ...)
+	if not verbose then return end
+	print("|cff33ff99[AGC quest]|r " .. fmt:format(...))
+end
+
 -- How far around the current step to look for a matching quest. Generous enough to
 -- cover a hub where several quests are taken at once, tight enough that it will not
 -- grab something from much later in the route.
@@ -88,16 +95,58 @@ end
 local function OnQuestDetail()
 	if not AutoAcceptEnabled() then return end
 	local title = GetTitleText and GetTitleText()
+	Trace("QUEST_DETAIL %s -> %s", tostring(title),
+		tostring(AutoQuestService.GetIntent(title) or "none"))
 	if AutoQuestService.GetIntent(title) == "accept" and AcceptQuest then
 		AcceptQuest()
+	end
+end
+
+--[[
+QUEST_GREETING is the frame Classic shows when an NPC has several quests but no
+gossip options -- very common, and the path a hub NPC takes as soon as they have both
+something to hand in and something to offer. It is a different API from gossip:
+GetActiveTitle/SelectActiveQuest rather than the gossip equivalents.
+
+Missing this was why hand-ins silently did nothing. The first quest of a chain arrives
+via QUEST_DETAIL and worked; as soon as the same NPC had two quests the greeting frame
+took over and nothing was listening for it.
+]]
+local function OnQuestGreeting()
+	if AutoTurnInEnabled() and type(GetNumActiveQuests) == "function" then
+		local ok, count = pcall(GetNumActiveQuests)
+		for index = 1, (ok and count or 0) do
+			local title = GetActiveTitle and GetActiveTitle(index)
+			Trace("greeting active %d: %s -> %s", index, tostring(title),
+				tostring(AutoQuestService.GetIntent(title) or "none"))
+			if AutoQuestService.GetIntent(title) == "turnin" and SelectActiveQuest then
+				SelectActiveQuest(index)
+				return
+			end
+		end
+	end
+	if AutoAcceptEnabled() and type(GetNumAvailableQuests) == "function" then
+		local ok, count = pcall(GetNumAvailableQuests)
+		for index = 1, (ok and count or 0) do
+			local title = GetAvailableTitle and GetAvailableTitle(index)
+			Trace("greeting available %d: %s -> %s", index, tostring(title),
+				tostring(AutoQuestService.GetIntent(title) or "none"))
+			if AutoQuestService.GetIntent(title) == "accept" and SelectAvailableQuest then
+				SelectAvailableQuest(index)
+				return
+			end
+		end
 	end
 end
 
 local function OnQuestProgress()
 	if not AutoTurnInEnabled() then return end
 	local title = GetTitleText and GetTitleText()
+	local completable = IsQuestCompletable and IsQuestCompletable()
+	Trace("QUEST_PROGRESS %s -> %s (completable %s)", tostring(title),
+		tostring(AutoQuestService.GetIntent(title) or "none"), tostring(completable))
 	if AutoQuestService.GetIntent(title) ~= "turnin" then return end
-	if IsQuestCompletable and IsQuestCompletable() and CompleteQuest then
+	if completable and CompleteQuest then
 		CompleteQuest()
 	end
 end
@@ -113,7 +162,10 @@ local function OnQuestComplete()
 		return
 	end
 	if GetQuestReward then
-		GetQuestReward(choices == 1 and 1 or nil)
+		-- 0 means "no choice made", which is what Blizzard's own quest frame passes
+		-- when a quest offers no choice of reward. nil is not valid here.
+		Trace("completing %s (%d reward choices)", tostring(title), choices)
+		GetQuestReward(choices == 1 and 1 or 0)
 	end
 end
 
@@ -205,6 +257,7 @@ frame:RegisterEvent("QUEST_DETAIL")
 frame:RegisterEvent("QUEST_PROGRESS")
 frame:RegisterEvent("QUEST_COMPLETE")
 frame:RegisterEvent("GOSSIP_SHOW")
+frame:RegisterEvent("QUEST_GREETING")
 frame:SetScript("OnEvent", function(_, event)
 	-- Never fight the player mid-combat, and never act without a guide loaded.
 	if InCombatLockdown() then return end
@@ -218,10 +271,20 @@ frame:SetScript("OnEvent", function(_, event)
 		OnQuestComplete()
 	elseif event == "GOSSIP_SHOW" then
 		OnGossipShow()
+	elseif event == "QUEST_GREETING" then
+		OnQuestGreeting()
 	end
 end)
 
 -- Debug helpers (see todo.md) -------------------------------------------------
+
+-- Turns on a running commentary of what the automation sees and decides. It is
+-- otherwise entirely invisible when it does nothing, which is the hard case.
+_G.AGC_QuestDebug = function(enabled)
+	if enabled == nil then enabled = not verbose end
+	verbose = enabled and true or false
+	print(("|cff33ff99[AGC]|r quest automation tracing %s."):format(verbose and "ON" or "OFF"))
+end
 
 _G.AGC_QuestIntent = function(title)
 	if not title then
