@@ -27,6 +27,7 @@
 /run AGC_GuideStatus()
 /run AGC_GuideProgress()
 /run AGC_GuideScan()
+/run AGC_GuideObjectives()
 /run AGC_QuestIntent("A Threat Within")
 /run AGC_ResetGuidePosition()
 /run SettingsService.SetGuideOpacity(0.55)   -- guide panel transparency

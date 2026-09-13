@@ -28,6 +28,24 @@ GuideProgressService = { }
 
 local frame
 local scanScheduled
+local listeners = { }
+
+--[[
+Fired after every scan, whether or not a step advanced. Objective counts change far
+more often than steps do, and the window has to follow them.
+]]
+function GuideProgressService.RegisterListener(callback)
+	table.insert(listeners, callback)
+end
+
+local function NotifyListeners()
+	for _, listener in ipairs(listeners) do
+		local ok, err = pcall(listener)
+		if not ok and AdventureGuideClassic_Debug then
+			print("|cffff0000AGC|r GuideProgressService listener error: " .. tostring(err))
+		end
+	end
+end
 
 -- Client API shims -------------------------------------------------------------
 
@@ -50,7 +68,7 @@ whose objectives are all done. Written against both the modern C_QuestLog API an
 older GetQuestLogTitle, since the two clients differ.
 ]]
 function GuideProgressService.GetQuestLogState()
-	local inLog, readyToTurnIn = { }, { }
+	local inLog, readyToTurnIn, indexByTitle = { }, { }, { }
 
 	-- Test that these are callable, not merely present. Checking presence alone lets a
 	-- partial or shimmed namespace through and fails further in, where it is much
@@ -64,6 +82,7 @@ function GuideProgressService.GetQuestLogState()
 			local ok, info = pcall(C_QuestLog.GetInfo, index)
 			if ok and info and not info.isHeader and info.title then
 				inLog[info.title] = info.questID or true
+				indexByTitle[info.title] = index
 				local complete = info.isComplete
 				if complete == nil and info.questID and type(C_QuestLog.IsComplete) == "function" then
 					local ok2, value = pcall(C_QuestLog.IsComplete, info.questID)
@@ -72,7 +91,7 @@ function GuideProgressService.GetQuestLogState()
 				if complete then readyToTurnIn[info.title] = true end
 			end
 		end
-		return inLog, readyToTurnIn
+		return inLog, readyToTurnIn, indexByTitle
 	end
 
 	if type(GetNumQuestLogEntries) == "function" and type(GetQuestLogTitle) == "function" then
@@ -82,11 +101,60 @@ function GuideProgressService.GetQuestLogState()
 			local title, _, _, isHeader, _, isComplete, _, questID = GetQuestLogTitle(index)
 			if title and not isHeader then
 				inLog[title] = questID or true
+				indexByTitle[title] = index
 				if isComplete and isComplete ~= 0 then readyToTurnIn[title] = true end
 			end
 		end
 	end
-	return inLog, readyToTurnIn
+	return inLog, readyToTurnIn, indexByTitle
+end
+
+--[[
+Live objectives for a quest in the log, as { text, done } lines ready to display.
+
+Both APIs already return the objective pre-formatted ("Kobold Vermin slain: 4/10"),
+so there is nothing to parse or localise here -- take the client's own wording.
+]]
+function GuideProgressService.GetObjectives(questTitle)
+	if not questTitle then return { } end
+	local inLog, _, indexByTitle = GuideProgressService.GetQuestLogState()
+	local questID = inLog[questTitle]
+	local questIndex = indexByTitle[questTitle]
+	if not questIndex then return { } end
+
+	local objectives = { }
+
+	if type(questID) == "number"
+		and type(C_QuestLog) == "table"
+		and type(C_QuestLog.GetQuestObjectives) == "function" then
+		local ok, list = pcall(C_QuestLog.GetQuestObjectives, questID)
+		if ok and type(list) == "table" then
+			for _, objective in ipairs(list) do
+				if objective and objective.text and objective.text ~= "" then
+					table.insert(objectives, {
+						text = objective.text,
+						done = objective.finished and true or false,
+					})
+				end
+			end
+			if #objectives > 0 then return objectives end
+		end
+	end
+
+	if type(GetNumQuestLeaderBoards) == "function"
+		and type(GetQuestLogLeaderBoard) == "function" then
+		local ok, count = pcall(GetNumQuestLeaderBoards, questIndex)
+		if ok and type(count) == "number" then
+			for i = 1, count do
+				local ok2, text, _, finished = pcall(GetQuestLogLeaderBoard, i, questIndex)
+				if ok2 and text and text ~= "" then
+					table.insert(objectives, { text = text, done = finished and true or false })
+				end
+			end
+		end
+	end
+
+	return objectives
 end
 
 -- Completed-quest memory -------------------------------------------------------
@@ -128,6 +196,12 @@ local function QuestForStep(guide, index)
 		if later[1] == "accept" then break end
 	end
 	return nil
+end
+
+-- Public form of the above, for callers that need to know which quest a step belongs
+-- to (the window, to show that quest's objectives).
+function GuideProgressService.GetQuestForStep(guide, index)
+	return QuestForStep(guide, index)
 end
 
 --[[
@@ -195,6 +269,7 @@ function GuideProgressService.Scan()
 	if advanced > 0 then
 		GuideService.SetStepIndex(index, guide)
 	end
+	NotifyListeners()
 	return advanced
 end
 
@@ -278,6 +353,20 @@ _G.AGC_GuideProgress = function()
 		local state = GuideProgressService.IsStepComplete(guide, i, inLog, ready)
 		print(("  %d. [%-9s] %s"):format(i, tostring(guide.steps[i][1]),
 			state == true and "done" or (state == nil and "cannot tell" or "not done")))
+	end
+end
+
+_G.AGC_GuideObjectives = function()
+	local guide = GuideService.GetCurrentGuide()
+	if not guide then
+		print("|cffff5555[AGC]|r no guide selected.")
+		return
+	end
+	local index = GuideService.GetStepIndex(guide)
+	local quest = GuideProgressService.GetQuestForStep(guide, index)
+	print(("|cff33ff99[AGC]|r step %d belongs to quest: %s"):format(index, tostring(quest)))
+	for _, objective in ipairs(GuideProgressService.GetObjectives(quest)) do
+		print(("  [%s] %s"):format(objective.done and "x" or " ", objective.text))
 	end
 end
 

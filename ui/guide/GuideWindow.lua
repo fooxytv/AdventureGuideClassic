@@ -288,6 +288,9 @@ local function CreateWindow()
 	stepPanel.text:SetJustifyV("TOP")
 	stepPanel.text:SetSpacing(3)
 
+	-- Live objective lines for the step's quest, created on demand.
+	stepPanel.objectives = { }
+
 	ApplyScale()
 	frame:Hide()
 end
@@ -317,6 +320,60 @@ function GuideWindow.EnsureCreated()
 			GuideWindow.Refresh()
 		end
 	end)
+	-- Objective counts change constantly; the scan is already debounced, so following
+	-- it directly is cheap.
+	if GuideProgressService and GuideProgressService.RegisterListener then
+		GuideProgressService.RegisterListener(function() GuideWindow.Refresh() end)
+	end
+end
+
+--[[
+Live objectives for whatever quest the current step belongs to, so you can watch
+"4/10" tick up without opening the quest log. Kill and collect steps rarely name their
+quest, so GuideProgressService resolves it from the turn-in ahead of them.
+
+Nothing is shown when the quest is not in the log yet -- before accepting it there is
+no progress to report, and an empty block would just pad the panel.
+]]
+local function HideObjectives()
+	for _, line in ipairs(stepPanel.objectives) do
+		line:Hide()
+	end
+end
+
+local function ShowObjectives(guide, index)
+	HideObjectives()
+	if not GuideProgressService then return 0 end
+
+	local quest = GuideProgressService.GetQuestForStep(guide, index)
+	if not quest then return 0 end
+
+	local objectives = GuideProgressService.GetObjectives(quest)
+	if #objectives == 0 then return 0 end
+
+	local height = 6
+	for position, objective in ipairs(objectives) do
+		local line = stepPanel.objectives[position]
+		if not line then
+			line = stepPanel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+			line:SetJustifyH("LEFT")
+			line:SetJustifyV("TOP")
+			stepPanel.objectives[position] = line
+		end
+		line:ClearAllPoints()
+		line:SetPoint("TOPLEFT", stepPanel.text, "BOTTOMLEFT", 0, -height + 2)
+		line:SetPoint("RIGHT", stepPanel, "RIGHT", -14, 0)
+		line:SetText(objective.text)
+		-- Finished objectives dim out of the way; outstanding ones stay legible.
+		if objective.done then
+			line:SetTextColor(0.45, 0.62, 0.45)
+		else
+			line:SetTextColor(0.95, 0.82, 0.35)
+		end
+		line:Show()
+		height = height + line:GetStringHeight() + 2
+	end
+	return height
 end
 
 function GuideWindow.Refresh()
@@ -325,6 +382,7 @@ function GuideWindow.Refresh()
 	local guide = GuideService.GetCurrentGuide()
 
 	if not guide then
+		HideObjectives()
 		header.title:SetText("Levelling Guide")
 		header.stepText:SetText("")
 		header.progress:SetValue(0)
@@ -349,8 +407,11 @@ function GuideWindow.Refresh()
 		stepPanel.icon:SetTexture(GuideTaskTypes.GetIcon(current))
 		stepPanel.text:SetText(GuideTaskTypes.GetText(current))
 	end
+
+	local objectiveHeight = ShowObjectives(guide, index)
+
 	-- Grow to the text rather than clipping a step that carries a note.
-	stepPanel:SetHeight(math.max(46, stepPanel.text:GetStringHeight() + 30))
+	stepPanel:SetHeight(math.max(46, stepPanel.text:GetStringHeight() + objectiveHeight + 30))
 
 	header.back:SetEnabled(GuideService.HasPreviousStep())
 	header.next:SetEnabled(GuideService.HasNextStep() or (guide.next ~= nil))
