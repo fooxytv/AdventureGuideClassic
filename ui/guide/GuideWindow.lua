@@ -41,7 +41,9 @@ GuideWindow = { }
 
 local WIDTH = 300
 local HEADER_HEIGHT = 44
-local RING_SIZE, PORTRAIT_SIZE = 56, 36
+local RING_SIZE, PORTRAIT_SIZE = 56, 36
+-- The cog badge: a small framed icon echoing the portrait above it.
+local BADGE_RING_SIZE, BADGE_ICON_SIZE = 26, 13
 -- How far the ring pokes past the header panel's left edge, so the title and progress
 -- bar know where they can start.
 local RING_OVERHANG = 26
@@ -188,21 +190,26 @@ local function CreateHeader(parent)
 	-- Icon first, border over the top.
 	--
 	-- The artifact item border has a TRANSPARENT centre, so it frames the icon when
-	-- drawn above it -- which is the arrangement that actually looks right, and the
-	-- one the established guide addons use. This is the opposite of
-	-- portrait-ring-withbg, whose centre is opaque and which therefore has to go
-	-- underneath; that difference is why earlier attempts produced a black disc.
+	-- drawn above it. This is the opposite of portrait-ring-withbg, whose centre is
+	-- opaque and which therefore has to go underneath; conflating the two is what
+	-- produced a black disc in earlier attempts.
+	--
+	-- Everything here hangs off the HEADER PANEL, not the container. A child frame
+	-- draws above its parent's textures whatever draw layer they claim, so a ring
+	-- parented to the container was always going to be cut in half by the header's
+	-- backdrop. On the header, ARTWORK and OVERLAY sit in front of that backdrop and
+	-- the overhang to the left simply hangs outside it.
 	--
 	-- The icon is static -- the addon's own Encounter Journal mark, as used by the
 	-- minimap button. A live SetPortraitTexture portrait was tried and abandoned: it
 	-- silently does nothing when the unit is not ready, and there is no dependable way
 	-- to tell whether it worked, so it fails blank rather than falling back.
-	bar.portrait = parent:CreateTexture(nil, "ARTWORK")
+	bar.portrait = bar:CreateTexture(nil, "ARTWORK")
 	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
 	bar.portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
-	bar.portrait:SetPoint("TOPLEFT", parent, "TOPLEFT", (RING_SIZE - PORTRAIT_SIZE) / 2, -6)
+	bar.portrait:SetPoint("CENTER", bar, "LEFT", -2, 0)
 
-	bar.ring = parent:CreateTexture(nil, "OVERLAY")
+	bar.ring = bar:CreateTexture(nil, "OVERLAY")
 	if ApplyArtifactBorder(bar.ring) then
 		bar.ring:SetSize(RING_SIZE, RING_SIZE)
 		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
@@ -213,7 +220,7 @@ local function CreateHeader(parent)
 		bar.ring:SetTexture("Interface/Common/portrait-ring-withbg")
 		bar.ring:SetSize(RING_SIZE, RING_SIZE)
 		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
-		local mask = parent:CreateMaskTexture()
+		local mask = bar:CreateMaskTexture()
 		mask:SetAllPoints(bar.portrait)
 		mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
 			"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
@@ -230,18 +237,21 @@ local function CreateHeader(parent)
 		function() GuideService.PreviousStep() end)
 	bar.back:SetPoint("RIGHT", bar.next, "LEFT", -2, 0)
 
-	-- Cog goes where the player frame puts the level badge: a spot Blizzard already
-	-- uses on a portrait, so it reads as part of the furniture. Sitting below and left
-	-- of the ring it also clears the progress bar, which is what went wrong when it was
-	-- pinned to the ring's other corner.
-	bar.settingsBadge = parent:CreateTexture(nil, "ARTWORK")
-	bar.settingsBadge:SetTexture("Interface/Common/portrait-ring-withbg")
-	bar.settingsBadge:SetSize(24, 24)
-	bar.settingsBadge:SetPoint("BOTTOMLEFT", bar.ring, "BOTTOMLEFT", -2, -2)
+	-- Cog goes where the player frame puts the level badge, framed by a ring of its
+	-- own so it matches the portrait rather than looking like a stray icon dropped on
+	-- the corner.
+	bar.settings = CreateIconButton(bar, BADGE_ICON_SIZE,
+		"Interface/GossipFrame/BinderGossipIcon", nil,
+		"Guide options", function() GuideWindow.ShowMenu() end)
+	bar.settings:SetPoint("CENTER", bar.portrait, "BOTTOMLEFT", 4, 4)
 
-	bar.settings = CreateIconButton(parent, 13, "Interface/GossipFrame/BinderGossipIcon",
-		nil, "Guide options", function() GuideWindow.ShowMenu() end)
-	bar.settings:SetPoint("CENTER", bar.settingsBadge, "CENTER", 0, 0)
+	bar.settingsRing = bar:CreateTexture(nil, "OVERLAY")
+	if not ApplyArtifactBorder(bar.settingsRing) then
+		bar.settingsRing:SetDrawLayer("BACKGROUND")
+		bar.settingsRing:SetTexture("Interface/Common/portrait-ring-withbg")
+	end
+	bar.settingsRing:SetSize(BADGE_RING_SIZE, BADGE_RING_SIZE)
+	bar.settingsRing:SetPoint("CENTER", bar.settings, "CENTER", 0, 0)
 
 	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	bar.title:SetTextScale(0.85)
