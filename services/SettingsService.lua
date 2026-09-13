@@ -24,11 +24,13 @@ local defaults = {
 	-- Open the Adventure Guide on the Suggested Content tab instead of Dungeons.
 	-- Off by default so existing users keep the behaviour they're used to.
 	SuggestedContentDefaultTab = false,
-	-- Levelling guide window. Shown/unlocked/1.0 scale, advancing automatically and
-	-- dropping waypoints, since all of that is the expected behaviour once a user has
-	-- opted into following a guide at all.
+	-- Levelling guide window. Hidden until the user asks for it (/agc guide, the
+	-- keybinding, or a Suggested Content zone card) -- someone who installed the addon
+	-- for the encounter journal should not get a guide frame on screen at login. Once
+	-- shown, the setting persists, so it returns on the next login.
+	-- The rest are on: they are the expected behaviour once a guide IS being followed.
 	Guide = {
-		Show = true,
+		Show = false,
 		Locked = false,
 		Scale = 1.0,
 		AutoAdvance = true,

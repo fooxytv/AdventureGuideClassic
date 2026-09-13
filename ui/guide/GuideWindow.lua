@@ -22,6 +22,7 @@ instances, and no title bar -- the header is the chrome.
 
 GuideWindow = { }
 
+local NEWLINE = string.char(10)
 local WIDTH = 242
 local HEADER_HEIGHT = 44
 local ROW_HEIGHT = 34
@@ -43,7 +44,9 @@ telling you to run Deadmines, hiding it inside Deadmines is unhelpful.
 ]]
 local function ShouldBeShown()
 	if not SettingsService.IsGuideShown() then return false end
-	if not GuideService.GetCurrentGuide() then return false end
+	-- Deliberately NOT conditional on a guide being selected. The picker lives in this
+	-- window's cog menu, so hiding when no guide is chosen makes choosing one
+	-- impossible -- the window has to be able to show its own empty state.
 	if PlayerContextService.IsInInstance() then
 		local step = GuideService.GetCurrentStep()
 		if not (step and step.instance) then
@@ -226,7 +229,7 @@ local function CreateWindow()
 	frame.empty:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 6, -PADDING)
 	frame.empty:SetPoint("RIGHT", frame, "RIGHT", -6, 0)
 	frame.empty:SetJustifyH("LEFT")
-	frame.empty:SetText("No guide selected.")
+	frame.empty:SetText("No guide selected." .. NEWLINE .. NEWLINE .. "Click the button above to choose one.")
 	frame.empty:Hide()
 
 	ApplyScale()
@@ -264,9 +267,11 @@ function GuideWindow.Refresh()
 	if not guide then
 		header.title:SetText("Levelling Guide")
 		header.step:SetText("")
+		header.back:SetEnabled(false)
+		header.next:SetEnabled(false)
 		for _, row in ipairs(rows) do row:Hide() end
 		frame.empty:Show()
-		frame:SetHeight(HEADER_HEIGHT + 40)
+		frame:SetHeight(HEADER_HEIGHT + 56)
 		frame:SetShown(ShouldBeShown())
 		return
 	end
@@ -312,6 +317,11 @@ end
 function GuideWindow.Show()
 	GuideWindow.EnsureCreated()
 	SettingsService.SetGuideShown(true)
+	-- First open: pick the guide matching this character rather than showing an empty
+	-- frame and making the user hunt through the cog menu.
+	if not GuideService.GetCurrentGuide() then
+		GuideService.StartGuideForLevel()
+	end
 	GuideWindow.Refresh()
 end
 
@@ -322,7 +332,7 @@ end
 
 function GuideWindow.Toggle()
 	GuideWindow.EnsureCreated()
-	if SettingsService.IsGuideShown() then
+	if GuideWindow.IsShown() then
 		GuideWindow.Hide()
 	else
 		GuideWindow.Show()
@@ -416,4 +426,22 @@ end)
 -- Debug helpers (see todo.md) -------------------------------------------------
 
 _G.AGC_ToggleGuide = function() GuideWindow.Toggle() end
+
+-- Explains why the window is or isn't on screen.
+_G.AGC_GuideStatus = function()
+	local guide = GuideService.GetCurrentGuide()
+	print("|cff33ff99[AGC]|r guide window status:")
+	print(("  created:        %s"):format(tostring(initialised)))
+	print(("  setting 'show': %s"):format(tostring(SettingsService.IsGuideShown())))
+	print(("  in instance:    %s"):format(tostring(PlayerContextService.IsInInstance())))
+	print(("  current guide:  %s"):format(guide and guide.id or "none"))
+	print(("  guides for you: %d"):format(#GuideService.GetGuidesForCharacter()))
+	print(("  should show:    %s"):format(tostring(ShouldBeShown())))
+	print(("  actually shown: %s"):format(tostring(GuideWindow.IsShown())))
+	if initialised then
+		local point, _, _, x, y = frame:GetPoint()
+		print(("  anchor:         %s %.0f,%.0f  scale %.2f"):format(
+			tostring(point), x or 0, y or 0, frame:GetScale()))
+	end
+end
 _G.AGC_ResetGuidePosition = function() GuideWindow.ResetPosition() end

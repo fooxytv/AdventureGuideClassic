@@ -24,6 +24,7 @@
 /run AGC_ActiveEvents(2026, 10, 20)
 /run AGC_ListGuides()
 /run AGC_ToggleGuide()
+/run AGC_GuideStatus()
 /run AGC_ResetGuidePosition()
 /agc guide
 
