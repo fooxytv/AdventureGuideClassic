@@ -41,12 +41,14 @@ GuideWindow = { }
 
 local WIDTH = 300
 local HEADER_HEIGHT = 44
-local RING_SIZE, PORTRAIT_SIZE = 56, 36
+local RING_SIZE, PORTRAIT_SIZE = 64, 42
 -- The cog badge: a small framed icon echoing the portrait above it.
-local BADGE_RING_SIZE, BADGE_ICON_SIZE = 26, 13
--- How far the ring pokes past the header panel's left edge, so the title and progress
--- bar know where they can start.
-local RING_OVERHANG = 26
+local BADGE_RING_SIZE, BADGE_ICON_SIZE = 30, 15
+-- How far the ring reaches INTO the header panel, so the title and progress bar know
+-- where they can start. The ring is centred 2px left of the panel's edge, so this is
+-- half the ring less that offset -- keep the three in step if the ring is resized, or
+-- the title will either collide with it or float away from it.
+local RING_OVERHANG = (RING_SIZE / 2) - 2
 local PANEL_GAP = 5
 
 local frame, header, stepPanel
