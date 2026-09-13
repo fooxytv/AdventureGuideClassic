@@ -39,6 +39,9 @@ local defaults = {
 		-- it is the point of following a guide; both are one click away in the cog menu.
 		AutoAccept = true,
 		AutoTurnIn = true,
+		-- Panel opacity. The guide sits on screen for hours, so how much of the world
+		-- shows through it is a real preference rather than a detail.
+		Opacity = 0.85,
 	},
 }
 local SCALE_MIN = 0.5
@@ -288,6 +291,18 @@ end
 
 function SettingsService.SetGuideAutoTurnInEnabled(enabled)
 	SetGuideSetting("AutoTurnIn", enabled)
+end
+
+function SettingsService.GetGuideOpacity()
+	local value = GetGuideSetting("Opacity")
+	if type(value) ~= "number" then return defaults.Guide.Opacity end
+	if value < 0.2 then return 0.2 end
+	if value > 1 then return 1 end
+	return value
+end
+
+function SettingsService.SetGuideOpacity(value)
+	SetGuideSetting("Opacity", value)
 end
 
 function SettingsService.IsGuideWaypointsEnabled()

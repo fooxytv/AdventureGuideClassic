@@ -29,6 +29,8 @@
 /run AGC_GuideScan()
 /run AGC_QuestIntent("A Threat Within")
 /run AGC_ResetGuidePosition()
+/run SettingsService.SetGuideOpacity(0.55)   -- guide panel transparency
+/run SettingsService.SetGuideScale(0.9)
 /agc guide
 
 NOTE: every file calls SetupGlobalFacade(), which setfenv's the chunk into the
