@@ -323,14 +323,38 @@ function GuideMenu.Refresh()
 	frame:SetHeight(offsetY + 8)
 end
 
-function GuideMenu.Open(anchorTo)
+--[[
+Which side of the guide window to open on: whichever has more room. The guide defaults
+to the top right of the screen, so the panel almost always belongs to its left --
+opening it over the guide hides the step you are reading, which is the one thing the
+window exists to show.
+]]
+local function AnchorBesideGuide()
+	local guide = GuideWindow and GuideWindow.GetFrame and GuideWindow.GetFrame()
+	if not guide then
+		frame:SetPoint("CENTER")
+		return
+	end
+
+	local guideLeft = guide:GetLeft()
+	local screenWidth = UIParent:GetWidth()
+	local openLeft = true
+	if guideLeft and screenWidth then
+		-- Not enough room on the left for the panel plus a margin? Use the right.
+		openLeft = guideLeft > (WIDTH + 20)
+	end
+
+	if openLeft then
+		frame:SetPoint("TOPRIGHT", guide, "TOPLEFT", -6, 0)
+	else
+		frame:SetPoint("TOPLEFT", guide, "TOPRIGHT", 6, 0)
+	end
+end
+
+function GuideMenu.Open()
 	if not frame then Create() end
 	frame:ClearAllPoints()
-	if anchorTo then
-		frame:SetPoint("TOPLEFT", anchorTo, "BOTTOMRIGHT", 4, 0)
-	else
-		frame:SetPoint("CENTER")
-	end
+	AnchorBesideGuide()
 	frame:Show()
 	GuideMenu.Refresh()
 end
@@ -339,11 +363,11 @@ function GuideMenu.Close()
 	if frame then frame:Hide() end
 end
 
-function GuideMenu.Toggle(anchorTo)
+function GuideMenu.Toggle()
 	if frame and frame:IsShown() then
 		GuideMenu.Close()
 	else
-		GuideMenu.Open(anchorTo)
+		GuideMenu.Open()
 	end
 end
 

@@ -42,6 +42,9 @@ GuideWindow = { }
 local WIDTH = 300
 local HEADER_HEIGHT = 44
 local RING_SIZE, PORTRAIT_SIZE = 54, 36
+-- How far the ring pokes past the header panel's left edge, so the title and progress
+-- bar know where they can start.
+local RING_OVERHANG = 26
 local PANEL_GAP = 5
 
 local frame, header, stepPanel
@@ -162,7 +165,7 @@ local function CreateHeader(parent)
 	local bar = CreatePanel(parent)
 	bar:SetHeight(HEADER_HEIGHT)
 	-- Inset from the left so the portrait ring can overhang into the gap.
-	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", RING_SIZE - 22, 0)
+	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", RING_SIZE - RING_OVERHANG, 0)
 	bar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, 0)
 
 	-- Step label floats above the header rather than inside it, keeping the header
@@ -179,7 +182,6 @@ local function CreateHeader(parent)
 	bar.ring:SetPoint("TOP", bar, "TOP", 0, 6)
 
 	bar.portrait = parent:CreateTexture(nil, "ARTWORK")
-	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
 	bar.portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
 	bar.portrait:SetPoint("CENTER", bar.ring, "CENTER", 0, 0)
 	local mask = parent:CreateMaskTexture()
@@ -187,26 +189,28 @@ local function CreateHeader(parent)
 	mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
 		"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 	bar.portrait:AddMaskTexture(mask)
-
-	-- Cog tucked onto the ring, so the header keeps its full width for the title.
-	bar.settings = CreateIconButton(parent, 18, "Interface/GossipFrame/BinderGossipIcon",
-		nil, "Guide options", function(self) GuideWindow.ShowMenu(self) end)
-	bar.settings:SetPoint("BOTTOMRIGHT", bar.ring, "BOTTOMRIGHT", 2, 2)
+	GuideWindow.UpdatePortrait()
 
 	bar.next = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-NextPage-Down", "Next step",
 		function() GuideService.NextStep() end)
-	bar.next:SetPoint("TOPRIGHT", -8, -6)
+	bar.next:SetPoint("TOPRIGHT", -8, -5)
 
 	bar.back = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-PrevPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-PrevPage-Down", "Previous step",
 		function() GuideService.PreviousStep() end)
 	bar.back:SetPoint("RIGHT", bar.next, "LEFT", -2, 0)
 
+	-- Cog sits with the other controls. On the ring it collided with both the ring art
+	-- and the progress bar beneath it.
+	bar.settings = CreateIconButton(bar, 18, "Interface/GossipFrame/BinderGossipIcon",
+		nil, "Guide options", function() GuideWindow.ShowMenu() end)
+	bar.settings:SetPoint("RIGHT", bar.back, "LEFT", -4, 0)
+
 	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	bar.title:SetTextScale(0.85)
-	bar.title:SetPoint("TOPLEFT", 14, -8)
-	bar.title:SetPoint("RIGHT", bar.back, "LEFT", -6, 0)
+	bar.title:SetPoint("TOPLEFT", RING_OVERHANG, -8)
+	bar.title:SetPoint("RIGHT", bar.settings, "LEFT", -6, 0)
 	bar.title:SetJustifyH("LEFT")
 	bar.title:SetWordWrap(false)
 
@@ -214,7 +218,8 @@ local function CreateHeader(parent)
 	-- without counting steps.
 	bar.progress = CreateFrame("StatusBar", nil, bar)
 	bar.progress:SetHeight(6)
-	bar.progress:SetPoint("BOTTOMLEFT", 14, 8)
+	-- Clear of the ring, which overhangs this panel's left edge.
+	bar.progress:SetPoint("BOTTOMLEFT", RING_OVERHANG, 8)
 	bar.progress:SetPoint("BOTTOMRIGHT", -12, 8)
 	bar.progress:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
 	bar.progress:SetStatusBarColor(0.20, 0.50, 0.90)
@@ -273,7 +278,7 @@ local function CreateWindow()
 
 	-- The current step, and only the current step.
 	stepPanel = CreatePanel(frame)
-	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -(RING_SIZE - 22), -PANEL_GAP)
+	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -(RING_SIZE - RING_OVERHANG), -PANEL_GAP)
 	stepPanel:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -PANEL_GAP)
 	stepPanel:SetHeight(52)
 
@@ -297,6 +302,25 @@ end
 
 -- Public -------------------------------------------------------------------------
 
+--[[
+The player's own portrait. Falls back to the Encounter Journal icon where
+SetPortraitTexture is unavailable, and is refreshed on login because the unit is not
+always ready when the frame is first built.
+]]
+function GuideWindow.UpdatePortrait()
+	if not (header and header.portrait) then return end
+	if type(SetPortraitTexture) == "function" then
+		local ok = pcall(SetPortraitTexture, header.portrait, "player")
+		if ok then return end
+	end
+	header.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
+end
+
+-- The options panel anchors beside this frame rather than over it.
+function GuideWindow.GetFrame()
+	return frame
+end
+
 function GuideWindow.EnsureCreated()
 	if initialised then return end
 	initialised = true
@@ -316,6 +340,7 @@ function GuideWindow.EnsureCreated()
 		GuideWindow.Refresh()
 	end)
 	PlayerContextService.RegisterListener(function(_, changed)
+		GuideWindow.UpdatePortrait()
 		if changed.inInstance or changed.level then
 			GuideWindow.Refresh()
 		end
@@ -460,8 +485,8 @@ end
 The options panel lives in ui/guide/GuideMenu.lua -- a styled translucent panel rather
 than a UIDropDownMenu, matching the window itself. See that file for why.
 ]]
-function GuideWindow.ShowMenu(anchor)
-	GuideMenu.Toggle(anchor)
+function GuideWindow.ShowMenu()
+	GuideMenu.Toggle()
 end
 
 -- Initialise once the character is known; the window must be able to appear with the
