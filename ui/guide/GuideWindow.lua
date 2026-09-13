@@ -41,14 +41,24 @@ GuideWindow = { }
 
 local WIDTH = 300
 local HEADER_HEIGHT = 44
-local RING_SIZE, PORTRAIT_SIZE = 64, 42
--- The cog badge: a small framed icon echoing the portrait above it.
+local RING_SIZE, PORTRAIT_SIZE = 64, 48
+-- The cog badge: a small framed icon echoing the portrait it is tucked against.
 local BADGE_RING_SIZE, BADGE_ICON_SIZE = 30, 15
--- How far the ring reaches INTO the header panel, so the title and progress bar know
--- where they can start. The ring is centred 2px left of the panel's edge, so this is
--- half the ring less that offset -- keep the three in step if the ring is resized, or
--- the title will either collide with it or float away from it.
-local RING_OVERHANG = (RING_SIZE / 2) - 2
+--[[
+Header geometry, all derived, so that resizing the portrait cannot silently push the
+title into it. Measured from the header panel's left edge:
+
+  RING_OFFSET    how far left of that edge the portrait's centre sits
+  HEADER_LEFT    where the panel starts, chosen so the ring still fits the container
+  CONTENT_INSET  where the title and progress bar may begin -- clear of BOTH the ring
+                 and the cog badge tucked against the portrait's bottom-right, which
+                 now reaches further right than the ring itself does
+]]
+local RING_OFFSET = 2
+local HEADER_LEFT = (RING_SIZE / 2) + RING_OFFSET
+local RING_REACH = (RING_SIZE / 2) - RING_OFFSET
+local BADGE_REACH = (PORTRAIT_SIZE / 2) - RING_OFFSET + (BADGE_RING_SIZE / 2) - 4
+local CONTENT_INSET = math.max(RING_REACH, BADGE_REACH) + 6
 local PANEL_GAP = 5
 
 local frame, header, stepPanel
@@ -180,7 +190,7 @@ local function CreateHeader(parent)
 	local bar = CreatePanel(parent)
 	bar:SetHeight(HEADER_HEIGHT)
 	-- Inset from the left so the portrait ring can overhang into the gap.
-	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", RING_SIZE - RING_OVERHANG, 0)
+	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", HEADER_LEFT, 0)
 	bar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, 0)
 
 	-- Step label floats above the header rather than inside it, keeping the header
@@ -209,7 +219,7 @@ local function CreateHeader(parent)
 	bar.portrait = bar:CreateTexture(nil, "ARTWORK")
 	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
 	bar.portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
-	bar.portrait:SetPoint("CENTER", bar, "LEFT", -2, 0)
+	bar.portrait:SetPoint("CENTER", bar, "LEFT", -RING_OFFSET, 0)
 
 	bar.ring = bar:CreateTexture(nil, "OVERLAY")
 	if ApplyArtifactBorder(bar.ring) then
@@ -239,13 +249,13 @@ local function CreateHeader(parent)
 		function() GuideService.PreviousStep() end)
 	bar.back:SetPoint("RIGHT", bar.next, "LEFT", -2, 0)
 
-	-- Cog goes where the player frame puts the level badge, framed by a ring of its
-	-- own so it matches the portrait rather than looking like a stray icon dropped on
-	-- the corner.
+	-- Cog tucked against the portrait's bottom-RIGHT, framed by a ring of its own so
+	-- it matches the portrait rather than looking like a stray icon on the corner.
+	-- CONTENT_INSET above accounts for how far right this reaches.
 	bar.settings = CreateIconButton(bar, BADGE_ICON_SIZE,
 		"Interface/GossipFrame/BinderGossipIcon", nil,
 		"Guide options", function() GuideWindow.ShowMenu() end)
-	bar.settings:SetPoint("CENTER", bar.portrait, "BOTTOMLEFT", 4, 4)
+	bar.settings:SetPoint("CENTER", bar.portrait, "BOTTOMRIGHT", -4, 4)
 
 	bar.settingsRing = bar:CreateTexture(nil, "OVERLAY")
 	if not ApplyArtifactBorder(bar.settingsRing) then
@@ -257,7 +267,7 @@ local function CreateHeader(parent)
 
 	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	bar.title:SetTextScale(0.85)
-	bar.title:SetPoint("TOPLEFT", RING_OVERHANG, -8)
+	bar.title:SetPoint("TOPLEFT", CONTENT_INSET, -8)
 	bar.title:SetPoint("RIGHT", bar.back, "LEFT", -6, 0)
 	bar.title:SetJustifyH("LEFT")
 	bar.title:SetWordWrap(false)
@@ -267,7 +277,7 @@ local function CreateHeader(parent)
 	bar.progress = CreateFrame("StatusBar", nil, bar)
 	bar.progress:SetHeight(6)
 	-- Clear of the ring, which overhangs this panel's left edge.
-	bar.progress:SetPoint("BOTTOMLEFT", RING_OVERHANG, 8)
+	bar.progress:SetPoint("BOTTOMLEFT", CONTENT_INSET, 8)
 	bar.progress:SetPoint("BOTTOMRIGHT", -12, 8)
 	bar.progress:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
 	bar.progress:SetStatusBarColor(0.20, 0.50, 0.90)
@@ -328,7 +338,7 @@ local function CreateWindow()
 
 	-- The current step, and only the current step.
 	stepPanel = CreatePanel(frame)
-	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -(RING_SIZE - RING_OVERHANG), -PANEL_GAP)
+	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -PANEL_GAP)
 	stepPanel:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -PANEL_GAP)
 	stepPanel:SetHeight(52)
 
