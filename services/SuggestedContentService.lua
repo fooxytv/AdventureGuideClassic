@@ -48,7 +48,7 @@ local function BuildEventCards(today)
 		for _, location in ipairs(locations) do
 			table.insert(names, location.name)
 		end
-		local uiMapID = locations[1] and locations[1].uiMapID
+		local uiMapID = locations[1] and ZoneService.GetMapIDByName(locations[1].name)
 
 		local daysLeft = WorldEventService.GetDaysRemaining(event, today)
 		local shortSubtitle
@@ -93,7 +93,7 @@ local function BuildZoneCard(level, faction, race)
 		description = zone.overview,
 		continent = zone.continent,
 		levelRange = zone.levelRange,
-		uiMapID = zone.uiMapID,
+		uiMapID = ZoneService.GetZoneMapID(zone),
 		zone = zone,
 	}
 end

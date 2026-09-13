@@ -46,9 +46,9 @@ Event({
 	-- given month -- if the addon names the wrong one, adjust it by 1 and re-check.
 	rotationOffset = 0,
 	locations = {
-		{ name = "Elwynn Forest", uiMapID = 37 },
-		{ name = "Mulgore", uiMapID = 7 },
-		{ name = "Terokkar Forest", uiMapID = 108, expansion = "tbc" },
+		{ name = "Elwynn Forest" },
+		{ name = "Mulgore" },
+		{ name = "Terokkar Forest", expansion = "tbc" },
 	},
 	summary = "Turn in Darkmoon cards and quest tokens for reputation and trinkets, " ..
 		"and play the carnival games.",
@@ -65,7 +65,7 @@ Event({
 	ends = { month = 2, day = 11 },
 	shifts = true,
 	locations = {
-		{ name = "Moonglade", uiMapID = 80 },
+		{ name = "Moonglade" },
 	},
 	summary = "Collect Coins of Ancestry from elders across the world and trade them " ..
 		"for festival gear in Moonglade.",
@@ -147,8 +147,8 @@ Event({
 	-- Brewfest arrived in patch 2.3, so it does not exist on a Classic Era client.
 	expansion = "tbc",
 	locations = {
-		{ name = "Durotar", uiMapID = 1 },
-		{ name = "Dun Morogh", uiMapID = 27 },
+		{ name = "Durotar" },
+		{ name = "Dun Morogh" },
 	},
 	summary = "Drink, ram-race and fight Coren Direbrew for brewery gear and steins.",
 })

@@ -19,6 +19,7 @@
 /run AGC_TestSuggestionsAt(24)
 /run AGC_TestSuggestionsAt(24, "Horde")
 /run AGC_VerifyZoneMapIDs()
+/run AGC_DumpZoneMapIDs()
 /run AGC_ActiveEvents()
 /run AGC_ActiveEvents(2026, 10, 20)
 

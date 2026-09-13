@@ -90,9 +90,16 @@ Composition rules (first pass):
 - Event cards always surface when live, regardless of level.
 
 **`services/ZoneService.lua`** + `data/Zones/era.lua`, `data/Zones/tbc.lua`
-New dataset. Per zone: `name`, `uiMapID`, `levelRange = { min, max }`, `faction`
-(`nil` = contested/both), `continent`, `recommendedLevel`, short `overview`, and an
-optional `guideID` linking to a levelling guide (Part 2). ~40 Era zones, ~10 TBC.
+New dataset. Per zone: `name`, `levelRange = { min, max }`, `faction` (`nil` =
+contested/both), `continent`, `rec`, `races` for starting zones, short `overview`, and
+an optional `guideID` linking to a levelling guide (Part 2). 38 Era zones, 12 TBC.
+
+**Map ids are never hard-coded.** Era, BCC and retail number their maps differently --
+Elwynn Forest is 1429 on Era but 37 on retail -- so a hand-written list is wrong on at
+least one client, and wrong *silently*: the card renders fine and just opens the wrong
+map. The data carries only the zone's name and `ZoneService` asks the client for the
+id, walking the map tree with a bounded scan as fallback. This was learned the hard
+way: the first attempt hard-coded retail ids and all 50 were wrong in-game.
 
 **`services/WorldEventService.lua`** + `data/WorldEvents.lua`
 Darkmoon Faire and holiday events (Lunar Festival, Love is in the Air, Noblegarden,
@@ -108,14 +115,17 @@ Era and BCC. Two kinds of entry:
 
 ```lua
 -- Fixed calendar dates, repeating annually
-{ id = "hallowsend", name = "Hallow's End", icon = ...,
+{ id = "hallowsend", name = "Hallow's End", rule = "fixedDate",
   starts = { month = 10, day = 18 }, ends = { month = 11, day = 1 },
-  zones = { 1453, 1454 }, summary = "..." },
+  locations = { { name = "Capital cities" } }, summary = "..." },
 
 -- Rule-based, for events that move
-{ id = "darkmoon", name = "Darkmoon Faire", icon = ...,
-  rule = "firstMondayOfMonth", duration = 7,
-  rotates = { 1429, 1412 },   -- Elwynn Forest / Mulgore, alternating months
+{ id = "darkmoon", name = "Darkmoon Faire",
+  rule = "firstMondayOfMonth", duration = 7, rotationOffset = 0,
+  locations = {                 -- rotating month by month
+    { name = "Elwynn Forest" }, { name = "Mulgore" },
+    { name = "Terokkar Forest", expansion = "tbc" },
+  },
   summary = "..." },
 ```
 

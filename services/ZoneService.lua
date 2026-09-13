@@ -22,6 +22,87 @@ function ZoneService.AddZone(zone)
 	table.insert(zones, zone)
 end
 
+--[[
+Map id resolution.
+
+uiMapIDs are NOT hard-coded in the data files. Classic Era, BCC and retail all number
+their maps differently -- Elwynn Forest is 1429 on Era but 37 on retail -- so any list
+we wrote by hand would be wrong on at least one client, and wrong silently: the card
+still renders, it just opens the wrong map.
+
+Instead the data carries only the zone's name, and the client is asked for the id. It
+always knows, on every client, in every locale it ships the zone under.
+]]
+local mapIDsByName
+
+local MAP_TYPE_ZONE = 3
+
+local function IndexMap(info)
+	if not (info and info.name and info.mapID) then return end
+	local existing = mapIDsByName[info.name]
+	-- Prefer a true Zone over a micro-dungeon or continent sharing the name.
+	if not existing or (info.mapType == MAP_TYPE_ZONE and existing.mapType ~= MAP_TYPE_ZONE) then
+		mapIDsByName[info.name] = { mapID = info.mapID, mapType = info.mapType }
+	end
+end
+
+local function CountIndex()
+	local count = 0
+	for _ in pairs(mapIDsByName) do count = count + 1 end
+	return count
+end
+
+local function BuildMapIndex()
+	mapIDsByName = { }
+	if not (C_Map and C_Map.GetMapInfo) then return end
+
+	-- Walk down from the cosmic/world roots where possible; it is far cheaper than a
+	-- scan and needs no knowledge of the client's id ranges.
+	if C_Map.GetMapChildrenInfo then
+		for _, root in ipairs({ 946, 947 }) do
+			local ok, children = pcall(C_Map.GetMapChildrenInfo, root, nil, true)
+			if ok and type(children) == "table" then
+				for _, info in ipairs(children) do
+					IndexMap(info)
+				end
+			end
+		end
+	end
+
+	-- If the tree walk found little or nothing, fall back to a bounded scan. Runs at
+	-- most once per session, lazily, the first time a map id is actually needed.
+	if CountIndex() < 20 then
+		for id = 1, 2500 do
+			local ok, info = pcall(C_Map.GetMapInfo, id)
+			if ok then IndexMap(info) end
+		end
+	end
+end
+
+function ZoneService.GetMapIDByName(name)
+	if not name then return nil end
+	if not mapIDsByName then BuildMapIndex() end
+	local entry = mapIDsByName[name]
+	return entry and entry.mapID or nil
+end
+
+-- Resolved id for a zone, cached per zone. `false` records "looked up, not found" so
+-- a miss isn't retried on every refresh.
+function ZoneService.GetZoneMapID(zone)
+	if not zone then return nil end
+	if zone.resolvedMapID == nil then
+		zone.resolvedMapID = ZoneService.GetMapIDByName(zone.name) or false
+	end
+	return zone.resolvedMapID or nil
+end
+
+function ZoneService.RebuildMapIndex()
+	mapIDsByName = nil
+	for _, zone in ipairs(zones) do
+		zone.resolvedMapID = nil
+	end
+end
+
 local function IsBurningCrusade()
 	return select(4, GetBuildInfo()) >= 20000
 end
@@ -51,7 +132,7 @@ end
 
 function ZoneService.GetZoneByMapID(uiMapID)
 	for _, zone in ipairs(zones) do
-		if zone.uiMapID == uiMapID then
+		if ZoneService.GetZoneMapID(zone) == uiMapID then
 			return zone
 		end
 	end
@@ -130,29 +211,37 @@ end
 -- Debug helpers (see todo.md) -------------------------------------------------
 
 --[[
-Checks every registered uiMapID against the client's own map data. The ids are
-hand-entered, and a wrong one fails silently (the suggestion still renders, it just
-points at the wrong map), so this is the cheap way to catch a typo.
+Reports any zone whose name the client does not recognise as a map. A miss is not
+fatal -- the card still works, its click just won't open a map -- but it means either
+a typo in our name or a zone this client spells differently.
 ]]
 _G.AGC_VerifyZoneMapIDs = function()
 	if not (C_Map and C_Map.GetMapInfo) then
 		print("|cffff5555[AGC]|r C_Map.GetMapInfo unavailable on this client.")
 		return
 	end
-	local checked, problems = 0, 0
+	ZoneService.RebuildMapIndex()
+	local checked, unresolved = 0, 0
 	for _, zone in ipairs(zones) do
-		checked = checked + 1
-		local info = C_Map.GetMapInfo(zone.uiMapID)
-		if not info then
-			problems = problems + 1
-			print(("|cffff5555[AGC]|r %s: uiMapID %d does not exist"):format(zone.name, zone.uiMapID))
-		elseif info.name ~= zone.name then
-			problems = problems + 1
-			print(("|cffff5555[AGC]|r %s: uiMapID %d is actually \"%s\""):format(
-				zone.name, zone.uiMapID, tostring(info.name)))
+		if PassesClientRules(zone) then
+			checked = checked + 1
+			if not ZoneService.GetZoneMapID(zone) then
+				unresolved = unresolved + 1
+				print(("|cffff5555[AGC]|r %s: this client has no map by that name"):format(zone.name))
+			end
 		end
 	end
-	print(("|cff33ff99[AGC]|r checked %d zone map ids, %d problems."):format(checked, problems))
+	print(("|cff33ff99[AGC]|r resolved %d of %d zone map ids (%d unresolved)."):format(
+		checked - unresolved, checked, unresolved))
+end
+
+-- Prints the id the client resolved for each zone, for reference.
+_G.AGC_DumpZoneMapIDs = function()
+	for _, zone in ipairs(zones) do
+		if PassesClientRules(zone) then
+			print(("  %-28s %s"):format(zone.name, tostring(ZoneService.GetZoneMapID(zone) or "unresolved")))
+		end
+	end
 end
 
 _G.AGC_ZonesForLevel = function(level, faction)
