@@ -62,6 +62,12 @@ local function GetQuestTitleByID(questID)
 	return nil
 end
 
+-- Exposed so AutoQuestService can turn a questID from the quest frame into the name
+-- the guides are written against.
+function GuideProgressService.GetQuestTitleByID(questID)
+	return GetQuestTitleByID(questID)
+end
+
 --[[
 Every quest currently in the log, as a set of titles, plus a second set of the ones
 whose objectives are all done. Written against both the modern C_QuestLog API and the

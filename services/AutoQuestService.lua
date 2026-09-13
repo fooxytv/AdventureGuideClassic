@@ -82,6 +82,31 @@ function AutoQuestService.GetIntent(title)
 	return nil
 end
 
+--[[
+The title of the quest the open quest frame is about.
+
+GetTitleText is the obvious source but is not dependable at the moment these events
+fire, so fall back to resolving GetQuestID through the quest database -- which is what
+the established guide addons key off throughout. Either alone leaves a gap; the guides
+here are written against names, so a name is what has to come out.
+]]
+local function OfferedQuestTitle()
+	if type(GetTitleText) == "function" then
+		local ok, title = pcall(GetTitleText)
+		title = ok and Trim(title) or nil
+		if title and title ~= "" then return title end
+	end
+	if type(GetQuestID) == "function" then
+		local ok, questID = pcall(GetQuestID)
+		if ok and type(questID) == "number" and questID > 0 then
+			local title = GuideProgressService.GetQuestTitleByID
+				and GuideProgressService.GetQuestTitleByID(questID)
+			if title and title ~= "" then return Trim(title) end
+		end
+	end
+	return nil
+end
+
 local function AutoAcceptEnabled()
 	return SettingsService.IsGuideAutoAcceptEnabled()
 end
@@ -94,7 +119,7 @@ end
 
 local function OnQuestDetail()
 	if not AutoAcceptEnabled() then return end
-	local title = GetTitleText and GetTitleText()
+	local title = OfferedQuestTitle()
 	Trace("QUEST_DETAIL %s -> %s", tostring(title),
 		tostring(AutoQuestService.GetIntent(title) or "none"))
 	if AutoQuestService.GetIntent(title) == "accept" and AcceptQuest then
@@ -141,7 +166,7 @@ end
 
 local function OnQuestProgress()
 	if not AutoTurnInEnabled() then return end
-	local title = GetTitleText and GetTitleText()
+	local title = OfferedQuestTitle()
 	local completable = IsQuestCompletable and IsQuestCompletable()
 	Trace("QUEST_PROGRESS %s -> %s (completable %s)", tostring(title),
 		tostring(AutoQuestService.GetIntent(title) or "none"), tostring(completable))
@@ -153,7 +178,7 @@ end
 
 local function OnQuestComplete()
 	if not AutoTurnInEnabled() then return end
-	local title = GetTitleText and GetTitleText()
+	local title = OfferedQuestTitle()
 	Trace("QUEST_COMPLETE %s -> %s", tostring(title),
 		tostring(AutoQuestService.GetIntent(title) or "none"))
 	if AutoQuestService.GetIntent(title) ~= "turnin" then return end
@@ -174,85 +199,118 @@ end
 
 -- Gossip ------------------------------------------------------------------------
 
+--[[
+Gossip quest lists, returned as entries that know how to select THEMSELVES.
+
+The two APIs disagree about what a quest is addressed by, and mixing them up fails
+silently -- you select the wrong quest, or none:
+
+  modern  C_GossipInfo.SelectAvailableQuest takes a QUEST ID
+  legacy  SelectGossipAvailableQuest takes a 1-based INDEX
+
+Returning a closure per entry keeps that difference in one place instead of leaking an
+"is this an index or an id?" question into the caller.
+
+The legacy calls also return a flat varargs list, several fields per quest, and the
+field count differs between the two: 7 for available, 6 for active. The stride is
+computed from the actual count where possible and falls back to those figures.
+]]
+local function UnpackLegacy(packed, countFn, fallbackStride, makeSelect)
+	local entries = { }
+	if #packed == 0 then return entries end
+	local count
+	if type(countFn) == "function" then
+		local ok, value = pcall(countFn)
+		if ok and type(value) == "number" and value > 0 then count = value end
+	end
+	local stride = fallbackStride
+	if count and count > 0 and #packed % count == 0 then
+		stride = math.floor(#packed / count)
+	end
+	if stride < 1 then stride = fallbackStride end
+	local index = 0
+	for i = 1, #packed, stride do
+		index = index + 1
+		local position = index
+		table.insert(entries, {
+			title = packed[i],
+			Select = function() makeSelect(position) end,
+		})
+	end
+	return entries
+end
+
 local function GetGossipAvailable()
-	if type(C_GossipInfo) == "table" and type(C_GossipInfo.GetAvailableQuests) == "function" then
+	if type(C_GossipInfo) == "table"
+		and type(C_GossipInfo.GetAvailableQuests) == "function"
+		and type(C_GossipInfo.SelectAvailableQuest) == "function" then
 		local ok, quests = pcall(C_GossipInfo.GetAvailableQuests)
-		if ok and type(quests) == "table" then return quests, true end
-	end
-	if type(GetGossipAvailableQuests) == "function" then
-		local packed = { GetGossipAvailableQuests() }
-		local quests = { }
-		-- Older clients return a flat list, several fields per quest.
-		local stride = (GetNumGossipAvailableQuests and #packed > 0
-			and math.floor(#packed / math.max(1, GetNumGossipAvailableQuests()))) or 6
-		for i = 1, #packed, stride do
-			table.insert(quests, { title = packed[i] })
+		if ok and type(quests) == "table" then
+			local entries = { }
+			for _, quest in ipairs(quests) do
+				local questID = quest.questID
+				table.insert(entries, {
+					title = quest.title,
+					Select = function() C_GossipInfo.SelectAvailableQuest(questID) end,
+				})
+			end
+			return entries
 		end
-		return quests, false
 	end
-	return { }, false
+	if type(GetGossipAvailableQuests) == "function"
+		and type(SelectGossipAvailableQuest) == "function" then
+		return UnpackLegacy({ GetGossipAvailableQuests() }, GetNumGossipAvailableQuests, 7,
+			SelectGossipAvailableQuest)
+	end
+	return { }
 end
 
 local function GetGossipActive()
-	if type(C_GossipInfo) == "table" and type(C_GossipInfo.GetActiveQuests) == "function" then
+	if type(C_GossipInfo) == "table"
+		and type(C_GossipInfo.GetActiveQuests) == "function"
+		and type(C_GossipInfo.SelectActiveQuest) == "function" then
 		local ok, quests = pcall(C_GossipInfo.GetActiveQuests)
-		if ok and type(quests) == "table" then return quests, true end
-	end
-	if type(GetGossipActiveQuests) == "function" then
-		local packed = { GetGossipActiveQuests() }
-		local quests = { }
-		local stride = (GetNumGossipActiveQuests and #packed > 0
-			and math.floor(#packed / math.max(1, GetNumGossipActiveQuests()))) or 6
-		for i = 1, #packed, stride do
-			table.insert(quests, { title = packed[i], isComplete = nil })
+		if ok and type(quests) == "table" then
+			local entries = { }
+			for _, quest in ipairs(quests) do
+				local questID = quest.questID
+				table.insert(entries, {
+					title = quest.title,
+					Select = function() C_GossipInfo.SelectActiveQuest(questID) end,
+				})
+			end
+			return entries
 		end
-		return quests, false
 	end
-	return { }, false
+	if type(GetGossipActiveQuests) == "function"
+		and type(SelectGossipActiveQuest) == "function" then
+		return UnpackLegacy({ GetGossipActiveQuests() }, GetNumGossipActiveQuests, 6,
+			SelectGossipActiveQuest)
+	end
+	return { }
 end
 
-local function SelectAvailable(index, modern)
-	if modern and C_GossipInfo and C_GossipInfo.SelectAvailableQuest then
-		C_GossipInfo.SelectAvailableQuest(index)
-	elseif SelectGossipAvailableQuest then
-		SelectGossipAvailableQuest(index)
-	end
-end
-
-local function SelectActive(index, modern)
-	if modern and C_GossipInfo and C_GossipInfo.SelectActiveQuest then
-		C_GossipInfo.SelectActiveQuest(index)
-	elseif SelectGossipActiveQuest then
-		SelectGossipActiveQuest(index)
-	end
-end
-
---[[
-An NPC with a gossip menu hides its quests one level down. Pick the one the guide is
-after -- turn-ins first, so a hub NPC who both takes and gives closes the loop before
-starting a new one.
-]]
 local function OnGossipShow()
 	if AutoTurnInEnabled() then
-		local active, modern = GetGossipActive()
+		local active = GetGossipActive()
 		Trace("  gossip: %d active quest(s)", #active)
 		for index, quest in ipairs(active) do
 			Trace("    active %d: %s -> %s", index, tostring(quest.title),
 				tostring(AutoQuestService.GetIntent(quest.title) or "none"))
 			if AutoQuestService.GetIntent(quest.title) == "turnin" then
-				SelectActive(index, modern)
+				quest.Select()
 				return
 			end
 		end
 	end
 	if AutoAcceptEnabled() then
-		local available, modern = GetGossipAvailable()
+		local available = GetGossipAvailable()
 		Trace("  gossip: %d available quest(s)", #available)
 		for index, quest in ipairs(available) do
 			Trace("    available %d: %s -> %s", index, tostring(quest.title),
 				tostring(AutoQuestService.GetIntent(quest.title) or "none"))
 			if AutoQuestService.GetIntent(quest.title) == "accept" then
-				SelectAvailable(index, modern)
+				quest.Select()
 				return
 			end
 		end
@@ -307,7 +365,7 @@ end
 
 _G.AGC_QuestIntent = function(title)
 	if not title then
-		title = GetTitleText and GetTitleText() or nil
+		title = OfferedQuestTitle()
 	end
 	print(("|cff33ff99[AGC]|r intent for %s: %s"):format(
 		tostring(title), tostring(AutoQuestService.GetIntent(title) or "none")))
