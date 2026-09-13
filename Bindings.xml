@@ -4,4 +4,8 @@
         SlashCmdList["ADVENTUREGUIDECLASSIC"]()
     </Binding>
 
+    <Binding name="TOGGLE_ADVENTUREGUIDECLASSIC_GUIDE" category="AdventureGuide Classic">
+        AGC_ToggleGuide()
+    </Binding>
+
 </Bindings>

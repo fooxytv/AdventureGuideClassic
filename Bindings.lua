@@ -5,6 +5,7 @@ All rights reserved.
 Programming by: TomCat / TomCat's Gaming
 ]]
 _G["BINDING_NAME_TOGGLE_ADVENTUREGUIDECLASSIC"] = "Toggle Main Window"
+_G["BINDING_NAME_TOGGLE_ADVENTUREGUIDECLASSIC_GUIDE"] = "Toggle Levelling Guide"
 
 local frame = CreateFrame("FRAME")
 

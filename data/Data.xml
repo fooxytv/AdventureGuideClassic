@@ -114,6 +114,9 @@
     <!-- Holidays and the Darkmoon Faire, for Suggested Content -->
     <Script file="data/WorldEvents.lua" />
 
+    <!-- Levelling guides -->
+    <Script file="data/Guides/era/alliance-elwynn-1-10.lua" />
+
     <SimpleHTML name="AdventureGuideClassic_SampleEncounterDescription"
                 file="Interface\AddOns\AdventureGuideClassic\data\encounterDescriptions\sample.html"
                 virtual="true">

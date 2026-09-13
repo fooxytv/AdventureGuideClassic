@@ -11,6 +11,8 @@ SlashCmdList["ADVENTUREGUIDECLASSIC"] = function(message)
 	message = string.lower(message or "")
 	if (message == "") then
 		UI.ToggleEncounterJournal()
+	elseif (message == "guide") then
+		GuideWindow.Toggle()
 	elseif (message == "button") then
 		MinimapButton.Toggle()
 	elseif (message == "modeltune") then

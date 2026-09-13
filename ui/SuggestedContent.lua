@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -61,6 +61,13 @@ local function Card_OnClick(self)
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(card.instance)
 		components.EncounterFrame.ShowInstanceInfo(card.instance)
+	elseif card.type == "zone" and GuideService.GetGuideForZone(card.title) then
+		-- Closes the loop: the zone card answers "where", the guide answers "what to
+		-- do there". Falls through to the map below for zones we have no guide for.
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
+		local guide = GuideService.GetGuideForZone(card.title)
+		GuideService.SetCurrentGuide(guide.id)
+		GuideWindow.Show()
 	elseif card.type == "zone" or card.type == "event" then
 		if not card.uiMapID then return end
 		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)

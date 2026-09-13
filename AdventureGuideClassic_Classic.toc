@@ -8,6 +8,6 @@
 ## Notes: Provides a dungeon and raid journal for Classic WoW
 ## DefaultState: enabled
 ## SavedVariables: AdventureGuideClassic_Account
-## SavedVariablesPerCharacter: AdventureGuideClassic_Lockout
+## SavedVariablesPerCharacter: AdventureGuideClassic_Lockout, AdventureGuideClassic_Character
 
 Main.xml
