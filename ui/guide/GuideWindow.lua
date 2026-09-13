@@ -14,38 +14,37 @@ UI.Init: you read this while questing, with the main window closed, so it cannot
 that window's lifetime. lib/TomCats/MinimapButton.lua sets the precedent for a UI
 module that initialises itself.
 
-Presentation: separate translucent panels floating on the world rather than one solid
-window. A guide sits on screen for hours while you play, so it has to stay out of the
-way -- an opaque frame the size of this one is a wall. Each panel carries the tooltip
-backdrop at partial alpha with a tan border, so the world still reads through it.
+Presentation: two translucent panels floating on the world, no enclosing frame. A
+guide sits on screen for hours, so it has to stay out of the way -- an opaque window
+this size is a wall, and the world should read through the gaps.
 
-	  (ring) [ title            < > cog ]     <- header, ring overhangs the left
-	         [ progress bar               ]
-	[ CURRENT STEP                        ]   <- its own panel
-	[ upcoming steps, scrolled            ]   <- and another
+	            Step: 4 of 36              <- floats above the header
+	  (ring) [ Elwynn Forest (1-10)  < > ]  <- ring overhangs the left, cog on the ring
+	         [ ===progress=========      ]
+	[ THE CURRENT STEP, and only that     ]
 
-Portrait layering matters and is easy to get wrong: portrait-ring-withbg has an OPAQUE
-background, so the ring goes DOWN FIRST at BACKGROUND and the icon sits on top at
-ARTWORK. Drawing the ring above the icon paints over the very thing it frames -- which
-is exactly what an earlier version did, rendering a black disc.
-ui/EncounterJournal.lua's version icon already uses this ordering correctly.
+Deliberately shows ONE step. An upcoming list was tried and dropped: it filled most of
+the frame with things the player cannot act on yet, and the arrows already cover
+moving around. What is on screen is what to do now.
+
+Portrait layering is easy to get wrong: the ring goes DOWN FIRST at BACKGROUND with
+the icon above it at ARTWORK. portrait-ring-withbg (the fallback ring) has an opaque
+background and will paint over the icon if drawn above it -- which an earlier version
+did, rendering a black disc.
 
 Behaviours: top-right by default, left-drag to move, right-click passes through so the
-camera still turns, lockable to ignore the mouse entirely, its own scale, and
-auto-hide inside instances unless the step itself is an instance step.
+camera still turns, lockable to ignore the mouse entirely, its own scale and opacity,
+and auto-hide inside instances unless the step itself is an instance step.
 ]]
 
 GuideWindow = { }
 
 local WIDTH = 300
-local HEADER_HEIGHT = 40
-local RING_SIZE, PORTRAIT_SIZE = 52, 34
-local PANEL_GAP = 4
-local LIST_HEIGHT = 210
-local ROW_SPACING = 5
-local MAX_UPCOMING = 40
+local HEADER_HEIGHT = 44
+local RING_SIZE, PORTRAIT_SIZE = 54, 36
+local PANEL_GAP = 5
 
-local frame, header, currentPanel, listPanel, scrollFrame, rowPool
+local frame, header, stepPanel
 local isMoving
 local initialised
 
@@ -53,12 +52,14 @@ local function IsLocked()
 	return SettingsService.IsGuideLocked()
 end
 
---[[
-The translucent panel look. Uses Blizzard's shared constant where it exists and an
-equivalent literal where it does not, so neither client is assumed.
-]]
+-- Panels --------------------------------------------------------------------------
+
 local panels = { }
 
+--[[
+The translucent panel look. Uses Blizzard's shared backdrop constant where it exists
+and an equivalent literal where it does not, so neither client is assumed.
+]]
 local function ApplyPanelBackdrop(panel, alpha)
 	panel.alphaScale = alpha or 1
 	panels[panel] = true
@@ -120,11 +121,11 @@ local function ApplyScale()
 	frame:SetScale(SettingsService.GetGuideScale())
 end
 
--- Buttons -----------------------------------------------------------------------
+-- Buttons ---------------------------------------------------------------------------
 
-local function CreateIconButton(parent, up, down, tooltip, onClick)
+local function CreateIconButton(parent, size, up, down, tooltip, onClick)
 	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(20, 20)
+	button:SetSize(size, size)
 	button:SetNormalTexture(up)
 	button:SetPushedTexture(down or up)
 	button:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
@@ -138,21 +139,44 @@ local function CreateIconButton(parent, up, down, tooltip, onClick)
 	return button
 end
 
--- Header --------------------------------------------------------------------------
+--[[
+The gold ring around the portrait. Prefers the artifact item-border atlas, which is
+the look wanted, and falls back to the portrait ring texture where that atlas is not
+present -- atlases are not guaranteed across clients and a missing one draws nothing
+at all, silently.
+]]
+local function ApplyRingTexture(texture)
+	if texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo then
+		local ok, info = pcall(C_Texture.GetAtlasInfo, "auctionhouse-itemicon-border-artifact")
+		if ok and info then
+			texture:SetAtlas("auctionhouse-itemicon-border-artifact")
+			return
+		end
+	end
+	texture:SetTexture("Interface/Common/portrait-ring-withbg")
+end
+
+-- Header ----------------------------------------------------------------------------
 
 local function CreateHeader(parent)
 	local bar = CreatePanel(parent)
 	bar:SetHeight(HEADER_HEIGHT)
 	-- Inset from the left so the portrait ring can overhang into the gap.
-	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", RING_SIZE - 20, 0)
+	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", RING_SIZE - 22, 0)
 	bar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, 0)
 
-	-- Ring FIRST, at BACKGROUND: this atlas has an opaque background and would hide
-	-- the portrait if drawn above it.
+	-- Step label floats above the header rather than inside it, keeping the header
+	-- itself down to the title and controls.
+	bar.stepText = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	bar.stepText:SetPoint("BOTTOM", bar, "TOP", 0, 2)
+	bar.stepText:SetTextScale(0.95)
+
+	-- Ring FIRST at BACKGROUND, icon above it at ARTWORK. See the file header.
 	bar.ring = parent:CreateTexture(nil, "BACKGROUND")
-	bar.ring:SetTexture("Interface/Common/portrait-ring-withbg")
+	ApplyRingTexture(bar.ring)
 	bar.ring:SetSize(RING_SIZE, RING_SIZE)
-	bar.ring:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 4)
+	bar.ring:SetPoint("LEFT", parent, "LEFT", 0, 0)
+	bar.ring:SetPoint("TOP", bar, "TOP", 0, 6)
 
 	bar.portrait = parent:CreateTexture(nil, "ARTWORK")
 	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
@@ -164,94 +188,52 @@ local function CreateHeader(parent)
 		"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 	bar.portrait:AddMaskTexture(mask)
 
-	bar.settings = CreateIconButton(bar, "Interface/GossipFrame/BinderGossipIcon", nil,
-		"Guide options", function(self) GuideWindow.ShowMenu(self) end)
-	bar.settings:SetPoint("RIGHT", -8, 2)
+	-- Cog tucked onto the ring, so the header keeps its full width for the title.
+	bar.settings = CreateIconButton(parent, 18, "Interface/GossipFrame/BinderGossipIcon",
+		nil, "Guide options", function(self) GuideWindow.ShowMenu(self) end)
+	bar.settings:SetPoint("BOTTOMRIGHT", bar.ring, "BOTTOMRIGHT", 2, 2)
 
-	bar.next = CreateIconButton(bar, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
+	bar.next = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-NextPage-Down", "Next step",
 		function() GuideService.NextStep() end)
-	bar.next:SetPoint("RIGHT", bar.settings, "LEFT", -4, 0)
+	bar.next:SetPoint("TOPRIGHT", -8, -6)
 
-	bar.back = CreateIconButton(bar, "Interface/Buttons/UI-SpellbookIcon-PrevPage-Up",
+	bar.back = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-PrevPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-PrevPage-Down", "Previous step",
 		function() GuideService.PreviousStep() end)
 	bar.back:SetPoint("RIGHT", bar.next, "LEFT", -2, 0)
 
-	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	bar.title:SetPoint("LEFT", 14, 4)
+	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	bar.title:SetTextScale(0.85)
+	bar.title:SetPoint("TOPLEFT", 14, -8)
 	bar.title:SetPoint("RIGHT", bar.back, "LEFT", -6, 0)
 	bar.title:SetJustifyH("LEFT")
 	bar.title:SetWordWrap(false)
 
-	-- A thin progress bar reading the whole guide, so you can see how far through the
-	-- zone you are without counting steps.
+	-- Progress across the whole guide, so you can see how far through a zone you are
+	-- without counting steps.
 	bar.progress = CreateFrame("StatusBar", nil, bar)
-	bar.progress:SetHeight(5)
-	bar.progress:SetPoint("BOTTOMLEFT", 12, 7)
-	bar.progress:SetPoint("BOTTOMRIGHT", -12, 7)
+	bar.progress:SetHeight(6)
+	bar.progress:SetPoint("BOTTOMLEFT", 14, 8)
+	bar.progress:SetPoint("BOTTOMRIGHT", -12, 8)
 	bar.progress:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
-	bar.progress:SetStatusBarColor(0.25, 0.55, 0.85)
+	bar.progress:SetStatusBarColor(0.20, 0.50, 0.90)
 	bar.progress:SetMinMaxValues(0, 1)
 	bar.progress:SetValue(0)
 	bar.progress.bg = bar.progress:CreateTexture(nil, "BACKGROUND")
 	bar.progress.bg:SetAllPoints()
-	bar.progress.bg:SetColorTexture(0, 0, 0, 0.5)
-
-	bar.stepText = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	bar.stepText:SetPoint("BOTTOMRIGHT", bar.progress, "TOPRIGHT", 0, 1)
-	bar.stepText:SetTextColor(0.65, 0.85, 1)
+	bar.progress.bg:SetColorTexture(0, 0, 0, 0.55)
 
 	return bar
 end
 
--- Step rows ----------------------------------------------------------------------
-
---[[
-One upcoming step. Clicking it jumps straight there, so a quest done out of order does
-not mean clicking Next repeatedly.
-]]
-local function CreateRow(parent)
-	local row = CreateFrame("Button", nil, parent)
-	row:SetHeight(20)
-	row.icon = row:CreateTexture(nil, "ARTWORK")
-	row.icon:SetSize(14, 14)
-	row.icon:SetPoint("TOPLEFT", 0, -2)
-	row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	row.text:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", 6, 2)
-	row.text:SetPoint("RIGHT", row, "RIGHT", 0, 0)
-	row.text:SetJustifyH("LEFT")
-	row.text:SetJustifyV("TOP")
-	row.text:SetSpacing(2)
-	row.text:SetTextColor(0.80, 0.80, 0.80)
-	row.highlight = row:CreateTexture(nil, "BACKGROUND")
-	row.highlight:SetAllPoints()
-	row.highlight:SetColorTexture(1, 0.82, 0, 0.10)
-	row.highlight:Hide()
-	row:SetScript("OnEnter", function(self) self.highlight:Show() end)
-	row:SetScript("OnLeave", function(self) self.highlight:Hide() end)
-	row:SetScript("OnClick", function(self)
-		if self.stepIndex then
-			GuideService.SetStepIndex(self.stepIndex)
-		end
-	end)
-	return row
-end
-
-local function AcquireRow(index)
-	if not rowPool[index] then
-		rowPool[index] = CreateRow(scrollFrame.child)
-	end
-	return rowPool[index]
-end
-
--- Frame --------------------------------------------------------------------------
+-- Frame -----------------------------------------------------------------------------
 
 local function CreateWindow()
-	-- The container itself is invisible: the panels below are the visible parts, so
-	-- the world shows through the gaps between them.
+	-- The container is invisible: the panels are the visible parts, so the world shows
+	-- through the gaps between them.
 	frame = CreateFrame("Frame", addonName .. "_GuideWindow", UIParent)
-	frame:SetSize(WIDTH, 240)
+	frame:SetSize(WIDTH, 120)
 	frame:SetFrameStrata("MEDIUM")
 	frame:SetClampedToScreen(true)
 	frame:SetMovable(true)
@@ -289,54 +271,23 @@ local function CreateWindow()
 
 	header = CreateHeader(frame)
 
-	-- Current step, its own panel so the eye lands on it first.
-	currentPanel = CreatePanel(frame, 0.85)
-	currentPanel:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -(HEADER_HEIGHT + PANEL_GAP))
-	currentPanel:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -(HEADER_HEIGHT + PANEL_GAP))
-	currentPanel:SetHeight(50)
+	-- The current step, and only the current step.
+	stepPanel = CreatePanel(frame)
+	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -(RING_SIZE - 22), -PANEL_GAP)
+	stepPanel:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -PANEL_GAP)
+	stepPanel:SetHeight(52)
 
-	currentPanel.icon = currentPanel:CreateTexture(nil, "ARTWORK")
-	currentPanel.icon:SetSize(18, 18)
-	currentPanel.icon:SetPoint("TOPLEFT", 12, -12)
+	stepPanel.icon = stepPanel:CreateTexture(nil, "ARTWORK")
+	stepPanel.icon:SetSize(18, 18)
+	stepPanel.icon:SetPoint("TOPLEFT", 14, -14)
 
-	currentPanel.text = currentPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	currentPanel.text:SetPoint("TOPLEFT", currentPanel.icon, "TOPRIGHT", 8, 2)
-	currentPanel.text:SetPoint("RIGHT", currentPanel, "RIGHT", -12, 0)
-	currentPanel.text:SetJustifyH("LEFT")
-	currentPanel.text:SetJustifyV("TOP")
-	currentPanel.text:SetSpacing(3)
+	stepPanel.text = stepPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	stepPanel.text:SetPoint("TOPLEFT", stepPanel.icon, "TOPRIGHT", 8, 2)
+	stepPanel.text:SetPoint("RIGHT", stepPanel, "RIGHT", -14, 0)
+	stepPanel.text:SetJustifyH("LEFT")
+	stepPanel.text:SetJustifyV("TOP")
+	stepPanel.text:SetSpacing(3)
 
-	-- Upcoming steps in a panel of their own.
-	listPanel = CreatePanel(frame)
-	listPanel:SetPoint("TOPLEFT", currentPanel, "BOTTOMLEFT", 0, -PANEL_GAP)
-	listPanel:SetPoint("TOPRIGHT", currentPanel, "BOTTOMRIGHT", 0, -PANEL_GAP)
-	listPanel:SetHeight(LIST_HEIGHT)
-
-	-- Plain ScrollFrame with MinimalScrollBar, the pattern
-	-- ui/DynamicContentScroller.lua already proves on both clients -- ScrollBox list
-	-- views are the API that diverges between Era and BCC.
-	scrollFrame = CreateFrame("ScrollFrame", nil, listPanel)
-	scrollFrame:SetPoint("TOPLEFT", 12, -10)
-	scrollFrame:SetPoint("BOTTOMRIGHT", -24, 10)
-	scrollFrame.scrollBarX = -10
-	scrollFrame.scrollBarTopY = -4
-	scrollFrame.scrollBarBottomY = 4
-	scrollFrame.scrollBarTemplate = "MinimalScrollBar"
-	scrollFrame.child = CreateFrame("Frame", nil, scrollFrame)
-	scrollFrame.child:SetSize(WIDTH - 40, 10)
-	scrollFrame.child:SetPoint("TOPLEFT")
-	scrollFrame:SetScrollChild(scrollFrame.child)
-	if ScrollFrame_OnLoad then
-		pcall(ScrollFrame_OnLoad, scrollFrame)
-	end
-
-	frame.empty = listPanel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	frame.empty:SetPoint("TOPLEFT", 14, -14)
-	frame.empty:SetPoint("RIGHT", listPanel, "RIGHT", -14, 0)
-	frame.empty:SetJustifyH("LEFT")
-	frame.empty:Hide()
-
-	rowPool = { }
 	ApplyScale()
 	frame:Hide()
 end
@@ -355,6 +306,7 @@ function GuideWindow.EnsureCreated()
 			ApplyScale()
 		elseif key == "Opacity" then
 			ApplyOpacity()
+			if GuideMenu and GuideMenu.Refresh then GuideMenu.Refresh() end
 		elseif key == "Locked" then
 			frame:EnableMouse(not IsLocked())
 		end
@@ -365,18 +317,6 @@ function GuideWindow.EnsureCreated()
 			GuideWindow.Refresh()
 		end
 	end)
-end
-
---[[
-Sizes the container to whatever the panels ended up needing, so the invisible frame
-matches its visible contents and dragging picks up where you expect.
-]]
-local function ResizeToContents()
-	local height = HEADER_HEIGHT + PANEL_GAP + currentPanel:GetHeight()
-	if listPanel:IsShown() then
-		height = height + PANEL_GAP + listPanel:GetHeight()
-	end
-	frame:SetHeight(height)
 end
 
 function GuideWindow.Refresh()
@@ -390,77 +330,32 @@ function GuideWindow.Refresh()
 		header.progress:SetValue(0)
 		header.back:SetEnabled(false)
 		header.next:SetEnabled(false)
-		currentPanel:Hide()
-		listPanel:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -(HEADER_HEIGHT + PANEL_GAP))
-		listPanel:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -(HEADER_HEIGHT + PANEL_GAP))
-		listPanel:SetHeight(70)
-		listPanel:Show()
-		frame.empty:SetText("No guide selected." ..
-			string.char(10) .. string.char(10) ..
-			"Use the cog above to choose one.")
-		frame.empty:Show()
-		for _, row in pairs(rowPool) do row:Hide() end
-		frame:SetHeight(HEADER_HEIGHT + PANEL_GAP + 70)
+		stepPanel.icon:SetTexture("Interface/GossipFrame/GossipGossipIcon")
+		stepPanel.text:SetText("No guide selected. Use the cog to choose one.")
+		stepPanel:SetHeight(math.max(46, stepPanel.text:GetStringHeight() + 30))
+		frame:SetHeight(HEADER_HEIGHT + PANEL_GAP + stepPanel:GetHeight())
 		frame:SetShown(ShouldBeShown())
 		return
 	end
 
-	frame.empty:Hide()
-	currentPanel:Show()
-	listPanel:ClearAllPoints()
-	listPanel:SetPoint("TOPLEFT", currentPanel, "BOTTOMLEFT", 0, -PANEL_GAP)
-	listPanel:SetPoint("TOPRIGHT", currentPanel, "BOTTOMRIGHT", 0, -PANEL_GAP)
-	listPanel:SetHeight(LIST_HEIGHT)
-
 	local index = GuideService.GetStepIndex(guide)
 	local total = #guide.steps
 	header.title:SetText(guide.title)
-	header.stepText:SetText(("%d / %d"):format(index, total))
+	header.stepText:SetText(("Step: %d of %d"):format(index, total))
 	header.progress:SetValue(total > 0 and (index / total) or 0)
 
 	local current = guide.steps[index]
 	if current then
-		currentPanel.icon:SetTexture(GuideTaskTypes.GetIcon(current))
-		currentPanel.text:SetText(GuideTaskTypes.GetText(current))
-		-- Grow to the text rather than clipping a step that carries a note.
-		currentPanel:SetHeight(math.max(46, currentPanel.text:GetStringHeight() + 28))
+		stepPanel.icon:SetTexture(GuideTaskTypes.GetIcon(current))
+		stepPanel.text:SetText(GuideTaskTypes.GetText(current))
 	end
-
-	local upcoming = GuideService.GetSteps(index + 1, MAX_UPCOMING)
-	local offsetY = 0
-	for position, entry in ipairs(upcoming) do
-		local row = AcquireRow(position)
-		row.stepIndex = entry.index
-		row.icon:SetTexture(GuideTaskTypes.GetIcon(entry.task))
-		row.text:SetText(GuideTaskTypes.GetText(entry.task))
-		row:ClearAllPoints()
-		row:SetPoint("TOPLEFT", scrollFrame.child, "TOPLEFT", 0, -offsetY)
-		row:SetPoint("RIGHT", scrollFrame.child, "RIGHT", 0, 0)
-		local height = math.max(20, row.text:GetStringHeight() + 6)
-		row:SetHeight(height)
-		row:Show()
-		offsetY = offsetY + height + ROW_SPACING
-	end
-	for position = #upcoming + 1, #rowPool do
-		rowPool[position]:Hide()
-	end
-	scrollFrame.child:SetHeight(math.max(10, offsetY))
-
-	-- Shrink the list panel when there is little left, rather than leaving dead space.
-	listPanel:SetHeight(math.min(LIST_HEIGHT, math.max(40, offsetY + 20)))
-	listPanel:SetShown(#upcoming > 0)
-
-	if #upcoming == 0 then
-		frame.empty:SetText("Guide complete.")
-		frame.empty:Show()
-		listPanel:SetHeight(46)
-		listPanel:Show()
-	end
+	-- Grow to the text rather than clipping a step that carries a note.
+	stepPanel:SetHeight(math.max(46, stepPanel.text:GetStringHeight() + 30))
 
 	header.back:SetEnabled(GuideService.HasPreviousStep())
 	header.next:SetEnabled(GuideService.HasNextStep() or (guide.next ~= nil))
 
-	ResizeToContents()
+	frame:SetHeight(HEADER_HEIGHT + PANEL_GAP + stepPanel:GetHeight())
 	frame:SetShown(ShouldBeShown())
 end
 
@@ -501,116 +396,11 @@ function GuideWindow.ResetPosition()
 end
 
 --[[
-Cog menu: guide selection, the automation toggles and window options. Rebuilt every
-time it opens so the ticks reflect the current settings rather than whatever was true
-when the menu was first created.
+The options panel lives in ui/guide/GuideMenu.lua -- a styled translucent panel rather
+than a UIDropDownMenu, matching the window itself. See that file for why.
 ]]
-local menuFrame
-
 function GuideWindow.ShowMenu(anchor)
-	if not menuFrame then
-		menuFrame = CreateFrame("Frame", addonName .. "_GuideMenu", UIParent, "UIDropDownMenuTemplate")
-	end
-	local function Initialize(_, level)
-		if level == 1 then
-			local info = UIDropDownMenu_CreateInfo()
-			info.isTitle, info.notCheckable = true, true
-			info.text = "Levelling Guide"
-			UIDropDownMenu_AddButton(info, level)
-
-			info = UIDropDownMenu_CreateInfo()
-			info.text = "Choose guide"
-			info.notCheckable = true
-			info.hasArrow = true
-			info.value = "guides"
-			UIDropDownMenu_AddButton(info, level)
-
-			info = UIDropDownMenu_CreateInfo()
-			info.isTitle, info.notCheckable = true, true
-			info.text = "Automation"
-			UIDropDownMenu_AddButton(info, level)
-
-			local toggles = {
-				{ "Advance steps automatically",
-					SettingsService.IsGuideAutoAdvanceEnabled,
-					SettingsService.SetGuideAutoAdvanceEnabled },
-				{ "Accept guide quests automatically",
-					SettingsService.IsGuideAutoAcceptEnabled,
-					SettingsService.SetGuideAutoAcceptEnabled },
-				{ "Hand in guide quests automatically",
-					SettingsService.IsGuideAutoTurnInEnabled,
-					SettingsService.SetGuideAutoTurnInEnabled },
-			}
-			for _, toggle in ipairs(toggles) do
-				local label, get, set = toggle[1], toggle[2], toggle[3]
-				info = UIDropDownMenu_CreateInfo()
-				info.text = label
-				info.checked = get()
-				info.keepShownOnClick = true
-				info.func = function() set(not get()) end
-				UIDropDownMenu_AddButton(info, level)
-			end
-
-			info = UIDropDownMenu_CreateInfo()
-			info.isTitle, info.notCheckable = true, true
-			info.text = "Window"
-			UIDropDownMenu_AddButton(info, level)
-
-			info = UIDropDownMenu_CreateInfo()
-			info.text = "Lock window"
-			info.checked = SettingsService.IsGuideLocked()
-			info.keepShownOnClick = true
-			info.func = function()
-				SettingsService.SetGuideLocked(not SettingsService.IsGuideLocked())
-			end
-			UIDropDownMenu_AddButton(info, level)
-
-			info = UIDropDownMenu_CreateInfo()
-			info.text = "Opacity"
-			info.notCheckable = true
-			info.hasArrow = true
-			info.value = "opacity"
-			UIDropDownMenu_AddButton(info, level)
-
-			info = UIDropDownMenu_CreateInfo()
-			info.text = "Reset position"
-			info.notCheckable = true
-			info.func = function() GuideWindow.ResetPosition() end
-			UIDropDownMenu_AddButton(info, level)
-
-			info = UIDropDownMenu_CreateInfo()
-			info.text = "Restart this guide"
-			info.notCheckable = true
-			info.func = function() GuideService.ResetProgress() end
-			UIDropDownMenu_AddButton(info, level)
-
-			info = UIDropDownMenu_CreateInfo()
-			info.text = "Hide guide"
-			info.notCheckable = true
-			info.func = function() GuideWindow.Hide() end
-			UIDropDownMenu_AddButton(info, level)
-		elseif level == 2 and UIDROPDOWNMENU_MENU_VALUE == "opacity" then
-			local current = SettingsService.GetGuideOpacity()
-			for _, value in ipairs({ 0.4, 0.55, 0.7, 0.85, 1.0 }) do
-				local info = UIDropDownMenu_CreateInfo()
-				info.text = ("%d%%"):format(value * 100)
-				info.checked = math.abs(current - value) < 0.01
-				info.func = function() SettingsService.SetGuideOpacity(value) end
-				UIDropDownMenu_AddButton(info, level)
-			end
-		elseif level == 2 and UIDROPDOWNMENU_MENU_VALUE == "guides" then
-			local current = GuideService.GetCurrentGuide()
-			for _, guide in ipairs(GuideService.GetGuidesForCharacter()) do
-				local info = UIDropDownMenu_CreateInfo()
-				info.text = ("%s (%d-%d)"):format(guide.title, guide.levels.min, guide.levels.max)
-				info.checked = current and current.id == guide.id
-				info.func = function() GuideService.SetCurrentGuide(guide.id) end
-				UIDropDownMenu_AddButton(info, level)
-			end
-		end
-	end
-	UIDropDownMenu_Initialize(menuFrame, Initialize, "MENU")
-	ToggleDropDownMenu(1, nil, menuFrame, anchor or "cursor", 0, 0)
+	GuideMenu.Toggle(anchor)
 end
 
 -- Initialise once the character is known; the window must be able to appear with the
@@ -640,7 +430,8 @@ _G.AGC_GuideStatus = function()
 	print(("  actually shown: %s"):format(tostring(GuideWindow.IsShown())))
 	if initialised then
 		local point, _, _, x, y = frame:GetPoint()
-		print(("  anchor:         %s %.0f,%.0f  scale %.2f"):format(
-			tostring(point), x or 0, y or 0, frame:GetScale()))
+		print(("  anchor:         %s %.0f,%.0f  scale %.2f  opacity %.2f"):format(
+			tostring(point), x or 0, y or 0, frame:GetScale(),
+			SettingsService.GetGuideOpacity()))
 	end
 end

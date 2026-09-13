@@ -43,5 +43,6 @@
     <!-- Levelling guide pop-out. Initialises itself on PLAYER_LOGIN rather than
          through UI.Init, so it can show with the main window never opened. -->
     <Script file="ui/guide/GuideTaskTypes.lua" />
+    <Script file="ui/guide/GuideMenu.lua" />
     <Script file="ui/guide/GuideWindow.lua" />
 </Ui>
