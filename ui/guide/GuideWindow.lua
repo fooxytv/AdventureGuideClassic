@@ -189,7 +189,6 @@ local function CreateHeader(parent)
 	mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
 		"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 	bar.portrait:AddMaskTexture(mask)
-	GuideWindow.UpdatePortrait()
 
 	bar.next = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-NextPage-Down", "Next step",
@@ -201,16 +200,23 @@ local function CreateHeader(parent)
 		function() GuideService.PreviousStep() end)
 	bar.back:SetPoint("RIGHT", bar.next, "LEFT", -2, 0)
 
-	-- Cog sits with the other controls. On the ring it collided with both the ring art
-	-- and the progress bar beneath it.
-	bar.settings = CreateIconButton(bar, 18, "Interface/GossipFrame/BinderGossipIcon",
+	-- Cog goes where the player frame puts the level badge: a spot Blizzard already
+	-- uses on a portrait, so it reads as part of the furniture. Sitting below and left
+	-- of the ring it also clears the progress bar, which is what went wrong when it was
+	-- pinned to the ring's other corner.
+	bar.settingsBadge = parent:CreateTexture(nil, "ARTWORK")
+	bar.settingsBadge:SetTexture("Interface/Common/portrait-ring-withbg")
+	bar.settingsBadge:SetSize(24, 24)
+	bar.settingsBadge:SetPoint("BOTTOMLEFT", bar.ring, "BOTTOMLEFT", -2, -2)
+
+	bar.settings = CreateIconButton(parent, 13, "Interface/GossipFrame/BinderGossipIcon",
 		nil, "Guide options", function() GuideWindow.ShowMenu() end)
-	bar.settings:SetPoint("RIGHT", bar.back, "LEFT", -4, 0)
+	bar.settings:SetPoint("CENTER", bar.settingsBadge, "CENTER", 0, 0)
 
 	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	bar.title:SetTextScale(0.85)
 	bar.title:SetPoint("TOPLEFT", RING_OVERHANG, -8)
-	bar.title:SetPoint("RIGHT", bar.settings, "LEFT", -6, 0)
+	bar.title:SetPoint("RIGHT", bar.back, "LEFT", -6, 0)
 	bar.title:SetJustifyH("LEFT")
 	bar.title:SetWordWrap(false)
 
@@ -275,6 +281,8 @@ local function CreateWindow()
 	end)
 
 	header = CreateHeader(frame)
+	-- Only now is the `header` local set, which UpdatePortrait needs.
+	GuideWindow.UpdatePortrait()
 
 	-- The current step, and only the current step.
 	stepPanel = CreatePanel(frame)
@@ -309,11 +317,34 @@ always ready when the frame is first built.
 ]]
 function GuideWindow.UpdatePortrait()
 	if not (header and header.portrait) then return end
+	local portrait = header.portrait
+	portrait:SetTexCoord(0, 1, 0, 1)
+
+	-- pcall succeeding only means the call did not error; it does not mean a texture
+	-- was set. The unit is often not ready at login, and trusting the call left a
+	-- blank portrait over the ring's dark backing -- a black disc. Check the result.
 	if type(SetPortraitTexture) == "function" then
-		local ok = pcall(SetPortraitTexture, header.portrait, "player")
-		if ok then return end
+		portrait:SetTexture(nil)
+		pcall(SetPortraitTexture, portrait, "player")
+		if portrait:GetTexture() then return end
 	end
-	header.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
+
+	-- The class icon is always present and reads well in a circle.
+	local class = select(2, UnitClass("player"))
+	local coords = class and CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[class]
+	if coords then
+		portrait:SetTexture("Interface/TargetingFrame/UI-Classes-Circles")
+		portrait:SetTexCoord(unpack(coords))
+		return
+	end
+
+	portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
+end
+
+-- Read-only accessor, so the portrait fallback chain can be asserted rather than
+-- eyeballed. It has been wrong twice.
+function GuideWindow.GetPortrait()
+	return header and header.portrait
 end
 
 -- The options panel anchors beside this frame rather than over it.
@@ -493,8 +524,10 @@ end
 -- main Adventure Guide window never having been opened.
 local loginFrame = CreateFrame("Frame")
 loginFrame:RegisterEvent("PLAYER_LOGIN")
+loginFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 loginFrame:SetScript("OnEvent", function()
 	GuideWindow.EnsureCreated()
+	GuideWindow.UpdatePortrait()
 	GuideWindow.Refresh()
 end)
 
