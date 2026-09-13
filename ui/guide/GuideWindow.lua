@@ -145,16 +145,29 @@ end
 local ARTIFACT_BORDER = "auctionhouse-itemicon-border-artifact"
 
 --[[
-Whether this client ships the artifact item border atlas. Atlases are not guaranteed
-across clients and a missing one draws nothing at all, silently, so this decides which
-of two different layouts to build rather than being assumed.
+Applies the artifact item border, reporting whether it took.
+
+Asks the texture itself rather than asking C_Texture whether the atlas exists. That
+lookup API is not present on every client, and gating on it meant a client that
+supports the atlas perfectly well still fell through to the fallback ring whenever
+C_Texture.GetAtlasInfo happened to be missing -- which is exactly what left a blue
+disc where the gold border should have been.
+
+SetAtlas on a missing atlas simply draws nothing, so the optimistic order is safe:
+apply it, then confirm via GetAtlas where that exists. Where it does not, trust it --
+the reference addons call SetAtlas unconditionally on these clients.
 ]]
-local function HasArtifactBorder()
-	if type(C_Texture) ~= "table" or type(C_Texture.GetAtlasInfo) ~= "function" then
-		return false
+local function ApplyArtifactBorder(texture)
+	if type(texture.SetAtlas) ~= "function" then return false end
+	local ok = pcall(texture.SetAtlas, texture, ARTIFACT_BORDER)
+	if not ok then return false end
+	if type(texture.GetAtlas) == "function" then
+		local gotOk, atlas = pcall(texture.GetAtlas, texture)
+		if gotOk then
+			return atlas == ARTIFACT_BORDER
+		end
 	end
-	local ok, info = pcall(C_Texture.GetAtlasInfo, ARTIFACT_BORDER)
-	return ok and info ~= nil
+	return true
 end
 
 -- Header ----------------------------------------------------------------------------
@@ -190,8 +203,7 @@ local function CreateHeader(parent)
 	bar.portrait:SetPoint("TOPLEFT", parent, "TOPLEFT", (RING_SIZE - PORTRAIT_SIZE) / 2, -6)
 
 	bar.ring = parent:CreateTexture(nil, "OVERLAY")
-	if HasArtifactBorder() then
-		bar.ring:SetAtlas(ARTIFACT_BORDER)
+	if ApplyArtifactBorder(bar.ring) then
 		bar.ring:SetSize(RING_SIZE, RING_SIZE)
 		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
 	else

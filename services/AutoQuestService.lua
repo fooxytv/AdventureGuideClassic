@@ -154,11 +154,14 @@ end
 local function OnQuestComplete()
 	if not AutoTurnInEnabled() then return end
 	local title = GetTitleText and GetTitleText()
+	Trace("QUEST_COMPLETE %s -> %s", tostring(title),
+		tostring(AutoQuestService.GetIntent(title) or "none"))
 	if AutoQuestService.GetIntent(title) ~= "turnin" then return end
 
 	local choices = GetNumQuestChoices and GetNumQuestChoices() or 0
 	if choices > 1 then
 		-- A real choice of rewards. Leave it to the player.
+		Trace("  leaving %s to you: %d reward choices", tostring(title), choices)
 		return
 	end
 	if GetQuestReward then
@@ -172,11 +175,11 @@ end
 -- Gossip ------------------------------------------------------------------------
 
 local function GetGossipAvailable()
-	if C_GossipInfo and C_GossipInfo.GetAvailableQuests then
+	if type(C_GossipInfo) == "table" and type(C_GossipInfo.GetAvailableQuests) == "function" then
 		local ok, quests = pcall(C_GossipInfo.GetAvailableQuests)
 		if ok and type(quests) == "table" then return quests, true end
 	end
-	if GetGossipAvailableQuests then
+	if type(GetGossipAvailableQuests) == "function" then
 		local packed = { GetGossipAvailableQuests() }
 		local quests = { }
 		-- Older clients return a flat list, several fields per quest.
@@ -191,11 +194,11 @@ local function GetGossipAvailable()
 end
 
 local function GetGossipActive()
-	if C_GossipInfo and C_GossipInfo.GetActiveQuests then
+	if type(C_GossipInfo) == "table" and type(C_GossipInfo.GetActiveQuests) == "function" then
 		local ok, quests = pcall(C_GossipInfo.GetActiveQuests)
 		if ok and type(quests) == "table" then return quests, true end
 	end
-	if GetGossipActiveQuests then
+	if type(GetGossipActiveQuests) == "function" then
 		local packed = { GetGossipActiveQuests() }
 		local quests = { }
 		local stride = (GetNumGossipActiveQuests and #packed > 0
@@ -232,7 +235,10 @@ starting a new one.
 local function OnGossipShow()
 	if AutoTurnInEnabled() then
 		local active, modern = GetGossipActive()
+		Trace("  gossip: %d active quest(s)", #active)
 		for index, quest in ipairs(active) do
+			Trace("    active %d: %s -> %s", index, tostring(quest.title),
+				tostring(AutoQuestService.GetIntent(quest.title) or "none"))
 			if AutoQuestService.GetIntent(quest.title) == "turnin" then
 				SelectActive(index, modern)
 				return
@@ -241,7 +247,10 @@ local function OnGossipShow()
 	end
 	if AutoAcceptEnabled() then
 		local available, modern = GetGossipAvailable()
+		Trace("  gossip: %d available quest(s)", #available)
 		for index, quest in ipairs(available) do
+			Trace("    available %d: %s -> %s", index, tostring(quest.title),
+				tostring(AutoQuestService.GetIntent(quest.title) or "none"))
 			if AutoQuestService.GetIntent(quest.title) == "accept" then
 				SelectAvailable(index, modern)
 				return
@@ -259,9 +268,19 @@ frame:RegisterEvent("QUEST_COMPLETE")
 frame:RegisterEvent("GOSSIP_SHOW")
 frame:RegisterEvent("QUEST_GREETING")
 frame:SetScript("OnEvent", function(_, event)
+	Trace("event %s", event)
 	-- Never fight the player mid-combat, and never act without a guide loaded.
-	if InCombatLockdown() then return end
-	if not GuideService.GetCurrentGuide() then return end
+	if InCombatLockdown() then
+		Trace("  ignored: in combat")
+		return
+	end
+	if not GuideService.GetCurrentGuide() then
+		Trace("  ignored: no guide selected")
+		return
+	end
+	Trace("  auto-accept %s, auto-turn-in %s, step %d",
+		tostring(AutoAcceptEnabled()), tostring(AutoTurnInEnabled()),
+		GuideService.GetStepIndex())
 
 	if event == "QUEST_DETAIL" then
 		OnQuestDetail()
