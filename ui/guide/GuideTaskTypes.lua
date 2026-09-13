@@ -22,8 +22,8 @@ GuideTaskTypes = { }
 
 local types = { }
 
-local GOSSIP = "Interface\\GossipFrame\\%sGossipIcon"
-local FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
+local GOSSIP = "Interface/GossipFrame/%sGossipIcon"
+local FALLBACK_ICON = "Interface/Icons/INV_Misc_QuestionMark"
 
 local function Quote(text)
 	return ("|cffffd100%s|r"):format(tostring(text or "?"))
@@ -45,21 +45,21 @@ local function Register(name, definition)
 end
 
 Register("accept", {
-	icon = "Interface\\GossipFrame\\AvailableQuestIcon",
+	icon = "Interface/GossipFrame/AvailableQuestIcon",
 	Format = function(task)
 		return WithSource(("Accept %s"):format(Quote(task.quest)), task, "from")
 	end,
 })
 
 Register("turnin", {
-	icon = "Interface\\GossipFrame\\ActiveQuestIcon",
+	icon = "Interface/GossipFrame/ActiveQuestIcon",
 	Format = function(task)
 		return WithSource(("Turn in %s"):format(Quote(task.quest)), task, "to")
 	end,
 })
 
 Register("kill", {
-	icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+	icon = "Interface/TargetingFrame/UI-RaidTargetingIcon_8",
 	Format = function(task)
 		if task.count then
 			return ("Kill %d x %s"):format(task.count, Quote(task.target))
@@ -69,7 +69,7 @@ Register("kill", {
 })
 
 Register("collect", {
-	icon = "Interface\\Minimap\\Tracking\\Banker",
+	icon = "Interface/Minimap/Tracking/Banker",
 	Format = function(task)
 		if task.count then
 			return ("Collect %d x %s"):format(task.count, Quote(task.item))
@@ -79,7 +79,7 @@ Register("collect", {
 })
 
 Register("goto", {
-	icon = "Interface\\Minimap\\Tracking\\Target",
+	icon = "Interface/Minimap/Tracking/Target",
 	Format = function(task)
 		return ("Travel to %s"):format(Quote(task.place))
 	end,
@@ -123,14 +123,14 @@ Register("train", {
 })
 
 Register("level", {
-	icon = "Interface\\Minimap\\Tracking\\Class",
+	icon = "Interface/Minimap/Tracking/Class",
 	Format = function(task)
 		return ("Reach level %s before moving on"):format(Quote(task.level))
 	end,
 })
 
 Register("note", {
-	icon = "Interface\\GossipFrame\\GossipGossipIcon",
+	icon = "Interface/GossipFrame/GossipGossipIcon",
 	Format = function(task)
 		return tostring(task.text or "")
 	end,

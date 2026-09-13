@@ -23,11 +23,12 @@ instances, and no title bar -- the header is the chrome.
 GuideWindow = { }
 
 local NEWLINE = string.char(10)
+local INSET_LEFT, INSET_RIGHT = 10, 10
+local INSET_TOP, INSET_BOTTOM = 10, 10
 local WIDTH = 242
 local HEADER_HEIGHT = 44
 local ROW_HEIGHT = 34
 local VISIBLE_STEPS = 5
-local PADDING = 10
 
 local frame, header, rows
 local isMoving
@@ -63,7 +64,7 @@ local function CreateHeaderButton(parent, atlasUp, atlasDown, tooltip, onClick)
 	button:SetSize(20, 20)
 	button:SetNormalTexture(atlasUp)
 	button:SetPushedTexture(atlasDown or atlasUp)
-	button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+	button:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
 	button:SetScript("OnClick", onClick)
 	button:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_TOP")
@@ -75,40 +76,32 @@ local function CreateHeaderButton(parent, atlasUp, atlasDown, tooltip, onClick)
 end
 
 local function CreateHeader(parent)
-	local bar = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	-- No backdrop of its own: the window is one panel now, and the header is marked
+	-- off by a divider rather than by nesting a second bordered box inside the first.
+	local bar = CreateFrame("Frame", nil, parent)
 	bar:SetHeight(HEADER_HEIGHT)
-	bar:SetPoint("TOPLEFT", 22, 0)
-	bar:SetPoint("TOPRIGHT", 0, 0)
-	bar.backdropInfo = BACKDROP_GLUE_TOOLTIP_16_16 or {
-		bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-		edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-		tile = true, tileEdge = true, tileSize = 16, edgeSize = 16,
-		insets = { left = 5, right = 5, top = 5, bottom = 5 },
-	}
-	if bar.OnBackdropLoaded then
-		bar:OnBackdropLoaded()
-		bar:SetBackdropBorderColor(0.78, 0.73, 0.56)
-	end
+	bar:SetPoint("TOPLEFT", INSET_LEFT + 34, -INSET_TOP)
+	bar:SetPoint("TOPRIGHT", -INSET_RIGHT, -INSET_TOP)
 
-	-- Portrait overhanging the left edge, masked the way the main window's is.
-	bar.portrait = bar:CreateTexture(nil, "ARTWORK")
-	bar.portrait:SetSize(38, 38)
-	bar.portrait:SetPoint("RIGHT", bar, "LEFT", 14, 2)
-	bar.portrait:SetTexture("Interface\\EncounterJournal\\UI-EJ-PortraitIcon")
-	local mask = bar:CreateMaskTexture()
+	-- Portrait overhanging the top-left corner, masked as the main window's is.
+	bar.portrait = parent:CreateTexture(nil, "ARTWORK")
+	bar.portrait:SetSize(40, 40)
+	bar.portrait:SetPoint("TOPLEFT", parent, "TOPLEFT", 6, -4)
+	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
+	local mask = parent:CreateMaskTexture()
 	mask:SetAllPoints(bar.portrait)
-	mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask",
+	mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
 		"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 	bar.portrait:AddMaskTexture(mask)
 
-	bar.ring = bar:CreateTexture(nil, "OVERLAY")
-	bar.ring:SetTexture("Interface\\Common\\portrait-ring-withbg")
-	bar.ring:SetPoint("TOPLEFT", bar.portrait, -6, 6)
-	bar.ring:SetPoint("BOTTOMRIGHT", bar.portrait, 6, -6)
+	bar.ring = parent:CreateTexture(nil, "OVERLAY")
+	bar.ring:SetTexture("Interface/Common/portrait-ring-withbg")
+	bar.ring:SetPoint("TOPLEFT", bar.portrait, -5, 5)
+	bar.ring:SetPoint("BOTTOMRIGHT", bar.portrait, 5, -5)
 
-	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	bar.title:SetPoint("TOPLEFT", 26, -7)
-	bar.title:SetPoint("RIGHT", -68, 0)
+	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	bar.title:SetPoint("TOPLEFT", 0, -2)
+	bar.title:SetPoint("RIGHT", -4, 0)
 	bar.title:SetJustifyH("LEFT")
 	bar.title:SetWordWrap(false)
 
@@ -117,19 +110,28 @@ local function CreateHeader(parent)
 	bar.step:SetJustifyH("LEFT")
 	bar.step:SetTextColor(0.65, 0.85, 1)
 
-	bar.settings = CreateHeaderButton(bar, "Interface\\GossipFrame\\BinderGossipIcon", nil,
+	-- Nav sits on its own row under the title so a long guide name has the full width.
+	bar.settings = CreateHeaderButton(bar, "Interface/GossipFrame/BinderGossipIcon", nil,
 		"Guide options", function(self) GuideWindow.ShowMenu(self) end)
-	bar.settings:SetPoint("TOPRIGHT", -6, -4)
+	bar.settings:SetPoint("BOTTOMRIGHT", 0, 2)
 
-	bar.back = CreateHeaderButton(bar, "Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up",
-		"Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down", "Previous step",
-		function() GuideService.PreviousStep() end)
-	bar.back:SetPoint("BOTTOMRIGHT", -32, 5)
-
-	bar.next = CreateHeaderButton(bar, "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up",
-		"Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down", "Next step",
+	bar.next = CreateHeaderButton(bar, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
+		"Interface/Buttons/UI-SpellbookIcon-NextPage-Down", "Next step",
 		function() GuideService.NextStep() end)
-	bar.next:SetPoint("BOTTOMRIGHT", -8, 5)
+	bar.next:SetPoint("RIGHT", bar.settings, "LEFT", -4, 0)
+
+	bar.back = CreateHeaderButton(bar, "Interface/Buttons/UI-SpellbookIcon-PrevPage-Up",
+		"Interface/Buttons/UI-SpellbookIcon-PrevPage-Down", "Previous step",
+		function() GuideService.PreviousStep() end)
+	bar.back:SetPoint("RIGHT", bar.next, "LEFT", -2, 0)
+
+	-- Divider between header and step list.
+	bar.divider = parent:CreateTexture(nil, "ARTWORK")
+	bar.divider:SetTexture("Interface/Tooltips/UI-Tooltip-Border")
+	bar.divider:SetHeight(2)
+	bar.divider:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", -32, -4)
+	bar.divider:SetPoint("TOPRIGHT", bar, "BOTTOMRIGHT", 0, -4)
+	bar.divider:SetVertexColor(0.5, 0.45, 0.35)
 
 	return bar
 end
@@ -165,6 +167,10 @@ end
 
 -- Frame -----------------------------------------------------------------------
 
+-- Everything above and below the step rows: top inset, header, the gap to the list
+-- inset and that inset's padding, mirrored at the bottom.
+local CHROME_HEIGHT = INSET_TOP + HEADER_HEIGHT + 8 + 4 + 4 + INSET_BOTTOM
+
 local function ApplyScale()
 	if InCombatLockdown() then return end
 	frame:SetScale(SettingsService.GetGuideScale())
@@ -175,13 +181,27 @@ local function SavePosition()
 end
 
 local function CreateWindow()
-	frame = CreateFrame("Frame", "AdventureGuideClassic_GuideWindow", UIParent)
+	frame = CreateFrame("Frame", "AdventureGuideClassic_GuideWindow", UIParent, "BackdropTemplate")
 	frame:SetSize(WIDTH, HEADER_HEIGHT + 40)
 	frame:SetFrameStrata("MEDIUM")
 	frame:SetClampedToScreen(true)
 	frame:SetMovable(true)
 	frame:EnableMouse(not IsLocked())
 	frame:RegisterForDrag("LeftButton")
+
+	-- The whole window is one opaque panel: dark stone ground with the gold-ish
+	-- tooltip border, so it reads as a Blizzard frame rather than floating text.
+	frame.backdropInfo = {
+		bgFile = "Interface/DialogFrame/UI-DialogBox-Background-Dark",
+		edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+		tile = true, tileEdge = true, tileSize = 16, edgeSize = 16,
+		insets = { left = 4, right = 4, top = 4, bottom = 4 },
+	}
+	if frame.OnBackdropLoaded then
+		frame:OnBackdropLoaded()
+		frame:SetBackdropColor(0.09, 0.08, 0.07, 0.95)
+		frame:SetBackdropBorderColor(0.78, 0.73, 0.56)
+	end
 
 	-- Let right-click through to the world so the camera still turns over the frame.
 	-- Not present on every client, hence the guard.
@@ -214,20 +234,28 @@ local function CreateWindow()
 
 	header = CreateHeader(frame)
 
+	-- Recessed panel behind the steps, the standard Blizzard treatment for a list.
+	local list = CreateFrame("Frame", nil, frame, "InsetFrameTemplate")
+	list:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -30, -8)
+	list:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -INSET_RIGHT, INSET_BOTTOM)
+	frame.list = list
+
 	rows = { }
 	for index = 1, VISIBLE_STEPS do
 		local row = CreateRow(frame, index)
 		if index == 1 then
-			row:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 4, -PADDING)
+			row:SetPoint("TOPLEFT", list, "TOPLEFT", 4, -4)
+			row:SetPoint("RIGHT", list, "RIGHT", -4, 0)
 		else
 			row:SetPoint("TOPLEFT", rows[index - 1], "BOTTOMLEFT", 0, -2)
+			row:SetPoint("RIGHT", list, "RIGHT", -4, 0)
 		end
 		rows[index] = row
 	end
 
 	frame.empty = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	frame.empty:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 6, -PADDING)
-	frame.empty:SetPoint("RIGHT", frame, "RIGHT", -6, 0)
+	frame.empty:SetPoint("TOPLEFT", list, "TOPLEFT", 8, -8)
+	frame.empty:SetPoint("RIGHT", list, "RIGHT", -8, 0)
 	frame.empty:SetJustifyH("LEFT")
 	frame.empty:SetText("No guide selected." .. NEWLINE .. NEWLINE .. "Click the button above to choose one.")
 	frame.empty:Hide()
@@ -271,7 +299,7 @@ function GuideWindow.Refresh()
 		header.next:SetEnabled(false)
 		for _, row in ipairs(rows) do row:Hide() end
 		frame.empty:Show()
-		frame:SetHeight(HEADER_HEIGHT + 56)
+		frame:SetHeight(CHROME_HEIGHT + 44)
 		frame:SetShown(ShouldBeShown())
 		return
 	end
@@ -302,7 +330,7 @@ function GuideWindow.Refresh()
 		end
 	end
 
-	local height = HEADER_HEIGHT + PADDING * 2
+	local height = CHROME_HEIGHT
 	for position = 1, used do
 		height = height + rows[position]:GetHeight() + 2
 	end
