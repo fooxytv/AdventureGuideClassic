@@ -55,6 +55,10 @@ title into it. Measured from the header panel's left edge:
                  now reaches further right than the ring itself does
 ]]
 local RING_OFFSET = 2
+-- The step panel reaches further left than the header, but stops short of the ring's
+-- own left edge, so the portrait still reads as overhanging everything below it.
+-- Flush with the header looks cramped; flush with the ring loses the overhang.
+local STEP_PANEL_OUTDENT = 16
 local HEADER_LEFT = (RING_SIZE / 2) + RING_OFFSET
 local RING_REACH = (RING_SIZE / 2) - RING_OFFSET
 local BADGE_REACH = (PORTRAIT_SIZE / 2) - RING_OFFSET + (BADGE_RING_SIZE / 2) - 4
@@ -338,7 +342,7 @@ local function CreateWindow()
 
 	-- The current step, and only the current step.
 	stepPanel = CreatePanel(frame)
-	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -PANEL_GAP)
+	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -STEP_PANEL_OUTDENT, -PANEL_GAP)
 	stepPanel:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -PANEL_GAP)
 	stepPanel:SetHeight(52)
 
