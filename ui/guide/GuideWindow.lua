@@ -41,7 +41,7 @@ GuideWindow = { }
 
 local WIDTH = 300
 local HEADER_HEIGHT = 44
-local RING_SIZE, PORTRAIT_SIZE = 54, 36
+local RING_SIZE, PORTRAIT_SIZE = 56, 36
 -- How far the ring pokes past the header panel's left edge, so the title and progress
 -- bar know where they can start.
 local RING_OVERHANG = 26
@@ -142,21 +142,19 @@ local function CreateIconButton(parent, size, up, down, tooltip, onClick)
 	return button
 end
 
+local ARTIFACT_BORDER = "auctionhouse-itemicon-border-artifact"
+
 --[[
-The gold ring around the portrait. Prefers the artifact item-border atlas, which is
-the look wanted, and falls back to the portrait ring texture where that atlas is not
-present -- atlases are not guaranteed across clients and a missing one draws nothing
-at all, silently.
+Whether this client ships the artifact item border atlas. Atlases are not guaranteed
+across clients and a missing one draws nothing at all, silently, so this decides which
+of two different layouts to build rather than being assumed.
 ]]
-local function ApplyRingTexture(texture)
-	if texture.SetAtlas and C_Texture and C_Texture.GetAtlasInfo then
-		local ok, info = pcall(C_Texture.GetAtlasInfo, "auctionhouse-itemicon-border-artifact")
-		if ok and info then
-			texture:SetAtlas("auctionhouse-itemicon-border-artifact")
-			return
-		end
+local function HasArtifactBorder()
+	if type(C_Texture) ~= "table" or type(C_Texture.GetAtlasInfo) ~= "function" then
+		return false
 	end
-	texture:SetTexture("Interface/Common/portrait-ring-withbg")
+	local ok, info = pcall(C_Texture.GetAtlasInfo, ARTIFACT_BORDER)
+	return ok and info ~= nil
 end
 
 -- Header ----------------------------------------------------------------------------
@@ -174,21 +172,41 @@ local function CreateHeader(parent)
 	bar.stepText:SetPoint("BOTTOM", bar, "TOP", 0, 2)
 	bar.stepText:SetTextScale(0.95)
 
-	-- Ring FIRST at BACKGROUND, icon above it at ARTWORK. See the file header.
-	bar.ring = parent:CreateTexture(nil, "BACKGROUND")
-	ApplyRingTexture(bar.ring)
-	bar.ring:SetSize(RING_SIZE, RING_SIZE)
-	bar.ring:SetPoint("LEFT", parent, "LEFT", 0, 0)
-	bar.ring:SetPoint("TOP", bar, "TOP", 0, 6)
-
+	-- Icon first, border over the top.
+	--
+	-- The artifact item border has a TRANSPARENT centre, so it frames the icon when
+	-- drawn above it -- which is the arrangement that actually looks right, and the
+	-- one the established guide addons use. This is the opposite of
+	-- portrait-ring-withbg, whose centre is opaque and which therefore has to go
+	-- underneath; that difference is why earlier attempts produced a black disc.
+	--
+	-- The icon is static -- the addon's own Encounter Journal mark, as used by the
+	-- minimap button. A live SetPortraitTexture portrait was tried and abandoned: it
+	-- silently does nothing when the unit is not ready, and there is no dependable way
+	-- to tell whether it worked, so it fails blank rather than falling back.
 	bar.portrait = parent:CreateTexture(nil, "ARTWORK")
+	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
 	bar.portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
-	bar.portrait:SetPoint("CENTER", bar.ring, "CENTER", 0, 0)
-	local mask = parent:CreateMaskTexture()
-	mask:SetAllPoints(bar.portrait)
-	mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
-		"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-	bar.portrait:AddMaskTexture(mask)
+	bar.portrait:SetPoint("TOPLEFT", parent, "TOPLEFT", (RING_SIZE - PORTRAIT_SIZE) / 2, -6)
+
+	bar.ring = parent:CreateTexture(nil, "OVERLAY")
+	if HasArtifactBorder() then
+		bar.ring:SetAtlas(ARTIFACT_BORDER)
+		bar.ring:SetSize(RING_SIZE, RING_SIZE)
+		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
+	else
+		-- No atlas on this client: the circular ring has an opaque centre, so it must
+		-- sit under the icon, and the icon needs masking to a circle to suit it.
+		bar.ring:SetDrawLayer("BACKGROUND")
+		bar.ring:SetTexture("Interface/Common/portrait-ring-withbg")
+		bar.ring:SetSize(RING_SIZE, RING_SIZE)
+		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
+		local mask = parent:CreateMaskTexture()
+		mask:SetAllPoints(bar.portrait)
+		mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
+			"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+		bar.portrait:AddMaskTexture(mask)
+	end
 
 	bar.next = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-NextPage-Down", "Next step",
@@ -311,38 +329,22 @@ end
 -- Public -------------------------------------------------------------------------
 
 --[[
-The player's own portrait. Falls back to the Encounter Journal icon where
-SetPortraitTexture is unavailable, and is refreshed on login because the unit is not
-always ready when the frame is first built.
+The header icon. Static, so there is nothing to go wrong or arrive late; kept as a
+function because the login hook calls it and a future class- or faction-specific mark
+would slot in here.
 ]]
 function GuideWindow.UpdatePortrait()
 	if not (header and header.portrait) then return end
-	local portrait = header.portrait
-	portrait:SetTexCoord(0, 1, 0, 1)
-
-	-- pcall succeeding only means the call did not error; it does not mean a texture
-	-- was set. The unit is often not ready at login, and trusting the call left a
-	-- blank portrait over the ring's dark backing -- a black disc. Check the result.
-	if type(SetPortraitTexture) == "function" then
-		portrait:SetTexture(nil)
-		pcall(SetPortraitTexture, portrait, "player")
-		if portrait:GetTexture() then return end
-	end
-
-	-- The class icon is always present and reads well in a circle.
-	local class = select(2, UnitClass("player"))
-	local coords = class and CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[class]
-	if coords then
-		portrait:SetTexture("Interface/TargetingFrame/UI-Classes-Circles")
-		portrait:SetTexCoord(unpack(coords))
-		return
-	end
-
-	portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
+	header.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
 end
 
 -- Read-only accessor, so the portrait fallback chain can be asserted rather than
 -- eyeballed. It has been wrong twice.
+-- Exposed alongside GetPortrait so the icon/border layering can be asserted.
+function GuideWindow.GetRing()
+	return header and header.ring
+end
+
 function GuideWindow.GetPortrait()
 	return header and header.portrait
 end
