@@ -285,7 +285,7 @@ mergeable after any of them.
 | 2 | ~~`WorldEventService` + `data/WorldEvents.lua` table + event cards~~ **done** | **Yes** |
 | 3 | Max-level content: raid cards, `AttunementService` + status | **Yes** |
 | 4 | Guide window shell + step list + one hand-authored pilot guide (Elwynn 1-10) | **Yes** (preview quality) |
-| 5 | `GuideProgressService` auto-advance + waypoints/map pins | **Yes** |
+| 5 | ~~`GuideProgressService` auto-advance~~ **done**, plus `AutoQuestService` (auto accept/hand-in). Waypoints/map pins still outstanding | **Yes** |
 | 6 | `tools/questie_import.py` + full 1-60 Era route content | **Yes** |
 | 7 | Suggested Content → guide wiring; BCC 58-70 routes | **Yes** |
 

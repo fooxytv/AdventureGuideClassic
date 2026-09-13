@@ -25,6 +25,9 @@
 /run AGC_ListGuides()
 /run AGC_ToggleGuide()
 /run AGC_GuideStatus()
+/run AGC_GuideProgress()
+/run AGC_GuideScan()
+/run AGC_QuestIntent("A Threat Within")
 /run AGC_ResetGuidePosition()
 /agc guide
 

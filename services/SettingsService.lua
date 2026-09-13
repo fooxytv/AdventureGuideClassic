@@ -35,6 +35,10 @@ local defaults = {
 		Scale = 1.0,
 		AutoAdvance = true,
 		Waypoints = true,
+		-- Accept and hand in only the quests the current guide asks for. On, because
+		-- it is the point of following a guide; both are one click away in the cog menu.
+		AutoAccept = true,
+		AutoTurnIn = true,
 	},
 }
 local SCALE_MIN = 0.5
@@ -268,6 +272,22 @@ end
 
 function SettingsService.SetGuideAutoAdvanceEnabled(enabled)
 	SetGuideSetting("AutoAdvance", enabled)
+end
+
+function SettingsService.IsGuideAutoAcceptEnabled()
+	return GetGuideSetting("AutoAccept")
+end
+
+function SettingsService.SetGuideAutoAcceptEnabled(enabled)
+	SetGuideSetting("AutoAccept", enabled)
+end
+
+function SettingsService.IsGuideAutoTurnInEnabled()
+	return GetGuideSetting("AutoTurnIn")
+end
+
+function SettingsService.SetGuideAutoTurnInEnabled(enabled)
+	SetGuideSetting("AutoTurnIn", enabled)
 end
 
 function SettingsService.IsGuideWaypointsEnabled()

@@ -403,8 +403,42 @@ function GuideWindow.ShowMenu(anchor)
 			UIDropDownMenu_AddButton(info, level)
 
 			info = UIDropDownMenu_CreateInfo()
+			info.isTitle, info.notCheckable = true, true
+			info.text = "Automation"
+			UIDropDownMenu_AddButton(info, level)
+
+			-- Rebuilt every time the menu opens, so the ticks always reflect the
+			-- current setting rather than whatever was true when the menu was created.
+			local toggles = {
+				{ "Advance steps automatically",
+					SettingsService.IsGuideAutoAdvanceEnabled,
+					SettingsService.SetGuideAutoAdvanceEnabled },
+				{ "Accept guide quests automatically",
+					SettingsService.IsGuideAutoAcceptEnabled,
+					SettingsService.SetGuideAutoAcceptEnabled },
+				{ "Hand in guide quests automatically",
+					SettingsService.IsGuideAutoTurnInEnabled,
+					SettingsService.SetGuideAutoTurnInEnabled },
+			}
+			for _, toggle in ipairs(toggles) do
+				local label, get, set = toggle[1], toggle[2], toggle[3]
+				info = UIDropDownMenu_CreateInfo()
+				info.text = label
+				info.checked = get()
+				info.keepShownOnClick = true
+				info.func = function() set(not get()) end
+				UIDropDownMenu_AddButton(info, level)
+			end
+
+			info = UIDropDownMenu_CreateInfo()
+			info.isTitle, info.notCheckable = true, true
+			info.text = "Window"
+			UIDropDownMenu_AddButton(info, level)
+
+			info = UIDropDownMenu_CreateInfo()
 			info.text = "Lock window"
 			info.checked = SettingsService.IsGuideLocked()
+			info.keepShownOnClick = true
 			info.func = function()
 				SettingsService.SetGuideLocked(not SettingsService.IsGuideLocked())
 			end
