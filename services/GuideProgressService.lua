@@ -67,6 +67,54 @@ Every quest currently in the log, as a set of titles, plus a second set of the o
 whose objectives are all done. Written against both the modern C_QuestLog API and the
 older GetQuestLogTitle, since the two clients differ.
 ]]
+--[[
+Is this quest ready to hand in?
+
+Deliberately consults every source available rather than one, because which of them
+exists varies by client and a single missing accessor means nothing ever registers as
+complete -- which leaves kill and collect steps stuck forever and the guide never
+reaching the turn-in.
+
+Note that isComplete is tri-state on the older API: 1 complete, -1 FAILED, nil
+otherwise. Only a positive value counts.
+]]
+local function IsQuestReadyToTurnIn(questID, questIndex, infoIsComplete)
+	if infoIsComplete == true then return true end
+	if type(infoIsComplete) == "number" and infoIsComplete > 0 then return true end
+
+	if questID and type(C_QuestLog) == "table" then
+		for _, accessor in ipairs({ "IsComplete", "ReadyForTurnIn" }) do
+			if type(C_QuestLog[accessor]) == "function" then
+				local ok, value = pcall(C_QuestLog[accessor], questID)
+				if ok and value then return true end
+			end
+		end
+	end
+
+	if questIndex and type(GetQuestLogTitle) == "function" then
+		local ok, _, _, _, _, _, isComplete = pcall(GetQuestLogTitle, questIndex)
+		if ok and type(isComplete) == "number" and isComplete > 0 then return true end
+		if ok and isComplete == true then return true end
+	end
+
+	-- Last resort, and the one that works everywhere: if the quest has objectives and
+	-- every one of them is finished, it is done. Quests with no objectives at all
+	-- (deliver-this, speak-to-them) have no signal here, which is why this is last.
+	if questIndex and type(GetNumQuestLeaderBoards) == "function"
+		and type(GetQuestLogLeaderBoard) == "function" then
+		local ok, count = pcall(GetNumQuestLeaderBoards, questIndex)
+		if ok and type(count) == "number" and count > 0 then
+			for i = 1, count do
+				local ok2, _, _, finished = pcall(GetQuestLogLeaderBoard, i, questIndex)
+				if not (ok2 and finished) then return false end
+			end
+			return true
+		end
+	end
+
+	return false
+end
+
 function GuideProgressService.GetQuestLogState()
 	local inLog, readyToTurnIn, indexByTitle = { }, { }, { }
 
@@ -79,16 +127,13 @@ function GuideProgressService.GetQuestLogState()
 		local ok, numEntries = pcall(C_QuestLog.GetNumQuestLogEntries)
 		if not (ok and type(numEntries) == "number") then numEntries = 0 end
 		for index = 1, numEntries do
-			local ok, info = pcall(C_QuestLog.GetInfo, index)
-			if ok and info and not info.isHeader and info.title then
+			local ok2, info = pcall(C_QuestLog.GetInfo, index)
+			if ok2 and info and not info.isHeader and info.title then
 				inLog[info.title] = info.questID or true
 				indexByTitle[info.title] = index
-				local complete = info.isComplete
-				if complete == nil and info.questID and type(C_QuestLog.IsComplete) == "function" then
-					local ok2, value = pcall(C_QuestLog.IsComplete, info.questID)
-					complete = ok2 and value or nil
+				if IsQuestReadyToTurnIn(info.questID, index, info.isComplete) then
+					readyToTurnIn[info.title] = true
 				end
-				if complete then readyToTurnIn[info.title] = true end
 			end
 		end
 		return inLog, readyToTurnIn, indexByTitle
@@ -102,7 +147,9 @@ function GuideProgressService.GetQuestLogState()
 			if title and not isHeader then
 				inLog[title] = questID or true
 				indexByTitle[title] = index
-				if isComplete and isComplete ~= 0 then readyToTurnIn[title] = true end
+				if IsQuestReadyToTurnIn(questID, index, isComplete) then
+					readyToTurnIn[title] = true
+				end
 			end
 		end
 	end
@@ -347,6 +394,14 @@ _G.AGC_GuideProgress = function()
 	print(("|cff33ff99[AGC]|r %s, step %d of %d, auto-advance %s"):format(
 		guide.id, index, #guide.steps,
 		SettingsService.IsGuideAutoAdvanceEnabled() and "on" or "off"))
+	local anyReady = false
+	for title in pairs(ready) do
+		anyReady = true
+		print(("  ready to hand in: %s"):format(title))
+	end
+	if not anyReady then
+		print("  nothing in the log reads as ready to hand in")
+	end
 	for offset = 0, 4 do
 		local i = index + offset
 		if not guide.steps[i] then break end
