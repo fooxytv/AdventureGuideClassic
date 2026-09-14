@@ -63,17 +63,33 @@ local STATUS_ICON = {
 }
 
 --[[
-InsetFrameTemplate is translucent, and over the journal parchment it lands at a warm
-mid-brown -- which is what made white and gold text hard to read no matter how the type
-was set. Lay a near-black fill inside each inset so the panels are actually dark, and
-the quest log's colours do what they do in the quest log.
+A flat colour behind each panel, rather than a texture.
 
-The fill is a texture on the inset itself, so it draws above the page's parchment (a
-child frame always does) and below the inset's own border art.
+InsetFrameTemplate brings a translucent background of its own, and over the journal
+parchment that lands at a warm mid-brown -- white and gold text on mid-orange, which is
+what made this page hard to read however the type was set. A texture cannot be relied
+on here: whatever is behind it shows through.
+
+So hide the template's background where the client gives us one, and paint a solid,
+fully opaque colour inside the border instead. Near-black, biased warm so it belongs to
+the journal rather than reading as a grey box dropped onto it.
+
+Two details that matter. The fill sits high within BACKGROUND, above the template's own
+background at sublevel 0 -- put it below and the translucent texture simply draws over
+the top, which is the bug this replaces. And it need not be below the content: the rows
+are child frames, and a child frame always draws above its parent's textures.
 ]]
+local GROUND = { 0.09, 0.075, 0.06 }
+
 local function AddDarkGround(inset)
-	local fill = inset:CreateTexture(nil, "BACKGROUND", nil, -6)
-	fill:SetColorTexture(0.043, 0.035, 0.027, 0.92)
+	for _, key in ipairs({ "Bg", "bg", "InsetBg" }) do
+		local texture = rawget(inset, key)
+		if type(texture) == "table" and type(texture.Hide) == "function" then
+			texture:Hide()
+		end
+	end
+	local fill = inset:CreateTexture(nil, "BACKGROUND", nil, 7)
+	fill:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], 1)
 	fill:SetPoint("TOPLEFT", 3, -3)
 	fill:SetPoint("BOTTOMRIGHT", -3, 3)
 	return fill
