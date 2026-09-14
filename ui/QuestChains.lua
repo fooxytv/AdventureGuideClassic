@@ -59,8 +59,12 @@ local STATUS_ICON = {
 	completed = "Interface/RaidFrame/ReadyCheck-Ready",
 	active    = "Interface/GossipFrame/ActiveQuestIcon",
 	available = "Interface/GossipFrame/AvailableQuestIcon",
-	blocked   = nil,
+	-- A quest you cannot take yet has no quest-giver marker in the world, so there is
+	-- no obvious icon for it. It still gets something: with the slot left empty, runs
+	-- of blocked quests lost their left edge and read as one block of text.
+	blocked   = "Interface/COMMON/Indicator-Gray",
 }
+local BLOCKED_ICON_ALPHA = 0.5
 
 --[[
 A flat colour behind each panel, rather than a texture.
@@ -114,6 +118,8 @@ local BAR_HEIGHT  = 3
 local HEADING_BAR = 120
 
 local RAIL_ROW_HEIGHT = 47   -- tall enough to hold the bar clear of the level band
+local ICON_SIZE = 14
+local ICON_GAP = 6           -- icon to name, and so the left edge of the wrapped text
 
 local railScroll, panelScroll
 local railRows, panelRows = { }, { }
@@ -254,7 +260,7 @@ local function CreateQuestRow(parent)
 	local row = CreateFrame("Frame", nil, parent)
 
 	row.icon = row:CreateTexture(nil, "ARTWORK")
-	row.icon:SetSize(14, 14)
+	row.icon:SetSize(ICON_SIZE, ICON_SIZE)
 	row.icon:SetPoint("TOPLEFT", 0, -2)
 
 	row.level = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -265,19 +271,26 @@ local function CreateQuestRow(parent)
 	row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	row.name:SetJustifyH("LEFT")
 	row.name:SetWordWrap(false)
-	row.name:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", 6, 1)
+	row.name:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", ICON_GAP, 1)
 	row.name:SetPoint("RIGHT", row.level, "LEFT", -8, 0)
 
-	-- The sentence. Wraps, and is what the row's height is mostly made of.
+	--[[
+	The sentence, which is most of the row's height.
+
+	Its width is set explicitly on every draw rather than taken from a RIGHT anchor on
+	the row. The row has no width until it is anchored, and the height has to be known
+	before that -- so a freshly created row measured its sentence against a width of
+	zero, reported a single line, and came out too short for two. That is what ran
+	consecutive blocked quests together: their text is the longest on the page, because
+	it carries the reason as well as the objective.
+	]]
 	row.says = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.says:SetJustifyH("LEFT")
 	row.says:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -GAP_TIGHT)
-	row.says:SetPoint("RIGHT", -2, 0)
 
 	row.leads = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 	row.leads:SetJustifyH("LEFT")
 	row.leads:SetPoint("TOPLEFT", row.says, "BOTTOMLEFT", 0, -GAP_TIGHT)
-	row.leads:SetPoint("RIGHT", -2, 0)
 
 	row.rule = row:CreateTexture(nil, "ARTWORK")
 	row.rule:SetColorTexture(1, 1, 1, 0.07)
@@ -506,6 +519,9 @@ local function RefreshPanel(inLog)
 		return
 	end
 
+	-- The lane the wrapped text runs in: the row, less the icon and the gap after it.
+	local textWidth = math.max(60, child:GetWidth() - ICON_SIZE - ICON_GAP - 2)
+
 	local offsetY = 0
 	local function Place(row, height)
 		row:SetHeight(height)
@@ -540,7 +556,10 @@ local function RefreshPanel(inLog)
 
 		local icon = STATUS_ICON[status]
 		row.icon:SetShown(icon ~= nil)
-		if icon then row.icon:SetTexture(icon) end
+		if icon then
+			row.icon:SetTexture(icon)
+			row.icon:SetAlpha(blocked and BLOCKED_ICON_ALPHA or 1)
+		end
 		row.name:SetText(quest.name or ("Quest " .. tostring(quest.id)))
 		SetColor(row.name, STATUS_COLOR[status] or WHITE)
 		row.level:SetText(quest.level and quest.level > 0 and tostring(quest.level) or "")
@@ -563,6 +582,10 @@ local function RefreshPanel(inLog)
 		row.leads:SetText(leads or "")
 		SetColor(row.leads, FAINT)
 		row.leads:SetShown(leads ~= nil)
+
+		-- Size the wrapped text before asking it how tall it is.
+		row.says:SetWidth(textWidth)
+		row.leads:SetWidth(textWidth)
 
 		-- Measure rather than assume: the sentence wraps to one line or three depending
 		-- on the quest and the panel's width, and a fixed row height would either clip
