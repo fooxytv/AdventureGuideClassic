@@ -40,10 +40,10 @@ and auto-hide inside instances unless the step itself is an instance step.
 GuideWindow = { }
 
 local WIDTH = 300
-local HEADER_HEIGHT = 44
-local RING_SIZE, PORTRAIT_SIZE = 64, 48
+local HEADER_HEIGHT = 40
+local RING_SIZE, PORTRAIT_SIZE = 50, 38
 -- The cog badge: a small framed icon echoing the portrait it is tucked against.
-local BADGE_RING_SIZE, BADGE_ICON_SIZE = 30, 15
+local BADGE_RING_SIZE, BADGE_ICON_SIZE = 20, 11
 --[[
 Header geometry, all derived, so that resizing the portrait cannot silently push the
 title into it. Measured from the header panel's left edge:
@@ -58,13 +58,14 @@ title into it. Measured from the header panel's left edge:
 local PROGRESS_HEIGHT = 5
 local PROGRESS_COLOR = { 0.10, 0.45, 0.75 }
 local RING_OFFSET = 2
--- The step panel reaches further left than the header, but stops short of the ring's
--- own left edge, so the portrait still reads as overhanging everything below it.
--- Flush with the header looks cramped; flush with the ring loses the overhang.
-local STEP_PANEL_OUTDENT = 16
+-- The step panel reaches further left than the header, stopping a few pixels short of
+-- the container edge, so the portrait overhangs its top-left corner. Derived rather
+-- than fixed: with a hard number, resizing the ring moves the header but not the panel
+-- and the two drift out of alignment.
+local STEP_PANEL_EDGE = 4
 local HEADER_LEFT = (RING_SIZE / 2) + RING_OFFSET
 local RING_REACH = (RING_SIZE / 2) - RING_OFFSET
-local BADGE_REACH = (PORTRAIT_SIZE / 2) - RING_OFFSET + (BADGE_RING_SIZE / 2) - 4
+local BADGE_REACH = (PORTRAIT_SIZE / 2) - RING_OFFSET + (BADGE_RING_SIZE / 2) - 6
 local CONTENT_INSET = math.max(RING_REACH, BADGE_REACH) + 6
 local PANEL_GAP = 5
 
@@ -274,10 +275,11 @@ local function CreateHeader(parent)
 	-- Cog tucked against the portrait's bottom-RIGHT, framed by a ring of its own so
 	-- it matches the portrait rather than looking like a stray icon on the corner.
 	-- CONTENT_INSET above accounts for how far right this reaches.
-	-- A dark disc behind the gear, or it disappears against light ground.
+	-- Just enough backing to keep the gear legible on light ground. A full-strength
+	-- dark disc reads as a blob stuck on the portrait rather than part of the frame.
 	bar.settingsBacking = bar:CreateTexture(nil, "ARTWORK")
-	bar.settingsBacking:SetColorTexture(0.05, 0.05, 0.06, 0.9)
-	bar.settingsBacking:SetSize(BADGE_RING_SIZE - 8, BADGE_RING_SIZE - 8)
+	bar.settingsBacking:SetColorTexture(0.05, 0.05, 0.06, 0.55)
+	bar.settingsBacking:SetSize(BADGE_RING_SIZE - 6, BADGE_RING_SIZE - 6)
 	ApplyRoundMask(bar, bar.settingsBacking)
 
 	-- An actual cog. The hearthstone-shaped gossip icon used before reads as a
@@ -285,7 +287,7 @@ local function CreateHeader(parent)
 	bar.settings = CreateIconButton(bar, BADGE_ICON_SIZE,
 		"Interface/Icons/INV_Misc_Gear_01", nil,
 		"Guide options", function() GuideWindow.ShowMenu() end)
-	bar.settings:SetPoint("CENTER", bar.portrait, "BOTTOMRIGHT", -4, 4)
+	bar.settings:SetPoint("CENTER", bar.portrait, "BOTTOMRIGHT", -6, 2)
 
 	bar.settingsBacking:SetPoint("CENTER", bar.settings, "CENTER", 0, 0)
 
@@ -375,7 +377,7 @@ local function CreateWindow()
 
 	-- The current step, and only the current step.
 	stepPanel = CreatePanel(frame)
-	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -STEP_PANEL_OUTDENT, -PANEL_GAP)
+	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -(HEADER_LEFT - STEP_PANEL_EDGE), -PANEL_GAP)
 	stepPanel:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -PANEL_GAP)
 	stepPanel:SetHeight(52)
 
