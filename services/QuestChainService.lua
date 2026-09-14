@@ -25,6 +25,7 @@ QuestChainService = { }
 local zones = { }        -- uiMapID -> { expansion, quests = { } }
 local questsByID = { }   -- id -> quest
 local npcsByID = { }     -- id -> { name, display }
+local dependantsByID = { }  -- id -> { ids of quests that list it as a prerequisite }
 
 -- Standard WoW race and class bitmasks, which is how Questie stores quest gating.
 local RACE_BITS = {
@@ -53,6 +54,18 @@ function QuestChainService.AddQuests(expansion, uiMapID, quests)
 	for _, quest in ipairs(quests) do
 		quest.uiMapID = uiMapID
 		questsByID[quest.id] = quest
+	end
+	-- The prerequisite edges, read backwards. Used to work out that a quest must have
+	-- been finished because something downstream of it was.
+	for _, quest in ipairs(quests) do
+		for _, list in ipairs({ quest.pre, quest.preAll }) do
+			if list then
+				for _, id in ipairs(list) do
+					dependantsByID[id] = dependantsByID[id] or { }
+					table.insert(dependantsByID[id], quest.id)
+				end
+			end
+		end
 	end
 end
 
@@ -120,34 +133,83 @@ local function HasBit(mask, bit)
 	return math.floor(mask / bit) % 2 == 1
 end
 
-local function AnyCompleted(ids)
-	if not ids then return true end
-	for _, id in ipairs(ids) do
-		local quest = questsByID[id]
-		if QuestLogService.IsCompleted(quest and quest.name, id) then return true end
+local function RecordedComplete(quest)
+	return QuestLogService.IsCompleted(quest and quest.name, quest and quest.id)
+end
+
+--[[
+Does finishing `other` prove that quest `questID` was finished?
+
+Only where `other` could not have been taken without it. preQuestGroup is "all of
+these", so any member qualifies. preQuestSingle is "any one of these", so a single-entry
+list qualifies and a longer one does not -- the player might have come the other way.
+]]
+local function Requires(other, questID)
+	if other.preAll then
+		for _, id in ipairs(other.preAll) do
+			if id == questID then return true end
+		end
+	end
+	if other.pre and #other.pre == 1 and other.pre[1] == questID then return true end
+	return false
+end
+
+--[[
+A quest the player must have finished, even though nothing recorded it.
+
+The client only remembers quests it was told about, and the addon only remembers ones it
+watched happen -- so a character who levelled before installing it shows a completed
+chain as still to do. But if a quest downstream of this one is finished, or is sitting
+in the log right now, and it could not have been taken without this one, then this one
+was finished. That is sound whatever either record says.
+
+Deliberately one level deep: it reads only what is actually recorded, never another
+inference, so two quests cannot prove each other and there is no cycle to guard.
+]]
+local function ImpliedComplete(quest, inLog)
+	local dependants = dependantsByID[quest.id]
+	if not dependants then return false end
+	for _, otherID in ipairs(dependants) do
+		local other = questsByID[otherID]
+		if other and Requires(other, quest.id) then
+			if RecordedComplete(other) then return true end
+			if inLog and inLog[other.name] then return true end
+		end
 	end
 	return false
 end
 
-local function AllCompleted(ids)
+local function IsDone(quest, inLog)
+	if not quest then return false end
+	return RecordedComplete(quest) or ImpliedComplete(quest, inLog)
+end
+
+local function AnyCompleted(ids, inLog)
 	if not ids then return true end
 	for _, id in ipairs(ids) do
-		local quest = questsByID[id]
-		if not QuestLogService.IsCompleted(quest and quest.name, id) then return false end
+		if IsDone(questsByID[id], inLog) then return true end
+	end
+	return false
+end
+
+local function AllCompleted(ids, inLog)
+	if not ids then return true end
+	for _, id in ipairs(ids) do
+		if not IsDone(questsByID[id], inLog) then return false end
 	end
 	return true
 end
 
-local function MissingPrerequisite(quest)
-	if quest.pre and not AnyCompleted(quest.pre) then
+local function MissingPrerequisite(quest, inLog)
+	if quest.pre and not AnyCompleted(quest.pre, inLog) then
 		-- preQuestSingle means ANY of these; name the first as the one to do.
 		local first = questsByID[quest.pre[1]]
 		return first and first.name or ("quest " .. tostring(quest.pre[1]))
 	end
-	if quest.preAll and not AllCompleted(quest.preAll) then
+	if quest.preAll and not AllCompleted(quest.preAll, inLog) then
 		for _, id in ipairs(quest.preAll) do
 			local other = questsByID[id]
-			if not QuestLogService.IsCompleted(other and other.name, id) then
+			if not IsDone(other, inLog) then
 				return other and other.name or ("quest " .. tostring(id))
 			end
 		end
@@ -169,13 +231,52 @@ Returns a status and, when blocked, the reason -- which is the part worth having
 function QuestChainService.GetStatus(quest, inLog)
 	if not quest then return "blocked" end
 
-	if QuestLogService.IsCompleted(quest.name, quest.id) then
+	if RecordedComplete(quest) then
 		return "completed"
 	end
 
 	inLog = inLog or (select(1, QuestLogService.GetQuestLogState()))
 	if inLog[quest.name] then
 		return "active"
+	end
+
+	-- Nothing recorded it, but something downstream proves it happened.
+	if ImpliedComplete(quest, inLog) then
+		return "completed"
+	end
+
+	--[[
+	Quests that can no longer be picked up, which is not the same as blocked.
+
+	exclusiveTo is a fork: taking one of a set closes the others for good.
+	nextQuestInChain is the step after this one -- Questie's own note is that while it
+	is active or finished, this quest is no longer offered. Reaching here means the
+	inference above could not prove this quest was done, so the successor does not
+	require it; the player got there another way and this one is simply gone.
+
+	Showing either as "available" is the bug this fixes: the guide sent the player to
+	an npc who has nothing for them.
+	]]
+	if quest.exclusive then
+		for _, id in ipairs(quest.exclusive) do
+			local other = questsByID[id]
+			if IsDone(other, inLog) then
+				return "blocked", "exclusive",
+					("you took %s instead"):format(other and other.name or "another quest")
+			end
+		end
+	end
+	if quest.nextInChain then
+		local nextQuest = questsByID[quest.nextInChain]
+		if nextQuest and (IsDone(nextQuest, inLog) or inLog[nextQuest.name]) then
+			return "blocked", "superseded", "no longer offered"
+		end
+	end
+	if quest.breadcrumbFor then
+		local target = questsByID[quest.breadcrumbFor]
+		if target and (IsDone(target, inLog) or inLog[target.name]) then
+			return "blocked", "superseded", "no longer offered"
+		end
 	end
 
 	local race = PlayerContextService.GetRace()
@@ -194,7 +295,7 @@ function QuestChainService.GetStatus(quest, inLog)
 		return "blocked", "level", ("requires level %d"):format(quest.req)
 	end
 
-	local missing = MissingPrerequisite(quest)
+	local missing = MissingPrerequisite(quest, inLog)
 	if missing then
 		return "blocked", "prerequisite", ("after %s"):format(missing)
 	end
@@ -387,6 +488,40 @@ function QuestChainService.Summarise(chain, inLog)
 end
 
 -- Debug helpers (see todo.md) -------------------------------------------------
+
+--[[
+Why a quest reads the way it does. The first thing to run when the guide disagrees with
+the game -- it names which source said what, so a wrong answer points at its cause.
+]]
+_G.AGC_WhyQuest = function(questID)
+	local quest = questsByID[tonumber(questID) or 0]
+	if not quest then
+		print("|cffff0000AGC|r no quest with id " .. tostring(questID))
+		return
+	end
+	local inLog = QuestLogService.GetQuestLogState()
+	local status, reason, detail = QuestChainService.GetStatus(quest, inLog)
+	print(("|cff33ff99[AGC]|r [%d] %s -> %s%s"):format(quest.id, quest.name, status,
+		detail and (" (" .. detail .. ")") or ""))
+	print("  client completion api: " .. tostring(QuestLogService.HasCompletionAPI()))
+	print("  client says completed: " .. tostring(RecordedComplete(quest)))
+	print("  in your log now:       " .. tostring(inLog[quest.name] ~= nil))
+	print("  implied by a later quest: " .. tostring(ImpliedComplete(quest, inLog)))
+	for _, otherID in ipairs(dependantsByID[quest.id] or { }) do
+		local other = questsByID[otherID]
+		if other then
+			print(("    <- [%d] %s  requires-this=%s done=%s inlog=%s"):format(
+				other.id, other.name, tostring(Requires(other, quest.id)),
+				tostring(RecordedComplete(other)), tostring(inLog[other.name] ~= nil)))
+		end
+	end
+	if quest.nextInChain then
+		local nextQuest = questsByID[quest.nextInChain]
+		print(("  next in chain: [%d] %s done=%s"):format(quest.nextInChain,
+			nextQuest and nextQuest.name or "?", tostring(IsDone(nextQuest, inLog))))
+	end
+	if reason then print("  reason: " .. reason) end
+end
 
 _G.AGC_QuestChains = function(uiMapID)
 	uiMapID = uiMapID or PlayerContextService.GetZone()

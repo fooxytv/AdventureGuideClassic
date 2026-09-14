@@ -212,13 +212,35 @@ function QuestLogService.MarkCompleted(title)
 	EnsureStore().completed[title] = true
 end
 
+--[[
+Has this character handed this quest in?
+
+Asks the client first and our own record second. Both accessors are tried because which
+one exists varies: 1.15 moved the flag onto C_QuestLog and only some builds keep the
+global alias, and consulting just the global meant a character who levelled before
+installing the addon had every quest reported as still to do.
+]]
 function QuestLogService.IsCompleted(title, questID)
-	if questID and type(IsQuestFlaggedCompleted) == "function" then
-		local ok, value = pcall(IsQuestFlaggedCompleted, questID)
-		if ok and value then return true end
+	if questID then
+		if type(C_QuestLog) == "table" and type(C_QuestLog.IsQuestFlaggedCompleted) == "function" then
+			local ok, value = pcall(C_QuestLog.IsQuestFlaggedCompleted, questID)
+			if ok and value then return true end
+		end
+		if type(IsQuestFlaggedCompleted) == "function" then
+			local ok, value = pcall(IsQuestFlaggedCompleted, questID)
+			if ok and value then return true end
+		end
 	end
 	if not title then return false end
 	return EnsureStore().completed[title] == true
+end
+
+-- Whether the client can answer for itself. When it cannot, the guide leans entirely on
+-- what it has watched happen, which is worth saying out loud in the debug output.
+function QuestLogService.HasCompletionAPI()
+	return (type(C_QuestLog) == "table"
+			and type(C_QuestLog.IsQuestFlaggedCompleted) == "function")
+		or type(IsQuestFlaggedCompleted) == "function"
 end
 
 function QuestLogService.ForgetCompleted()
