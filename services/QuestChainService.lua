@@ -297,6 +297,36 @@ function QuestChainService.GetChains(uiMapID)
 	return chains, standalone
 end
 
+--[[
+Summarises a chain for listing: its level band and how much of it is done.
+
+A storyline the player can see the shape of at a glance -- "levels 1-6, 3 of 12" --
+is the difference between a browsable guide and a wall of quest names.
+]]
+function QuestChainService.Summarise(chain, inLog)
+	inLog = inLog or (select(1, QuestLogService.GetQuestLogState()))
+	local done, active, minLevel, maxLevel = 0, 0, nil, nil
+	for _, quest in ipairs(chain) do
+		local status = QuestChainService.GetStatus(quest, inLog)
+		if status == "completed" then done = done + 1 end
+		if status == "active" then active = active + 1 end
+		local level = quest.level
+		if level and level > 0 then
+			if not minLevel or level < minLevel then minLevel = level end
+			if not maxLevel or level > maxLevel then maxLevel = level end
+		end
+	end
+	return {
+		name = chain[1] and chain[1].name or "Quests",
+		total = #chain,
+		done = done,
+		active = active,
+		minLevel = minLevel,
+		maxLevel = maxLevel,
+		linear = chain.linear,
+	}
+end
+
 -- Debug helpers (see todo.md) -------------------------------------------------
 
 _G.AGC_QuestChains = function(uiMapID)
