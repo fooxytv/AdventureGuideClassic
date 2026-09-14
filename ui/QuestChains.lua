@@ -7,28 +7,30 @@ Programming by: FooxyTV
 select(2, ...).SetupGlobalFacade()
 
 --[[
-The Quests tab: a zone's storylines, and where this character stands in each.
+The Quests tab: a zone's storylines, and what each quest actually asks of you.
 
-What this shows the player, stated plainly: a zone's quests are not a list, they are a
-handful of stories. Elwynn has the defence of Northshire, the trouble at the Fargodeep
-Mine, Marshal Dughan's problem with the Riverpaw. Each is a chain of quests. The tab
-presents those stories, in the order you would meet them, showing how far through each
-you are and -- where you cannot continue -- why.
+A zone's quests are not a list, they are a handful of stories. Elwynn has the defence
+of Northshire, the trouble at the Fargodeep Mine, Marshal Dughan's problem with the
+Riverpaw. Each is a chain. The tab presents those stories, in the order you would meet
+them, and for every quest in one says three things a quest name alone cannot:
 
-Drawn as the encounter overview is drawn, because that IS the addon's look: the journal
-parchment behind everything, and on it one page of collapsible sections, each with the
-overview's own paper-header art. A section is a storyline. Its header carries the name,
-the level band, the count and a progress bar, so the page reads as a list of stories
-and how far you are through each even with everything closed; opening one lays its
-quests out on the overview's paper in quest-log ink, the reason a quest is blocked in a
-column of its own on the right.
+    what it asks of you   "Bring 12 Red Burlap Bandanas to Deputy Willem outside the
+                           Northshire Abbey" -- shipped in data/Quests/
+    what it opens up      "Leads to Wolves Across the Border" -- free, the prerequisite
+                           edges read the other way round
+    why you cannot yet    "after Kobold Camp Cleanup", "requires level 9"
 
-Earlier versions split the page into a list and a detail panel, first as inset panels
-and then as the boss list beside the overview. Neither read well: the boss buttons
-were the wrong shape for stories, and a detail column 320 wide cramped the text into
-something hard to read. One wide page fixes both.
+Earlier versions showed quest names and little else, and no amount of restyling fixed
+that: a name is a label, not information. The layout is storylines on the left, the
+chosen one opened on the right, both on dark inset panels rather than the journal
+parchment -- light text on a dark ground is what the quest log itself does, and it is
+what finally made this readable at the size the page actually is.
 
-Built on a plain ScrollFrame, the pattern ui/DynamicContentScroller.lua already proves
+Colours follow the quest log too: gold for a quest in your log, white for one you can
+take, green for done, grey for one you cannot reach yet, and the body text a step down
+from white so the names still lead.
+
+Built on plain ScrollFrames, the pattern ui/DynamicContentScroller.lua already proves
 on both clients. ScrollBox list views are the API that diverges between Era and BCC.
 ]]
 
@@ -37,22 +39,21 @@ local components
 
 local EJ_TEXTURES = "Interface/EncounterJournal/UI-EncounterJournalTextures"
 
--- The encounter view's own palette, so this reads as the same journal.
-local TITLE_COLOR = { 0.902, 0.788, 0.671 }   -- instance title over the parchment
-local HEADER_TEXT = { 0.929, 0.788, 0.620 }   -- overview section headers
-local INK = { 0.25, 0.1484375, 0.02 }         -- overview body text
+-- The quest log's own palette, which is what a player already reads quests in.
+local GOLD      = { 1.00, 0.82, 0.00 }
+local WHITE     = { 1.00, 1.00, 1.00 }
+local GREEN     = { 0.25, 0.75, 0.25 }
+local GREY      = { 0.55, 0.53, 0.50 }
+local BODY      = { 0.76, 0.73, 0.69 }   -- the objective sentence: a step below white
+local BODY_DIM  = { 0.52, 0.50, 0.47 }   -- the same, for a quest out of reach
+local FAINT     = { 0.58, 0.52, 0.42 }   -- "leads to"
+local TITLE     = { 0.902, 0.788, 0.671 }-- the journal's own bronze, for the zone
 
--- Quest names are ink on paper, so status is shown as darker inks rather than the
--- quest log's bright colours, which vanish against parchment.
-local STATUS_INK = {
-	completed = { 0.16, 0.42, 0.14 },
-	active    = { 0.60, 0.36, 0.02 },
-	available = INK,
-	blocked   = { 0.42, 0.36, 0.30 },
+local STATUS_COLOR = {
+	completed = GREEN, active = GOLD, available = WHITE, blocked = GREY,
 }
 
--- Textures rather than glyphs: a tick and a quest marker read instantly, where "v"
--- and ">" have to be decoded.
+-- Textures rather than glyphs: a tick and a quest marker read instantly.
 local STATUS_ICON = {
 	completed = "Interface/RaidFrame/ReadyCheck-Ready",
 	active    = "Interface/GossipFrame/ActiveQuestIcon",
@@ -60,20 +61,15 @@ local STATUS_ICON = {
 	blocked   = nil,
 }
 
-local PAGE_WIDTH = 710
-local HEADER_HEIGHT = 34
-local QUEST_ROW_HEIGHT = 22
-local SECTION_GAP = 8
-local PAPER_INSET = 6
-
+local RAIL_WIDTH = 232
+local RAIL_ROW_HEIGHT = 42
+local PANEL_PAD = 14
 local SINGLES = "__singles__"
 
-local scroll
-local rows, papers = { }, { }
-local rowsUsed, papersUsed = 0, 0
-local chains, standalone, currentZone
-local expanded = { }      -- key -> true
-local lastOpened          -- the storyline the nav bar names
+local railScroll, panelScroll
+local railRows, panelRows = { }, { }
+local panelUsed = 0
+local chains, standalone, currentZone, selectedKey
 
 -- Helpers ------------------------------------------------------------------------------
 
@@ -89,228 +85,231 @@ local function LevelBand(summary)
 	return ("Level %d"):format(summary.minLevel)
 end
 
--- Section headers ---------------------------------------------------------------------------
+-- The plain-ScrollFrame recipe from DynamicContentScroller, in one place. Note what is
+-- NOT here: ScrollFrameTemplate_OnMouseWheel. That is the legacy Slider handler and
+-- MinimalScrollBar has no GetValue, so adding it throws on every wheel tick.
+-- ScrollFrame_OnLoad already wires the wheel to the bar it creates.
+local function CreateScroller(parent, childWidth)
+	local scroll = CreateFrame("ScrollFrame", nil, parent)
+	scroll.scrollBarX = -10
+	scroll.scrollBarTopY = -4
+	scroll.scrollBarBottomY = 4
+	scroll.scrollBarTemplate = "MinimalScrollBar"
+	scroll.child = CreateFrame("Frame", nil, scroll)
+	scroll.child:SetSize(childWidth, 10)
+	scroll.child:SetPoint("TOPLEFT")
+	scroll:SetScrollChild(scroll.child)
+	if ScrollFrame_OnLoad then pcall(ScrollFrame_OnLoad, scroll) end
+	return scroll
+end
+
+-- Storyline rail ---------------------------------------------------------------------------
 
 --[[
-A storyline's header: the overview's collapsible section header, with the paper-header
-art and the +/- the player already knows from boss abilities. Taller than the
-overview's, to carry the progress bar; the bar is what makes the closed page useful.
+One storyline in the rail: name, level band, how much is done, and a bar. The bar is
+what makes the rail readable at a glance -- the counts alone all look alike.
 ]]
-local function CreateHeaderRow(parent)
+local function CreateRailRow(parent)
 	local row = CreateFrame("Button", nil, parent)
-	row:SetHeight(HEADER_HEIGHT)
+	row:SetHeight(RAIL_ROW_HEIGHT)
 
-	-- Expanded art (e*) and collapsed art (c*), swapped as the section opens and closes,
-	-- exactly as CollapsibleSectionWidgetTypeMixin does.
-	row.eLeft = row:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-PaperHeader-SelectUp-Left")
-	row.eLeft:ClearAllPoints()
-	row.eLeft:SetPoint("LEFT", -1, 0)
-	row.eRight = row:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-PaperHeader-SelectUp-Right")
-	row.eRight:ClearAllPoints()
-	row.eRight:SetPoint("RIGHT", 2, 0)
-	row.eMid = row:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-PaperHeader-SelectUp-Mid")
-	row.eMid:SetDrawLayer("BACKGROUND", -2)
-	row.eMid:ClearAllPoints()
-	row.eMid:SetPoint("LEFT", row.eLeft, "RIGHT", -32, 0)
-	row.eMid:SetPoint("RIGHT", row.eRight, "LEFT", 32, 0)
-
-	row.cLeft = row:CreateTexture(nil, "BACKGROUND")
-	row.cLeft:SetTexture(EJ_TEXTURES)
-	row.cLeft:SetSize(64, 29)
-	row.cLeft:SetTexCoord(0.84960938, 0.97460938, 0.49023438, 0.51855469)
-	row.cLeft:SetPoint("LEFT", -1, 0)
-	row.cRight = row:CreateTexture(nil, "BACKGROUND")
-	row.cRight:SetTexture(EJ_TEXTURES)
-	row.cRight:SetSize(64, 29)
-	row.cRight:SetTexCoord(0.72656250, 0.85156250, 0.52441406, 0.55273438)
-	row.cRight:SetPoint("RIGHT", 2, 0)
-	row.cMid = row:CreateTexture(nil, "BACKGROUND")
-	row.cMid:SetTexture(EJ_TEXTURES .. "_Tile", "REPEAT", "REPEAT")
-	row.cMid:SetSize(64, 29)
-	row.cMid:SetTexCoord(0.0, 1.0, 0.34375000, 0.40039063)
-	row.cMid:SetHorizTile(true)
-	row.cMid:SetDrawLayer("BACKGROUND", -2)
-	row.cMid:SetPoint("LEFT", row.cLeft, "RIGHT", -32, 0)
-	row.cMid:SetPoint("RIGHT", row.cRight, "LEFT", 32, 0)
-
-	local hLeft = row:CreateTexture(nil, "HIGHLIGHT")
-	hLeft:SetTexture(EJ_TEXTURES)
-	hLeft:SetTexCoord(0.74218750, 0.86718750, 0.15820313, 0.18652344)
-	hLeft:SetSize(64, 29)
-	hLeft:SetPoint("LEFT", -1, 0)
-	local hRight = row:CreateTexture(nil, "HIGHLIGHT")
-	hRight:SetTexture(EJ_TEXTURES)
-	hRight:SetTexCoord(0.87109375, 0.99609375, 0.15820313, 0.18652344)
-	hRight:SetSize(64, 29)
-	hRight:SetPoint("RIGHT", 2, 0)
-	local hMid = row:CreateTexture(nil, "HIGHLIGHT")
-	hMid:SetTexture(EJ_TEXTURES .. "_Tile")
-	hMid:SetTexCoord(0.00000000, 1.00000000, 0.46484375, 0.52148438)
-	hMid:SetSize(64, 29)
-	hMid:SetPoint("LEFT", hLeft, "RIGHT", -32, 0)
-	hMid:SetPoint("RIGHT", hRight, "LEFT", 32, 0)
-
-	row.toggle = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	row.toggle:SetSize(12, 12)
-	row.toggle:SetPoint("LEFT", 8, 3)
-	SetColor(row.toggle, HEADER_TEXT)
+	row.highlight = row:CreateTexture(nil, "BACKGROUND")
+	row.highlight:SetAllPoints()
+	row.highlight:SetColorTexture(1, 0.82, 0, 0.08)
+	row.highlight:Hide()
+	row.selected = row:CreateTexture(nil, "BACKGROUND")
+	row.selected:SetAllPoints()
+	row.selected:SetColorTexture(1, 0.82, 0, 0.16)
+	row.selected:Hide()
+	-- A bright edge on the selected row, so the choice is legible without a border.
+	row.edge = row:CreateTexture(nil, "ARTWORK")
+	row.edge:SetColorTexture(1, 0.82, 0, 0.85)
+	row.edge:SetWidth(2)
+	row.edge:SetPoint("TOPLEFT")
+	row.edge:SetPoint("BOTTOMLEFT")
+	row.edge:Hide()
 
 	row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	row.name:SetJustifyH("LEFT")
 	row.name:SetWordWrap(false)
-	row.name:SetPoint("TOPLEFT", 26, -7)
-	SetColor(row.name, HEADER_TEXT)
+	row.name:SetPoint("TOPLEFT", 9, -6)
+	row.name:SetPoint("RIGHT", -8, 0)
 
-	row.count = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	row.detail = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.detail:SetJustifyH("LEFT")
+	row.detail:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -3)
+
+	row.count = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 	row.count:SetJustifyH("RIGHT")
-	row.count:SetPoint("TOPRIGHT", -12, -8)
-	SetColor(row.count, HEADER_TEXT)
-	row.name:SetPoint("RIGHT", row.count, "LEFT", -12, 0)
+	row.count:SetPoint("RIGHT", -9, 0)
+	row.count:SetPoint("TOP", row.detail, "TOP", 0, 0)
 
 	row.barBg = row:CreateTexture(nil, "ARTWORK")
-	row.barBg:SetColorTexture(0, 0, 0, 0.45)
-	row.barBg:SetHeight(4)
-	row.barBg:SetPoint("BOTTOMLEFT", 26, 6)
-	row.barBg:SetPoint("BOTTOMRIGHT", -12, 6)
+	row.barBg:SetColorTexture(0, 0, 0, 0.55)
+	row.barBg:SetHeight(3)
+	row.barBg:SetPoint("BOTTOMLEFT", 9, 6)
+	row.barBg:SetPoint("BOTTOMRIGHT", -9, 6)
 	row.bar = row:CreateTexture(nil, "OVERLAY")
-	row.bar:SetHeight(4)
+	row.bar:SetHeight(3)
 	row.bar:SetPoint("TOPLEFT", row.barBg, "TOPLEFT", 0, 0)
 
+	row:SetScript("OnEnter", function(self) self.highlight:Show() end)
+	row:SetScript("OnLeave", function(self) self.highlight:Hide() end)
 	row:SetScript("OnClick", function(self)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-		component.Toggle(self.key)
+		if self.key == selectedKey then return end
+		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
+		component.Select(self.key)
 	end)
 	return row
 end
 
-local function SetHeaderExpanded(row, isExpanded)
-	row.toggle:SetText(isExpanded and "-" or "+")
-	row.eLeft:SetShown(isExpanded)
-	row.eMid:SetShown(isExpanded)
-	row.eRight:SetShown(isExpanded)
-	row.cLeft:SetShown(not isExpanded)
-	row.cMid:SetShown(not isExpanded)
-	row.cRight:SetShown(not isExpanded)
+local function AcquireRailRow(index)
+	if not railRows[index] then
+		railRows[index] = CreateRailRow(railScroll.child)
+	end
+	return railRows[index]
 end
 
--- Quest rows ------------------------------------------------------------------------------
+-- Briefing rows ------------------------------------------------------------------------------
 
 --[[
-One quest on the paper. Quest-log ink for the name -- the size the quest log itself
-uses, which is what "readable" means to a player -- and the reason it is blocked in a
-column of its own on the right, so the names line up and the reasons line up.
+One quest, briefed: the marker and name on the first line with the level to the right,
+then what it asks of you, then what it leads to. Every part below the name is optional,
+so the row measures itself once the text is set.
 ]]
 local function CreateQuestRow(parent)
 	local row = CreateFrame("Frame", nil, parent)
-	row:SetHeight(QUEST_ROW_HEIGHT)
+
 	row.icon = row:CreateTexture(nil, "ARTWORK")
 	row.icon:SetSize(14, 14)
-	row.icon:SetPoint("LEFT", 0, 0)
-	row.reason = row:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	row.reason:SetJustifyH("RIGHT")
-	row.reason:SetWordWrap(false)
-	row.reason:SetPoint("RIGHT", -16, 0)
-	SetColor(row.reason, STATUS_INK.blocked)
-	row.name = row:CreateFontString(nil, "OVERLAY", "QuestFont")
+	row.icon:SetPoint("TOPLEFT", 0, -2)
+
+	row.level = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.level:SetJustifyH("RIGHT")
+	row.level:SetPoint("TOPRIGHT", 0, -3)
+
+	row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	row.name:SetJustifyH("LEFT")
 	row.name:SetWordWrap(false)
-	row.name:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
-	row.name:SetPoint("RIGHT", row.reason, "LEFT", -12, 0)
+	row.name:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", 6, 1)
+	row.name:SetPoint("RIGHT", row.level, "LEFT", -8, 0)
+
+	-- The sentence. Wraps, and is what the row's height is mostly made of.
+	row.says = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	row.says:SetJustifyH("LEFT")
+	row.says:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -3)
+	row.says:SetPoint("RIGHT", -2, 0)
+
+	row.leads = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.leads:SetJustifyH("LEFT")
+	row.leads:SetPoint("TOPLEFT", row.says, "BOTTOMLEFT", 0, -2)
+	row.leads:SetPoint("RIGHT", -2, 0)
+
+	row.rule = row:CreateTexture(nil, "ARTWORK")
+	row.rule:SetColorTexture(1, 1, 1, 0.05)
+	row.rule:SetHeight(1)
+	row.rule:SetPoint("BOTTOMLEFT", 0, 0)
+	row.rule:SetPoint("BOTTOMRIGHT", 0, 0)
 	return row
 end
 
-local ROW_FACTORY = { header = CreateHeaderRow, quest = CreateQuestRow }
+-- The storyline's own heading, at the top of the briefing.
+local function CreateHeadingRow(parent)
+	local row = CreateFrame("Frame", nil, parent)
 
-local function AcquireRow(kind)
-	rowsUsed = rowsUsed + 1
-	local entry = rows[rowsUsed]
+	row.title = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	row.title:SetJustifyH("LEFT")
+	row.title:SetWordWrap(false)
+	row.title:SetPoint("TOPLEFT", 0, -1)
+	row.title:SetPoint("RIGHT", 0, 0)
+
+	row.sub = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.sub:SetJustifyH("LEFT")
+	row.sub:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -5)
+
+	row.barBg = row:CreateTexture(nil, "ARTWORK")
+	row.barBg:SetColorTexture(0, 0, 0, 0.55)
+	row.barBg:SetHeight(3)
+	row.barBg:SetPoint("TOPLEFT", row.sub, "BOTTOMLEFT", 0, -5)
+	row.barBg:SetWidth(120)
+	row.bar = row:CreateTexture(nil, "OVERLAY")
+	row.bar:SetHeight(3)
+	row.bar:SetPoint("TOPLEFT", row.barBg, "TOPLEFT", 0, 0)
+
+	row.rule = row:CreateTexture(nil, "ARTWORK")
+	row.rule:SetColorTexture(1, 0.82, 0, 0.22)
+	row.rule:SetHeight(1)
+	row.rule:SetPoint("BOTTOMLEFT", 0, 0)
+	row.rule:SetPoint("BOTTOMRIGHT", 0, 0)
+	return row
+end
+
+local ROW_FACTORY = { heading = CreateHeadingRow, quest = CreateQuestRow }
+
+local function AcquirePanelRow(kind)
+	panelUsed = panelUsed + 1
+	local entry = panelRows[panelUsed]
 	if not entry or entry.kind ~= kind then
-		entry = { kind = kind, frame = ROW_FACTORY[kind](scroll.child) }
-		rows[rowsUsed] = entry
+		entry = { kind = kind, frame = ROW_FACTORY[kind](panelScroll.child) }
+		panelRows[panelUsed] = entry
 	end
 	entry.frame:Show()
 	return entry.frame
-end
-
--- The overview's paper, one sheet per open storyline.
-local function AcquirePaper()
-	papersUsed = papersUsed + 1
-	local paper = papers[papersUsed]
-	if not paper then
-		local child = scroll.child
-		paper = child:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-AbilityTextBG")
-		paper:SetDrawLayer("BACKGROUND", -3)
-		paper.bottom = child:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-AbilityTextBottomBorder")
-		paper.bottom:SetDrawLayer("BACKGROUND", -3)
-		paper.bottom:ClearAllPoints()
-		paper.bottom:SetPoint("LEFT", paper, "BOTTOMLEFT")
-		paper.bottom:SetPoint("RIGHT", paper, "BOTTOMRIGHT")
-		papers[papersUsed] = paper
-	end
-	paper:Show()
-	paper.bottom:Show()
-	return paper
 end
 
 -- Component --------------------------------------------------------------------------------
 
 function component.Init(components_)
 	components = components_
-	-- Same page as the encounter view: sized and placed exactly as its info panel.
 	local page = CreateFrame("Frame", EncounterJournal:GetName() .. "QuestChains", EncounterJournal)
 	component.frame = page
 	EncounterJournal.questChains = page
-	page:SetSize(785, 425)
-	page:SetPoint("BOTTOMRIGHT", EncounterJournal.inset, "BOTTOMRIGHT", -4, 2)
+	page:SetPoint("TOPLEFT", EncounterJournal.inset, 0, -2)
+	page:SetPoint("BOTTOMRIGHT", EncounterJournal.inset, -3, 0)
 
-	page.bg = page:CreateTexture(nil, "BACKGROUND", nil, 1)
-	page.bg:SetTexture("Interface/EncounterJournal/UI-EJ-JournalBG")
-	page.bg:SetTexCoord(0, 0.766601562, 0, 0.830078125)
+	-- The journal parchment stays as the page: it is the Adventure Guide's look, and the
+	-- two dark panels sit on it the way the boss list and overview sit on the encounter
+	-- page. The text lives on the panels, not on the parchment.
+	page.bg = page:CreateTexture(nil, "BACKGROUND")
+	page.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Classic")
 	page.bg:SetAllPoints()
-	page.leftShadow = page:CreateTexture(nil, "BACKGROUND", nil, 3)
-	page.leftShadow:SetTexture(EJ_TEXTURES)
-	page.leftShadow:SetTexCoord(0, 0.755859375, 0.9599609375, 1)
-	page.leftShadow:SetSize(386, 39)
-	page.leftShadow:SetPoint("TOPLEFT", 0, -11)
-	page.rightShadow = page:CreateTexture(nil, "BACKGROUND", nil, 3)
-	page.rightShadow:SetTexture(EJ_TEXTURES)
-	page.rightShadow:SetTexCoord(0.755859375, 0, 0.9599609375, 1)
-	page.rightShadow:SetSize(386, 39)
-	page.rightShadow:SetPoint("TOPRIGHT", 0, -11)
+	page.bg:SetPoint("TOPLEFT", 3, -1)
 
-	-- The zone takes the instance's place in the header, in the same bronze.
 	page.title = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	page.title:SetJustifyH("LEFT")
 	page.title:SetWordWrap(false)
-	page.title:SetSize(330, 16)
-	page.title:SetPoint("TOPLEFT", 26, -20)
-	SetColor(page.title, TITLE_COLOR)
+	page.title:SetPoint("TOPLEFT", 20, -16)
+	SetColor(page.title, TITLE)
 
 	page.summary = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	page.summary:SetJustifyH("RIGHT")
-	page.summary:SetPoint("TOPRIGHT", -24, -22)
-	SetColor(page.summary, TITLE_COLOR)
+	page.summary:SetPoint("TOPRIGHT", -20, -18)
+	SetColor(page.summary, TITLE)
 
-	-- One page, the width of the boss list and the overview together.
-	scroll = CreateFrame("ScrollFrame", nil, page)
-	scroll:SetSize(740, 372)
-	scroll:SetPoint("BOTTOMLEFT", 25, 1)
-	scroll.scrollBarX = -15
-	scroll.scrollBarTopY = -6
-	scroll.scrollBarBottomY = 6
-	scroll.scrollBarTemplate = "MinimalScrollBar"
-	scroll.child = CreateFrame("Frame", nil, scroll)
-	scroll.child:SetSize(PAGE_WIDTH, 10)
-	scroll.child:SetPoint("TOPLEFT")
-	scroll:SetScrollChild(scroll.child)
-	-- ScrollFrame_OnLoad also wires the mouse wheel to the bar it creates. Do not
-	-- add ScrollFrameTemplate_OnMouseWheel on top: that is the legacy Slider handler,
-	-- and MinimalScrollBar is not a Slider -- it has no GetValue, so the wheel throws.
-	if ScrollFrame_OnLoad then pcall(ScrollFrame_OnLoad, scroll) end
+	-- Storylines, left.
+	local railInset = CreateFrame("Frame", nil, page, "InsetFrameTemplate")
+	railInset:SetWidth(RAIL_WIDTH)
+	railInset:SetPoint("TOPLEFT", 14, -44)
+	railInset:SetPoint("BOTTOMLEFT", 14, 10)
+	railScroll = CreateScroller(railInset, RAIL_WIDTH - 26)
+	railScroll:SetPoint("TOPLEFT", 4, -5)
+	railScroll:SetPoint("BOTTOMRIGHT", -20, 5)
+
+	-- The briefing, right.
+	local panelInset = CreateFrame("Frame", nil, page, "InsetFrameTemplate")
+	panelInset:SetPoint("TOPLEFT", railInset, "TOPRIGHT", 8, 0)
+	panelInset:SetPoint("BOTTOMRIGHT", -14, 10)
+	panelScroll = CreateScroller(panelInset, 10)
+	panelScroll:SetPoint("TOPLEFT", PANEL_PAD, -10)
+	panelScroll:SetPoint("BOTTOMRIGHT", -22, 8)
+	-- The child has to be told its width before anything wraps against it, and the inset
+	-- has no size until the frame is laid out, so take it on the first draw instead.
+	panelScroll:SetScript("OnSizeChanged", function(self, width)
+		if width and width > 0 then self.child:SetWidth(width) end
+	end)
 
 	page.empty = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	page.empty:SetPoint("CENTER", 0, 10)
-	SetColor(page.empty, INK)
 	page.empty:Hide()
 
 	-- Follow the quest log, so a hand-in moves the quest to completed and unlocks
@@ -326,20 +325,8 @@ function component.Init(components_)
 	page:Hide()
 end
 
-function component.Toggle(key)
-	if expanded[key] then
-		expanded[key] = nil
-		if lastOpened == key then lastOpened = nil end
-	else
-		expanded[key] = true
-		lastOpened = key
-	end
-	component.Refresh()
-end
-
-function component.CollapseAll()
-	expanded = { }
-	lastOpened = nil
+function component.Select(key)
+	selectedKey = key
 	component.Refresh()
 end
 
@@ -359,97 +346,157 @@ local function ResolveZone()
 end
 
 --[[
-What opens by itself on a fresh zone: the storyline you are in the middle of, or
-failing that the first. A page with everything closed says nothing; a page with
-everything open is the wall of names this design exists to avoid.
+Which storyline opens first in a fresh zone: the one you are in the middle of, else the
+first. Landing on a storyline you have already finished would be the least useful
+choice available.
 ]]
-local function DefaultExpansion(inLog)
-	expanded = { }
-	lastOpened = nil
+local function DefaultSelection(inLog)
 	for index, chain in ipairs(chains) do
-		if QuestChainService.Summarise(chain, inLog).active > 0 then
-			expanded[index] = true
-			lastOpened = index
-			return
-		end
+		if QuestChainService.Summarise(chain, inLog).active > 0 then return index end
 	end
-	if chains[1] then
-		expanded[1] = true
-		lastOpened = 1
+	for index, chain in ipairs(chains) do
+		local summary = QuestChainService.Summarise(chain, inLog)
+		if summary.done < summary.total then return index end
 	end
+	return chains[1] and 1 or SINGLES
 end
 
-local function StoryName(key)
-	if key == SINGLES then return "Other quests" end
-	local chain = chains[key]
-	return chain and (chain[1].name or "Storyline") or nil
+local function SelectedQuests(inLog)
+	if selectedKey == SINGLES then
+		return standalone, "Other quests", QuestChainService.Summarise(standalone, inLog)
+	end
+	local chain = chains[selectedKey]
+	if chain then
+		return chain, chain[1].name or "Storyline", QuestChainService.Summarise(chain, inLog)
+	end
+	return nil
 end
 
-local function RefreshPage(inLog)
-	for _, entry in pairs(rows) do entry.frame:Hide() end
-	for _, paper in pairs(papers) do paper:Hide() paper.bottom:Hide() end
-	rowsUsed, papersUsed = 0, 0
-	local child = scroll.child
+local function RefreshRail(inLog)
+	for _, row in pairs(railRows) do row:Hide() end
 
-	local offsetY = 6
-	local function AddSection(key, quests)
-		local summary = QuestChainService.Summarise(quests, inLog)
-		local isOpen = expanded[key] and true or false
+	local offsetY, index = 2, 0
+	local function AddEntry(key, name, summary)
+		index = index + 1
+		local row = AcquireRailRow(index)
+		row.key = key
+		row.name:SetText(name)
+		row.detail:SetText(LevelBand(summary))
+		row.count:SetText(("%d/%d"):format(summary.done, summary.total))
 
-		local header = AcquireRow("header")
-		header.key = key
-		header.name:SetText(StoryName(key))
-		local band = LevelBand(summary)
-		header.count:SetText(("%s%s%d of %d"):format(
-			band, band ~= "" and "  ·  " or "", summary.done, summary.total))
 		local finished = summary.total > 0 and summary.done == summary.total
 		local fraction = summary.total > 0 and (summary.done / summary.total) or 0
-		header.bar:SetWidth(math.max(1, (PAGE_WIDTH - 38) * fraction))
-		header.bar:SetShown(fraction > 0)
+		row.bar:SetWidth(math.max(1, (RAIL_WIDTH - 44) * fraction))
+		row.bar:SetShown(fraction > 0)
+		row.bar:SetColorTexture(finished and 0.25 or 1, finished and 0.75 or 0.82,
+			finished and 0.25 or 0, 1)
+		-- Finished stops shouting; the one you are on is picked out in quest gold.
 		if finished then
-			header.bar:SetColorTexture(0.35, 0.70, 0.30)
+			SetColor(row.name, GREEN)
+		elseif summary.active > 0 then
+			SetColor(row.name, GOLD)
 		else
-			header.bar:SetColorTexture(1, 0.82, 0)
+			SetColor(row.name, WHITE)
 		end
-		SetHeaderExpanded(header, isOpen)
-		header:ClearAllPoints()
-		header:SetPoint("TOPLEFT", child, "TOPLEFT", 0, -offsetY)
-		header:SetPoint("RIGHT", child, "RIGHT", 0, 0)
-		offsetY = offsetY + HEADER_HEIGHT
 
-		if isOpen then
-			local paper = AcquirePaper()
-			local paperTop = offsetY
-			offsetY = offsetY + 8
-			for _, quest in ipairs(quests) do
-				local status, _, detail = QuestChainService.GetStatus(quest, inLog)
-				local row = AcquireRow("quest")
-				local icon = STATUS_ICON[status]
-				row.icon:SetShown(icon ~= nil)
-				if icon then row.icon:SetTexture(icon) end
-				local name = quest.name or ("Quest " .. tostring(quest.id))
-				if quest.level then name = ("%s  (%d)"):format(name, quest.level) end
-				row.name:SetText(name)
-				SetColor(row.name, STATUS_INK[status] or INK)
-				row.reason:SetText(detail or "")
-				-- Indent by depth so a branch reads as a branch, only where it branches.
-				local indent = 22 + (summary.linear and 0 or ((quest.depth or 0) * 14))
-				row:ClearAllPoints()
-				row:SetPoint("TOPLEFT", child, "TOPLEFT", indent, -offsetY)
-				row:SetPoint("RIGHT", child, "RIGHT", 0, 0)
-				offsetY = offsetY + QUEST_ROW_HEIGHT
-			end
-			offsetY = offsetY + 6
-			paper:ClearAllPoints()
-			paper:SetPoint("TOPLEFT", child, "TOPLEFT", PAPER_INSET, -paperTop)
-			paper:SetPoint("BOTTOMRIGHT", child, "TOPLEFT", PAGE_WIDTH - PAPER_INSET, -offsetY)
-			offsetY = offsetY + 4
-		end
-		offsetY = offsetY + SECTION_GAP
+		row.selected:SetShown(key == selectedKey)
+		row.edge:SetShown(key == selectedKey)
+		row:ClearAllPoints()
+		row:SetPoint("TOPLEFT", railScroll.child, "TOPLEFT", 0, -offsetY)
+		row:SetPoint("RIGHT", railScroll.child, "RIGHT", 0, 0)
+		row:Show()
+		offsetY = offsetY + RAIL_ROW_HEIGHT
 	end
 
-	for index, chain in ipairs(chains) do AddSection(index, chain) end
-	if #standalone > 0 then AddSection(SINGLES, standalone) end
+	for chainIndex, chain in ipairs(chains) do
+		AddEntry(chainIndex, chain[1].name or "Storyline",
+			QuestChainService.Summarise(chain, inLog))
+	end
+	if #standalone > 0 then
+		AddEntry(SINGLES, "Other quests", QuestChainService.Summarise(standalone, inLog))
+	end
+
+	railScroll.child:SetHeight(math.max(10, offsetY + 2))
+end
+
+local function RefreshPanel(inLog)
+	for _, entry in pairs(panelRows) do entry.frame:Hide() end
+	panelUsed = 0
+
+	local child = panelScroll.child
+	local width = panelScroll:GetWidth()
+	if width and width > 0 then child:SetWidth(width) end
+	width = child:GetWidth()
+
+	local quests, title, summary = SelectedQuests(inLog)
+	if not quests then
+		child:SetHeight(10)
+		return
+	end
+
+	local offsetY = 0
+	local function Place(row, height)
+		row:SetHeight(height)
+		row:ClearAllPoints()
+		row:SetPoint("TOPLEFT", child, "TOPLEFT", 0, -offsetY)
+		row:SetPoint("RIGHT", child, "RIGHT", 0, 0)
+		offsetY = offsetY + height
+	end
+
+	local heading = AcquirePanelRow("heading")
+	heading.title:SetText(title)
+	SetColor(heading.title, TITLE)
+	local band = LevelBand(summary)
+	local shape = summary.linear == false and "  |  branches" or ""
+	heading.sub:SetText(("%s%s%d of %d complete%s"):format(
+		band, band ~= "" and "  |  " or "", summary.done, summary.total, shape))
+	local hFraction = summary.total > 0 and (summary.done / summary.total) or 0
+	local hDone = summary.total > 0 and summary.done == summary.total
+	heading.bar:SetWidth(math.max(1, 120 * hFraction))
+	heading.bar:SetShown(hFraction > 0)
+	heading.bar:SetColorTexture(hDone and 0.25 or 1, hDone and 0.75 or 0.82, hDone and 0.25 or 0, 1)
+	Place(heading, 54)
+	offsetY = offsetY + 8
+
+	for _, quest in ipairs(quests) do
+		local status, _, detail = QuestChainService.GetStatus(quest, inLog)
+		local blocked = status == "blocked"
+		local row = AcquirePanelRow("quest")
+
+		local icon = STATUS_ICON[status]
+		row.icon:SetShown(icon ~= nil)
+		if icon then row.icon:SetTexture(icon) end
+		row.name:SetText(quest.name or ("Quest " .. tostring(quest.id)))
+		SetColor(row.name, STATUS_COLOR[status] or WHITE)
+		row.level:SetText(quest.level and quest.level > 0 and tostring(quest.level) or "")
+
+		--[[
+		The sentence, or the reason there isn't one to act on yet. A blocked quest leads
+		with why it is blocked, because that is the thing the player needs; the sentence
+		still follows, so they can see whether it is worth unblocking.
+		]]
+		local says = quest.text
+		if blocked and detail then
+			says = says and (detail .. "  --  " .. says) or detail
+		end
+		row.says:SetText(says or "")
+		SetColor(row.says, blocked and BODY_DIM or BODY)
+		row.says:SetShown(says ~= nil)
+
+		local leads = quest.unlocks and #quest.unlocks > 0
+			and ("Leads to " .. table.concat(quest.unlocks, ", ")) or nil
+		row.leads:SetText(leads or "")
+		SetColor(row.leads, FAINT)
+		row.leads:SetShown(leads ~= nil)
+
+		-- Measure rather than assume: the sentence wraps to one line or three depending
+		-- on the quest and the panel's width, and a fixed row height would either clip
+		-- the long ones or leave a gap under every short one.
+		local height = 18
+		if says then height = height + math.max(11, row.says:GetStringHeight()) + 3 end
+		if leads then height = height + math.max(10, row.leads:GetStringHeight()) + 2 end
+		Place(row, height + 9)
+	end
 
 	child:SetHeight(math.max(10, offsetY + 6))
 end
@@ -478,8 +525,9 @@ function component.Refresh()
 
 	if uiMapID ~= currentZone then
 		currentZone = uiMapID
-		DefaultExpansion(inLog)
+		selectedKey = DefaultSelection(inLog)
 	end
+	if selectedKey == nil then selectedKey = DefaultSelection(inLog) end
 
 	local done, total = 0, 0
 	for _, list in ipairs({ chains, { standalone } }) do
@@ -491,12 +539,13 @@ function component.Refresh()
 	end
 	page.summary:SetText(("%d of %d quests complete"):format(done, total))
 
-	RefreshPage(inLog)
+	RefreshRail(inLog)
+	RefreshPanel(inLog)
 
-	-- Home > Elwynn Forest > A Threat Within: the storyline most recently opened.
-	local path = { { name = zoneName or "Quests", onClick = component.CollapseAll } }
-	local storyName = lastOpened and expanded[lastOpened] and StoryName(lastOpened)
-	if storyName then table.insert(path, { name = storyName }) end
+	-- Home > Elwynn Forest > A Threat Within, as the encounter view does for a boss.
+	local _, storyTitle = SelectedQuests(inLog)
+	local path = { { name = zoneName or "Quests" } }
+	if storyTitle then table.insert(path, { name = storyTitle }) end
 	components.NavBar.SetPath(path)
 end
 

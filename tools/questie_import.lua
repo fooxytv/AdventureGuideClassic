@@ -16,10 +16,15 @@ the first time the formatting shifts.
 Questie is GPL-3.0, as is this addon, so the derived data is compatible. The generated
 files carry attribution.
 
-Only the fields needed to describe a chain are taken: identity, level gating, and the
-prerequisite graph. Objectives text, spawn coordinates and drop tables are deliberately
-left behind -- they are the bulk of Questie's 1MB, and the player already has Questie
-or the quest log for those.
+Only the fields needed to describe a chain are taken: identity, level gating, the
+prerequisite graph, and the one-line objectives text. Spawn coordinates and drop tables
+are deliberately left behind -- they are the bulk of Questie's 1MB, and the player
+already has Questie or the quest log for those.
+
+The objectives text is the exception to "graph data only", and it earns its place: a
+quest name is a label, but "Bring 12 Red Burlap Bandanas to Deputy Willem outside the
+Northshire Abbey" tells a player what the quest is and where to go. It costs about
+3.4KB a zone, roughly 375KB for all of Era.
 ]]
 
 local QUESTIE = "../Questie"
@@ -28,7 +33,7 @@ local OUT = "data/Quests"
 -- Questie's field order, from the questKeys table at the top of its database file.
 local KEY = {
 	name = 1, requiredLevel = 4, questLevel = 5,
-	requiredRaces = 6, requiredClasses = 7,
+	requiredRaces = 6, requiredClasses = 7, objectivesText = 8,
 	preQuestGroup = 12, preQuestSingle = 13, childQuests = 14,
 	exclusiveTo = 16, zoneOrSort = 17,
 	nextQuestInChain = 22, parentQuest = 25,
@@ -98,6 +103,21 @@ end
 
 -- Emitting --------------------------------------------------------------------
 
+--[[
+Questie stores objectives text as a list; all but a handful of quests have exactly one
+entry. Join them so a quest is always one sentence, and flatten any stray newline --
+the addon draws this on a single wrapped font string.
+]]
+local function JoinObjectives(list)
+	if type(list) ~= "table" then return nil end
+	local parts = {}
+	for _, line in ipairs(list) do
+		if type(line) == "string" and line ~= "" then parts[#parts + 1] = line end
+	end
+	if #parts == 0 then return nil end
+	return (table.concat(parts, " "):gsub("%s+", " "))
+end
+
 local function QuoteString(text)
 	return ('"%s"'):format(tostring(text):gsub('\\', '\\\\'):gsub('"', '\\"'))
 end
@@ -130,6 +150,7 @@ local function FormatQuest(quest)
 	if quest.breadcrumbFor then
 		parts[#parts + 1] = ("breadcrumbFor = %d"):format(quest.breadcrumbFor)
 	end
+	if quest.text then parts[#parts + 1] = ("text = %s"):format(QuoteString(quest.text)) end
 	return "\t{ " .. table.concat(parts, ", ") .. " },"
 end
 
@@ -144,8 +165,8 @@ AUTO-GENERATED -- DO NOT EDIT.
     lua tools/questie_import.lua %d
 
 Derived from the Questie quest database (https://github.com/Questie/Questie),
-licensed GPL-3.0, as is this addon. Only chain-shaping fields are carried across:
-identity, level gating and the prerequisite graph.
+licensed GPL-3.0, as is this addon. Only what the guide needs is carried across:
+identity, level gating, the prerequisite graph, and the one-line objectives text.
 
 Zone: %s (area %d, uiMapID %s)
 Quests: %d
@@ -194,6 +215,7 @@ for expansion, path in pairs(SOURCES) do
 				name = row[KEY.name],
 				level = row[KEY.questLevel],
 				req = row[KEY.requiredLevel],
+				text = JoinObjectives(row[KEY.objectivesText]),
 				races = row[KEY.requiredRaces],
 				classes = row[KEY.requiredClasses],
 				pre = row[KEY.preQuestSingle],

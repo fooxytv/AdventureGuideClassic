@@ -248,10 +248,29 @@ function QuestChainService.GetChains(uiMapID)
 		return best
 	end
 
+	--[[
+	What each quest opens up, named rather than numbered.
+
+	Free -- it is the prerequisite edges read the other way round -- and it is the one
+	thing that makes a chain read forwards. "Leads to Wolves Across the Border" tells a
+	player why this quest is worth doing; "after Eagan Peltskinner" only tells them why
+	it is not available yet.
+	]]
+	local unlocks = { }
+	for _, quest in ipairs(quests) do
+		for _, preID in ipairs(PrerequisitesOf(quest)) do
+			if inZone[preID] then
+				unlocks[preID] = unlocks[preID] or { }
+				table.insert(unlocks[preID], quest.name)
+			end
+		end
+	end
+
 	local chains, standalone = { }, { }
 	for _, group in pairs(groups) do
 		for _, quest in ipairs(group) do
 			quest.depth = Depth(quest.id)
+			quest.unlocks = unlocks[quest.id]
 		end
 		table.sort(group, function(a, b)
 			if a.depth ~= b.depth then return a.depth < b.depth end
