@@ -269,6 +269,23 @@ function component.Reset()
 	NavBar_Reset(component.frame)
 end
 
+--[[
+A path with no instance behind it, for views that are not dungeons or raids: the
+Quests tab reads Home > Elwynn Forest > A Threat Within. Each crumb is { name, onClick }.
+]]
+function component.SetPath(crumbs)
+	instance = nil
+	encounterID = nil
+	NavBar_Reset(component.frame)
+	for _, crumb in ipairs(crumbs or { }) do
+		NavBar_AddButton(component.frame, {
+			name = crumb.name,
+			OnClick = crumb.onClick or nop,
+			listFunc = nop,
+		})
+	end
+end
+
 function component.OnSearchTextChanged(text)
 	if searchDebounceTimer then
 		searchDebounceTimer:Cancel()

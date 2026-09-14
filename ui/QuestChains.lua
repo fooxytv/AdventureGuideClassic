@@ -17,9 +17,10 @@ you are and -- where you cannot continue -- why.
 
 Drawn as the encounter view is drawn, because that IS the addon's look: the journal
 parchment behind everything, storylines on the left as the boss list is (the same
-button art, a portrait disc, a "defeated" mark once the story is done), and the
-selected storyline on the right in the overview's ink-on-paper text under one of its
-section headers. A player who has used the Dungeons tab already knows how to read
+button art, a "defeated" mark once the story is done), and the selected storyline on
+the right on the overview's paper, in its ink, under one of its section headers.
+Storylines have no portrait: there is no art for them, and the default boss disc
+read as exactly that -- a placeholder. A player who has used the Dungeons tab already knows how to read
 this one. The earlier version used inset panels and white text on the dark background,
 which belonged to no part of the journal and was hard to read besides.
 
@@ -44,7 +45,7 @@ local STATUS_INK = {
 	completed = { 0.16, 0.42, 0.14 },
 	active    = { 0.60, 0.36, 0.02 },
 	available = INK,
-	blocked   = { 0.50, 0.44, 0.38 },
+	blocked   = { 0.45, 0.39, 0.33 },
 }
 
 -- Textures rather than glyphs: a tick and a quest marker read instantly, where "v"
@@ -105,11 +106,11 @@ end
 -- Storyline buttons ------------------------------------------------------------------------
 
 --[[
-One storyline, drawn exactly as a boss is drawn in the encounter view: the same button
-art, a portrait disc at the top-left, the name in the same bronze. The disc carries the
-storyline's state instead of a face, and a finished storyline gets the same "defeated"
-mark a killed boss does. Below the name, what a boss never needs: the level band, the
-count, and a progress bar -- keeping track is the point of the tab.
+One storyline, drawn as a boss is drawn in the encounter view: the same button art,
+the name in the same bronze, the same "defeated" mark once it is finished. Where the
+boss has a portrait, the storyline has its state -- waiting, underway or done -- as a
+quest marker. Below the name, what a boss never needs: the level band, the count, and
+a progress bar -- keeping track is the point of the tab.
 ]]
 local function CreateStoryButton(parent)
 	local button = CreateFrame("Button", nil, parent)
@@ -128,18 +129,10 @@ local function CreateStoryButton(parent)
 	highlight:SetTexCoord(0.00195313, 0.63671875, 0.15820313, 0.21191406)
 	button:SetHighlightTexture(highlight)
 
-	-- The disc overhangs the button's top edge, as boss portraits do; a child frame
-	-- lets it draw outside the button.
-	local discFrame = CreateFrame("Frame", nil, button)
-	discFrame:SetSize(1, 1)
-	discFrame:SetPoint("TOPLEFT", -4, 13)
-	button.disc = discFrame:CreateTexture(nil, "OVERLAY", nil, 6)
-	button.disc:SetTexture("Interface/EncounterJournal/UI-EJ-BOSS-Default")
-	button.disc:SetSize(128, 64)
-	button.disc:SetPoint("TOPLEFT")
-	button.status = discFrame:CreateTexture(nil, "OVERLAY", nil, 7)
-	button.status:SetSize(22, 22)
-	button.status:SetPoint("CENTER", discFrame, "TOPLEFT", 33, -32)
+	-- Sits where the boss portrait would, centred on the recess in the button art.
+	button.status = button:CreateTexture(nil, "OVERLAY", nil, 6)
+	button.status:SetSize(30, 30)
+	button.status:SetPoint("CENTER", button, "TOPLEFT", 30, -22)
 
 	button.done = CreateFrame("Frame", nil, button)
 	button.done:SetSize(16, 16)
@@ -150,10 +143,10 @@ local function CreateStoryButton(parent)
 	button.done.icon:SetPoint("CENTER")
 
 	button.name = button:CreateFontString(nil, "OVERLAY", "GameFontNormalMed3")
-	button.name:SetSize(205, 16)
+	button.name:SetSize(246, 16)
 	button.name:SetJustifyH("LEFT")
 	button.name:SetWordWrap(false)
-	button.name:SetPoint("TOPLEFT", 105, -8)
+	button.name:SetPoint("TOPLEFT", 64, -8)
 	SetColor(button.name, BUTTON_TEXT)
 
 	button.detail = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -163,7 +156,7 @@ local function CreateStoryButton(parent)
 
 	button.barBg = button:CreateTexture(nil, "OVERLAY", nil, 1)
 	button.barBg:SetColorTexture(0, 0, 0, 0.55)
-	button.barBg:SetSize(190, 4)
+	button.barBg:SetSize(230, 4)
 	button.barBg:SetPoint("TOPLEFT", button.detail, "BOTTOMLEFT", 0, -4)
 	button.bar = button:CreateTexture(nil, "OVERLAY", nil, 2)
 	button.bar:SetHeight(4)
@@ -268,26 +261,14 @@ function component.Init(components_)
 	page.rightShadow:SetSize(386, 39)
 	page.rightShadow:SetPoint("TOPRIGHT", 0, -11)
 
-	-- The zone takes the instance's place in the header: icon in the same bordered
-	-- frame, name in the same bronze beside it.
-	page.zoneButton = CreateFrame("Button", nil, page)
-	page.zoneButton:SetSize(64, 61)
-	page.zoneButton:SetPoint("TOPLEFT", 0, -3)
-	page.zoneButton.icon = page.zoneButton:CreateTexture(nil, "BACKGROUND", nil, 6)
-	page.zoneButton.icon:SetSize(64, 64)
-	page.zoneButton.icon:SetPoint("TOPLEFT", 6.5, -7)
-	page.zoneButton.icon:SetTexture("Interface/Icons/INV_Misc_Map_01")
-	page.zoneButton.icon:SetMask(I.InstanceButtonIconMask)
-	local border = page.zoneButton:CreateTexture()
-	border:SetTexture(EJ_TEXTURES)
-	border:SetTexCoord(0.50585938, 0.63085938, 0.02246094, 0.08203125)
-	page.zoneButton:SetNormalTexture(border)
-
+	-- The zone takes the instance's place in the header, in the same bronze. No icon:
+	-- zones have no art of their own here, and a stand-in in the bordered frame was
+	-- more conspicuous than nothing.
 	page.title = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	page.title:SetJustifyH("LEFT")
 	page.title:SetWordWrap(false)
-	page.title:SetSize(290, 16)
-	page.title:SetPoint("TOPLEFT", 65, -20)
+	page.title:SetSize(330, 16)
+	page.title:SetPoint("TOPLEFT", 26, -20)
 	SetColor(page.title, TITLE_COLOR)
 
 	page.summary = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -306,9 +287,19 @@ function component.Init(components_)
 	selectedTexture:SetTexCoord(0.00195313, 0.63671875, 0.15820313, 0.21191406)
 	selectedTexture:SetAllPoints()
 
-	-- The selected storyline, right, in the overview's place.
+	-- The selected storyline, right, in the overview's place. The quests sit on the
+	-- same paper the overview puts under ability text: ink on the bare journal
+	-- background is hard to read, and this is what the encounter view does about it.
 	detailScroll = CreateScroller(page, 350, 383, DETAIL_WIDTH, -15)
 	detailScroll:SetPoint("BOTTOMRIGHT", -5, 1)
+	local child = detailScroll.child
+	child.paper = child:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-AbilityTextBG")
+	child.paper:SetDrawLayer("BACKGROUND", -3)
+	child.paperBottom = child:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-AbilityTextBottomBorder")
+	child.paperBottom:SetDrawLayer("BACKGROUND", -3)
+	child.paperBottom:ClearAllPoints()
+	child.paperBottom:SetPoint("LEFT", child.paper, "BOTTOMLEFT")
+	child.paperBottom:SetPoint("RIGHT", child.paper, "BOTTOMRIGHT")
 
 	page.empty = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	page.empty:SetPoint("CENTER", 0, 10)
@@ -375,7 +366,7 @@ local function RefreshList(inLog)
 
 		local finished = summary.total > 0 and summary.done == summary.total
 		local fraction = summary.total > 0 and (summary.done / summary.total) or 0
-		button.bar:SetWidth(math.max(1, 190 * fraction))
+		button.bar:SetWidth(math.max(1, 230 * fraction))
 		button.bar:SetShown(fraction > 0)
 		if finished then
 			button.bar:SetColorTexture(0.35, 0.70, 0.30)
@@ -384,7 +375,7 @@ local function RefreshList(inLog)
 		end
 		button.done:SetShown(finished)
 
-		-- The disc says where the story stands: done, underway, or waiting.
+		-- The marker says where the story stands: done, underway, or waiting.
 		local icon = STATUS_ICON.available
 		if finished then
 			icon = STATUS_ICON.completed
@@ -419,9 +410,12 @@ local function RefreshDetail(inLog)
 	for _, entry in pairs(detailRows) do entry.frame:Hide() end
 	detailUsed = 0
 
+	local child = detailScroll.child
 	local quests, title, summary = SelectedQuests(inLog)
 	if not quests then
-		detailScroll.child:SetHeight(10)
+		child.paper:Hide()
+		child.paperBottom:Hide()
+		child:SetHeight(10)
 		return
 	end
 
@@ -436,6 +430,11 @@ local function RefreshDetail(inLog)
 	local heading = AcquireDetailRow("heading")
 	heading.text:SetText(title)
 	Place(heading)
+	offsetY = offsetY + 8
+
+	-- Everything from here down is on the paper.
+	local paperTop = offsetY
+	offsetY = offsetY + 8
 
 	local band = LevelBand(summary)
 	-- Only a real chain has a shape; the one-off quests are neither linear nor branching.
@@ -444,14 +443,14 @@ local function RefreshDetail(inLog)
 	sub.text:SetText(("%s%s%d of %d complete%s"):format(
 		band, band ~= "" and "  ·  " or "", summary.done, summary.total, shape))
 	SetColor(sub.text, INK)
-	Place(sub, 6)
+	Place(sub, 12)
 	offsetY = offsetY + 6
 
 	for _, quest in ipairs(quests) do
 		local status, _, detail = QuestChainService.GetStatus(quest, inLog)
 		local ink = STATUS_INK[status] or INK
 		-- Indent by depth so a branch reads as a branch, only where it branches.
-		local indent = 6 + (summary.linear and 0 or ((quest.depth or 0) * 12))
+		local indent = 12 + (summary.linear and 0 or ((quest.depth or 0) * 12))
 
 		local row = AcquireDetailRow("quest")
 		local icon = STATUS_ICON[status]
@@ -473,7 +472,14 @@ local function RefreshDetail(inLog)
 		end
 	end
 
-	detailScroll.child:SetHeight(math.max(10, offsetY + 10))
+	offsetY = offsetY + 8
+	child.paper:ClearAllPoints()
+	child.paper:SetPoint("TOPLEFT", child, "TOPLEFT", 2, -paperTop)
+	child.paper:SetPoint("BOTTOMRIGHT", child, "TOPLEFT", DETAIL_WIDTH - 6, -offsetY)
+	child.paper:Show()
+	child.paperBottom:Show()
+
+	child:SetHeight(math.max(10, offsetY + 14))
 end
 
 function component.Refresh()
@@ -516,12 +522,18 @@ function component.Refresh()
 	if selectedKey == nil then selectedKey = 1 end
 	RefreshList(inLog)
 	RefreshDetail(inLog)
+
+	-- Home > Elwynn Forest > A Threat Within, as the encounter view does for a boss.
+	local _, storyTitle = SelectedQuests(inLog)
+	local path = { { name = zoneName or "Quests", onClick = function() component.Select(1) end } }
+	if storyTitle then table.insert(path, { name = storyTitle }) end
+	components.NavBar.SetPath(path)
 end
 
 function component.Show()
-	component.Refresh()
 	components.EncounterJournal.SetCurrentView(component.frame)
 	components.NavBar.Reset()
+	component.Refresh()
 end
 
 UI.Add(component)
