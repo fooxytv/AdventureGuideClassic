@@ -40,7 +40,7 @@ and auto-hide inside instances unless the step itself is an instance step.
 GuideWindow = { }
 
 local WIDTH = 300
-local HEADER_HEIGHT = 56
+local HEADER_HEIGHT = 44
 --[[
 Header geometry. The template owns its own portrait socket and frame art, so all that
 is left to place is where the progress hairline may start -- clear of that socket --
@@ -238,18 +238,35 @@ local function CreateHeader(parent)
 	bar.DimChrome = function(alpha) SetChromeAlpha(bar, alpha) end
 	bar.DimChrome(SettingsService.GetGuideOpacity())
 
-	-- The template's own portrait socket, carrying the addon's journal mark.
-	bar.portrait = _G[name .. "Portrait"]
-	if bar.portrait then
-		bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
-		bar.portrait:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-		ApplyRoundMask(bar, bar.portrait)
+	-- The template's own portrait socket, carrying the addon's journal mark. Build our
+	-- own if the template did not provide one, so the socket is never simply absent.
+	local portrait = _G[name .. "Portrait"]
+	if not portrait then
+		portrait = bar:CreateTexture(nil, "ARTWORK")
+		portrait:SetSize(HEADER_HEIGHT - 8, HEADER_HEIGHT - 8)
+		portrait:SetPoint("LEFT", 6, 0)
 	end
+	portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
+	portrait:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	ApplyRoundMask(bar, portrait)
+	bar.portrait = portrait
 
-	bar.title = _G[name .. "TitleText"]
-	if bar.title then
-		bar.title:SetFontObject("GameFontNormal")
-	end
+	--[[
+	The title is ours, not the template's.
+
+	The template's TitleText is centred for a full-width window and is not guaranteed
+	to exist under the name we would have to look it up by. Depending on it meant
+	Refresh threw the moment it was missing, which left the chrome drawn and every
+	piece of text blank -- a window that looks broken rather than one that reports a
+	problem. Owning the font string costs one line and removes both risks.
+	]]
+	local templateTitle = _G[name .. "TitleText"]
+	if templateTitle then templateTitle:Hide() end
+
+	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	bar.title:SetPoint("TOPLEFT", CONTENT_INSET, -8)
+	bar.title:SetJustifyH("LEFT")
+	bar.title:SetWordWrap(false)
 
 	-- The template's close button hides the guide, which is what a close button on it
 	-- should do.
@@ -277,6 +294,7 @@ local function CreateHeader(parent)
 	bar.settings = CreateIconButton(bar, 18, "Interface/Icons/INV_Misc_Gear_01", nil,
 		"Guide options", function() GuideWindow.ShowMenu() end)
 	bar.settings:SetPoint("RIGHT", bar.back, "LEFT", -4, 0)
+	bar.title:SetPoint("RIGHT", bar.settings, "LEFT", -6, 0)
 	-- Crop the gear's baked-in border. GetNormalTexture can return nothing, so this is
 	-- guarded rather than chained.
 	local gear = bar.settings:GetNormalTexture()
