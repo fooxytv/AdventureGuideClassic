@@ -119,21 +119,43 @@ local function LevelBand(summary)
 	return ("Level %d"):format(summary.minLevel)
 end
 
--- The plain-ScrollFrame recipe from DynamicContentScroller, in one place. Note what is
--- NOT here: ScrollFrameTemplate_OnMouseWheel. That is the legacy Slider handler and
--- MinimalScrollBar has no GetValue, so adding it throws on every wheel tick.
--- ScrollFrame_OnLoad already wires the wheel to the bar it creates.
-local function CreateScroller(parent, childWidth)
+--[[
+The scroll bar hangs inside the scroll frame's right edge, and the content stops short
+by enough to leave it a lane of its own. That is the pattern the rest of the addon uses
+-- DynamicContentScroller is 350 wide with a 320 child, and the bar lives in the slack.
+
+Getting this wrong is what put the bars in the middle of the panels: the scroll frames
+were already inset from the panel edge and then scrollBarX pulled the bar a further 10
+left of that, so it sat well short of the border with content underneath it. Run the
+scroll frame out to the edge instead and take the lane out of the child.
+
+Note what is NOT here: ScrollFrameTemplate_OnMouseWheel. That is the legacy Slider
+handler and MinimalScrollBar has no GetValue, so adding it throws on every wheel tick.
+ScrollFrame_OnLoad already wires the wheel to the bar it creates.
+]]
+local SCROLL_BAR_X = -13        -- the bar, relative to the scroll frame's right edge
+local SCROLL_BAR_LANE = 22      -- how much narrower the content is, to clear it
+
+local function ContentWidth(scroll)
+	local width = scroll:GetWidth() or 0
+	return math.max(10, width - SCROLL_BAR_LANE)
+end
+
+local function CreateScroller(parent, initialWidth)
 	local scroll = CreateFrame("ScrollFrame", nil, parent)
-	scroll.scrollBarX = -10
+	scroll.scrollBarX = SCROLL_BAR_X
 	scroll.scrollBarTopY = -4
 	scroll.scrollBarBottomY = 4
 	scroll.scrollBarTemplate = "MinimalScrollBar"
 	scroll.child = CreateFrame("Frame", nil, scroll)
-	scroll.child:SetSize(childWidth, 10)
+	scroll.child:SetSize(initialWidth or 10, 10)
 	scroll.child:SetPoint("TOPLEFT")
 	scroll:SetScrollChild(scroll.child)
 	if ScrollFrame_OnLoad then pcall(ScrollFrame_OnLoad, scroll) end
+	-- The frame has no width until it is laid out, so the child takes its own then.
+	scroll:SetScript("OnSizeChanged", function(self, width)
+		if width and width > 0 then self.child:SetWidth(ContentWidth(self)) end
+	end)
 	return scroll
 end
 
@@ -330,25 +352,18 @@ function component.Init(components_)
 	railInset:SetPoint("TOPLEFT", 14, -44)
 	railInset:SetPoint("BOTTOMLEFT", 14, 10)
 	AddDarkGround(railInset)
-	railScroll = CreateScroller(railInset, RAIL_WIDTH - 26)
+	railScroll = CreateScroller(railInset, RAIL_WIDTH - 31)
 	railScroll:SetPoint("TOPLEFT", 4, -5)
-	railScroll:SetPoint("BOTTOMRIGHT", -20, 5)
+	railScroll:SetPoint("BOTTOMRIGHT", -5, 5)
 
 	-- The briefing, right.
 	local panelInset = CreateFrame("Frame", nil, page, "InsetFrameTemplate")
 	panelInset:SetPoint("TOPLEFT", railInset, "TOPRIGHT", 8, 0)
 	panelInset:SetPoint("BOTTOMRIGHT", -14, 10)
 	AddDarkGround(panelInset)
-	panelScroll = CreateScroller(panelInset, 10)
+	panelScroll = CreateScroller(panelInset)
 	panelScroll:SetPoint("TOPLEFT", PANEL_PAD, -10)
-	-- Wide enough on the right that the scroll bar gets its own lane: the level numbers
-	-- were being drawn underneath it.
-	panelScroll:SetPoint("BOTTOMRIGHT", -28, 8)
-	-- The child has to be told its width before anything wraps against it, and the inset
-	-- has no size until the frame is laid out, so take it on the first draw instead.
-	panelScroll:SetScript("OnSizeChanged", function(self, width)
-		if width and width > 0 then self.child:SetWidth(width) end
-	end)
+	panelScroll:SetPoint("BOTTOMRIGHT", -6, 8)
 
 	page.empty = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	page.empty:SetPoint("CENTER", 0, 10)
@@ -465,10 +480,10 @@ local function RefreshPanel(inLog)
 	for _, entry in pairs(panelRows) do entry.frame:Hide() end
 	panelUsed = 0
 
+	-- Re-take the width here as well as on resize: the first draw can land before the
+	-- frame has ever been sized, and everything below wraps against it.
 	local child = panelScroll.child
-	local width = panelScroll:GetWidth()
-	if width and width > 0 then child:SetWidth(width) end
-	width = child:GetWidth()
+	if (panelScroll:GetWidth() or 0) > 0 then child:SetWidth(ContentWidth(panelScroll)) end
 
 	local quests, title, summary = SelectedQuests(inLog)
 	if not quests then
