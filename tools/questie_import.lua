@@ -29,11 +29,13 @@ Northshire Abbey" tells a player what the quest is and where to go. It costs abo
 
 local QUESTIE = "../Questie"
 local OUT = "data/Quests"
+local NPC_MODELS = "tools/npc_models.tsv"
 
 -- Questie's field order, from the questKeys table at the top of its database file.
 local KEY = {
-	name = 1, requiredLevel = 4, questLevel = 5,
-	requiredRaces = 6, requiredClasses = 7, objectivesText = 8,
+	name = 1, startedBy = 2, finishedBy = 3,
+	requiredLevel = 4, questLevel = 5,
+	requiredRaces = 6, requiredClasses = 7, objectivesText = 8, objectives = 10,
 	preQuestGroup = 12, preQuestSingle = 13, childQuests = 14,
 	exclusiveTo = 16, zoneOrSort = 17,
 	nextQuestInChain = 22, parentQuest = 25,
@@ -50,6 +52,32 @@ local SOURCES = {
 local DEFAULT_AREAS = { 12 }   -- Elwynn Forest (Northshire rolls into it)
 
 -- Helpers ---------------------------------------------------------------------
+
+--[[
+The npc id -> creature display id map, from tools/extract_npc_models.py.
+
+Questie says which npc gives a quest and which creature you have to kill for it, but
+carries no display ids, and the Classic client ships Creature.db2 empty -- so this file
+is the only thing that can turn "Marshal McBride" into a model the guide can show.
+Missing is fine: quests then simply have no previewable npcs.
+]]
+local function LoadNpcModels(path)
+	local models = {}
+	local handle = io.open(path, "rb")
+	if not handle then
+		print(("  [note] %s not found -- npc models will be omitted"):format(path))
+		return models
+	end
+	local contents = handle:read("*a")
+	handle:close()
+	for line in contents:gmatch("[^\r\n]+") do
+		if line:sub(1, 1) ~= "#" then
+			local id, display, name = line:match("^(%d+)\t(%d+)\t(.+)$")
+			if id then models[tonumber(id)] = { name = name, display = tonumber(display) } end
+		end
+	end
+	return models
+end
 
 local function ReadFile(path)
 	local handle = io.open(path, "rb")
@@ -118,6 +146,40 @@ local function JoinObjectives(list)
 	return (table.concat(parts, " "):gsub("%s+", " "))
 end
 
+--[[
+The npcs a quest's text will mention: who gives it, who you hand it to, and anything it
+asks you to kill. Ordered longest name first, because the guide substitutes them into
+the sentence one at a time and "Kobold Vermin" must not be matched inside "Kobold
+Vermin Leader" once the shorter name has already been replaced.
+]]
+local function QuestNpcs(row, models)
+	local seen, ids = {}, {}
+	local function Add(id)
+		if type(id) == "number" and models[id] and not seen[id] then
+			seen[id] = true
+			ids[#ids + 1] = id
+		end
+	end
+	for _, key in ipairs({ KEY.startedBy, KEY.finishedBy }) do
+		local group = row[key]
+		if type(group) == "table" and type(group[1]) == "table" then
+			for _, id in ipairs(group[1]) do Add(id) end
+		end
+	end
+	local objectives = row[KEY.objectives]
+	if type(objectives) == "table" and type(objectives[1]) == "table" then
+		for _, entry in ipairs(objectives[1]) do
+			if type(entry) == "table" then Add(entry[1]) else Add(entry) end
+		end
+	end
+	table.sort(ids, function(a, b)
+		local nameA, nameB = models[a].name, models[b].name
+		if #nameA ~= #nameB then return #nameA > #nameB end
+		return nameA < nameB
+	end)
+	return ids
+end
+
 local function QuoteString(text)
 	return ('"%s"'):format(tostring(text):gsub('\\', '\\\\'):gsub('"', '\\"'))
 end
@@ -151,6 +213,9 @@ local function FormatQuest(quest)
 		parts[#parts + 1] = ("breadcrumbFor = %d"):format(quest.breadcrumbFor)
 	end
 	if quest.text then parts[#parts + 1] = ("text = %s"):format(QuoteString(quest.text)) end
+	if quest.npcs and #quest.npcs > 0 then
+		parts[#parts + 1] = ("npcs = %s"):format(FormatList(quest.npcs))
+	end
 	return "\t{ " .. table.concat(parts, ", ") .. " },"
 end
 
@@ -168,10 +233,16 @@ Derived from the Questie quest database (https://github.com/Questie/Questie),
 licensed GPL-3.0, as is this addon. Only what the guide needs is carried across:
 identity, level gating, the prerequisite graph, and the one-line objectives text.
 
+Creature display ids come from the CMaNGOS Classic 1.12.1 world database (GPL-2.0),
+via tools/extract_npc_models.py.
+
 Zone: %s (area %d, uiMapID %s)
 Quests: %d
 ]==]
 select(2, ...).SetupGlobalFacade()
+
+QuestChainService.AddNpcs(%s, %s, {
+%s})
 
 QuestChainService.AddQuests(%s, %s, {
 ]]
@@ -190,6 +261,8 @@ for _, value in ipairs(args) do
 	end
 end
 if #areas == 0 then areas = DEFAULT_AREAS end
+
+local npcModels = LoadNpcModels(NPC_MODELS)
 
 local subToParent = LoadIntMap(QUESTIE .. "/Database/Zones/data/subZoneToParentZone.lua")
 local areaToUiMap = LoadIntMap(QUESTIE .. "/Database/Zones/data/areaIdToUiMapId.lua")
@@ -216,6 +289,7 @@ for expansion, path in pairs(SOURCES) do
 				level = row[KEY.questLevel],
 				req = row[KEY.requiredLevel],
 				text = JoinObjectives(row[KEY.objectivesText]),
+				npcs = QuestNpcs(row, npcModels),
 				races = row[KEY.requiredRaces],
 				classes = row[KEY.requiredClasses],
 				pre = row[KEY.preQuestSingle],
@@ -254,8 +328,23 @@ for expansion, path in pairs(SOURCES) do
 				os.execute(('mkdir "%s" 2>nul'):format(dir:gsub("/", "\\")))
 				local fileName = ("%s/%s.lua"):format(dir,
 					name:lower():gsub("[^%w]+", "_"):gsub("^_+", ""):gsub("_+$", ""))
+				-- One npc table per zone, referenced by id from the quests below, so a
+				-- creature that turns up in six quests is named and numbered once.
+				local used, npcLines = {}, {}
+				for _, quest in ipairs(list) do
+					for _, id in ipairs(quest.npcs or {}) do used[id] = true end
+				end
+				local usedIds = {}
+				for id in pairs(used) do usedIds[#usedIds + 1] = id end
+				table.sort(usedIds)
+				for _, id in ipairs(usedIds) do
+					npcLines[#npcLines + 1] = ("\t[%d] = { %s, %d },\n")
+						:format(id, QuoteString(npcModels[id].name), npcModels[id].display)
+				end
+
 				local out = assert(io.open(fileName, "wb"))
 				out:write(HEADER:format(area, name, area, tostring(uiMapId), #list,
+					QuoteString(expansion), tostring(uiMapId), table.concat(npcLines),
 					QuoteString(expansion), tostring(uiMapId)))
 				for _, quest in ipairs(list) do
 					out:write(FormatQuest(quest), "\n")

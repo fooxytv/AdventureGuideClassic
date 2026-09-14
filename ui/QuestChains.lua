@@ -126,11 +126,25 @@ The page's margins. The right is wider than the left because the page frame itse
 already sits 3px inside the journal inset on that side, and because the panel should
 line up with the seam in the journal art rather than run past it.
 ]]
+--[[
+Creature names inside the objective sentence become links, so hovering "Marshal
+McBride" or "Kobold Vermin" shows what they look like.
+
+A FontString renders |H...|h escape sequences, and the frame around it raises
+OnHyperlinkEnter for them once hyperlinks are switched on -- so the sentence stays one
+wrapped paragraph and the names inside it are still individually hoverable. Both the
+escape handling and the model viewer are feature-detected: where either is missing the
+text is left plain rather than offering a link that does nothing.
+]]
+local LINK_PREFIX = "agcnpc"
+local LINK_COLOR = "ffffd100"
+
 local MARGIN_LEFT = 14
 local MARGIN_RIGHT = 20
 local MARGIN_BOTTOM = 10
 
 local railScroll, panelScroll
+local linksSupported
 local railRows, panelRows = { }, { }
 local panelUsed = 0
 local chains, standalone, currentZone, selectedKey
@@ -139,6 +153,45 @@ local chains, standalone, currentZone, selectedKey
 
 local function SetColor(fontString, color)
 	fontString:SetTextColor(color[1], color[2], color[3])
+end
+
+-- Lua patterns treat most punctuation as syntax, and creature names carry plenty of it
+-- -- "Hogger", "Ma Stonefield", "Sea Wolf MacKinley". Escape before matching.
+local function EscapePattern(text)
+	return (text:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1"))
+end
+
+--[[
+Wraps each creature's name in the sentence with a link to its model.
+
+Done in two passes. Every name is first swapped for a placeholder, longest name first,
+so a shorter creature can never be matched inside a longer one that shares its opening
+words ("Kobold Vermin" inside "Kobold Vermin Leader"), nor inside the escape sequence of
+a name already linked. The placeholders then expand to the real links.
+
+Each name is linked once. A sentence that names the same creature twice reads better
+with one link than with the same word lit up in two places.
+]]
+local function Linkify(text, quest)
+	if not text or not linksSupported then return text end
+	local npcs = QuestChainService.GetQuestNpcs(quest)
+	if not npcs then return text end
+
+	local slots = { }
+	for _, npc in ipairs(npcs) do
+		if npc.name and npc.name ~= "" and npc.display then
+			local pattern = EscapePattern(npc.name)
+			if text:find(pattern) then
+				slots[#slots + 1] = npc
+				text = text:gsub(pattern, ("\1%d\2"):format(#slots), 1)
+			end
+		end
+	end
+	for index, npc in ipairs(slots) do
+		local link = ("|H%s:%d|h|c%s%s|r|h"):format(LINK_PREFIX, npc.id, LINK_COLOR, npc.name)
+		text = text:gsub("\1" .. index .. "\2", (link:gsub("%%", "%%%%")), 1)
+	end
+	return text
 end
 
 local function LevelBand(summary)
@@ -268,6 +321,29 @@ so the row measures itself once the text is set.
 local function CreateQuestRow(parent)
 	local row = CreateFrame("Frame", nil, parent)
 
+	--[[
+	Hyperlinks inside the wrapped sentence. The frame has to be told to raise the
+	events and has to take mouse input for them to fire at all; without both, the
+	names render coloured but nothing happens on hover.
+	]]
+	if linksSupported then
+		row:EnableMouse(true)
+		row:SetHyperlinksEnabled(true)
+		row:SetScript("OnHyperlinkEnter", function(_, link)
+			local npcID = tonumber(link:match("^" .. LINK_PREFIX .. ":(%d+)$"))
+			local npc = npcID and QuestChainService.GetNpc(npcID)
+			if npc then components.NpcPreview.Show(npc) end
+		end)
+		row:SetScript("OnHyperlinkLeave", function()
+			components.NpcPreview.Hide()
+		end)
+		-- Leaving the row entirely does not always raise OnHyperlinkLeave, notably when
+		-- the pointer jumps straight out of the panel.
+		row:SetScript("OnLeave", function()
+			components.NpcPreview.Hide()
+		end)
+	end
+
 	row.icon = row:CreateTexture(nil, "ARTWORK")
 	row.icon:SetSize(ICON_SIZE, ICON_SIZE)
 	row.icon:SetPoint("TOPLEFT", 0, -2)
@@ -358,6 +434,18 @@ end
 
 function component.Init(components_)
 	components = components_
+
+	--[[
+	Links are only offered where they can actually do something: the client has to
+	raise hyperlink events on a plain frame, and the preview has to be able to draw a
+	model. Where either is missing the sentence stays plain text -- a coloured name
+	that does nothing on hover is worse than no link at all.
+	]]
+	local probe = CreateFrame("Frame")
+	linksSupported = type(probe.SetHyperlinksEnabled) == "function"
+		and components.NpcPreview ~= nil
+		and components.NpcPreview.IsSupported()
+
 	local page = CreateFrame("Frame", EncounterJournal:GetName() .. "QuestChains", EncounterJournal)
 	component.frame = page
 	EncounterJournal.questChains = page
@@ -414,6 +502,10 @@ function component.Init(components_)
 	PlayerContextService.RegisterListener(function(_, changed)
 		if not page:IsShown() then return end
 		if changed.level or changed.zone then component.Refresh() end
+	end)
+
+	page:SetScript("OnHide", function()
+		if components.NpcPreview then components.NpcPreview.Hide() end
 	end)
 
 	page:Hide()
@@ -582,7 +674,7 @@ local function RefreshPanel(inLog)
 		if blocked and detail then
 			says = says and (detail .. "  --  " .. says) or detail
 		end
-		row.says:SetText(says or "")
+		row.says:SetText(says and Linkify(says, quest) or "")
 		SetColor(row.says, blocked and BODY_DIM or BODY)
 		row.says:SetShown(says ~= nil)
 

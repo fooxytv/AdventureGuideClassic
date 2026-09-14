@@ -24,6 +24,7 @@ QuestChainService = { }
 
 local zones = { }        -- uiMapID -> { expansion, quests = { } }
 local questsByID = { }   -- id -> quest
+local npcsByID = { }     -- id -> { name, display }
 
 -- Standard WoW race and class bitmasks, which is how Questie stores quest gating.
 local RACE_BITS = {
@@ -57,6 +58,45 @@ end
 
 function QuestChainService.GetQuest(questID)
 	return questsByID[questID]
+end
+
+--[[
+The creatures a zone's quests talk about: who gives them, who you hand them to, and
+what they ask you to kill, each with the display id of its model.
+
+Registered per zone alongside the quests, and filtered to this client the same way, so
+a zone the player will never see costs nothing. Quests reference these by id rather
+than repeating a name that turns up in six of them.
+]]
+function QuestChainService.AddNpcs(expansion, uiMapID, npcs)
+	local wanted = IsBurningCrusade() and "tbc" or "era"
+	if expansion ~= wanted then return end
+
+	for id, entry in pairs(npcs) do
+		npcsByID[id] = { name = entry[1], display = entry[2], id = id }
+	end
+end
+
+function QuestChainService.GetNpc(npcID)
+	return npcID and npcsByID[npcID] or nil
+end
+
+--[[
+The npcs named in a quest's text, in the order the guide should substitute them:
+longest name first, so a creature is never matched inside a longer one that shares its
+opening words.
+]]
+function QuestChainService.GetQuestNpcs(quest)
+	if not quest or not quest.npcs then return nil end
+	local found
+	for _, id in ipairs(quest.npcs) do
+		local npc = npcsByID[id]
+		if npc then
+			found = found or { }
+			found[#found + 1] = npc
+		end
+	end
+	return found
 end
 
 function QuestChainService.GetZones()
