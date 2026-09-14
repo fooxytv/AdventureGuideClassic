@@ -111,11 +111,27 @@ them rather than carrying a height of its own. The heading used to be a hardcode
 which is how it drifted out of step with the quest rows beneath it -- a block with a
 literal height stops matching the moment anything around it changes.
 ]]
+--[[
+Progress is two textures, not one.
+
+A single coloured line cannot say what it is a fraction of: at 12 of 12 it looked like a
+short green dash that stopped before the edge of the panel, with nothing to say the dash
+was the whole of it. The trough shows everything there is to do and the fill shows how
+much is done, so the empty part is as visible as the full part.
+
+UI-StatusBar is the plain gradient Blizzard fills its own bars with, tinted per use. The
+outline behind the trough is what separates it from the panel it sits on -- without it
+the dark trough simply disappeared into the dark ground.
+]]
+local STATUS_BAR = "Interface/TargetingFrame/UI-StatusBar"
+local TROUGH_COLOR = { 0.26, 0.21, 0.16 }
+local BAR_GOLD  = { 0.95, 0.75, 0.12 }
+local BAR_GREEN = { 0.32, 0.70, 0.28 }
+
 local GAP_TIGHT   = 3     -- a line and the line that explains it
 local GAP_LOOSE   = 8     -- a block and the next thing along
 local PAD_BOTTOM  = 9     -- last line of a row to its rule
-local BAR_HEIGHT  = 3
-local HEADING_BAR = 120
+local BAR_HEIGHT  = 6
 
 local RAIL_ROW_HEIGHT = 47   -- tall enough to hold the bar clear of the level band
 local ICON_SIZE = 14
@@ -194,6 +210,41 @@ local function Linkify(text, quest)
 	return text
 end
 
+--[[
+The trough is anchored by the caller, left and right, so it spans whatever it is in.
+Everything else hangs off it.
+]]
+local function CreateProgressBar(parent)
+	local bar = { }
+	bar.outline = parent:CreateTexture(nil, "BACKGROUND", nil, 3)
+	bar.outline:SetColorTexture(0, 0, 0, 0.9)
+	bar.trough = parent:CreateTexture(nil, "ARTWORK")
+	bar.trough:SetTexture(STATUS_BAR)
+	bar.trough:SetVertexColor(TROUGH_COLOR[1], TROUGH_COLOR[2], TROUGH_COLOR[3], 1)
+	bar.trough:SetHeight(BAR_HEIGHT)
+	bar.fill = parent:CreateTexture(nil, "OVERLAY")
+	bar.fill:SetTexture(STATUS_BAR)
+	bar.fill:SetHeight(BAR_HEIGHT)
+	bar.outline:SetPoint("TOPLEFT", bar.trough, "TOPLEFT", -1, 1)
+	bar.outline:SetPoint("BOTTOMRIGHT", bar.trough, "BOTTOMRIGHT", 1, -1)
+	bar.fill:SetPoint("TOPLEFT", bar.trough, "TOPLEFT", 0, 0)
+	return bar
+end
+
+--[[
+How full the bar is. The width is passed rather than measured: the trough takes its size
+from anchors that are not resolved until the frame is laid out, and this runs before
+that -- the same trap that made the quest rows too short for their own text.
+]]
+local function SetProgress(bar, width, done, total)
+	local fraction = (total and total > 0) and (done / total) or 0
+	local finished = total and total > 0 and done >= total
+	local color = finished and BAR_GREEN or BAR_GOLD
+	bar.fill:SetVertexColor(color[1], color[2], color[3], 1)
+	bar.fill:SetWidth(math.max(1, (width or 0) * fraction))
+	bar.fill:SetShown(fraction > 0)
+end
+
 local function LevelBand(summary)
 	if not summary.minLevel then return "" end
 	if summary.maxLevel and summary.maxLevel ~= summary.minLevel then
@@ -248,9 +299,29 @@ end
 One storyline in the rail: name, level band, how much is done, and a bar. The bar is
 what makes the rail readable at a glance -- the counts alone all look alike.
 ]]
+--[[
+A storyline in the rail. Hover and selection are carried by a real bordered panel rather
+than a wash of colour: the tint alone was doing two jobs badly, colouring the text it sat
+behind while still not reading as a frame around the row.
+
+The border is the tooltip edge -- the addon's own furniture, it scales to any row height
+without stretching, and the gold on it is the gold the journal uses everywhere else.
+Where the client has no backdrop support the row falls back to the tint, which is worse
+but is never nothing.
+]]
 local function CreateRailRow(parent)
-	local row = CreateFrame("Button", nil, parent)
+	local row = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	row:SetHeight(RAIL_ROW_HEIGHT)
+
+	row.hasBackdrop = type(row.SetBackdrop) == "function"
+	if row.hasBackdrop then
+		row:SetBackdrop({
+			bgFile = "Interface/Buttons/WHITE8X8",
+			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+			tile = true, tileSize = 8, edgeSize = 12,
+			insets = { left = 3, right = 3, top = 3, bottom = 3 },
+		})
+	end
 
 	row.highlight = row:CreateTexture(nil, "BACKGROUND")
 	row.highlight:SetAllPoints()
@@ -260,13 +331,6 @@ local function CreateRailRow(parent)
 	row.selected:SetAllPoints()
 	row.selected:SetColorTexture(1, 0.82, 0, 0.09)
 	row.selected:Hide()
-	-- A bright edge on the selected row, so the choice is legible without a border.
-	row.edge = row:CreateTexture(nil, "ARTWORK")
-	row.edge:SetColorTexture(1, 0.82, 0, 0.85)
-	row.edge:SetWidth(2)
-	row.edge:SetPoint("TOPLEFT")
-	row.edge:SetPoint("BOTTOMLEFT")
-	row.edge:Hide()
 
 	row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	row.name:SetJustifyH("LEFT")
@@ -285,17 +349,18 @@ local function CreateRailRow(parent)
 	row.count:SetPoint("TOP", row.detail, "TOP", 0, 0)
 	SetColor(row.count, META)
 
-	row.barBg = row:CreateTexture(nil, "ARTWORK")
-	row.barBg:SetColorTexture(0, 0, 0, 0.55)
-	row.barBg:SetHeight(BAR_HEIGHT)
-	row.barBg:SetPoint("BOTTOMLEFT", 9, GAP_LOOSE)
-	row.barBg:SetPoint("BOTTOMRIGHT", -9, GAP_LOOSE)
-	row.bar = row:CreateTexture(nil, "OVERLAY")
-	row.bar:SetHeight(BAR_HEIGHT)
-	row.bar:SetPoint("TOPLEFT", row.barBg, "TOPLEFT", 0, 0)
+	row.progress = CreateProgressBar(row)
+	row.progress.trough:SetPoint("BOTTOMLEFT", 10, GAP_LOOSE)
+	row.progress.trough:SetPoint("BOTTOMRIGHT", -10, GAP_LOOSE)
 
-	row:SetScript("OnEnter", function(self) self.highlight:Show() end)
-	row:SetScript("OnLeave", function(self) self.highlight:Hide() end)
+	row:SetScript("OnEnter", function(self)
+		self.hovered = true
+		component.ApplyRowState(self)
+	end)
+	row:SetScript("OnLeave", function(self)
+		self.hovered = false
+		component.ApplyRowState(self)
+	end)
 	row:SetScript("OnClick", function(self)
 		if self.key == selectedKey then return end
 		PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
@@ -400,14 +465,11 @@ local function CreateHeadingRow(parent)
 	row.sub:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -GAP_TIGHT)
 	SetColor(row.sub, META)
 
-	row.barBg = row:CreateTexture(nil, "ARTWORK")
-	row.barBg:SetColorTexture(0, 0, 0, 0.55)
-	row.barBg:SetHeight(BAR_HEIGHT)
-	row.barBg:SetPoint("TOPLEFT", row.sub, "BOTTOMLEFT", 0, -GAP_LOOSE)
-	row.barBg:SetWidth(HEADING_BAR)
-	row.bar = row:CreateTexture(nil, "OVERLAY")
-	row.bar:SetHeight(BAR_HEIGHT)
-	row.bar:SetPoint("TOPLEFT", row.barBg, "TOPLEFT", 0, 0)
+	-- Spans the panel: the storyline's progress is the headline figure on this page, so
+	-- it gets the full width rather than a token 120px.
+	row.progress = CreateProgressBar(row)
+	row.progress.trough:SetPoint("TOPLEFT", row.sub, "BOTTOMLEFT", 0, -GAP_LOOSE)
+	row.progress.trough:SetPoint("RIGHT", row, "RIGHT", -2, 0)
 
 	row.rule = row:CreateTexture(nil, "ARTWORK")
 	row.rule:SetColorTexture(1, 0.82, 0, 0.22)
@@ -511,6 +573,32 @@ function component.Init(components_)
 	page:Hide()
 end
 
+--[[
+Three states, one place: at rest, under the pointer, and chosen. Kept together because
+they have to stay consistent -- a hovered row that is also the selected one must read as
+selected, not as a brighter hover.
+]]
+function component.ApplyRowState(row)
+	local selected, hovered = row.isSelected, row.hovered
+	if row.hasBackdrop then
+		if selected then
+			row:SetBackdropColor(1, 0.82, 0, 0.10)
+			row:SetBackdropBorderColor(1, 0.82, 0, 0.95)
+		elseif hovered then
+			row:SetBackdropColor(1, 0.82, 0, 0.05)
+			row:SetBackdropBorderColor(0.72, 0.60, 0.34, 0.85)
+		else
+			row:SetBackdropColor(0, 0, 0, 0)
+			row:SetBackdropBorderColor(0, 0, 0, 0)
+		end
+		row.highlight:Hide()
+		row.selected:Hide()
+	else
+		row.selected:SetShown(selected)
+		row.highlight:SetShown(hovered and not selected)
+	end
+end
+
 function component.Select(key)
 	selectedKey = key
 	component.Refresh()
@@ -571,11 +659,8 @@ local function RefreshRail(inLog)
 		row.count:SetText(("%d/%d"):format(summary.done, summary.total))
 
 		local finished = summary.total > 0 and summary.done == summary.total
-		local fraction = summary.total > 0 and (summary.done / summary.total) or 0
-		row.bar:SetWidth(math.max(1, (RAIL_WIDTH - 44) * fraction))
-		row.bar:SetShown(fraction > 0)
-		row.bar:SetColorTexture(finished and 0.25 or 1, finished and 0.75 or 0.82,
-			finished and 0.25 or 0, 1)
+		SetProgress(row.progress, railScroll.child:GetWidth() - 20,
+			summary.done, summary.total)
 		-- Finished stops shouting; the one you are on is picked out in quest gold.
 		if finished then
 			SetColor(row.name, GREEN)
@@ -585,8 +670,8 @@ local function RefreshRail(inLog)
 			SetColor(row.name, WHITE)
 		end
 
-		row.selected:SetShown(key == selectedKey)
-		row.edge:SetShown(key == selectedKey)
+		row.isSelected = key == selectedKey
+		component.ApplyRowState(row)
 		row:ClearAllPoints()
 		row:SetPoint("TOPLEFT", railScroll.child, "TOPLEFT", 0, -offsetY)
 		row:SetPoint("RIGHT", railScroll.child, "RIGHT", 0, 0)
@@ -639,11 +724,7 @@ local function RefreshPanel(inLog)
 	local shape = summary.linear == false and "  |  branches" or ""
 	heading.sub:SetText(("%s%s%d of %d complete%s"):format(
 		band, band ~= "" and "  |  " or "", summary.done, summary.total, shape))
-	local hFraction = summary.total > 0 and (summary.done / summary.total) or 0
-	local hDone = summary.total > 0 and summary.done == summary.total
-	heading.bar:SetWidth(math.max(1, HEADING_BAR * hFraction))
-	heading.bar:SetShown(hFraction > 0)
-	heading.bar:SetColorTexture(hDone and 0.25 or 1, hDone and 0.75 or 0.82, hDone and 0.25 or 0, 1)
+	SetProgress(heading.progress, child:GetWidth() - 2, summary.done, summary.total)
 	-- Measured, like every quest row below it, so the two stay in step.
 	Place(heading, 1 + math.max(16, heading.title:GetStringHeight())
 		+ GAP_TIGHT + math.max(11, heading.sub:GetStringHeight())
