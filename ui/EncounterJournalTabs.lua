@@ -66,6 +66,10 @@ function component.Init(components_)
         components.InstanceSelect.SetTitle(RAIDS)
         components.InstanceSelect.Show()
     end)
+    EncounterJournal.questsTab = AddTab("Quests", "Quests", function()
+        AdventureGuideNavigationService.Reset()
+        components.QuestChains.Show()
+    end)
     -- Suggested Content is tab 1 so it reads first, as it does on retail, but the
     -- window still opens on Dungeons unless the user opts in -- existing users
     -- shouldn't have the addon change behaviour under them after an update.

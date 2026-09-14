@@ -23,6 +23,8 @@
 /run AGC_ActiveEvents()
 /run AGC_ActiveEvents(2026, 10, 20)
 /run AGC_QuestLog()
+/run AGC_QuestChains()
+/run AGC_QuestChains(1429)   -- Elwynn Forest
 /run AGC_QuestObjectives("Kobold Camp Cleanup")
 
 NOTE: every file calls SetupGlobalFacade(), which setfenv's the chunk into the
