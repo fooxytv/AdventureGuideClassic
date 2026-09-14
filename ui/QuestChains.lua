@@ -44,9 +44,10 @@ local GOLD      = { 1.00, 0.82, 0.00 }
 local WHITE     = { 1.00, 1.00, 1.00 }
 local GREEN     = { 0.25, 0.75, 0.25 }
 local GREY      = { 0.55, 0.53, 0.50 }
-local BODY      = { 0.76, 0.73, 0.69 }   -- the objective sentence: a step below white
-local BODY_DIM  = { 0.52, 0.50, 0.47 }   -- the same, for a quest out of reach
-local FAINT     = { 0.58, 0.52, 0.42 }   -- "leads to"
+local BODY      = { 0.82, 0.78, 0.72 }   -- the objective sentence: a step below white
+local BODY_DIM  = { 0.58, 0.55, 0.51 }   -- the same, for a quest out of reach
+local FAINT     = { 0.68, 0.60, 0.44 }   -- "leads to"
+local META      = { 0.72, 0.66, 0.58 }   -- level bands, counts, level numbers
 local TITLE     = { 0.902, 0.788, 0.671 }-- the journal's own bronze, for the zone
 
 local STATUS_COLOR = {
@@ -60,6 +61,23 @@ local STATUS_ICON = {
 	available = "Interface/GossipFrame/AvailableQuestIcon",
 	blocked   = nil,
 }
+
+--[[
+InsetFrameTemplate is translucent, and over the journal parchment it lands at a warm
+mid-brown -- which is what made white and gold text hard to read no matter how the type
+was set. Lay a near-black fill inside each inset so the panels are actually dark, and
+the quest log's colours do what they do in the quest log.
+
+The fill is a texture on the inset itself, so it draws above the page's parchment (a
+child frame always does) and below the inset's own border art.
+]]
+local function AddDarkGround(inset)
+	local fill = inset:CreateTexture(nil, "BACKGROUND", nil, -6)
+	fill:SetColorTexture(0.043, 0.035, 0.027, 0.92)
+	fill:SetPoint("TOPLEFT", 3, -3)
+	fill:SetPoint("BOTTOMRIGHT", -3, 3)
+	return fill
+end
 
 local RAIL_WIDTH = 232
 local RAIL_ROW_HEIGHT = 42
@@ -115,11 +133,11 @@ local function CreateRailRow(parent)
 
 	row.highlight = row:CreateTexture(nil, "BACKGROUND")
 	row.highlight:SetAllPoints()
-	row.highlight:SetColorTexture(1, 0.82, 0, 0.08)
+	row.highlight:SetColorTexture(1, 0.82, 0, 0.07)
 	row.highlight:Hide()
 	row.selected = row:CreateTexture(nil, "BACKGROUND")
 	row.selected:SetAllPoints()
-	row.selected:SetColorTexture(1, 0.82, 0, 0.16)
+	row.selected:SetColorTexture(1, 0.82, 0, 0.09)
 	row.selected:Hide()
 	-- A bright edge on the selected row, so the choice is legible without a border.
 	row.edge = row:CreateTexture(nil, "ARTWORK")
@@ -135,14 +153,16 @@ local function CreateRailRow(parent)
 	row.name:SetPoint("TOPLEFT", 9, -6)
 	row.name:SetPoint("RIGHT", -8, 0)
 
-	row.detail = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.detail = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.detail:SetJustifyH("LEFT")
 	row.detail:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -3)
+	SetColor(row.detail, META)
 
-	row.count = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.count = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.count:SetJustifyH("RIGHT")
 	row.count:SetPoint("RIGHT", -9, 0)
 	row.count:SetPoint("TOP", row.detail, "TOP", 0, 0)
+	SetColor(row.count, META)
 
 	row.barBg = row:CreateTexture(nil, "ARTWORK")
 	row.barBg:SetColorTexture(0, 0, 0, 0.55)
@@ -184,9 +204,10 @@ local function CreateQuestRow(parent)
 	row.icon:SetSize(14, 14)
 	row.icon:SetPoint("TOPLEFT", 0, -2)
 
-	row.level = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.level = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.level:SetJustifyH("RIGHT")
-	row.level:SetPoint("TOPRIGHT", 0, -3)
+	row.level:SetPoint("TOPRIGHT", -4, -3)
+	SetColor(row.level, META)
 
 	row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	row.name:SetJustifyH("LEFT")
@@ -206,7 +227,7 @@ local function CreateQuestRow(parent)
 	row.leads:SetPoint("RIGHT", -2, 0)
 
 	row.rule = row:CreateTexture(nil, "ARTWORK")
-	row.rule:SetColorTexture(1, 1, 1, 0.05)
+	row.rule:SetColorTexture(1, 1, 1, 0.07)
 	row.rule:SetHeight(1)
 	row.rule:SetPoint("BOTTOMLEFT", 0, 0)
 	row.rule:SetPoint("BOTTOMRIGHT", 0, 0)
@@ -223,9 +244,10 @@ local function CreateHeadingRow(parent)
 	row.title:SetPoint("TOPLEFT", 0, -1)
 	row.title:SetPoint("RIGHT", 0, 0)
 
-	row.sub = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.sub = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.sub:SetJustifyH("LEFT")
 	row.sub:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -5)
+	SetColor(row.sub, META)
 
 	row.barBg = row:CreateTexture(nil, "ARTWORK")
 	row.barBg:SetColorTexture(0, 0, 0, 0.55)
@@ -291,6 +313,7 @@ function component.Init(components_)
 	railInset:SetWidth(RAIL_WIDTH)
 	railInset:SetPoint("TOPLEFT", 14, -44)
 	railInset:SetPoint("BOTTOMLEFT", 14, 10)
+	AddDarkGround(railInset)
 	railScroll = CreateScroller(railInset, RAIL_WIDTH - 26)
 	railScroll:SetPoint("TOPLEFT", 4, -5)
 	railScroll:SetPoint("BOTTOMRIGHT", -20, 5)
@@ -299,9 +322,12 @@ function component.Init(components_)
 	local panelInset = CreateFrame("Frame", nil, page, "InsetFrameTemplate")
 	panelInset:SetPoint("TOPLEFT", railInset, "TOPRIGHT", 8, 0)
 	panelInset:SetPoint("BOTTOMRIGHT", -14, 10)
+	AddDarkGround(panelInset)
 	panelScroll = CreateScroller(panelInset, 10)
 	panelScroll:SetPoint("TOPLEFT", PANEL_PAD, -10)
-	panelScroll:SetPoint("BOTTOMRIGHT", -22, 8)
+	-- Wide enough on the right that the scroll bar gets its own lane: the level numbers
+	-- were being drawn underneath it.
+	panelScroll:SetPoint("BOTTOMRIGHT", -28, 8)
 	-- The child has to be told its width before anything wraps against it, and the inset
 	-- has no size until the frame is laid out, so take it on the first draw instead.
 	panelScroll:SetScript("OnSizeChanged", function(self, width)
