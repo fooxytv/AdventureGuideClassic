@@ -121,6 +121,15 @@ local RAIL_ROW_HEIGHT = 47   -- tall enough to hold the bar clear of the level b
 local ICON_SIZE = 14
 local ICON_GAP = 6           -- icon to name, and so the left edge of the wrapped text
 
+--[[
+The page's margins. The right is wider than the left because the page frame itself
+already sits 3px inside the journal inset on that side, and because the panel should
+line up with the seam in the journal art rather than run past it.
+]]
+local MARGIN_LEFT = 14
+local MARGIN_RIGHT = 20
+local MARGIN_BOTTOM = 10
+
 local railScroll, panelScroll
 local railRows, panelRows = { }, { }
 local panelUsed = 0
@@ -377,8 +386,8 @@ function component.Init(components_)
 	-- Storylines, left.
 	local railInset = CreateFrame("Frame", nil, page, "InsetFrameTemplate")
 	railInset:SetWidth(RAIL_WIDTH)
-	railInset:SetPoint("TOPLEFT", 14, -44)
-	railInset:SetPoint("BOTTOMLEFT", 14, 10)
+	railInset:SetPoint("TOPLEFT", MARGIN_LEFT, -44)
+	railInset:SetPoint("BOTTOMLEFT", MARGIN_LEFT, MARGIN_BOTTOM)
 	AddDarkGround(railInset)
 	railScroll = CreateScroller(railInset, RAIL_WIDTH - 31)
 	railScroll:SetPoint("TOPLEFT", 4, -5)
@@ -387,7 +396,7 @@ function component.Init(components_)
 	-- The briefing, right.
 	local panelInset = CreateFrame("Frame", nil, page, "InsetFrameTemplate")
 	panelInset:SetPoint("TOPLEFT", railInset, "TOPRIGHT", 8, 0)
-	panelInset:SetPoint("BOTTOMRIGHT", -14, 10)
+	panelInset:SetPoint("BOTTOMRIGHT", -MARGIN_RIGHT, MARGIN_BOTTOM)
 	AddDarkGround(panelInset)
 	panelScroll = CreateScroller(panelInset)
 	panelScroll:SetPoint("TOPLEFT", PANEL_PAD, -10)
