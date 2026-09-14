@@ -9,7 +9,7 @@ select(2, ...).SetupGlobalFacade()
 --[[
 Single source of truth for "what is this character's situation right now?".
 
-Consumers (SuggestedContentService, ZoneService, GuideService) should read from here
+Consumers (SuggestedContentService, ZoneService, QuestChainService) should read from here
 rather than calling UnitLevel/UnitFactionGroup/C_Map directly, so that level and zone
 changes propagate from one place.
 ]]

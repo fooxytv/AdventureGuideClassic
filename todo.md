@@ -22,19 +22,8 @@
 /run AGC_DumpZoneMapIDs()
 /run AGC_ActiveEvents()
 /run AGC_ActiveEvents(2026, 10, 20)
-/run AGC_ListGuides()
-/run AGC_ToggleGuide()
-/run AGC_GuideStatus()
-/run AGC_GuideProgress()
-/run AGC_GuideScan()
-/run AGC_GuideObjectives()
-/dump GuideService.FindSteps("kobold")
-/run AGC_QuestIntent("A Threat Within")
-/run AGC_QuestDebug(true)   -- trace what the quest automation sees
-/run AGC_ResetGuidePosition()
-/run SettingsService.SetGuideOpacity(0.55)   -- guide panel transparency
-/run SettingsService.SetGuideScale(0.9)
-/agc guide
+/run AGC_QuestLog()
+/run AGC_QuestObjectives("Kobold Camp Cleanup")
 
 NOTE: every file calls SetupGlobalFacade(), which setfenv's the chunk into the
 addon's facade table. A bare `function Foo()` therefore lands on the facade, NOT

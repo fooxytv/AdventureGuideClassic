@@ -6,9 +6,7 @@
     <Script file="services/ZoneService.lua" />
     <Script file="services/WorldEventService.lua" />
     <Script file="services/SuggestedContentService.lua" />
-    <Script file="services/GuideService.lua" />
-    <Script file="services/GuideProgressService.lua" />
-    <Script file="services/AutoQuestService.lua" />
+    <Script file="services/QuestLogService.lua" />
     <Script file="services/AdventureGuideNavigation.lua" />
     <Script file="services/HyperlinkService.lua" />
     <Script file="services/NPC.lua" />

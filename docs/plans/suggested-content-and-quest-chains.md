@@ -1,8 +1,9 @@
-# Suggested Content + Integrated Levelling Guide
+# Suggested Content + Quest Chains
 
 Design plan for the `feature/suggested-content` branch.
 
-Status: **Phases 0 and 1 implemented**; Phase 2 onwards still design only.
+Status: **Phases 0-3 shipped** (Suggested Content, world events). Phases 4-5 were built
+as a levelling guide, then removed in favour of quest chains -- see Part 2 for why.
 
 ## Goal
 
@@ -13,9 +14,9 @@ service):
    retail's Adventure Guide *Suggested Content*. Tells the player what to do at their
    current level: a zone to level in, a dungeon they're in range for, any live world
    event, and at max level, raid/attunement pointers.
-2. **Integrated levelling guide** — a pop-out step-by-step guide window in the same
-   "if Blizzard shipped it" visual language as the rest of AGC, launched from the
-   Suggested Content tab's zone card.
+2. **Quest chains** — a Quests tab beside Dungeons and Raids, showing quest chains,
+   prerequisites and where this character stands on each. Not a route: the point is to
+   stop people getting lost in long chains, not to level them fastest. See Part 2.
 
 ## Constraints and ground rules
 
@@ -179,99 +180,68 @@ at the end of `Init` still does the right thing.
 
 ---
 
-## Part 2 — Integrated levelling guide
+## Part 2 — Quest chains (replaces the levelling guide)
 
-### Guide data format
+**This part was rebuilt from scratch after Phases 4 and 5 shipped.** What was built
+first was a speed-levelling guide: a floating window stepping through a hand-authored
+route, with auto-accept and auto-turn-in. It worked, and it was the wrong product.
 
-Plain, readable, hand-editable Lua — explicitly *not* the Base64/SimpleHTML packaging
-Joana's uses. Registered through the same `Add*` pattern as instances and spells:
+### Why it changed
 
-```lua
-GuideService.AddGuide({
-    id       = "era-alliance-elwynn-1-10",
-    module   = "era",
-    faction  = "Alliance",
-    levels   = { min = 1, max = 10 },
-    zone     = 37,                       -- uiMapID
-    title    = "Elwynn Forest (1-10)",
-    next     = "era-alliance-westfall-10-20",
-    steps = {
-        { "accept", quest = 783,  npc = 197, loc = { 37, 41.7, 65.9 } },
-        { "kill",   quest = 783,  npc = 299, count = 10 },
-        { "turnin", quest = 783,  npc = 197 },
-        { "hearth", loc = { 37, 42.1, 65.6 }, note = "Set hearth at Goldshire" },
-        { "level",  level = 6 },
-    },
-})
-```
+A route guide and an Adventure Guide are opposite things. A speed route says "do
+exactly this, in this order, don't think". The Adventure Guide is an encyclopedia:
+here is what exists, here is what is in it, here is what you need to get in. This
+addon already does that for dungeons and raids; a stepper sat awkwardly inside it and
+every styling round made that clearer, not less.
 
-Task types (one file each, mirroring how `ui/widgets/` registers widget types):
-`accept`, `turnin`, `kill`, `collect`, `goto`, `hearth`, `sethearth`, `taxi`,
-`vendor`, `train`, `level`, `note`.
+The problem actually worth solving is the one Questie leaves untouched. Questie tells
+you where a quest is. It does not tell you that this is step 3 of 7, that the next one
+needs level 22, or that the chain ends in something worth having. Long chains and
+hidden prerequisites are where people get lost, and nothing on Classic addresses it.
 
-### Questie importer
+Three things follow from the change:
 
-`tools/questie_import.py` — build-time only. Reads Questie's GPL-3.0 quest/NPC/object
-databases for Era and TBC, and emits **only the entries our route files actually
-reference** into `data/Guides/QuestData_era.lua` / `_tbc.lua` (quest name, objectives
-text, NPC name + coordinates, required level, faction).
+- It is unmistakably this addon's own product. A quest-chain browser inside a dungeon
+  journal is not something any other guide addon offers, which also ends the question
+  of whether the UI looks borrowed.
+- The content cost collapses. Hand-authoring routes for two factions across 1-60 was
+  the largest unwritten cost in this plan. A chain browser needs no routes at all --
+  it needs the quest graph, and Questie's GPL-3.0 database already carries exactly
+  that: `preQuestSingle`, `preQuestGroup`, `exclusiveTo`, `parentQuest`,
+  `requiredLevel`, `requiredRaces`.
+- The Questie importer stops being a supplement and becomes the whole data story.
 
-This is the decision that keeps the feature honest: AGC stays standalone (no
-`OptionalDeps: Questie`, works for users who don't run it) and the bundled data stays
-small because it is scoped to the routes we ship. GPL-3.0 attribution goes in a header
-comment in the generated files and in the addon's licence notes.
+### What was kept
 
-### Services
+`QuestLogService` -- the quest-state reading from the old `GuideProgressService`.
+Reading the log, detecting completion across differing client APIs, tracking
+objectives and remembering hand-ins per character is precisely the new product's
+foundation; it was only ever incidental to the stepper.
 
-- **`services/GuideService.lua`** — guide registry, lookup by faction/level/zone,
-  current guide + step persisted in `AdventureGuideClassic_Lockout`
-  (SavedVariablesPerCharacter — progress is per character, not per account).
-- **`services/GuideProgressService.lua`** — auto-advance from game events:
-  `QUEST_ACCEPTED`, `QUEST_TURNED_IN`, `QUEST_LOG_UPDATE`, `UNIT_QUEST_LOG_CHANGED`,
-  `PLAYER_LEVEL_UP`, `BAG_UPDATE`. Manual next/back always overrides.
-- **`services/GuideWaypointService.lua`** — waypoint arrow + world-map/minimap pins for
-  the current step, reusing `lib/TomCats/Maps.lua` patterns and the existing
-  `ui/Map.lua`. TomTom as an optional integration, not a requirement.
+### What was removed
 
-### UI
+The guide window, its options panel, the step/task format, the hand-authored pilot
+guide, and `AutoQuestService`. Auto-accept and auto-turn-in are speed-run features
+that pull against a product about understanding what you are doing, and they carried a
+running cost in client-API fragility across three different NPC interaction paths.
 
-- **`ui/guide/GuideWindow.lua`** — the pop-out. **Decision: it floats**, parented to
-  `UIParent` rather than to the Adventure Guide frame, so it stays up while the main
-  window is closed. That is the whole point — you read it while questing, not while
-  browsing the journal. Built from `BackdropTemplate` with
-  `BACKDROP_GLUE_TOOLTIP_16_16`, narrow (~242px) and auto-sizing to the step content.
+### Shape
 
-  Behaviours to match (rebuilt from Blizzard templates, not copied):
+**`services/QuestChainService.lua`** — the quest graph. For any quest: its chain, its
+position in it, what it requires, what it unlocks, and this character's status on each
+link (done / available / blocked, and why blocked).
 
-  | Behaviour | Notes |
-  |---|---|
-  | Default anchor top-right | Roughly `TOPRIGHT, -15, -330` — clear of the minimap and buff bars |
-  | Left-drag to move | Position saved account-wide; re-validated on load so a resolution change can't strand it off-screen |
-  | Right-click passes through | `SetPassThroughButtons("RightButton")` so right-click still turns the camera. **Feature-detect it** — it does not exist on every client |
-  | Clamped to screen | `SetClampedToScreen(true)` |
-  | Lockable | Lock disables mouse entirely so clicks fall through to the world, not just "can't drag" |
-  | Independently scalable | Its own scale setting, separate from the main window's `SettingsService.GetScale()` |
-  | Auto-hide in instances | On by default, suppressed when the current step *is* an instance step |
-  | Combat-safe | Guard scale/size changes behind `InCombatLockdown()` |
-  | Screen-side aware | Detect which half of the screen it sits on so menus and tooltips open away from the edge |
-  | Minimal chrome | No title bar or close button; the header *is* the chrome |
-  | Shown state persisted | Toggled via slash command, minimap button and a keybind (`Bindings.lua` already exists) |
-- **`ui/guide/GuideHeader.lua`** — portrait ring (AGC's own EJ portrait art, masked the
-  way `EncounterJournal.portrait` is), title, step counter, back / next / settings
-  buttons.
-- **`ui/guide/GuideStepList.lua`** — the current step's tasks with per-type icons and
-  completion state.
-- **`ui/guide/tasks/*.lua`** — one mixin per task type, registered like widget types.
-- **`ui/guide/GuideMenu.lua`** — pick guide / jump to zone / reset progress.
+**`data/Quests/{era,tbc}/*.lua`** — generated, never hand-written. Quest name, level,
+prerequisites, follow-ups, faction/race/class gating, zone, and the reward worth
+mentioning.
 
-### Wiring back to Part 1
+**`tools/questie_import.py`** — build-time only, as before. AGC gains no runtime
+dependency on Questie being installed.
 
-The Suggested Content zone card's `onClick` calls
-`GuideService.StartGuideForLevel(level, faction)` and shows the guide window at the
-right step. That closes the loop: *"here's where to level"* → *"here's exactly what to
-do there"*.
+**`ui/QuestSelect.lua` / `ui/QuestChain.lua`** — a Quests tab beside Dungeons and
+Raids. Browse by zone, see chains as a tree, see where you stand on each.
 
----
+No floating windows. The tab is the product.
 
 ## Phasing
 
@@ -284,10 +254,10 @@ mergeable after any of them.
 | 1 | ~~`ZoneService` + zone data, `SuggestedContentService`, Suggest tab UI with zone + dungeon cards~~ **done** | **Yes** |
 | 2 | ~~`WorldEventService` + `data/WorldEvents.lua` table + event cards~~ **done** | **Yes** |
 | 3 | Max-level content: raid cards, `AttunementService` + status | **Yes** |
-| 4 | Guide window shell + step list + one hand-authored pilot guide (Elwynn 1-10) | **Yes** (preview quality) |
-| 5 | ~~`GuideProgressService` auto-advance~~ **done**, plus `AutoQuestService` (auto accept/hand-in). Waypoints/map pins still outstanding | **Yes** |
-| 6 | `tools/questie_import.py` + full 1-60 Era route content | **Yes** |
-| 7 | Suggested Content → guide wiring; BCC 58-70 routes | **Yes** |
+| 4 | ~~Guide window shell + step list + pilot guide~~ **built, then removed** -- see Part 2 | — |
+| 5 | ~~Auto-advance + auto accept/hand-in~~ **built, then removed**. `QuestLogService` kept from it | — |
+| 6 | `tools/questie_import.py` + generated quest graph data | **Yes** |
+| 7 | `QuestChainService` + the Quests tab | **Yes** |
 
 ## Decisions
 

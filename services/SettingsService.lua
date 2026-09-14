@@ -24,25 +24,6 @@ local defaults = {
 	-- Open the Adventure Guide on the Suggested Content tab instead of Dungeons.
 	-- Off by default so existing users keep the behaviour they're used to.
 	SuggestedContentDefaultTab = false,
-	-- Levelling guide window. Hidden until the user asks for it (/agc guide, the
-	-- keybinding, or a Suggested Content zone card) -- someone who installed the addon
-	-- for the encounter journal should not get a guide frame on screen at login. Once
-	-- shown, the setting persists, so it returns on the next login.
-	-- The rest are on: they are the expected behaviour once a guide IS being followed.
-	Guide = {
-		Show = false,
-		Locked = false,
-		Scale = 1.0,
-		AutoAdvance = true,
-		Waypoints = true,
-		-- Accept and hand in only the quests the current guide asks for. On, because
-		-- it is the point of following a guide; both are one click away in the cog menu.
-		AutoAccept = true,
-		AutoTurnIn = true,
-		-- Panel opacity. The guide sits on screen for hours, so how much of the world
-		-- shows through it is a real preference rather than a detail.
-		Opacity = 0.85,
-	},
 }
 local SCALE_MIN = 0.5
 local SCALE_MAX = 1.5
@@ -61,9 +42,6 @@ local function EnsureSettings()
 	end
 	if not SavedVariables.Settings.ToastPositions then
 		SavedVariables.Settings.ToastPositions = {}
-	end
-	if not SavedVariables.Settings.Guide then
-		SavedVariables.Settings.Guide = {}
 	end
 end
 
@@ -218,102 +196,4 @@ end
 function SettingsService.SetSuggestedContentDefaultTab(enabled)
 	EnsureSettings()
 	SavedVariables.Settings.SuggestedContentDefaultTab = enabled
-end
-
--- Levelling guide window ------------------------------------------------------
-
-local guideListeners = {}
-
-local function NotifyGuideListeners(key, value)
-	for _, listener in ipairs(guideListeners) do
-		listener(key, value)
-	end
-end
-
-local function GetGuideSetting(key)
-	EnsureSettings()
-	local value = SavedVariables.Settings.Guide[key]
-	if value == nil then return defaults.Guide[key] end
-	return value
-end
-
-local function SetGuideSetting(key, value)
-	EnsureSettings()
-	SavedVariables.Settings.Guide[key] = value
-	NotifyGuideListeners(key, value)
-end
-
-function SettingsService.IsGuideShown()
-	return GetGuideSetting("Show")
-end
-
-function SettingsService.SetGuideShown(shown)
-	SetGuideSetting("Show", shown)
-end
-
-function SettingsService.IsGuideLocked()
-	return GetGuideSetting("Locked")
-end
-
-function SettingsService.SetGuideLocked(locked)
-	SetGuideSetting("Locked", locked)
-end
-
--- Deliberately separate from GetScale(): the guide window is a different size and
--- sits in a different part of the screen, so it gets its own scale.
-function SettingsService.GetGuideScale()
-	return ClampScale(GetGuideSetting("Scale"))
-end
-
-function SettingsService.SetGuideScale(value)
-	SetGuideSetting("Scale", ClampScale(value))
-end
-
-function SettingsService.IsGuideAutoAdvanceEnabled()
-	return GetGuideSetting("AutoAdvance")
-end
-
-function SettingsService.SetGuideAutoAdvanceEnabled(enabled)
-	SetGuideSetting("AutoAdvance", enabled)
-end
-
-function SettingsService.IsGuideAutoAcceptEnabled()
-	return GetGuideSetting("AutoAccept")
-end
-
-function SettingsService.SetGuideAutoAcceptEnabled(enabled)
-	SetGuideSetting("AutoAccept", enabled)
-end
-
-function SettingsService.IsGuideAutoTurnInEnabled()
-	return GetGuideSetting("AutoTurnIn")
-end
-
-function SettingsService.SetGuideAutoTurnInEnabled(enabled)
-	SetGuideSetting("AutoTurnIn", enabled)
-end
-
-function SettingsService.GetGuideOpacity()
-	local value = GetGuideSetting("Opacity")
-	if type(value) ~= "number" then return defaults.Guide.Opacity end
-	if value < 0.2 then return 0.2 end
-	if value > 1 then return 1 end
-	return value
-end
-
-function SettingsService.SetGuideOpacity(value)
-	SetGuideSetting("Opacity", value)
-end
-
-function SettingsService.IsGuideWaypointsEnabled()
-	return GetGuideSetting("Waypoints")
-end
-
-function SettingsService.SetGuideWaypointsEnabled(enabled)
-	SetGuideSetting("Waypoints", enabled)
-end
-
--- callback(key, value) where key is one of Show/Locked/Scale/AutoAdvance/Waypoints
-function SettingsService.RegisterGuideListener(callback)
-	table.insert(guideListeners, callback)
 end
