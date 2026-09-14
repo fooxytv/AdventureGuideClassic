@@ -132,3 +132,35 @@ returns 403 to scripted requests, so use the `nether` host.
 It's committed so the tool runs offline and gives reproducible results. To add
 ids, append rows; anything missing from the file is treated as not-gear and
 dropped, so regenerate before adding a new instance.
+
+## questie_import.lua
+
+Generates the quest-chain data in `data/Quests/` from Questie's database.
+
+```bash
+lua tools/questie_import.lua            # the default zone set
+lua tools/questie_import.lua 12 40      # specific AreaTable ids
+lua tools/questie_import.lua --list 12  # preview a zone, write nothing
+```
+
+Expects **Questie** as a sibling checkout, the same convention as the AtlasLoot tool:
+
+```
+workspaces/home-projects/
+  AdventureGuideClassic/     <- this repo
+  Questie/                   <- https://github.com/Questie/Questie
+```
+
+Lua rather than Python, unlike the other tools here, because Questie's database *is* a
+Lua table -- held in a long string returned by a chunk. Loading it is exact;
+regex-parsing nested Lua from Python would break the first time its formatting shifted.
+
+Only chain-shaping fields are carried across: identity, level gating and the
+prerequisite graph. Objectives text, spawn coordinates and drop tables are left behind
+-- they are the bulk of Questie's 1MB, and the player has Questie or the quest log for
+those. The result is about 5KB per zone.
+
+Questie is GPL-3.0, as is this addon, so the derived data is compatible; generated
+files carry attribution in their header.
+
+**Generated files are not hand-edited.** Re-run the tool instead.
