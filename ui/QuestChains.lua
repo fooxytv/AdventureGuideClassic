@@ -96,9 +96,24 @@ local function AddDarkGround(inset)
 end
 
 local RAIL_WIDTH = 232
-local RAIL_ROW_HEIGHT = 42
 local PANEL_PAD = 14
 local SINGLES = "__singles__"
+
+--[[
+One rhythm for the whole page, stated once.
+
+Every vertical gap on both sides comes from these, and every block measures itself from
+them rather than carrying a height of its own. The heading used to be a hardcoded 54,
+which is how it drifted out of step with the quest rows beneath it -- a block with a
+literal height stops matching the moment anything around it changes.
+]]
+local GAP_TIGHT   = 3     -- a line and the line that explains it
+local GAP_LOOSE   = 8     -- a block and the next thing along
+local PAD_BOTTOM  = 9     -- last line of a row to its rule
+local BAR_HEIGHT  = 3
+local HEADING_BAR = 120
+
+local RAIL_ROW_HEIGHT = 47   -- tall enough to hold the bar clear of the level band
 
 local railScroll, panelScroll
 local railRows, panelRows = { }, { }
@@ -204,11 +219,11 @@ local function CreateRailRow(parent)
 
 	row.barBg = row:CreateTexture(nil, "ARTWORK")
 	row.barBg:SetColorTexture(0, 0, 0, 0.55)
-	row.barBg:SetHeight(3)
-	row.barBg:SetPoint("BOTTOMLEFT", 9, 6)
-	row.barBg:SetPoint("BOTTOMRIGHT", -9, 6)
+	row.barBg:SetHeight(BAR_HEIGHT)
+	row.barBg:SetPoint("BOTTOMLEFT", 9, GAP_LOOSE)
+	row.barBg:SetPoint("BOTTOMRIGHT", -9, GAP_LOOSE)
 	row.bar = row:CreateTexture(nil, "OVERLAY")
-	row.bar:SetHeight(3)
+	row.bar:SetHeight(BAR_HEIGHT)
 	row.bar:SetPoint("TOPLEFT", row.barBg, "TOPLEFT", 0, 0)
 
 	row:SetScript("OnEnter", function(self) self.highlight:Show() end)
@@ -256,12 +271,12 @@ local function CreateQuestRow(parent)
 	-- The sentence. Wraps, and is what the row's height is mostly made of.
 	row.says = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.says:SetJustifyH("LEFT")
-	row.says:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -3)
+	row.says:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -GAP_TIGHT)
 	row.says:SetPoint("RIGHT", -2, 0)
 
 	row.leads = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 	row.leads:SetJustifyH("LEFT")
-	row.leads:SetPoint("TOPLEFT", row.says, "BOTTOMLEFT", 0, -2)
+	row.leads:SetPoint("TOPLEFT", row.says, "BOTTOMLEFT", 0, -GAP_TIGHT)
 	row.leads:SetPoint("RIGHT", -2, 0)
 
 	row.rule = row:CreateTexture(nil, "ARTWORK")
@@ -284,16 +299,16 @@ local function CreateHeadingRow(parent)
 
 	row.sub = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.sub:SetJustifyH("LEFT")
-	row.sub:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -5)
+	row.sub:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -GAP_TIGHT)
 	SetColor(row.sub, META)
 
 	row.barBg = row:CreateTexture(nil, "ARTWORK")
 	row.barBg:SetColorTexture(0, 0, 0, 0.55)
-	row.barBg:SetHeight(3)
-	row.barBg:SetPoint("TOPLEFT", row.sub, "BOTTOMLEFT", 0, -5)
-	row.barBg:SetWidth(120)
+	row.barBg:SetHeight(BAR_HEIGHT)
+	row.barBg:SetPoint("TOPLEFT", row.sub, "BOTTOMLEFT", 0, -GAP_LOOSE)
+	row.barBg:SetWidth(HEADING_BAR)
 	row.bar = row:CreateTexture(nil, "OVERLAY")
-	row.bar:SetHeight(3)
+	row.bar:SetHeight(BAR_HEIGHT)
 	row.bar:SetPoint("TOPLEFT", row.barBg, "TOPLEFT", 0, 0)
 
 	row.rule = row:CreateTexture(nil, "ARTWORK")
@@ -509,11 +524,14 @@ local function RefreshPanel(inLog)
 		band, band ~= "" and "  |  " or "", summary.done, summary.total, shape))
 	local hFraction = summary.total > 0 and (summary.done / summary.total) or 0
 	local hDone = summary.total > 0 and summary.done == summary.total
-	heading.bar:SetWidth(math.max(1, 120 * hFraction))
+	heading.bar:SetWidth(math.max(1, HEADING_BAR * hFraction))
 	heading.bar:SetShown(hFraction > 0)
 	heading.bar:SetColorTexture(hDone and 0.25 or 1, hDone and 0.75 or 0.82, hDone and 0.25 or 0, 1)
-	Place(heading, 54)
-	offsetY = offsetY + 8
+	-- Measured, like every quest row below it, so the two stay in step.
+	Place(heading, 1 + math.max(16, heading.title:GetStringHeight())
+		+ GAP_TIGHT + math.max(11, heading.sub:GetStringHeight())
+		+ GAP_LOOSE + BAR_HEIGHT + PAD_BOTTOM)
+	offsetY = offsetY + GAP_LOOSE
 
 	for _, quest in ipairs(quests) do
 		local status, _, detail = QuestChainService.GetStatus(quest, inLog)
@@ -550,9 +568,9 @@ local function RefreshPanel(inLog)
 		-- on the quest and the panel's width, and a fixed row height would either clip
 		-- the long ones or leave a gap under every short one.
 		local height = 18
-		if says then height = height + math.max(11, row.says:GetStringHeight()) + 3 end
-		if leads then height = height + math.max(10, row.leads:GetStringHeight()) + 2 end
-		Place(row, height + 9)
+		if says then height = height + GAP_TIGHT + math.max(11, row.says:GetStringHeight()) end
+		if leads then height = height + GAP_TIGHT + math.max(10, row.leads:GetStringHeight()) end
+		Place(row, height + PAD_BOTTOM)
 	end
 
 	child:SetHeight(math.max(10, offsetY + 6))
