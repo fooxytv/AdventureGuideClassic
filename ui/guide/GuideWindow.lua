@@ -40,32 +40,14 @@ and auto-hide inside instances unless the step itself is an instance step.
 GuideWindow = { }
 
 local WIDTH = 300
-local HEADER_HEIGHT = 34
-local RING_SIZE, PORTRAIT_SIZE = 46, 34
--- The cog badge: a small framed icon echoing the portrait it is tucked against.
-local BADGE_RING_SIZE, BADGE_ICON_SIZE = 20, 11
+local HEADER_HEIGHT = 56
 --[[
-Header geometry, all derived, so that resizing the portrait cannot silently push the
-title into it. Measured from the header panel's left edge:
-
-  RING_OFFSET    how far left of that edge the portrait's centre sits
-  HEADER_LEFT    where the panel starts, chosen so the ring still fits the container
-  CONTENT_INSET  where the title and progress bar may begin -- clear of BOTH the ring
-                 and the cog badge tucked against the portrait's bottom-right, which
-                 now reaches further right than the ring itself does
+Header geometry. The template owns its own portrait socket and frame art, so all that
+is left to place is where the progress hairline may start -- clear of that socket --
+and how far the step card is inset from the header's width.
 ]]
--- Progress bar: flat, thin and quiet. See CreateHeader.
-local PROGRESS_HEIGHT = 3
-local PROGRESS_COLOR = { 0.10, 0.45, 0.75 }
-local RING_OFFSET = 2
--- The step card sits INSIDE the header's width. Wider than the header made the two
--- fight each other; narrower gives a clear hierarchy -- portrait over header over
--- card -- and lets the portrait overhang all of it.
+local CONTENT_INSET = 62
 local STEP_PANEL_INSET = 8
-local HEADER_LEFT = (RING_SIZE / 2) + RING_OFFSET
-local RING_REACH = (RING_SIZE / 2) - RING_OFFSET
-local BADGE_REACH = (PORTRAIT_SIZE / 2) - RING_OFFSET + (BADGE_RING_SIZE / 2) - 6
-local CONTENT_INSET = math.max(RING_REACH, BADGE_REACH) + 6
 local PANEL_GAP = 5
 
 local frame, header, stepPanel
@@ -105,8 +87,11 @@ end
 local function ApplyOpacity()
 	local opacity = SettingsService.GetGuideOpacity()
 	for panel in pairs(panels) do
-		if panel.SetBackdropColor then
+		if panel.SetBackdropColor and panel.backdropInfo then
 			panel:SetBackdropColor(0.04, 0.04, 0.05, opacity * (panel.alphaScale or 1))
+		elseif panel.DimChrome then
+			-- A Blizzard template: dim its art rather than a backdrop it does not have.
+			panel.DimChrome(opacity)
 		end
 	end
 end
@@ -178,6 +163,7 @@ local function CreateIconButton(parent, size, up, down, tooltip, onClick)
 	return button
 end
 
+
 local ARTIFACT_BORDER = "auctionhouse-itemicon-border-artifact"
 
 --[[
@@ -208,116 +194,103 @@ end
 
 -- Header ----------------------------------------------------------------------------
 
+--[[
+Dims a Blizzard frame template's own chrome without touching its text or icons.
+
+SetAlpha on the frame would fade the title and portrait with it. The background and
+border pieces live on the BACKGROUND and BORDER layers while text and portrait sit on
+ARTWORK and above, so walking the regions and dimming only the lower two leaves the
+content crisp and lets the world through the frame.
+]]
+local function SetChromeAlpha(frame, alpha)
+	for _, region in ipairs({ frame:GetRegions() }) do
+		if type(region.GetObjectType) == "function"
+			and region:GetObjectType() == "Texture"
+			and type(region.GetDrawLayer) == "function" then
+			local layer = region:GetDrawLayer()
+			if layer == "BACKGROUND" or layer == "BORDER" then
+				region:SetAlpha(alpha)
+			end
+		end
+	end
+end
+
+--[[
+The header is a real PortraitFrameTemplate -- the same template the main Adventure
+Guide window is built from -- cut down to banner height so only its top chrome shows.
+
+That is the identity this addon already has: Blizzard's gold frame with the journal
+mark in the portrait socket. Building the header from a plain backdrop instead meant
+borrowing an identity rather than using our own, and the template hands us the
+portrait socket, the title and the frame art for free.
+
+Its chrome is dimmed so the world reads through it, which is the part worth keeping
+from the flat-panel version.
+]]
 local function CreateHeader(parent)
-	local bar = CreatePanel(parent)
+	local name = parent:GetName() .. "Header"
+	local bar = CreateFrame("Frame", name, parent, "PortraitFrameTemplate")
 	bar:SetHeight(HEADER_HEIGHT)
-	-- Inset from the left so the portrait ring can overhang into the gap.
-	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", HEADER_LEFT, 0)
+	bar:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
 	bar:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, 0)
+	panels[bar] = true
+	bar.alphaScale = 1
+	bar.DimChrome = function(alpha) SetChromeAlpha(bar, alpha) end
+	bar.DimChrome(SettingsService.GetGuideOpacity())
 
-	-- Step label floats above the header rather than inside it, keeping the header
-	-- itself down to the title and controls.
-	bar.stepText = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	bar.stepText:SetPoint("BOTTOM", bar, "TOP", 0, 2)
-	bar.stepText:SetTextScale(0.95)
-
-	-- Icon first, border over the top.
-	--
-	-- The artifact item border has a TRANSPARENT centre, so it frames the icon when
-	-- drawn above it. This is the opposite of portrait-ring-withbg, whose centre is
-	-- opaque and which therefore has to go underneath; conflating the two is what
-	-- produced a black disc in earlier attempts.
-	--
-	-- Everything here hangs off the HEADER PANEL, not the container. A child frame
-	-- draws above its parent's textures whatever draw layer they claim, so a ring
-	-- parented to the container was always going to be cut in half by the header's
-	-- backdrop. On the header, ARTWORK and OVERLAY sit in front of that backdrop and
-	-- the overhang to the left simply hangs outside it.
-	--
-	-- The icon is static -- the addon's own Encounter Journal mark, as used by the
-	-- minimap button. A live SetPortraitTexture portrait was tried and abandoned: it
-	-- silently does nothing when the unit is not ready, and there is no dependable way
-	-- to tell whether it worked, so it fails blank rather than falling back.
-	bar.portrait = bar:CreateTexture(nil, "ARTWORK")
-	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
-	bar.portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
-	bar.portrait:SetPoint("CENTER", bar, "LEFT", -RING_OFFSET, 0)
-	-- Trims the dark edge baked into icon art, the standard crop for an item icon.
-	bar.portrait:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-	-- Masked round in BOTH branches. The icon is square and the frame is not, so
-	-- without this its corners show outside the border.
-	ApplyRoundMask(bar, bar.portrait)
-
-	bar.ring = bar:CreateTexture(nil, "OVERLAY")
-	if ApplyArtifactBorder(bar.ring) then
-		bar.ring:SetSize(RING_SIZE, RING_SIZE)
-		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
-	else
-		-- No atlas on this client: the circular ring has an opaque centre, so it must
-		-- sit under the icon, and the icon needs masking to a circle to suit it.
-		bar.ring:SetDrawLayer("BACKGROUND")
-		bar.ring:SetTexture("Interface/Common/portrait-ring-withbg")
-		bar.ring:SetSize(RING_SIZE, RING_SIZE)
-		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
+	-- The template's own portrait socket, carrying the addon's journal mark.
+	bar.portrait = _G[name .. "Portrait"]
+	if bar.portrait then
+		bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
+		bar.portrait:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		ApplyRoundMask(bar, bar.portrait)
 	end
 
-	bar.next = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
+	bar.title = _G[name .. "TitleText"]
+	if bar.title then
+		bar.title:SetFontObject("GameFontNormal")
+	end
+
+	-- The template's close button hides the guide, which is what a close button on it
+	-- should do.
+	local closeButton = _G[name .. "CloseButton"]
+	if closeButton then
+		closeButton:SetScript("OnClick", function() GuideWindow.Hide() end)
+		closeButton:SetScale(0.8)
+	end
+
+	-- Step label floats above the frame, clear of its chrome.
+	bar.stepText = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	bar.stepText:SetPoint("BOTTOM", bar, "TOP", 0, 0)
+	bar.stepText:SetTextScale(0.95)
+
+	bar.next = CreateIconButton(bar, 20, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-NextPage-Down", "Next step",
 		function() GuideService.NextStep() end)
-	bar.next:SetPoint("TOPRIGHT", -8, -5)
+	bar.next:SetPoint("RIGHT", closeButton or bar, closeButton and "LEFT" or "RIGHT", -2, 0)
 
-	bar.back = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-PrevPage-Up",
+	bar.back = CreateIconButton(bar, 20, "Interface/Buttons/UI-SpellbookIcon-PrevPage-Up",
 		"Interface/Buttons/UI-SpellbookIcon-PrevPage-Down", "Previous step",
 		function() GuideService.PreviousStep() end)
 	bar.back:SetPoint("RIGHT", bar.next, "LEFT", -2, 0)
 
-	-- Cog tucked against the portrait's bottom-RIGHT, framed by a ring of its own so
-	-- it matches the portrait rather than looking like a stray icon on the corner.
-	-- CONTENT_INSET above accounts for how far right this reaches.
-	-- Just enough backing to keep the gear legible on light ground. A full-strength
-	-- dark disc reads as a blob stuck on the portrait rather than part of the frame.
-	bar.settingsBacking = bar:CreateTexture(nil, "ARTWORK")
-	bar.settingsBacking:SetColorTexture(0.05, 0.05, 0.06, 0.55)
-	bar.settingsBacking:SetSize(BADGE_RING_SIZE - 6, BADGE_RING_SIZE - 6)
-	ApplyRoundMask(bar, bar.settingsBacking)
-
-	-- An actual cog. The hearthstone-shaped gossip icon used before reads as a
-	-- location marker, not as settings.
-	bar.settings = CreateIconButton(bar, BADGE_ICON_SIZE,
-		"Interface/Icons/INV_Misc_Gear_01", nil,
+	bar.settings = CreateIconButton(bar, 18, "Interface/Icons/INV_Misc_Gear_01", nil,
 		"Guide options", function() GuideWindow.ShowMenu() end)
-	bar.settings:SetPoint("CENTER", bar.portrait, "BOTTOMRIGHT", -6, 2)
-
-	bar.settingsBacking:SetPoint("CENTER", bar.settings, "CENTER", 0, 0)
-
-	bar.settingsRing = bar:CreateTexture(nil, "OVERLAY")
-	if not ApplyArtifactBorder(bar.settingsRing) then
-		bar.settingsRing:SetDrawLayer("BACKGROUND")
-		bar.settingsRing:SetTexture("Interface/Common/portrait-ring-withbg")
+	bar.settings:SetPoint("RIGHT", bar.back, "LEFT", -4, 0)
+	-- Crop the gear's baked-in border. GetNormalTexture can return nothing, so this is
+	-- guarded rather than chained.
+	local gear = bar.settings:GetNormalTexture()
+	if gear and type(gear.SetTexCoord) == "function" then
+		gear:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	end
-	bar.settingsRing:SetSize(BADGE_RING_SIZE, BADGE_RING_SIZE)
-	bar.settingsRing:SetPoint("CENTER", bar.settings, "CENTER", 0, 0)
 
-	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	bar.title:SetTextScale(0.85)
-	bar.title:SetPoint("TOPLEFT", CONTENT_INSET, -5)
-	bar.title:SetPoint("RIGHT", bar.back, "LEFT", -6, 0)
-	bar.title:SetJustifyH("LEFT")
-	bar.title:SetWordWrap(false)
-
-	-- Progress across the whole guide, so you can see how far through a zone you are
-	-- without counting steps.
-	--
-	-- Two flat rectangles rather than a StatusBar: the default status bar texture is
-	-- glossy and domed, which reads as a cast bar sitting in the header. A thin flat
-	-- track with a filled portion over it is quieter and suits a frame you look at all
-	-- day. The fill is sized in Refresh, since its width is the progress.
+	-- Progress hairline along the bottom of the frame, inside its border.
 	bar.progressTrack = bar:CreateTexture(nil, "ARTWORK")
 	bar.progressTrack:SetColorTexture(PROGRESS_COLOR[1], PROGRESS_COLOR[2], PROGRESS_COLOR[3])
 	bar.progressTrack:SetAlpha(0.25)
 	bar.progressTrack:SetHeight(PROGRESS_HEIGHT)
-	bar.progressTrack:SetPoint("BOTTOMLEFT", CONTENT_INSET, 7)
-	bar.progressTrack:SetPoint("BOTTOMRIGHT", -10, 7)
+	bar.progressTrack:SetPoint("BOTTOMLEFT", CONTENT_INSET, 6)
+	bar.progressTrack:SetPoint("BOTTOMRIGHT", -12, 6)
 
 	bar.progressFill = bar:CreateTexture(nil, "OVERLAY")
 	bar.progressFill:SetColorTexture(PROGRESS_COLOR[1], PROGRESS_COLOR[2], PROGRESS_COLOR[3])
@@ -414,7 +387,9 @@ end
 
 -- Read-only accessor, so the portrait fallback chain can be asserted rather than
 -- eyeballed. It has been wrong twice.
--- Exposed alongside GetPortrait so the icon/border layering can be asserted.
+-- The template supplies the portrait socket, so there is no separate ring texture to
+-- expose. Kept returning nil rather than removed, so callers need not care which
+-- header style is in use.
 function GuideWindow.GetRing()
 	return header and header.ring
 end
