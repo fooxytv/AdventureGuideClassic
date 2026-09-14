@@ -54,6 +54,9 @@ title into it. Measured from the header panel's left edge:
                  and the cog badge tucked against the portrait's bottom-right, which
                  now reaches further right than the ring itself does
 ]]
+-- Progress bar: flat, thin and quiet. See CreateHeader.
+local PROGRESS_HEIGHT = 5
+local PROGRESS_COLOR = { 0.10, 0.45, 0.75 }
 local RING_OFFSET = 2
 -- The step panel reaches further left than the header, but stops short of the ring's
 -- own left edge, so the portrait still reads as overhanging everything below it.
@@ -144,6 +147,21 @@ end
 
 -- Buttons ---------------------------------------------------------------------------
 
+--[[
+Clips a texture to a circle. Masks are not on every client, so this is a no-op where
+CreateMaskTexture is missing rather than an error -- the icon simply keeps its corners.
+]]
+local function ApplyRoundMask(owner, texture)
+	if type(owner.CreateMaskTexture) ~= "function" then return false end
+	local ok, mask = pcall(owner.CreateMaskTexture, owner)
+	if not (ok and mask) then return false end
+	mask:SetAllPoints(texture)
+	mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
+		"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+	pcall(texture.AddMaskTexture, texture, mask)
+	return true
+end
+
 local function CreateIconButton(parent, size, up, down, tooltip, onClick)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(size, size)
@@ -224,6 +242,11 @@ local function CreateHeader(parent)
 	bar.portrait:SetTexture("Interface/EncounterJournal/UI-EJ-PortraitIcon")
 	bar.portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
 	bar.portrait:SetPoint("CENTER", bar, "LEFT", -RING_OFFSET, 0)
+	-- Trims the dark edge baked into icon art, the standard crop for an item icon.
+	bar.portrait:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	-- Masked round in BOTH branches. The icon is square and the frame is not, so
+	-- without this its corners show outside the border.
+	ApplyRoundMask(bar, bar.portrait)
 
 	bar.ring = bar:CreateTexture(nil, "OVERLAY")
 	if ApplyArtifactBorder(bar.ring) then
@@ -236,11 +259,6 @@ local function CreateHeader(parent)
 		bar.ring:SetTexture("Interface/Common/portrait-ring-withbg")
 		bar.ring:SetSize(RING_SIZE, RING_SIZE)
 		bar.ring:SetPoint("CENTER", bar.portrait, "CENTER", 0, 0)
-		local mask = bar:CreateMaskTexture()
-		mask:SetAllPoints(bar.portrait)
-		mask:SetTexture("Interface/CharacterFrame/TempPortraitAlphaMask",
-			"CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-		bar.portrait:AddMaskTexture(mask)
 	end
 
 	bar.next = CreateIconButton(bar, 22, "Interface/Buttons/UI-SpellbookIcon-NextPage-Up",
@@ -256,10 +274,20 @@ local function CreateHeader(parent)
 	-- Cog tucked against the portrait's bottom-RIGHT, framed by a ring of its own so
 	-- it matches the portrait rather than looking like a stray icon on the corner.
 	-- CONTENT_INSET above accounts for how far right this reaches.
+	-- A dark disc behind the gear, or it disappears against light ground.
+	bar.settingsBacking = bar:CreateTexture(nil, "ARTWORK")
+	bar.settingsBacking:SetColorTexture(0.05, 0.05, 0.06, 0.9)
+	bar.settingsBacking:SetSize(BADGE_RING_SIZE - 8, BADGE_RING_SIZE - 8)
+	ApplyRoundMask(bar, bar.settingsBacking)
+
+	-- An actual cog. The hearthstone-shaped gossip icon used before reads as a
+	-- location marker, not as settings.
 	bar.settings = CreateIconButton(bar, BADGE_ICON_SIZE,
-		"Interface/GossipFrame/BinderGossipIcon", nil,
+		"Interface/Icons/INV_Misc_Gear_01", nil,
 		"Guide options", function() GuideWindow.ShowMenu() end)
 	bar.settings:SetPoint("CENTER", bar.portrait, "BOTTOMRIGHT", -4, 4)
+
+	bar.settingsBacking:SetPoint("CENTER", bar.settings, "CENTER", 0, 0)
 
 	bar.settingsRing = bar:CreateTexture(nil, "OVERLAY")
 	if not ApplyArtifactBorder(bar.settingsRing) then
@@ -278,18 +306,23 @@ local function CreateHeader(parent)
 
 	-- Progress across the whole guide, so you can see how far through a zone you are
 	-- without counting steps.
-	bar.progress = CreateFrame("StatusBar", nil, bar)
-	bar.progress:SetHeight(6)
-	-- Clear of the ring, which overhangs this panel's left edge.
-	bar.progress:SetPoint("BOTTOMLEFT", CONTENT_INSET, 8)
-	bar.progress:SetPoint("BOTTOMRIGHT", -12, 8)
-	bar.progress:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
-	bar.progress:SetStatusBarColor(0.20, 0.50, 0.90)
-	bar.progress:SetMinMaxValues(0, 1)
-	bar.progress:SetValue(0)
-	bar.progress.bg = bar.progress:CreateTexture(nil, "BACKGROUND")
-	bar.progress.bg:SetAllPoints()
-	bar.progress.bg:SetColorTexture(0, 0, 0, 0.55)
+	--
+	-- Two flat rectangles rather than a StatusBar: the default status bar texture is
+	-- glossy and domed, which reads as a cast bar sitting in the header. A thin flat
+	-- track with a filled portion over it is quieter and suits a frame you look at all
+	-- day. The fill is sized in Refresh, since its width is the progress.
+	bar.progressTrack = bar:CreateTexture(nil, "ARTWORK")
+	bar.progressTrack:SetColorTexture(PROGRESS_COLOR[1], PROGRESS_COLOR[2], PROGRESS_COLOR[3])
+	bar.progressTrack:SetAlpha(0.35)
+	bar.progressTrack:SetHeight(PROGRESS_HEIGHT)
+	bar.progressTrack:SetPoint("BOTTOMLEFT", CONTENT_INSET, 9)
+	bar.progressTrack:SetPoint("BOTTOMRIGHT", -10, 9)
+
+	bar.progressFill = bar:CreateTexture(nil, "OVERLAY")
+	bar.progressFill:SetColorTexture(PROGRESS_COLOR[1], PROGRESS_COLOR[2], PROGRESS_COLOR[3])
+	bar.progressFill:SetHeight(PROGRESS_HEIGHT)
+	bar.progressFill:SetPoint("BOTTOMLEFT", bar.progressTrack, "BOTTOMLEFT", 0, 0)
+	bar.progressFill:SetWidth(1)
 
 	return bar
 end
@@ -351,7 +384,7 @@ local function CreateWindow()
 	stepPanel.icon:SetPoint("TOPLEFT", 14, -14)
 
 	stepPanel.text = stepPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	stepPanel.text:SetPoint("TOPLEFT", stepPanel.icon, "TOPRIGHT", 8, 2)
+	-- TOPLEFT is re-anchored in Refresh depending on whether the step has an icon.
 	stepPanel.text:SetPoint("RIGHT", stepPanel, "RIGHT", -14, 0)
 	stepPanel.text:SetJustifyH("LEFT")
 	stepPanel.text:SetJustifyV("TOP")
@@ -481,7 +514,7 @@ function GuideWindow.Refresh()
 		HideObjectives()
 		header.title:SetText("Levelling Guide")
 		header.stepText:SetText("")
-		header.progress:SetValue(0)
+		header.progressFill:Hide()
 		header.back:SetEnabled(false)
 		header.next:SetEnabled(false)
 		stepPanel.icon:SetTexture("Interface/GossipFrame/GossipGossipIcon")
@@ -496,11 +529,28 @@ function GuideWindow.Refresh()
 	local total = #guide.steps
 	header.title:SetText(guide.title)
 	header.stepText:SetText(("Step: %d of %d"):format(index, total))
-	header.progress:SetValue(total > 0 and (index / total) or 0)
+	local progress = total > 0 and (index / total) or 0
+	local trackWidth = header.progressTrack:GetWidth()
+	-- GetWidth returns nothing useful before the frame has been laid out.
+	if type(trackWidth) == "number" and trackWidth > 0 and progress > 0 then
+		header.progressFill:SetWidth(math.max(1, trackWidth * progress))
+		header.progressFill:Show()
+	else
+		header.progressFill:Hide()
+	end
 
 	local current = guide.steps[index]
 	if current then
-		stepPanel.icon:SetTexture(GuideTaskTypes.GetIcon(current))
+		-- Most steps have no icon now. Close the gap rather than leaving a hole where
+		-- one would have been, so text starts at the same place either way.
+		local icon = GuideTaskTypes.GetIcon(current)
+		stepPanel.icon:SetShown(icon ~= nil)
+		if icon then
+			stepPanel.icon:SetTexture(icon)
+			stepPanel.text:SetPoint("TOPLEFT", stepPanel.icon, "TOPRIGHT", 8, 2)
+		else
+			stepPanel.text:SetPoint("TOPLEFT", stepPanel, "TOPLEFT", 14, -12)
+		end
 		stepPanel.text:SetText(GuideTaskTypes.GetText(current))
 	end
 

@@ -13,9 +13,17 @@ One registry rather than a file per type (as ui/widgets/ does) because these are
 data with a formatter; there is no per-type behaviour to isolate yet. Split them out
 if and when a type grows its own logic.
 
-Icons are deliberately drawn from Interface\GossipFrame and the raid target set, which
-ship with every client, rather than guessed Interface\Icons paths -- a wrong icon path
-renders as a blank square with no error.
+Only quest steps carry an icon -- the ! and ? that everyone already reads as "take
+this" and "hand this in". Everything else has none.
+
+An icon per task type was tried and dropped: a raid-target skull for kill, a banker
+for collect, a class crest for level. Each borrowed a different visual language from
+somewhere unrelated, and together a card of five steps looked like a toolbar. The verb
+is the first word of every line anyway, so the icons were decorating text that did not
+need it.
+
+The two that remain come from Interface/GossipFrame, which ships with every client; a
+guessed Interface/Icons path renders as a blank square with no error.
 ]]
 
 GuideTaskTypes = { }
@@ -59,7 +67,6 @@ Register("turnin", {
 })
 
 Register("kill", {
-	icon = "Interface/TargetingFrame/UI-RaidTargetingIcon_8",
 	Format = function(task)
 		if task.count then
 			return ("Kill %d x %s"):format(task.count, Quote(task.target))
@@ -69,7 +76,6 @@ Register("kill", {
 })
 
 Register("collect", {
-	icon = "Interface/Minimap/Tracking/Banker",
 	Format = function(task)
 		if task.count then
 			return ("Collect %d x %s"):format(task.count, Quote(task.item))
@@ -79,35 +85,30 @@ Register("collect", {
 })
 
 Register("goto", {
-	icon = "Interface/Minimap/Tracking/Target",
 	Format = function(task)
 		return ("Travel to %s"):format(Quote(task.place))
 	end,
 })
 
 Register("sethearth", {
-	icon = ("%s"):format(GOSSIP:format("Binder")),
 	Format = function(task)
 		return ("Set your hearthstone at %s"):format(Quote(task.place))
 	end,
 })
 
 Register("hearth", {
-	icon = ("%s"):format(GOSSIP:format("Binder")),
 	Format = function(task)
 		return ("Hearth to %s"):format(Quote(task.place))
 	end,
 })
 
 Register("taxi", {
-	icon = ("%s"):format(GOSSIP:format("Taxi")),
 	Format = function(task)
 		return ("Fly to %s"):format(Quote(task.place))
 	end,
 })
 
 Register("vendor", {
-	icon = ("%s"):format(GOSSIP:format("Vendor")),
 	Format = function(task)
 		return task.place and ("Sell and repair at %s"):format(Quote(task.place))
 			or "Sell junk and repair"
@@ -115,7 +116,6 @@ Register("vendor", {
 })
 
 Register("train", {
-	icon = ("%s"):format(GOSSIP:format("Trainer")),
 	Format = function(task)
 		return task.place and ("Train your new spells at %s"):format(Quote(task.place))
 			or "Train your new spells"
@@ -123,14 +123,12 @@ Register("train", {
 })
 
 Register("level", {
-	icon = "Interface/Minimap/Tracking/Class",
 	Format = function(task)
 		return ("Reach level %s before moving on"):format(Quote(task.level))
 	end,
 })
 
 Register("note", {
-	icon = "Interface/GossipFrame/GossipGossipIcon",
 	Format = function(task)
 		return tostring(task.text or "")
 	end,
@@ -141,9 +139,17 @@ function GuideTaskTypes.Get(task)
 	return types[task[1]]
 end
 
+--[[
+The icon for a step, or nil where the type has none. Callers must close the gap when
+it is nil rather than substituting a placeholder -- a column of question marks would
+be worse than no icon at all.
+]]
 function GuideTaskTypes.GetIcon(task)
 	local definition = GuideTaskTypes.Get(task)
-	return (definition and definition.icon) or FALLBACK_ICON
+	if definition then return definition.icon end
+	-- Unknown type: mark it, so a guide written against a newer addon looks visibly
+	-- odd rather than silently blank.
+	return FALLBACK_ICON
 end
 
 --[[
