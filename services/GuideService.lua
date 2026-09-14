@@ -239,6 +239,44 @@ function GuideService.StartGuideForLevel(level, faction, race)
 	return guide
 end
 
+--[[
+Finds steps in the current guide matching a search term.
+
+Matches the raw fields a step carries -- quest and NPC names, targets, items, places,
+notes -- rather than the rendered instruction. Rendering lives in the UI layer, and
+going through it would drag colour codes and phrasing into the match; the underlying
+names are what anyone actually searches for.
+]]
+local SEARCHABLE_FIELDS = { "quest", "npc", "object", "target", "item", "place", "text", "note" }
+
+local function StepMatches(task, query)
+	if not task then return false end
+	for _, field in ipairs(SEARCHABLE_FIELDS) do
+		local value = task[field]
+		if type(value) == "string" and value:lower():find(query, 1, true) then
+			return true
+		end
+	end
+	-- The task type itself, so "turnin" or "train" finds those steps.
+	return type(task[1]) == "string" and task[1]:lower():find(query, 1, true) ~= nil
+end
+
+function GuideService.FindSteps(query, limit)
+	local guide = GuideService.GetCurrentGuide()
+	if not guide or type(query) ~= "string" then return { } end
+	query = query:lower():gsub("^%s+", ""):gsub("%s+$", "")
+	if query == "" then return { } end
+
+	local results = { }
+	for index, task in ipairs(guide.steps) do
+		if StepMatches(task, query) then
+			table.insert(results, { index = index, task = task })
+			if limit and #results >= limit then break end
+		end
+	end
+	return results
+end
+
 -- Debug helpers (see todo.md) -------------------------------------------------
 
 _G.AGC_ListGuides = function()

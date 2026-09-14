@@ -175,6 +175,21 @@ function GuideTaskTypes.GetText(task)
 	return text
 end
 
+--[[
+The instruction with colour codes and the trailing note stripped: one clean line, for
+places that list steps rather than present them -- search results, tooltips, debug
+output. The coloured multi-line form belongs on the step card alone.
+]]
+function GuideTaskTypes.GetPlainText(task)
+	local text = GuideTaskTypes.GetText(task) or ""
+	text = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+	-- Drop the note, which lives on its own line. string.char(10) rather than an
+	-- escape: escape sequences do not survive every editing path intact.
+	local newline = string.char(10)
+	text = text:gsub(newline .. ".*", "")
+	return text
+end
+
 function GuideTaskTypes.GetTypeNames()
 	local names = { }
 	for name in pairs(types) do

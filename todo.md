@@ -28,6 +28,7 @@
 /run AGC_GuideProgress()
 /run AGC_GuideScan()
 /run AGC_GuideObjectives()
+/dump GuideService.FindSteps("kobold")
 /run AGC_QuestIntent("A Threat Within")
 /run AGC_QuestDebug(true)   -- trace what the quest automation sees
 /run AGC_ResetGuidePosition()

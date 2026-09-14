@@ -31,6 +31,10 @@ local SECTION_GAP = 10
 local frame
 local rows = { }
 local rowCount = 0
+local searchText = ""
+local LayoutRows
+
+local SEARCH_RESULT_LIMIT = 8
 
 local function ApplyPanelBackdrop(panel)
 	panel.backdropInfo = BACKDROP_GLUE_TOOLTIP_16_16 or {
@@ -240,9 +244,50 @@ local function Create()
 	frame.title:SetPoint("LEFT", frame.icon, "RIGHT", 8, 0)
 	frame.title:SetText("Levelling Guides")
 
+	--[[
+	Step search.
+
+	Lives here rather than in the header: the guide window is ~300px wide and already
+	carries a title, three controls and a progress bar, whereas this panel has room and
+	a natural neighbour in "choose guide". SearchBoxTemplate is the same widget the
+	main window's NavBar uses, so it looks like the rest of the addon.
+	]]
+	frame.search = CreateFrame("EditBox", frame:GetName() .. "Search", frame, "SearchBoxTemplate")
+	frame.search:SetHeight(20)
+	frame.search:SetPoint("TOPLEFT", PAD + 4, -34)
+	frame.search:SetPoint("TOPRIGHT", -PAD, -34)
+	frame.search:SetAutoFocus(false)
+	if frame.search.Instructions then
+		frame.search.Instructions:SetText("Find a step")
+	end
+	frame.search:SetScript("OnTextChanged", function(self)
+		if self.Instructions then
+			self.Instructions:SetShown(self:GetText() == "")
+		end
+		searchText = self:GetText() or ""
+		GuideMenu.Refresh()
+	end)
+	frame.search:SetScript("OnEscapePressed", function(self)
+		self:SetText("")
+		self:ClearFocus()
+	end)
+
 	-- Escape closes it, the way any panel should.
 	table.insert(UISpecialFrames, frame:GetName())
 	frame:Hide()
+end
+
+-- Stacks whatever rows were added and sizes the panel to them.
+function LayoutRows()
+	local offsetY = 0
+	for index = 1, rowCount do
+		local row = rows[index]
+		row:ClearAllPoints()
+		row:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -offsetY)
+		row:SetPoint("RIGHT", frame, "RIGHT", 0, 0)
+		offsetY = offsetY + row:GetHeight()
+	end
+	frame:SetHeight(offsetY + 8)
 end
 
 function GuideMenu.Refresh()
@@ -263,7 +308,35 @@ function GuideMenu.Refresh()
 	local recommended = GuideService.GetGuideForLevel()
 	local available = GuideService.GetGuidesForCharacter()
 
-	AddSpacer(30)
+	-- Room for the title row and the search box above the first section.
+	AddSpacer(60)
+
+	-- While searching, the panel becomes a results list: showing guide selection and
+	-- toggles underneath would bury the thing being looked for.
+	if searchText ~= "" then
+		local results = GuideService.FindSteps(searchText, SEARCH_RESULT_LIMIT)
+		AddHeading(("Steps matching \"%s\""):format(searchText))
+		if #results == 0 then
+			local row = AddAction("No matching steps", function() end)
+			row:EnableMouse(false)
+		else
+			local currentIndex = GuideService.GetStepIndex()
+			for _, result in ipairs(results) do
+				local index = result.index
+				local label = ("%d. %s"):format(index, GuideTaskTypes.GetPlainText(result.task))
+				local row = AddAction(label, function()
+					GuideService.SetStepIndex(index)
+					GuideMenu.Close()
+				end)
+				if index == currentIndex then
+					row.label:SetTextColor(1, 0.82, 0)
+				end
+			end
+		end
+		AddSpacer(8)
+		LayoutRows()
+		return
+	end
 
 	if recommended then
 		AddHeading("Recommended for you")
@@ -311,16 +384,7 @@ function GuideMenu.Refresh()
 	end)
 	AddSpacer(6)
 
-	-- Stack the rows and size the panel to whatever they came to.
-	local offsetY = 0
-	for index = 1, rowCount do
-		local row = rows[index]
-		row:ClearAllPoints()
-		row:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -offsetY)
-		row:SetPoint("RIGHT", frame, "RIGHT", 0, 0)
-		offsetY = offsetY + row:GetHeight()
-	end
-	frame:SetHeight(offsetY + 8)
+	LayoutRows()
 end
 
 --[[
@@ -360,7 +424,13 @@ function GuideMenu.Open()
 end
 
 function GuideMenu.Close()
-	if frame then frame:Hide() end
+	if not frame then return end
+	searchText = ""
+	if frame.search then
+		frame.search:SetText("")
+		frame.search:ClearFocus()
+	end
+	frame:Hide()
 end
 
 function GuideMenu.Toggle()
