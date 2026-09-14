@@ -83,12 +83,10 @@ local function CreateScroller(parent, width, height, childWidth, scrollBarX)
 	scroll.child:SetSize(childWidth, 10)
 	scroll.child:SetPoint("TOPLEFT")
 	scroll:SetScrollChild(scroll.child)
+	-- ScrollFrame_OnLoad also wires the mouse wheel to the bar it creates. Do not
+	-- add ScrollFrameTemplate_OnMouseWheel on top: that is the legacy Slider handler,
+	-- and MinimalScrollBar is not a Slider -- it has no GetValue, so the wheel throws.
 	if ScrollFrame_OnLoad then pcall(ScrollFrame_OnLoad, scroll) end
-	local onWheel = ScrollFrameTemplate_OnMouseWheel or ScrollFrame_OnMouseWheel
-	if onWheel then
-		scroll:EnableMouseWheel(true)
-		scroll:SetScript("OnMouseWheel", onWheel)
-	end
 	return scroll
 end
 
