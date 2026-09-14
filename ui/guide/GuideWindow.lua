@@ -40,8 +40,8 @@ and auto-hide inside instances unless the step itself is an instance step.
 GuideWindow = { }
 
 local WIDTH = 300
-local HEADER_HEIGHT = 40
-local RING_SIZE, PORTRAIT_SIZE = 50, 38
+local HEADER_HEIGHT = 34
+local RING_SIZE, PORTRAIT_SIZE = 46, 34
 -- The cog badge: a small framed icon echoing the portrait it is tucked against.
 local BADGE_RING_SIZE, BADGE_ICON_SIZE = 20, 11
 --[[
@@ -55,14 +55,13 @@ title into it. Measured from the header panel's left edge:
                  now reaches further right than the ring itself does
 ]]
 -- Progress bar: flat, thin and quiet. See CreateHeader.
-local PROGRESS_HEIGHT = 5
+local PROGRESS_HEIGHT = 3
 local PROGRESS_COLOR = { 0.10, 0.45, 0.75 }
 local RING_OFFSET = 2
--- The step panel reaches further left than the header, stopping a few pixels short of
--- the container edge, so the portrait overhangs its top-left corner. Derived rather
--- than fixed: with a hard number, resizing the ring moves the header but not the panel
--- and the two drift out of alignment.
-local STEP_PANEL_EDGE = 4
+-- The step card sits INSIDE the header's width. Wider than the header made the two
+-- fight each other; narrower gives a clear hierarchy -- portrait over header over
+-- card -- and lets the portrait overhang all of it.
+local STEP_PANEL_INSET = 8
 local HEADER_LEFT = (RING_SIZE / 2) + RING_OFFSET
 local RING_REACH = (RING_SIZE / 2) - RING_OFFSET
 local BADGE_REACH = (PORTRAIT_SIZE / 2) - RING_OFFSET + (BADGE_RING_SIZE / 2) - 6
@@ -301,7 +300,7 @@ local function CreateHeader(parent)
 
 	bar.title = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	bar.title:SetTextScale(0.85)
-	bar.title:SetPoint("TOPLEFT", CONTENT_INSET, -8)
+	bar.title:SetPoint("TOPLEFT", CONTENT_INSET, -5)
 	bar.title:SetPoint("RIGHT", bar.back, "LEFT", -6, 0)
 	bar.title:SetJustifyH("LEFT")
 	bar.title:SetWordWrap(false)
@@ -315,10 +314,10 @@ local function CreateHeader(parent)
 	-- day. The fill is sized in Refresh, since its width is the progress.
 	bar.progressTrack = bar:CreateTexture(nil, "ARTWORK")
 	bar.progressTrack:SetColorTexture(PROGRESS_COLOR[1], PROGRESS_COLOR[2], PROGRESS_COLOR[3])
-	bar.progressTrack:SetAlpha(0.35)
+	bar.progressTrack:SetAlpha(0.25)
 	bar.progressTrack:SetHeight(PROGRESS_HEIGHT)
-	bar.progressTrack:SetPoint("BOTTOMLEFT", CONTENT_INSET, 9)
-	bar.progressTrack:SetPoint("BOTTOMRIGHT", -10, 9)
+	bar.progressTrack:SetPoint("BOTTOMLEFT", CONTENT_INSET, 7)
+	bar.progressTrack:SetPoint("BOTTOMRIGHT", -10, 7)
 
 	bar.progressFill = bar:CreateTexture(nil, "OVERLAY")
 	bar.progressFill:SetColorTexture(PROGRESS_COLOR[1], PROGRESS_COLOR[2], PROGRESS_COLOR[3])
@@ -377,15 +376,17 @@ local function CreateWindow()
 
 	-- The current step, and only the current step.
 	stepPanel = CreatePanel(frame)
-	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -(HEADER_LEFT - STEP_PANEL_EDGE), -PANEL_GAP)
-	stepPanel:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -PANEL_GAP)
+	stepPanel:SetPoint("TOPLEFT", header, "BOTTOMLEFT", STEP_PANEL_INSET, -PANEL_GAP)
+	stepPanel:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", -STEP_PANEL_INSET, -PANEL_GAP)
 	stepPanel:SetHeight(52)
 
 	stepPanel.icon = stepPanel:CreateTexture(nil, "ARTWORK")
 	stepPanel.icon:SetSize(18, 18)
 	stepPanel.icon:SetPoint("TOPLEFT", 14, -14)
 
-	stepPanel.text = stepPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	-- Highlight, not Normal: Normal is the gold face, and a whole paragraph of gold is
+	-- tiring. White body text with the names picked out in gold reads far faster.
+	stepPanel.text = stepPanel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	-- TOPLEFT is re-anchored in Refresh depending on whether the step has an icon.
 	stepPanel.text:SetPoint("RIGHT", stepPanel, "RIGHT", -14, 0)
 	stepPanel.text:SetJustifyH("LEFT")
@@ -497,9 +498,9 @@ local function ShowObjectives(guide, index)
 		line:SetText(objective.text)
 		-- Finished objectives dim out of the way; outstanding ones stay legible.
 		if objective.done then
-			line:SetTextColor(0.45, 0.62, 0.45)
+			line:SetTextColor(0.45, 0.68, 0.45)
 		else
-			line:SetTextColor(0.95, 0.82, 0.35)
+			line:SetTextColor(0.80, 0.80, 0.80)
 		end
 		line:Show()
 		height = height + line:GetStringHeight() + 2

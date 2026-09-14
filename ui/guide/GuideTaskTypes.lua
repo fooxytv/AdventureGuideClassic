@@ -33,6 +33,9 @@ local types = { }
 local GOSSIP = "Interface/GossipFrame/%sGossipIcon"
 local FALLBACK_ICON = "Interface/Icons/INV_Misc_QuestionMark"
 
+-- Names are picked out in gold against white body text. The reverse -- gold
+-- throughout -- is what the step card used to do, and a paragraph of it is tiring to
+-- read at this size.
 local function Quote(text)
 	return ("|cffffd100%s|r"):format(tostring(text or "?"))
 end
