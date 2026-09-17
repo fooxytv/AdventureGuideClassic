@@ -189,6 +189,73 @@ function QuestLogService.GetObjectives(questTitle)
 	return objectives
 end
 
+-- Opening the game's own quest log ---------------------------------------------
+
+--[[
+Can this client be asked to open its quest log at a particular quest?
+
+Era and BCC both carry the old QuestLogFrame, where a quest is selected by its index in
+the log. Later clients replaced it with the map-based one, keyed by quest id instead.
+The guide only offers the click where one of them answers.
+]]
+function QuestLogService.CanOpenQuestLog()
+	return type(QuestLog_OpenToQuest) == "function"
+		or type(QuestMapFrame_OpenToQuestDetails) == "function"
+		or type(SelectQuestLogEntry) == "function"
+end
+
+--[[
+Opens the game's quest log at `questTitle`, and says whether it managed to.
+
+Only works for a quest actually in the log -- there is no window to open for one the
+character has not taken. The accessors are tried in the order of how precisely they
+land: straight to the quest, then select-and-show, then simply showing the frame.
+]]
+function QuestLogService.OpenQuestLog(questTitle)
+	if not questTitle then return false end
+	local inLog, _, indexByTitle = QuestLogService.GetQuestLogState()
+	local index = indexByTitle[questTitle]
+	if not index then return false end
+	local questID = inLog[questTitle]
+
+	if type(QuestLog_OpenToQuest) == "function" then
+		local ok = pcall(QuestLog_OpenToQuest, index)
+		if ok then return true end
+	end
+
+	if type(questID) == "number" and type(QuestMapFrame_OpenToQuestDetails) == "function" then
+		local ok = pcall(QuestMapFrame_OpenToQuestDetails, questID)
+		if ok then return true end
+	end
+
+	-- Select first, then show, so the log opens on the right quest rather than on
+	-- whatever was last looked at.
+	if type(SelectQuestLogEntry) == "function" then pcall(SelectQuestLogEntry, index) end
+	if type(C_QuestLog) == "table" and type(C_QuestLog.SetSelectedQuest) == "function"
+		and type(questID) == "number" then
+		pcall(C_QuestLog.SetSelectedQuest, questID)
+	end
+	if type(QuestLog_Update) == "function" then pcall(QuestLog_Update) end
+
+	local frame = _G.QuestLogFrame
+	if frame then
+		if not frame:IsShown() and type(ShowUIPanel) == "function" then
+			local ok = pcall(ShowUIPanel, frame)
+			if ok then return true end
+		end
+		if not frame:IsShown() then frame:Show() end
+		return true
+	end
+
+	-- ToggleQuestLog is a last resort precisely because it toggles: calling it with the
+	-- log already open would close the thing the player just asked to see.
+	if type(ToggleQuestLog) == "function" then
+		local ok = pcall(ToggleQuestLog)
+		if ok then return true end
+	end
+	return false
+end
+
 -- Completed-quest memory -------------------------------------------------------
 
 --[[

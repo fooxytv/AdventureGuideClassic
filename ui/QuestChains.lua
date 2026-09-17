@@ -161,6 +161,7 @@ local MARGIN_BOTTOM = 10
 
 local railScroll, panelScroll
 local linksSupported
+local canOpenQuestLog
 local railRows, panelRows = { }, { }
 local panelUsed = 0
 local chains, standalone, currentZone, selectedKey
@@ -383,16 +384,46 @@ One quest, briefed: the marker and name on the first line with the level to the 
 then what it asks of you, then what it leads to. Every part below the name is optional,
 so the row measures itself once the text is set.
 ]]
+--[[
+One quest in the briefing.
+
+A Button rather than a Frame because a quest you are actually on can be clicked to open
+it in the game's own quest log. Only those rows respond: there is no window to open for
+a quest the character has not taken, and a row that lit up but did nothing would be a
+worse lie than one that never lit up at all. `row.openable` carries that per draw.
+]]
 local function CreateQuestRow(parent)
-	local row = CreateFrame("Frame", nil, parent)
+	local row = CreateFrame("Button", nil, parent)
+	row:EnableMouse(true)
+
+	-- Only drawn for a quest in the log, so the highlight is a promise the row keeps.
+	row.hover = row:CreateTexture(nil, "BACKGROUND")
+	row.hover:SetAllPoints()
+	row.hover:SetColorTexture(1, 0.82, 0, 0.07)
+	row.hover:Hide()
+
+	row:SetScript("OnEnter", function(self)
+		self.hover:SetShown(self.openable == true)
+	end)
+	row:SetScript("OnLeave", function(self)
+		self.hover:Hide()
+		-- Leaving the row does not always raise OnHyperlinkLeave, notably when the
+		-- pointer jumps straight out of the panel.
+		if components.NpcPreview then components.NpcPreview.Hide() end
+	end)
+	row:SetScript("OnClick", function(self)
+		if not self.openable or not self.questTitle then return end
+		if QuestLogService.OpenQuestLog(self.questTitle) then
+			PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN or SOUNDKIT.IG_SPELLBOOK_OPEN)
+		end
+	end)
 
 	--[[
 	Hyperlinks inside the wrapped sentence. The frame has to be told to raise the
-	events and has to take mouse input for them to fire at all; without both, the
-	names render coloured but nothing happens on hover.
+	events for them to fire at all; without that the names render coloured but nothing
+	happens on hover.
 	]]
 	if linksSupported then
-		row:EnableMouse(true)
 		row:SetHyperlinksEnabled(true)
 		row:SetScript("OnHyperlinkEnter", function(_, link)
 			local npcID = tonumber(link:match("^" .. LINK_PREFIX .. ":(%d+)$"))
@@ -400,11 +431,6 @@ local function CreateQuestRow(parent)
 			if npc then components.NpcPreview.Show(npc) end
 		end)
 		row:SetScript("OnHyperlinkLeave", function()
-			components.NpcPreview.Hide()
-		end)
-		-- Leaving the row entirely does not always raise OnHyperlinkLeave, notably when
-		-- the pointer jumps straight out of the panel.
-		row:SetScript("OnLeave", function()
 			components.NpcPreview.Hide()
 		end)
 	end
@@ -507,6 +533,7 @@ function component.Init(components_)
 	linksSupported = type(probe.SetHyperlinksEnabled) == "function"
 		and components.NpcPreview ~= nil
 		and components.NpcPreview.IsSupported()
+	canOpenQuestLog = QuestLogService.CanOpenQuestLog()
 
 	local page = CreateFrame("Frame", EncounterJournal:GetName() .. "QuestChains", EncounterJournal)
 	component.frame = page
@@ -736,6 +763,11 @@ local function RefreshPanel(inLog)
 		local blocked = status == "blocked"
 		local row = AcquirePanelRow("quest")
 
+		-- A quest in the log can be opened in the game's own window; nothing else can.
+		row.questTitle = quest.name
+		row.openable = (status == "active") and canOpenQuestLog
+		row.hover:Hide()
+
 		local icon = STATUS_ICON[status]
 		row.icon:SetShown(icon ~= nil)
 		if icon then
@@ -761,6 +793,10 @@ local function RefreshPanel(inLog)
 
 		local leads = quest.unlocks and #quest.unlocks > 0
 			and ("Leads to " .. table.concat(quest.unlocks, ", ")) or nil
+		if row.openable then
+			leads = leads and (leads .. "   |   Click to open in your quest log")
+				or "Click to open in your quest log"
+		end
 		row.leads:SetText(leads or "")
 		SetColor(row.leads, FAINT)
 		row.leads:SetShown(leads ~= nil)
