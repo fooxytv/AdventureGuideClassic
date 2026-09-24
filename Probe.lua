@@ -136,6 +136,18 @@ local function Probe()
 	Header("Encounter Journal API")
 	ProbeJournal()
 
+	Header("Events")
+	local events = {
+		"ENCOUNTER_END", "BOSS_KILL", "COMBAT_LOG_EVENT_UNFILTERED",
+		"UPDATE_MOUSEOVER_UNIT", "CHAT_MSG_SYSTEM", "PLAYER_LEVEL_UP",
+		"LOOT_OPENED", "PLAYER_EQUIPMENT_CHANGED",
+	}
+	local restricted = { }
+	for _, event in ipairs(events) do
+		if not Compat.IsEventAvailable(event) then table.insert(restricted, event) end
+	end
+	Line("restricted on this client", #restricted > 0 and table.concat(restricted, ", ") or "none")
+
 	Header("Content")
 	Line("expansion filter", InstanceService.GetExpansionFilter())
 	Line("registered instances", #InstanceService.GetAllInstances())

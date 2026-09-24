@@ -94,6 +94,43 @@ end
 ]]
 Compat.isVanillaLoot = Compat.isEraClient or Compat.isForever
 
+--[[
+	Events this client will not let an addon register.
+
+	Forever's own API documentation marks COMBAT_LOG_EVENT_UNFILTERED with
+	HasRestrictions = true, and registering it raises ADDON_ACTION_FORBIDDEN, which
+	both spams the error log and stops the rest of that frame's registrations. It is
+	the only event the addon uses that this applies to -- every other one was checked
+	against the same documentation and is clear.
+]]
+local RESTRICTED_EVENTS = { }
+if Compat.isForever then
+	RESTRICTED_EVENTS.COMBAT_LOG_EVENT_UNFILTERED = true
+end
+
+function Compat.IsEventAvailable(event)
+	return not RESTRICTED_EVENTS[event]
+end
+
+--[[
+	Registers events one at a time, skipping any this client restricts and guarding
+	the rest, so one refused event cannot take its neighbours down with it. Returns
+	the list that was skipped, or nil.
+]]
+function Compat.RegisterEvents(frame, ...)
+	local skipped
+	for index = 1, select("#", ...) do
+		local event = select(index, ...)
+		if Compat.IsEventAvailable(event) then
+			pcall(frame.RegisterEvent, frame, event)
+		else
+			skipped = skipped or { }
+			table.insert(skipped, event)
+		end
+	end
+	return skipped
+end
+
 local SEASON_OF_DISCOVERY = 2
 
 function Compat.IsSoD()
