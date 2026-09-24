@@ -23,6 +23,7 @@
   | "sod"        | Season of Discovery only                       |
   | "classic"    | Classic client (both Era and SoD, but not TBC) |
   | "tbc"        | TBC client only                                |
+  | "forever"    | WoW Forever only (1.60.x)                      |
   | "exclusive"  | Legacy - same as "sod"                         |
   | "restricted" | Legacy - NOT on SoD                            |
 

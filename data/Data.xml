@@ -42,6 +42,17 @@
     <Script file="data/Dungeons/tbc/The_Steamvault.lua" />
     <Script file="data/Dungeons/tbc/The_Underbog.lua" />
 
+    <!-- Forever Dungeons -->
+    <Script file="data/Dungeons/forever/Alcaz_Prison.lua" />
+    <Script file="data/Dungeons/forever/Blackmaw_Hold.lua" />
+    <Script file="data/Dungeons/forever/City_of_Dalaran.lua" />
+    <Script file="data/Dungeons/forever/Excavation_Site_Wetlands.lua" />
+    <Script file="data/Dungeons/forever/KrolDok_Stronghold.lua" />
+    <Script file="data/Dungeons/forever/Ruins_of_Lordaeron.lua" />
+    <Script file="data/Dungeons/forever/Shapers_Terrace.lua" />
+    <Script file="data/Dungeons/forever/The_Drowned_City.lua" />
+    <Script file="data/Dungeons/forever/The_Hall_of_Thanes.lua" />
+
     <!-- Classic Era Maps -->
     <Script file="data/Maps/era/Blackfathom_Deeps.lua" />
     <Script file="data/Maps/era/Blackrock_Depths.lua" />
@@ -91,6 +102,10 @@
     <Script file="data/Raids/tbc/Serpentshrine_Cavern.lua" />
     <Script file="data/Raids/tbc/Sunwell_Plateau.lua" />
     <Script file="data/Raids/tbc/The_Eye.lua" />
+
+    <!-- Forever Raids -->
+    <Script file="data/Raids/forever/Hyjal_Summit.lua" />
+    <Script file="data/Raids/forever/The_Barrow_Deeps.lua" />
 
     <!-- Creature display ids per encounter, for the model viewer -->
     <Script file="data/CreatureModels.lua" />

@@ -63,6 +63,15 @@ end
 local function ShouldIncludeInstance(instance)
 	local filterType = instance.seasonFilter or "all"
 
+	--[[
+		Forever's own instances. Checked ahead of everything else so the tag can never
+		leak onto a client that does not have the content -- on Era, SoD and TBC it is
+		an unrecognised tag, and unrecognised tags fall through to "show".
+	]]
+	if filterType == "forever" then
+		return Compat.isForever
+	end
+
 	if Compat.isForever then
 		return ShouldIncludeOnForever(instance, filterType)
 	end

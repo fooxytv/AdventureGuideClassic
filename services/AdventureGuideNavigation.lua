@@ -36,6 +36,7 @@ function AdventureGuideNavigationService.GetEncounterLoot()
 	local isClassicClient = Compat.isVanillaLoot
 	local isSoD = Compat.IsSoD()
 	local isEra = isClassicClient and not isSoD
+	local isForever = Compat.isForever
 	local difficulty = InstanceService.GetDifficulty and InstanceService.GetDifficulty() or "normal"
 	local function ShouldIncludeLootItem(item)
 		if not item.id then
@@ -78,6 +79,13 @@ function AdventureGuideNavigationService.GetEncounterLoot()
 			if isSoD then
 				if AdventureGuideClassic_DebugEvents then
 					print("  -> FILTERED: restricted item on SoD")
+				end
+				return false
+			end
+		elseif filterType == "forever" then
+			if not isForever then
+				if AdventureGuideClassic_DebugEvents then
+					print("  -> FILTERED: forever-only item on non-Forever client")
 				end
 				return false
 			end
