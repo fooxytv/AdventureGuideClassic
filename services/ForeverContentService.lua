@@ -59,8 +59,39 @@ local journalInstanceIDs        -- journalInstanceID -> true
 local trusted
 local resolved
 
+--[[
+	Wakes the journal up before reading it.
+
+	Blizzard's own UI calls C_EncounterJournal.OnOpen() when the frame is shown, and
+	InitalizeSelectedTier() (Blizzard's spelling) to pick a tier. On Forever that UI
+	never loads, so nothing ever makes those calls and the journal stays cold --
+	EJ_GetNumTiers() reads 0 and indexing instances returns nothing. Making the calls
+	ourselves is the only way to get an answer out of it.
+
+	Every call is guarded: if the client does not have these, or objects to being
+	opened by an addon, enumeration simply comes back empty and the caller falls back
+	exactly as it did before.
+]]
+local function PrimeJournal()
+	if not C_EncounterJournal then return end
+	if type(C_EncounterJournal.InitalizeSelectedTier) == "function" then
+		pcall(C_EncounterJournal.InitalizeSelectedTier)
+	end
+	if type(C_EncounterJournal.OnOpen) == "function" then
+		pcall(C_EncounterJournal.OnOpen)
+	end
+end
+
+local function ReleaseJournal()
+	if C_EncounterJournal and type(C_EncounterJournal.OnClose) == "function" then
+		pcall(C_EncounterJournal.OnClose)
+	end
+end
+
 local function EnumerateJournal()
 	if type(EJ_GetInstanceByIndex) ~= "function" then return nil end
+
+	PrimeJournal()
 
 	local ids = { }
 	local count = 0
@@ -74,6 +105,8 @@ local function EnumerateJournal()
 			end
 		end
 	end
+
+	ReleaseJournal()
 
 	if count == 0 then return nil end
 	return ids

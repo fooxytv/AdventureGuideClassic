@@ -73,6 +73,7 @@
     <Script file="data/Raids/era/Gnomeregan.lua" />
     <Script file="data/Raids/era/Molten_Core.lua" />
     <Script file="data/Raids/era/Naxxramas.lua" />
+    <Script file="data/Raids/era/Onyxias_Lair.lua" />
     <Script file="data/Raids/era/Ruins_of_Ahn_Qiraj.lua" />
     <Script file="data/Raids/era/Scarlet_Enclave.lua" />
     <Script file="data/Raids/era/Temple_of_Ahn_Qiraj.lua" />
