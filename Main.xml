@@ -29,6 +29,6 @@ Programming by: FooxyTV
     <Script file="SlashCommands.lua" />
     <Script file="Bindings.lua" />
     <Script file="Main.lua" />
-    <Script file="TestExpansionDetection.lua" />
+    <Script file="Probe.lua" />
 
 </Ui>
