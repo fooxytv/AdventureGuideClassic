@@ -60,38 +60,22 @@ local trusted
 local resolved
 
 --[[
-	Wakes the journal up before reading it.
+	Reading the journal is a plain enumeration, with no attempt to wake it first.
 
-	Blizzard's own UI calls C_EncounterJournal.OnOpen() when the frame is shown, and
-	InitalizeSelectedTier() (Blizzard's spelling) to pick a tier. On Forever that UI
-	never loads, so nothing ever makes those calls and the journal stays cold --
-	EJ_GetNumTiers() reads 0 and indexing instances returns nothing. Making the calls
-	ourselves is the only way to get an answer out of it.
+	Blizzard's UI calls C_EncounterJournal.OnOpen() and InitalizeSelectedTier() when
+	it opens, and calling those ourselves looked like the way to get data out of a
+	journal that nothing else initialises on this client. It is not. They are
+	protected, so the calls raise ADDON_ACTION_FORBIDDEN and taint the addon, and
+	pcall does not prevent either -- the call is refused rather than erroring, so it
+	returns "ok" while the event fires anyway. Tested on Forever: the journal reads
+	empty before and after, so the taint bought nothing.
 
-	Every call is guarded: if the client does not have these, or objects to being
-	opened by an addon, enumeration simply comes back empty and the caller falls back
-	exactly as it did before.
+	EJ_GetInstanceByIndex itself is unprotected and answers honestly, so the
+	enumeration stays. It costs one pass per session and will start working on its own
+	if this client ever ships journal data.
 ]]
-local function PrimeJournal()
-	if not C_EncounterJournal then return end
-	if type(C_EncounterJournal.InitalizeSelectedTier) == "function" then
-		pcall(C_EncounterJournal.InitalizeSelectedTier)
-	end
-	if type(C_EncounterJournal.OnOpen) == "function" then
-		pcall(C_EncounterJournal.OnOpen)
-	end
-end
-
-local function ReleaseJournal()
-	if C_EncounterJournal and type(C_EncounterJournal.OnClose) == "function" then
-		pcall(C_EncounterJournal.OnClose)
-	end
-end
-
 local function EnumerateJournal()
 	if type(EJ_GetInstanceByIndex) ~= "function" then return nil end
-
-	PrimeJournal()
 
 	local ids = { }
 	local count = 0
@@ -105,8 +89,6 @@ local function EnumerateJournal()
 			end
 		end
 	end
-
-	ReleaseJournal()
 
 	if count == 0 then return nil end
 	return ids

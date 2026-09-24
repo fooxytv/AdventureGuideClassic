@@ -95,6 +95,35 @@ end
 Compat.isVanillaLoot = Compat.isEraClient or Compat.isForever
 
 --[[
+	A spell's name and icon.
+
+	The GetSpellInfo global is gone on the mainline-family clients, Forever included,
+	where calling it is a nil-value error. C_Spell.GetSpellInfo replaces it and returns
+	a table rather than a list of values, so this is a real shim rather than an alias
+	like the GetItemInfo ones dotted around the addon -- C_Item kept the old signature,
+	C_Spell did not.
+
+	Returns nil for an unknown spell on every client, so callers have one case to
+	handle instead of two.
+]]
+function Compat.GetSpellInfo(spellID)
+	if not spellID then return nil end
+
+	if C_Spell and C_Spell.GetSpellInfo then
+		local info = C_Spell.GetSpellInfo(spellID)
+		if not info then return nil end
+		return info.name, info.iconID
+	end
+
+	if _G.GetSpellInfo then
+		local name, _, icon = _G.GetSpellInfo(spellID)
+		return name, icon
+	end
+
+	return nil
+end
+
+--[[
 	The tab button template differs by client.
 
 	Era and TBC have CharacterFrameTabButtonTemplate. On Forever the file defining it

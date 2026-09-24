@@ -59,8 +59,8 @@ local function ReportJournal(label)
 		numTiers = ok and tostring(tiers) or ("error: " .. tostring(tiers))
 	end
 	local dungeons, raids, sample = CountInstances()
-	Line(label .. " EJ_GetNumTiers()", numTiers)
-	Line(label .. " dungeons / raids", dungeons .. " / " .. raids)
+	Line(label .. "EJ_GetNumTiers()", numTiers)
+	Line(label .. "dungeons / raids", dungeons .. " / " .. raids)
 	if #sample > 0 then
 		print("    " .. table.concat(sample, ", "))
 	end
@@ -74,22 +74,7 @@ local function ProbeJournal()
 		return
 	end
 
-	ReportJournal("cold:")
-
-	-- The calls Blizzard's own UI makes on open, which nothing makes on this client.
-	if C_EncounterJournal then
-		for _, name in ipairs({ "InitalizeSelectedTier", "OnOpen" }) do
-			local fn = C_EncounterJournal[name]
-			if type(fn) ~= "function" then
-				Line(name, "absent")
-			else
-				local ok, err = pcall(fn)
-				Line(name .. "()", ok and "ok" or ("error: " .. tostring(err)))
-			end
-		end
-	end
-
-	local found = ReportJournal("primed:")
+	ReportJournal("")
 
 	if C_EncounterJournal and C_EncounterJournal.InstanceHasLoot then
 		local firstID = EJ_GetInstanceByIndex(1, false)
@@ -103,11 +88,11 @@ local function ProbeJournal()
 	-- Journal data can arrive from the server, so look again shortly.
 	C_Timer.After(3, function()
 		Header("Encounter Journal API, 3s later")
-		local later = ReportJournal("delayed:")
-		if later > 0 and found == 0 then
-			print("  |cff00ff00The journal populates after priming; content gating can use it.|r")
-		elseif later == 0 then
-			print("  |cffff5555The journal stays empty on this client; the fallback list is carrying it.|r")
+		local later = ReportJournal("delayed: ")
+		if later > 0 then
+			print("  |cff00ff00The journal has data; content gating can use it.|r")
+		else
+			print("  |cffff5555The journal is empty on this client; the fallback list is carrying it.|r")
 		end
 	end)
 end
