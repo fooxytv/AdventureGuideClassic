@@ -29,14 +29,27 @@ local function AddTab(name, label, onclickFunc)
     local tabIdx = #tabs + 1
     local tab = CreateFrame("Button", string.format(tabNameFormat, addonName, name),
             EncounterJournal, Compat.TabButtonTemplate)
+    -- PanelTemplates_Tab_OnClick selects by the button's id, so it has to have one.
+    tab:SetID(tabIdx)
     tab:SetText(label)
     if (tabIdx == 1) then
         tab:SetPoint("TOPLEFT", EncounterJournal, "BOTTOMLEFT", 16, 2)
     else
         tab:SetPoint("LEFT", tabs[tabIdx - 1], "RIGHT", -16, 0)
     end
-    tab:SetScript("OnEvent", nil)
-    tab:SetScript("OnShow", nil)
+    --[[
+        The Era and TBC template's OnShow and OnEvent belong to CharacterFrame, not to
+        a tab borrowed from it, so they are cleared there as they always were.
+
+        The mainline template's are its layout. PanelTabButtonMixin resizes the tab on
+        show and on DISPLAY_SIZE_CHANGED, because a font string does not report its
+        width reliably before it is shown -- clearing them left every tab at the 36pt
+        minimum, narrower than its own artwork, which is what made them overlap.
+    ]]
+    if not Compat.isForever then
+        tab:SetScript("OnEvent", nil)
+        tab:SetScript("OnShow", nil)
+    end
     tab:SetScript("OnClick", function()
         tab.onclickFunc()
         PanelTemplates_Tab_OnClick(tab, EncounterJournal)
@@ -60,6 +73,15 @@ end
 function component.Init(components_)
     components = components_
     EncounterJournal.Tabs = tabs
+
+    --[[
+        PanelTabButtonMixin reads its sizing off the frame the tabs belong to, so the
+        numbers passed to PanelTemplates_TabResize below have to live here too or a
+        resize on show would undo them. Unread on Era and TBC.
+    ]]
+    EncounterJournal.tabPadding = 0
+    EncounterJournal.minTabWidth = 36
+    EncounterJournal.maxTabWidth = 300
     -- EncounterJournal.suggestTab = AddTab("Suggest", "Suggested Content", function()
     --    --todo: Create suggested content tab
     -- end)
