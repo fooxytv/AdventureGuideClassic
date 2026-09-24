@@ -184,10 +184,17 @@ function ForeverContentService.GetUnknownInstanceIDs()
 	return unknown
 end
 
--- The journal is not always ready at load; rebuild once the world is in.
-local refreshFrame = CreateFrame("Frame")
-refreshFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-refreshFrame:SetScript("OnEvent", function(self)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	ForeverContentService.Refresh()
-end)
+--[[
+	The journal is not always ready at load, so rebuild once the world is in.
+
+	Only on Forever. Nothing else consults this service, and a frame registered on a
+	client that will never call it is just something to go wrong later.
+]]
+if Compat.isForever then
+	local refreshFrame = CreateFrame("Frame")
+	refreshFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	refreshFrame:SetScript("OnEvent", function(self)
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		ForeverContentService.Refresh()
+	end)
+end
