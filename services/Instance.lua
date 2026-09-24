@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -17,11 +17,6 @@ end
 
 function InstanceService.AddRaid(raid)
 	table.insert(raids, raid)
-end
-
-local function IsBurningCrusade()
-	local version, build, date, tocversion = GetBuildInfo()
-	return tocversion >= 20000
 end
 
 function InstanceService.GetExpansionFilter()
@@ -40,10 +35,40 @@ function InstanceService.SetDifficulty(difficulty)
 	SavedVariables.Difficulty = difficulty
 end
 
+--[[
+	Every registered instance, before any filtering. ForeverContentService needs the
+	raw set to decide whether the client's journal agrees with our data.
+]]
+function InstanceService.GetAllInstances()
+	local all = { }
+	for _, dungeon in ipairs(dungeons) do table.insert(all, dungeon) end
+	for _, raid in ipairs(raids) do table.insert(all, raid) end
+	return all
+end
+
+--[[
+	Forever has its own instance list, so the client's journal decides what shows
+	rather than our season tags. The tags still rule out content that cannot be there
+	under any reading -- Season of Discovery instances and TBC instances -- because
+	those are ours to know and the journal id for a SoD instance is borrowed from the
+	vanilla instance it reuses, so it would otherwise match.
+]]
+local function ShouldIncludeOnForever(instance, filterType)
+	if instance.season == true then return false end
+	if filterType == "exclusive" or filterType == "sod" then return false end
+	if filterType == "tbc" then return false end
+	return ForeverContentService.HasInstance(instance)
+end
+
 local function ShouldIncludeInstance(instance)
-	local activeSeason = C_Seasons.GetActiveSeason()
 	local filterType = instance.seasonFilter or "all"
-	local isTBC = IsBurningCrusade()
+
+	if Compat.isForever then
+		return ShouldIncludeOnForever(instance, filterType)
+	end
+
+	local activeSeason = Compat.GetActiveSeason()
+	local isTBC = Compat.isTBC
 	local userFilter = InstanceService.GetExpansionFilter()
 
 	if instance.season ~= nil then

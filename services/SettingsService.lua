@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -11,7 +11,9 @@ SettingsService = { }
 
 local defaults = {
 	Toasts = {
-		LevelUp = true,
+		-- Forever shows its own level-up notification, so ours stays out of the way
+		-- there unless the player asks for it.
+		LevelUp = not Compat.isForever,
 		BossDefeated = true,
 		WishlistItem = true,
 	},
@@ -62,7 +64,10 @@ function SettingsService.GetToastEnabled(toastType)
 	EnsureSettings()
 	local value = SavedVariables.Settings.Toasts[toastType]
 	if value == nil then
-		return defaults.Toasts[toastType] or true
+		value = defaults.Toasts[toastType]
+		-- Distinguish "defaults to off" from "no such toast", which the previous
+		-- `or true` collapsed into always-on.
+		if value == nil then return true end
 	end
 	return value
 end

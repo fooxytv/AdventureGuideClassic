@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
  -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
@@ -10,6 +10,10 @@ Programming by: TomCat / TomCat's Gaming
     <Include file="Templates.xml" />
 
     <Script file="lib/TomCats/GlobalFacade.lua" />
+
+    <!-- Client detection. Must load before anything that branches on the client. -->
+    <Script file="Compat.lua" />
+
     <Script file="lib/TomCats/Images.lua" />
     <Include file="lib/TomCats/MinimapButton.xml" />
     <Script file="lib/TomCats/MinimapButton.lua" />

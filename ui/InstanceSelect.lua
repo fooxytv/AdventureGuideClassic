@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -34,8 +34,8 @@ function component.Init(components_)
 	instanceSelect.title:SetPoint("TOPLEFT", 20, -15)
 	instanceSelect.filterDropdown = CreateFrame("Frame", instanceSelect:GetName() .. "FilterDropdown", instanceSelect, "UIDropDownMenuTemplate")
 	instanceSelect.filterDropdown:SetPoint("TOPRIGHT", instanceSelect, "TOPRIGHT", -20, -8)
-	local isTBC = select(4, GetBuildInfo()) >= 20000
-	if not isTBC then
+	-- The Classic/Burning Crusade switch only means anything on a TBC client.
+	if not Compat.isTBC then
 		instanceSelect.filterDropdown:Hide()
 	end
 	UIDropDownMenu_SetWidth(instanceSelect.filterDropdown, 150)
@@ -56,7 +56,7 @@ function component.Init(components_)
 	local function InitializeFilterDropdown(self, level)
 		local info = UIDropDownMenu_CreateInfo()
 		local currentFilter = InstanceService.GetExpansionFilter()
-		local isTBC = select(4, GetBuildInfo()) >= 20000
+		local isTBC = Compat.isTBC
 		info.text = "Classic"
 		info.value = "classic"
 		info.func = OnFilterClick
@@ -139,7 +139,6 @@ end
 
 function component.Show()
 	local filter = InstanceService.GetExpansionFilter()
-	local isTBC = select(4, GetBuildInfo()) >= 20000
 	if filter == "all" or filter == "classic" then
 		UIDropDownMenu_SetText(component.frame.filterDropdown, "Classic")
 		component.frame.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Classic")
