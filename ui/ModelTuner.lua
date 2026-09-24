@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 
 Developer panel for dialling in the model viewer camera. Off by default and
 reachable only through /agc modeltune -- it is a tuning aid, not a user feature.

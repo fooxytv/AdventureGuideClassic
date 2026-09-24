@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 
 Spell-by-level data adapted from the WhatsTraining addon
 (https://github.com/cmaddox5/WhatsTrainingClassic), MIT License, Copyright (c) 2019.
