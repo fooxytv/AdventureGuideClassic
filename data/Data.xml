@@ -73,7 +73,9 @@
     <Script file="data/Raids/era/Gnomeregan.lua" />
     <Script file="data/Raids/era/Molten_Core.lua" />
     <Script file="data/Raids/era/Naxxramas.lua" />
-    <Script file="data/Raids/era/Onyxias_Lair.lua" />
+    <!-- Onyxia's Lair is deliberately not registered: data/Raids/era/Onyxias_Lair.lua
+         exists but its contents are wrong, so registering it shows bad data rather
+         than none. Re-add the Script line once the file has been corrected. -->
     <Script file="data/Raids/era/Ruins_of_Ahn_Qiraj.lua" />
     <Script file="data/Raids/era/Scarlet_Enclave.lua" />
     <Script file="data/Raids/era/Temple_of_Ahn_Qiraj.lua" />

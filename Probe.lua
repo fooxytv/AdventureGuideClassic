@@ -102,6 +102,12 @@ local function Probe()
 	Line("flavor", Compat.flavor)
 	Line("interface version", Compat.tocVersion)
 	Line("loaded .toc", DescribeToc())
+	if C_AddOns and C_AddOns.GetAddOnInfo then
+		-- "reason" is INTERFACE_VERSION when the client rejects our declared number,
+		-- which is the only way to tell 16001 was the right one to declare.
+		local _, _, _, loadable, reason = C_AddOns.GetAddOnInfo(addonName)
+		Line("loadable", tostring(loadable) .. (reason and (" (" .. tostring(reason) .. ")") or ""))
+	end
 	Line("WOW_PROJECT_ID", WOW_PROJECT_ID)
 	Line("WOW_PROJECT_MAINLINE", WOW_PROJECT_MAINLINE)
 	Line("WOW_PROJECT_CLASSIC", WOW_PROJECT_CLASSIC)
