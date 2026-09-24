@@ -113,6 +113,17 @@ local function ShouldIncludeInstance(instance)
 	return true
 end
 
+--[[
+	Instances are listed by the name the player actually sees.
+
+	Registration order is by file name, which is close but not the same: Stormwind
+	Stockade lives in The_Stockade.lua, and Forever's instances are registered after
+	the vanilla ones, so both land in the wrong place without this.
+]]
+local function ByDisplayName(a, b)
+	return (a.name or "") < (b.name or "")
+end
+
 function InstanceService.GetDungeons()
 	local filteredDungeons = { }
 	for _, dungeon in ipairs(dungeons) do
@@ -120,6 +131,7 @@ function InstanceService.GetDungeons()
 			table.insert(filteredDungeons, dungeon)
 		end
 	end
+	table.sort(filteredDungeons, ByDisplayName)
 	return filteredDungeons
 end
 
@@ -130,6 +142,7 @@ function InstanceService.GetRaids()
 			table.insert(filteredRaids, raid)
 		end
 	end
+	table.sort(filteredRaids, ByDisplayName)
 	return filteredRaids
 end
 
