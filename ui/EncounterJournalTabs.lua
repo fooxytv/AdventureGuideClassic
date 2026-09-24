@@ -32,8 +32,24 @@ local function AddTab(name, label, onclickFunc)
     -- PanelTemplates_Tab_OnClick selects by the button's id, so it has to have one.
     tab:SetID(tabIdx)
     tab:SetText(label)
+    --[[
+        The two templates butt their tabs together differently.
+
+        Era and TBC overlap by 16 so the wide edge art of one tab meets the next.
+        The mainline template has no such allowance: PanelTemplates_AnchorTabs, which
+        is how Blizzard spaces these, puts each tab 3pt right of the previous one's
+        TOPRIGHT. Overlapping those by 16 sits them on top of each other, which is
+        exactly what happened.
+
+        Blizzard's own camelot XML still carries the old -16 between its
+        PanelTabButtonTemplate tabs, but InspectFrame calls PanelTemplates_SetNumTabs
+        on load and that re-anchors them, so the XML never takes effect. Reading it
+        as the live layout is what sent me the wrong way the first time.
+    ]]
     if (tabIdx == 1) then
         tab:SetPoint("TOPLEFT", EncounterJournal, "BOTTOMLEFT", 16, 2)
+    elseif Compat.isForever then
+        tab:SetPoint("TOPLEFT", tabs[tabIdx - 1], "TOPRIGHT", 3, 0)
     else
         tab:SetPoint("LEFT", tabs[tabIdx - 1], "RIGHT", -16, 0)
     end
