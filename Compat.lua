@@ -95,6 +95,22 @@ end
 Compat.isVanillaLoot = Compat.isEraClient or Compat.isForever
 
 --[[
+	The tab button template differs by client.
+
+	Era and TBC have CharacterFrameTabButtonTemplate. On Forever the file defining it
+	is gated to the cata and mists game types, so it is absent, and the mainline
+	family's PanelTabButtonTemplate is what exists instead. That one carries no
+	*Disabled textures and names its pieces by parentKey rather than globally, so
+	callers must not assume the old global texture names exist.
+
+	This is the only Blizzard template the addon uses that is not on every client --
+	the other nineteen were each checked against Forever's own TOC gating.
+]]
+Compat.TabButtonTemplate = Compat.isForever
+	and "PanelTabButtonTemplate"
+	or "CharacterFrameTabButtonTemplate"
+
+--[[
 	Events this client will not let an addon register.
 
 	Forever's own API documentation marks COMBAT_LOG_EVENT_UNFILTERED with

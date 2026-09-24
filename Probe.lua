@@ -121,6 +121,7 @@ local function Probe()
 	Line("WOW_PROJECT_MAINLINE", WOW_PROJECT_MAINLINE)
 	Line("WOW_PROJECT_CLASSIC", WOW_PROJECT_CLASSIC)
 	Line("build", (GetBuildInfo()))
+	Line("tab template", Compat.TabButtonTemplate)
 
 	Header("Compat")
 	Line("isForever", Compat.isForever)

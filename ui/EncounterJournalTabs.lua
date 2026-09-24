@@ -13,10 +13,22 @@ local tabs = { }
 local tabNameFormat = "%s_%sTab"
 local tabDisabledTextureFormat = "%s_%sTab%sDisabled"
 
+--[[
+    Hides the tab's disabled-state artwork. Only the Era and TBC template has these,
+    and only that one exposes them as globals, so a miss here is expected rather than
+    a fault.
+]]
+local function HideDisabledTextures(name)
+    for _, side in ipairs({ "Left", "Middle", "Right" }) do
+        local texture = _G[string.format(tabDisabledTextureFormat, addonName, name, side)]
+        if texture then texture:Hide() end
+    end
+end
+
 local function AddTab(name, label, onclickFunc)
     local tabIdx = #tabs + 1
     local tab = CreateFrame("Button", string.format(tabNameFormat, addonName, name),
-            EncounterJournal, "CharacterFrameTabButtonTemplate")
+            EncounterJournal, Compat.TabButtonTemplate)
     tab:SetText(label)
     if (tabIdx == 1) then
         tab:SetPoint("TOPLEFT", EncounterJournal, "BOTTOMLEFT", 16, 2)
@@ -31,9 +43,7 @@ local function AddTab(name, label, onclickFunc)
         PanelTemplates_SetTab(EncounterJournal, tabIdx)
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
     end)
-    _G[string.format(tabDisabledTextureFormat, addonName, name, "Left")]:Hide()
-    _G[string.format(tabDisabledTextureFormat, addonName, name, "Middle")]:Hide()
-    _G[string.format(tabDisabledTextureFormat, addonName, name, "Right")]:Hide()
+    HideDisabledTextures(name)
     tabs[tabIdx] = tab
     PanelTemplates_TabResize(tab, 0, nil, 36, 300);
     EncounterJournal.numTabs = #tabs
