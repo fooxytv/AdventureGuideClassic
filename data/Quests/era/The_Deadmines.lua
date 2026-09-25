@@ -12,9 +12,9 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("The Deadmines", {
-	{ id = 214, name = "Red Silk Bandanas", level = 17, minLevel = 14, side = "Alliance", startedBy = "Scout Riell", startZone = "Westfall", rewards = { 2074, 2089, 6094 } },
-	{ id = 168, name = "Collecting Memories", level = 18, minLevel = 14, side = "Alliance", startedBy = "Wilder Thistlenettle", startZone = "Stormwind City", rewards = { 2036, 2037 } },
-	{ id = 167, name = "Oh Brother. . .", level = 20, minLevel = 15, side = "Alliance", startedBy = "Wilder Thistlenettle", startZone = "Stormwind City", rewards = { 1893 } },
-	{ id = 2040, name = "Underground Assault", level = 20, minLevel = 15, side = "Alliance", startedBy = "Shoni the Shilent", startZone = "Stormwind City", rewards = { 7606, 7607 } },
-	{ id = 166, name = "The Defias Brotherhood", level = 22, minLevel = 14, side = "Alliance", startedBy = "Gryan Stoutmantle", startZone = "Westfall", rewards = { 2041, 2042, 6087 } },
+	{ id = 214, name = "Red Silk Bandanas", level = 17, minLevel = 14, side = "Alliance", startedBy = "Scout Riell", startZone = "Westfall", startedById = 820, startedByDisplay = 2374, rewards = { 2074, 2089, 6094 } },
+	{ id = 168, name = "Collecting Memories", level = 18, minLevel = 14, side = "Alliance", startedBy = "Wilder Thistlenettle", startZone = "Stormwind City", startedById = 656, startedByDisplay = 2363, rewards = { 2036, 2037 } },
+	{ id = 167, name = "Oh Brother. . .", level = 20, minLevel = 15, side = "Alliance", startedBy = "Wilder Thistlenettle", startZone = "Stormwind City", startedById = 656, startedByDisplay = 2363, rewards = { 1893 } },
+	{ id = 2040, name = "Underground Assault", level = 20, minLevel = 15, side = "Alliance", startedBy = "Shoni the Shilent", startZone = "Stormwind City", startedById = 6579, startedByDisplay = 5378, rewards = { 7606, 7607 } },
+	{ id = 166, name = "The Defias Brotherhood", level = 22, minLevel = 14, side = "Alliance", startedBy = "Gryan Stoutmantle", startZone = "Westfall", startedById = 234, startedByDisplay = 1690, rewards = { 2041, 2042, 6087 } },
 })

@@ -24,6 +24,8 @@ import sys
 
 Q_ROOT = os.path.expanduser("~/workspaces/home-projects/Questie")
 AG_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# npc id -> display id, so the Quests tab can show the giver's model on hover.
+NPC_MODELS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "npc_models.tsv")
 
 # Questie names a few dungeons differently from us.
 DUNGEON_ALIASES = {
@@ -118,6 +120,23 @@ def load_npcs():
     return npcs
 
 
+def load_npc_displays():
+    """NPC id -> display id, from tools/npc_models.tsv."""
+    displays = {}
+    if not os.path.exists(NPC_MODELS):
+        return displays
+    for line in io.open(NPC_MODELS, encoding="utf-8", errors="replace"):
+        if line.startswith("#"):
+            continue
+        parts = line.rstrip("\r\n").split("\t")
+        if len(parts) < 2 or not parts[0].isdigit() or not parts[1].isdigit():
+            continue
+        display = int(parts[1])
+        if display:
+            displays[int(parts[0])] = display
+    return displays
+
+
 def load_quest_rewards():
     """Quest id -> [reward item id...], inverted out of the item table."""
     rewards = {}
@@ -141,7 +160,7 @@ def faction_for(races):
     return None      # both, so no marker needed
 
 
-def load_quests_by_area(rewards, npcs, zone_names):
+def load_quests_by_area(rewards, npcs, zone_names, displays):
     by_area = {}
     for quest_id, f in rows("Database/Classic/classicQuestDB.lua"):
         area = field(f, 17)
@@ -149,13 +168,15 @@ def load_quests_by_area(rewards, npcs, zone_names):
             continue
 
         started_by = field(f, 2)
-        start_name, start_zone = None, None
+        start_name, start_zone, start_id, start_display = None, None, None, None
         if started_by:
             creatures = re.findall(r"\d+", started_by.split("}")[0])
             if creatures:
-                name, zone = npcs.get(int(creatures[0]), (None, None))
+                start_id = int(creatures[0])
+                name, zone = npcs.get(start_id, (None, None))
                 start_name = name or None
                 start_zone = zone_names.get(zone) if zone else None
+                start_display = displays.get(start_id)
 
         level = field(f, 5)
         min_level = field(f, 4)
@@ -166,6 +187,8 @@ def load_quests_by_area(rewards, npcs, zone_names):
             "minLevel": int(min_level) if min_level and min_level.isdigit() else None,
             "side": faction_for(field(f, 6)),
             "startedBy": start_name,
+            "startedById": start_id if start_name else None,
+            "startedByDisplay": start_display if start_name else None,
             "startZone": start_zone,
             "rewards": sorted(rewards.get(quest_id, [])),
         })
@@ -205,6 +228,10 @@ def render(dungeon_name, quests):
             parts.append("startedBy = %s" % lua_string(q["startedBy"]))
         if q["startZone"]:
             parts.append("startZone = %s" % lua_string(q["startZone"]))
+        if q["startedById"]:
+            parts.append("startedById = %d" % q["startedById"])
+        if q["startedByDisplay"]:
+            parts.append("startedByDisplay = %d" % q["startedByDisplay"])
         if q["rewards"]:
             parts.append("rewards = { %s }" % ", ".join(str(i) for i in q["rewards"]))
         out.append("\t{ " + ", ".join(parts) + " },")
@@ -222,7 +249,8 @@ def main():
     zone_names = load_zone_names()
     npcs = load_npcs()
     rewards = load_quest_rewards()
-    by_area = load_quests_by_area(rewards, npcs, zone_names)
+    displays = load_npc_displays()
+    by_area = load_quests_by_area(rewards, npcs, zone_names, displays)
 
     src_dir = os.path.join(AG_ROOT, "data", "Dungeons", args.flavour)
     out_dir = os.path.join(AG_ROOT, "data", "Quests", args.flavour)

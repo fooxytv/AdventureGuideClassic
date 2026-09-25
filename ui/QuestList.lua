@@ -21,77 +21,139 @@ local function RequestLoadItemDataCompat(itemId)
 	end
 end
 
-local ROW_WIDTH = 360
-local REWARD_ICON = 14
-local TITLE_COLOR = { 1, 0.82, 0 }
-local SUBTLE_COLOR = { 0.62, 0.57, 0.5 }
-
 --[[
-	Completed and in-progress quests both dim, which says "not something to go and pick
-	up". The tick is what separates them, and it stays at full strength so it still
-	reads against a faded row.
+A flat colour behind the panel rather than a texture.
+
+InsetFrameTemplate brings a translucent background of its own, and over the journal
+parchment that lands at a warm mid-brown, which is what made this page hard to read
+however the type was set. So hide the template's background and paint a solid colour
+inside the border instead: near-black, biased warm so it belongs to the journal rather
+than reading as a grey box dropped onto it.
+
+The fill sits high within BACKGROUND, above the template's own background at sublevel 0.
+Below it and the translucent texture simply draws over the top. It need not be below the
+content: the rows are child frames, and a child frame always draws above its parent's
+textures.
 ]]
+local GROUND = { 0.09, 0.075, 0.06 }
+
+local function AddDarkGround(inset)
+	for _, key in ipairs({ "Bg", "bg", "InsetBg" }) do
+		local texture = rawget(inset, key)
+		if type(texture) == "table" and type(texture.Hide) == "function" then
+			texture:Hide()
+		end
+	end
+	local fill = inset:CreateTexture(nil, "BACKGROUND", nil, 7)
+	fill:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], 1)
+	fill:SetPoint("TOPLEFT", 3, -3)
+	fill:SetPoint("BOTTOMRIGHT", -3, 3)
+	return fill
+end
+
+local STATE_ICON = {
+	available = "Interface/GossipFrame/AvailableQuestIcon",
+	active    = "Interface/GossipFrame/ActiveQuestIcon",
+	completed = "Interface/RaidFrame/ReadyCheck-Ready",
+}
+
+-- A quest already in hand or already done is not something to go and pick up, so both
+-- fade. The icon is what separates them, and it stays at full strength so it still
+-- reads against a faded row.
 local DIMMED_ALPHA = 0.45
 
-local function ApplyState(row, state)
-	row.tick:SetShown(state == "completed")
-	row.content:SetAlpha((state == "completed" or state == "active") and DIMMED_ALPHA or 1)
+local GOLD = { 1, 0.82, 0 }
+local SUBTLE = { 0.62, 0.57, 0.5 }
+
+local PAD = 9
+local ICON = 16
+local TITLE_H = 16
+local SOURCE_H = 15
+local REWARD_H = 17
+
+local function RowHeight(quest)
+	local rewards = quest.rewards and #quest.rewards or 0
+	return PAD + TITLE_H
+		+ (quest.startedBy and SOURCE_H or 0)
+		+ rewards * REWARD_H
+		+ PAD
 end
 
 local function BuildRow(row)
-	row:SetSize(ROW_WIDTH, 20)
+	row.hasBackdrop = type(row.SetBackdrop) == "function"
+	if row.hasBackdrop then
+		row:SetBackdrop({
+			bgFile = "Interface/Buttons/WHITE8X8",
+			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+			tile = true, tileSize = 8, edgeSize = 12,
+			insets = { left = 3, right = 3, top = 3, bottom = 3 },
+		})
+		row:SetBackdropColor(1, 1, 1, 0.025)
+		row:SetBackdropBorderColor(0.45, 0.38, 0.26, 0.9)
+	end
 
-	row.content = CreateFrame("Frame", nil, row)
-	row.content:SetPoint("TOPLEFT", 16, 0)
-	row.content:SetPoint("BOTTOMRIGHT", 0, 0)
+	row.icon = row:CreateTexture(nil, "ARTWORK")
+	row.icon:SetSize(ICON, ICON)
+	row.icon:SetPoint("TOPLEFT", PAD, -PAD)
 
-	row.tick = row:CreateTexture(nil, "OVERLAY")
-	row.tick:SetSize(13, 13)
-	row.tick:SetPoint("TOPLEFT", 0, -2)
-	row.tick:SetTexture("Interface/RaidFrame/ReadyCheck-Ready")
-	row.tick:Hide()
-
-	row.title = row.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	row.title:SetJustifyH("LEFT")
-	row.title:SetPoint("TOPLEFT")
-	row.title:SetTextColor(unpack(TITLE_COLOR))
-
-	row.level = row.content:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	row.level = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 	row.level:SetJustifyH("RIGHT")
-	row.level:SetPoint("TOPRIGHT")
+	row.level:SetPoint("TOPRIGHT", -PAD, -PAD)
 
-	row.title:SetPoint("TOPRIGHT", row.level, "TOPLEFT", -6, 0)
+	row.title = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	row.title:SetJustifyH("LEFT")
+	row.title:SetWordWrap(false)
+	row.title:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", 6, 1)
+	row.title:SetPoint("RIGHT", row.level, "LEFT", -6, 0)
+	row.title:SetTextColor(unpack(GOLD))
 
-	row.source = row.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	row.source:SetJustifyH("LEFT")
-	row.source:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -2)
-	row.source:SetTextColor(unpack(SUBTLE_COLOR))
+	--[[
+	The quest giver is its own small button rather than a hyperlink inside a sentence.
+	There is exactly one per quest, so hovering it needs no text parsing, and a button
+	gives the model preview a real frame to anchor its enter and leave to.
+	]]
+	row.giver = CreateFrame("Button", nil, row)
+	row.giver:SetHeight(SOURCE_H)
+	row.giver:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -2)
+
+	row.giverText = row.giver:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	row.giverText:SetJustifyH("LEFT")
+	row.giverText:SetPoint("LEFT")
+	row.giver:SetFontString(row.giverText)
+
+	row.zone = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	row.zone:SetJustifyH("LEFT")
+	row.zone:SetPoint("LEFT", row.giver, "RIGHT", 0, 0)
+	row.zone:SetTextColor(unpack(SUBTLE))
+
+	row.giver:SetScript("OnEnter", function(self)
+		if self.npc and components and components.NpcPreview then
+			components.NpcPreview.Show(self.npc)
+		end
+	end)
+	row.giver:SetScript("OnLeave", function()
+		if components and components.NpcPreview then
+			components.NpcPreview.Hide()
+		end
+	end)
 
 	row.rewards = { }
 	row.initialized = true
 end
 
---[[
-	Reward names arrive from the item cache, which is often cold on a first look at an
-	instance. A missing one is requested and the row shows the icon alone until the
-	cache answers; ui/Loot.lua drives a refresh off GET_ITEM_INFO_RECEIVED for the same
-	reason.
-]]
-local function SetRewards(row, rewards)
+local function SetRewards(row, rewards, anchor)
 	for _, reward in ipairs(row.rewards) do
 		reward:Hide()
 	end
+	if not rewards then return end
 
-	if not rewards then return 0 end
-
-	local shown = 0
 	for index, itemId in ipairs(rewards) do
 		local reward = row.rewards[index]
 		if not reward then
-			reward = CreateFrame("Frame", nil, row.content)
-			reward:SetSize(ROW_WIDTH, REWARD_ICON)
+			reward = CreateFrame("Frame", nil, row)
+			reward:SetHeight(REWARD_H)
 			reward.icon = reward:CreateTexture(nil, "ARTWORK")
-			reward.icon:SetSize(REWARD_ICON, REWARD_ICON)
+			reward.icon:SetSize(13, 13)
 			reward.icon:SetPoint("LEFT")
 			reward.label = reward:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 			reward.label:SetJustifyH("LEFT")
@@ -99,6 +161,11 @@ local function SetRewards(row, rewards)
 			row.rewards[index] = reward
 		end
 
+		--[[
+		Reward names come from the item cache, which is cold the first time an instance
+		is opened. A missing one is requested and the row shows its icon alone until the
+		cache answers; the component refreshes on GET_ITEM_INFO_RECEIVED.
+		]]
 		local name, _, quality, _, _, _, _, _, _, icon = GetItemInfoCompat(itemId)
 		if not name then
 			RequestLoadItemDataCompat(itemId)
@@ -109,16 +176,15 @@ local function SetRewards(row, rewards)
 		if color then
 			reward.label:SetTextColor(color.r, color.g, color.b)
 		else
-			reward.label:SetTextColor(unpack(SUBTLE_COLOR))
+			reward.label:SetTextColor(unpack(SUBTLE))
 		end
 
 		reward:ClearAllPoints()
-		local anchor = index == 1 and row.source or row.rewards[index - 1]
-		reward:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -2)
+		reward:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", index == 1 and 2 or 0, index == 1 and -3 or 0)
+		reward:SetPoint("RIGHT", row, "RIGHT", -PAD, 0)
 		reward:Show()
-		shown = index
+		anchor = reward
 	end
-	return shown
 end
 
 local function Initializer(row, quest)
@@ -126,22 +192,42 @@ local function Initializer(row, quest)
 		BuildRow(row)
 	end
 
+	local state = QuestService.GetState(quest.id)
+	local dim = (state == "active" or state == "completed") and DIMMED_ALPHA or 1
+
+	row.icon:SetTexture(STATE_ICON[state] or STATE_ICON.available)
 	row.title:SetText(quest.name or "")
+	row.title:SetAlpha(dim)
 	row.level:SetText(quest.level and tostring(quest.level) or "")
+	row.level:SetAlpha(dim)
 
-	local source = quest.startedBy
-	if source and quest.startZone then
-		source = source .. " \226\128\162 " .. quest.startZone
+	local hasGiver = quest.startedBy ~= nil
+	row.giver:SetShown(hasGiver)
+	row.zone:SetShown(hasGiver and quest.startZone ~= nil)
+	if hasGiver then
+		row.giverText:SetText(quest.startedBy)
+		row.giverText:SetTextColor(unpack(quest.startedByDisplay and GOLD or SUBTLE))
+		row.giver:SetWidth(row.giverText:GetStringWidth() + 2)
+		row.giver:SetAlpha(dim)
+		row.zone:SetText(quest.startZone and (" \226\128\162 " .. quest.startZone) or "")
+		row.zone:SetAlpha(dim)
+		--[[
+		Only a giver we have a model for is worth hovering. Without one the name still
+		shows, in the plain colour, so the row never offers a link that does nothing.
+		]]
+		row.giver.npc = quest.startedByDisplay
+			and { name = quest.startedBy, display = quest.startedByDisplay }
+			or nil
+		row.giver:EnableMouse(row.giver.npc ~= nil)
 	end
-	row.source:SetText(source or "")
-	row.source:SetShown(source ~= nil)
 
-	local rewardCount = SetRewards(row, quest.rewards)
-	ApplyState(row, QuestService.GetState(quest.id))
+	local anchor = hasGiver and row.giver or row.title
+	SetRewards(row, quest.rewards, anchor)
+	for _, reward in ipairs(row.rewards) do
+		reward:SetAlpha(dim)
+	end
 
-	-- Title, source line, then one line per reward, plus a gap between quests.
-	local height = 16 + (source and 14 or 0) + rewardCount * (REWARD_ICON + 2) + 8
-	row:SetHeight(height)
+	row:SetHeight(RowHeight(quest))
 end
 
 function component.Init(components_)
@@ -154,29 +240,35 @@ function component.Init(components_)
 	quests:SetPoint("BOTTOMRIGHT", -1, 2)
 
 	quests.title = quests:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	quests.title:SetPoint("TOPLEFT", 18, -14)
-	quests.title:SetText("Quests")
+	quests.title:SetPoint("TOPLEFT", 16, -12)
+	quests.title:SetTextColor(unpack(GOLD))
 
-	quests.empty = quests:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	quests.empty:SetPoint("TOPLEFT", quests.title, "BOTTOMLEFT", 0, -10)
+	local inset = CreateFrame("Frame", nil, quests, "InsetFrameTemplate")
+	inset:SetPoint("TOPLEFT", 8, -36)
+	inset:SetPoint("BOTTOMRIGHT", -8, 8)
+	AddDarkGround(inset)
+	quests.inset = inset
+
+	quests.empty = inset:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	quests.empty:SetPoint("TOPLEFT", 14, -14)
+	quests.empty:SetPoint("TOPRIGHT", -14, -14)
+	quests.empty:SetJustifyH("LEFT")
 	quests.empty:SetText("No dungeon quests are known for this instance.")
-	quests.empty:SetTextColor(unpack(SUBTLE_COLOR))
+	quests.empty:SetTextColor(unpack(SUBTLE))
 	quests.empty:Hide()
 
-	scrollbox = CreateFrame("Frame", nil, quests, "WowScrollBoxList")
-	scrollbox:SetPoint("TOPLEFT", 18, -40)
-	scrollbox:SetPoint("BOTTOMRIGHT", -26, 10)
+	scrollbox = CreateFrame("Frame", nil, inset, "WowScrollBoxList")
+	scrollbox:SetPoint("TOPLEFT", 8, -8)
+	scrollbox:SetPoint("BOTTOMRIGHT", -20, 8)
 
-	local scrollbar = CreateFrame("EventFrame", nil, quests, "MinimalScrollBar")
-	scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 8, 0)
-	scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 8, 0)
+	local scrollbar = CreateFrame("EventFrame", nil, inset, "MinimalScrollBar")
+	scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 6, 0)
+	scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 6, 0)
 
 	local view = CreateScrollBoxListLinearView()
-	view:SetElementInitializer("Frame", Initializer)
-	view:SetElementExtentCalculator(function(_, quest)
-		local lines = quest.rewards and #quest.rewards or 0
-		return 16 + (quest.startedBy and 14 or 0) + lines * (REWARD_ICON + 2) + 8
-	end)
+	view:SetElementInitializer("Button", Initializer)
+	view:SetElementExtentCalculator(function(_, quest) return RowHeight(quest) end)
+	view:SetPadding(2, 2, 0, 0, 4)
 	ScrollUtil.InitScrollBoxWithScrollBar(scrollbox, scrollbar, view)
 
 	quests:Hide()
@@ -199,8 +291,8 @@ function component.Show(instance)
 end
 
 --[[
-	Quest state changes while the guide is open -- picking one up, handing it in -- and
-	item names arrive late, so the list is rebuilt on both rather than only on show.
+Quest state changes while the guide is open -- picking one up, handing it in -- and item
+names arrive late, so the list is rebuilt on both rather than only on show.
 ]]
 local eventFrame = CreateFrame("Frame")
 Compat.RegisterEvents(eventFrame,

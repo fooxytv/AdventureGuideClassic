@@ -12,10 +12,10 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Stormwind Stockade", {
-	{ id = 386, name = "What Comes Around...", level = 25, minLevel = 22, side = "Alliance", startedBy = "Guard Berton", startZone = "Redridge Mountains", rewards = { 1317, 3400 } },
-	{ id = 377, name = "Crime and Punishment", level = 26, minLevel = 22, side = "Alliance", startedBy = "Councilman Millstipe", startZone = "Duskwood", rewards = { 2033, 2906 } },
-	{ id = 387, name = "Quell The Uprising", level = 26, minLevel = 22, side = "Alliance", startedBy = "Warden Thelwater", startZone = "Stormwind City" },
-	{ id = 388, name = "The Color of Blood", level = 26, minLevel = 22, side = "Alliance", startedBy = "Nikova Raskol", startZone = "Stormwind City" },
-	{ id = 378, name = "The Fury Runs Deep", level = 27, minLevel = 22, side = "Alliance", startedBy = "Motley Garmason", startZone = "Wetlands", rewards = { 1264, 3562 } },
-	{ id = 391, name = "The Stockade Riots", level = 29, minLevel = 16, side = "Alliance", startedBy = "Warden Thelwater", startZone = "Stormwind City" },
+	{ id = 386, name = "What Comes Around...", level = 25, minLevel = 22, side = "Alliance", startedBy = "Guard Berton", startZone = "Redridge Mountains", startedById = 859, startedByDisplay = 3453, rewards = { 1317, 3400 } },
+	{ id = 377, name = "Crime and Punishment", level = 26, minLevel = 22, side = "Alliance", startedBy = "Councilman Millstipe", startZone = "Duskwood", startedById = 270, startedByDisplay = 1724, rewards = { 2033, 2906 } },
+	{ id = 387, name = "Quell The Uprising", level = 26, minLevel = 22, side = "Alliance", startedBy = "Warden Thelwater", startZone = "Stormwind City", startedById = 1719, startedByDisplay = 1865 },
+	{ id = 388, name = "The Color of Blood", level = 26, minLevel = 22, side = "Alliance", startedBy = "Nikova Raskol", startZone = "Stormwind City", startedById = 1721, startedByDisplay = 1815 },
+	{ id = 378, name = "The Fury Runs Deep", level = 27, minLevel = 22, side = "Alliance", startedBy = "Motley Garmason", startZone = "Wetlands", startedById = 1074, startedByDisplay = 1675, rewards = { 1264, 3562 } },
+	{ id = 391, name = "The Stockade Riots", level = 29, minLevel = 16, side = "Alliance", startedBy = "Warden Thelwater", startZone = "Stormwind City", startedById = 1719, startedByDisplay = 1865 },
 })

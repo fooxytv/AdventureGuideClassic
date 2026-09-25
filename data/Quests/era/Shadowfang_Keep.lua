@@ -12,7 +12,7 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Shadowfang Keep", {
-	{ id = 1098, name = "Deathstalkers in Shadowfang", level = 25, minLevel = 18, side = "Horde", startedBy = "High Executor Hadrec", startZone = "Silverpine Forest", rewards = { 3324 } },
-	{ id = 1013, name = "The Book of Ur", level = 26, minLevel = 16, side = "Horde", startedBy = "Keeper Bel\\'dugur", startZone = "Undercity", rewards = { 4534, 6335 } },
-	{ id = 1014, name = "Arugal Must Die", level = 27, minLevel = 18, side = "Horde", startedBy = "Dalar Dawnweaver", startZone = "Silverpine Forest", rewards = { 6414 } },
+	{ id = 1098, name = "Deathstalkers in Shadowfang", level = 25, minLevel = 18, side = "Horde", startedBy = "High Executor Hadrec", startZone = "Silverpine Forest", startedById = 1952, startedByDisplay = 3545, rewards = { 3324 } },
+	{ id = 1013, name = "The Book of Ur", level = 26, minLevel = 16, side = "Horde", startedBy = "Keeper Bel\\'dugur", startZone = "Undercity", startedById = 2934, startedByDisplay = 5751, rewards = { 4534, 6335 } },
+	{ id = 1014, name = "Arugal Must Die", level = 27, minLevel = 18, side = "Horde", startedBy = "Dalar Dawnweaver", startZone = "Silverpine Forest", startedById = 1938, startedByDisplay = 1278, rewards = { 6414 } },
 })
