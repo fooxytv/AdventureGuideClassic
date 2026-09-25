@@ -273,19 +273,24 @@ function component.Init(components_)
 	quests:SetPoint("BOTTOMRIGHT", -1, 2)
 
 	--[[
-	The panel fills its whole side of the journal rather than floating inside it.
+	The panel fills its side of the journal below the header, rather than floating
+	inside it.
 
 	InsetFrameTemplate was drawing a second border within the journal's own inset, so
-	the dark ground read as a box dropped onto the page with parchment showing round
-	it. The ground now runs edge to edge over the same footprint InstanceOverview uses,
-	with a one-pixel dark line round it to seat it in the page instead of a frame.
+	the dark ground read as a box dropped onto the page with parchment showing round it.
+	The ground now runs to the edges, seated with a one-pixel dark line rather than a
+	frame of its own.
 
-	No title of its own either: the journal already names the instance in its header and
-	in the nav bar, and a third copy cost a row of height the list wanted.
+	It stops short at the top. The journal draws the instance name in that strip, and
+	running the ground the full height of the column covered it.
+
+	No title of its own either: the header has it, and so does the nav bar, so a third
+	copy cost a row of height the list wanted.
 	]]
+	local HEADER = 34
 	local ground = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
 	ground:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], 1)
-	ground:SetPoint("TOPLEFT", 2, -2)
+	ground:SetPoint("TOPLEFT", 2, -HEADER)
 	ground:SetPoint("BOTTOMRIGHT", -2, 2)
 
 	local edge = quests:CreateTexture(nil, "BACKGROUND", nil, 0)
@@ -294,15 +299,15 @@ function component.Init(components_)
 	edge:SetPoint("BOTTOMRIGHT", ground, 1, -1)
 
 	quests.empty = quests:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	quests.empty:SetPoint("TOPLEFT", 16, -16)
-	quests.empty:SetPoint("TOPRIGHT", -16, -16)
+	quests.empty:SetPoint("TOPLEFT", 16, -(HEADER + 14))
+	quests.empty:SetPoint("TOPRIGHT", -16, -(HEADER + 14))
 	quests.empty:SetJustifyH("LEFT")
 	quests.empty:SetText("No dungeon quests are known for this instance.")
 	quests.empty:SetTextColor(unpack(SUBTLE))
 	quests.empty:Hide()
 
 	scrollbox = CreateFrame("Frame", nil, quests, "WowScrollBoxList")
-	scrollbox:SetPoint("TOPLEFT", 6, -8)
+	scrollbox:SetPoint("TOPLEFT", 6, -(HEADER + 6))
 	scrollbox:SetPoint("BOTTOMRIGHT", -20, 8)
 
 	local scrollbar = CreateFrame("EventFrame", nil, quests, "MinimalScrollBar")

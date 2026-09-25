@@ -37,6 +37,14 @@ local function CreatePreview()
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
 	frame:SetFrameStrata("TOOLTIP")
 	frame:SetClampedToScreen(true)
+	--[[
+	The preview takes no mouse input at all. It sits at tooltip strata and follows the
+	pointer, so anything it accepts is taken from whatever is underneath: the scroll
+	wheel stopped reaching the quest list, and a scrollbar drag lost its mouse-up to
+	this frame and carried on following the cursor.
+	]]
+	frame:EnableMouse(false)
+	frame:EnableMouseWheel(false)
 	frame:Hide()
 
 	if frame.SetBackdrop then
@@ -59,6 +67,8 @@ local function CreatePreview()
 	local ok, created = pcall(CreateFrame, "PlayerModel", nil, frame)
 	if ok and created and type(created.SetDisplayInfo) == "function" then
 		model = created
+		if type(model.EnableMouse) == "function" then model:EnableMouse(false) end
+		if type(model.EnableMouseWheel) == "function" then model:EnableMouseWheel(false) end
 		model:SetPoint("TOPLEFT", 8, -26)
 		model:SetPoint("BOTTOMRIGHT", -8, 8)
 		supported = true
