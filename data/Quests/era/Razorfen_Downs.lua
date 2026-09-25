@@ -12,11 +12,11 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Razorfen Downs", {
-	{ id = 6626, name = "A Host of Evil", level = 35, minLevel = 28, startedBy = "Myriam Moonsinger", startZone = "The Barrens", startedById = 12866, startedByDisplay = 12964 },
-	{ id = 6521, name = "An Unholy Alliance", level = 36, minLevel = 28, side = "Horde", startedBy = "Varimathras", startZone = "Undercity", startedById = 2425, startedByDisplay = 11658, rewards = { 17039, 17042, 17043 } },
+	{ id = 6626, name = "A Host of Evil", level = 35, minLevel = 28, startedBy = "Myriam Moonsinger", startZone = "The Barrens", startZoneMap = 1413, startedById = 12866, startedByDisplay = 12964 },
+	{ id = 6521, name = "An Unholy Alliance", level = 36, minLevel = 28, side = "Horde", startedBy = "Varimathras", startZone = "Undercity", startZoneMap = 1458, startedById = 2425, startedByDisplay = 11658, rewards = { 17039, 17042, 17043 } },
 	{ id = 6522, name = "An Unholy Alliance", level = 36, minLevel = 28, side = "Horde" },
-	{ id = 3525, name = "Extinguishing the Idol", level = 37, minLevel = 32, startedBy = "Belnistrasz", startZone = "Razorfen Downs", startedById = 8516, startedByDisplay = 7851, rewards = { 10710 } },
-	{ id = 3523, name = "Scourge of the Downs", level = 37, minLevel = 32, startedBy = "Belnistrasz", startZone = "Razorfen Downs", startedById = 8516, startedByDisplay = 7851 },
-	{ id = 3341, name = "Bring the End", level = 42, minLevel = 37, side = "Horde", startedBy = "Andrew Brownell", startZone = "Undercity", startedById = 2308, startedByDisplay = 1585, rewards = { 10823, 10824 } },
-	{ id = 3636, name = "Bring the Light", level = 42, minLevel = 39, side = "Alliance", startedBy = "Archbishop Benedictus", startZone = "Stormwind City", startedById = 1284, startedByDisplay = 5072, rewards = { 10823, 10824 } },
+	{ id = 3525, name = "Extinguishing the Idol", level = 37, minLevel = 32, startedBy = "Belnistrasz", startZone = "Razorfen Downs", startZoneMap = 300, startedById = 8516, startedByDisplay = 7851, rewards = { 10710 } },
+	{ id = 3523, name = "Scourge of the Downs", level = 37, minLevel = 32, startedBy = "Belnistrasz", startZone = "Razorfen Downs", startZoneMap = 300, startedById = 8516, startedByDisplay = 7851 },
+	{ id = 3341, name = "Bring the End", level = 42, minLevel = 37, side = "Horde", startedBy = "Andrew Brownell", startZone = "Undercity", startZoneMap = 1458, startedById = 2308, startedByDisplay = 1585, rewards = { 10823, 10824 } },
+	{ id = 3636, name = "Bring the Light", level = 42, minLevel = 39, side = "Alliance", startedBy = "Archbishop Benedictus", startZone = "Stormwind City", startZoneMap = 1453, startedById = 1284, startedByDisplay = 5072, rewards = { 10823, 10824 } },
 })

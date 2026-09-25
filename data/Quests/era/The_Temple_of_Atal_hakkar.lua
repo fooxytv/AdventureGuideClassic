@@ -12,13 +12,13 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("The Temple of Atal'hakkar", {
-	{ id = 1475, name = "Into The Temple of Atal'Hakkar", level = 50, minLevel = 41, side = "Alliance", startedBy = "Brohann Caskbelly", startZone = "Stormwind City", startedById = 5384, startedByDisplay = 5079, rewards = { 1490 } },
-	{ id = 1445, name = "The Temple of Atal'Hakkar", level = 50, minLevel = 38, side = "Horde", startedBy = "Fel'zerul", startZone = "Swamp Of Sorrows", startedById = 1443, startedByDisplay = 4554, rewards = { 1490 } },
-	{ id = 3446, name = "Into the Depths", level = 51, minLevel = 46, startedBy = "Marvon Rivetseeker", startZone = "Tanaris", startedById = 7771, startedByDisplay = 7188 },
-	{ id = 3447, name = "Secret of the Circle", level = 51, minLevel = 46, startedBy = "Marvon Rivetseeker", startZone = "Tanaris", startedById = 7771, startedByDisplay = 7188, rewards = { 10773 } },
-	{ id = 3380, name = "The Sunken Temple", level = 51, minLevel = 46, side = "Horde", startedBy = "Witch Doctor Uzer'i", startZone = "Feralas", startedById = 8115, startedByDisplay = 7328 },
-	{ id = 4146, name = "Zapper Fuel", level = 52, minLevel = 47, side = "Horde", startedBy = "Liv Rizzlefix", startZone = "The Barrens", startedById = 8496, startedByDisplay = 7909 },
-	{ id = 1446, name = "Jammal'an the Prophet", level = 53, minLevel = 38, startedBy = "Atal'ai Exile", startZone = "The Hinterlands", startedById = 5598, startedByDisplay = 6590, rewards = { 11123, 11124 } },
-	{ id = 3528, name = "The God Hakkar", level = 53, minLevel = 40, startedBy = "Yeh'kinya", startZone = "Tanaris", startedById = 8579, startedByDisplay = 7902, rewards = { 10749, 10750, 10751 } },
+	{ id = 1475, name = "Into The Temple of Atal'Hakkar", level = 50, minLevel = 41, side = "Alliance", startedBy = "Brohann Caskbelly", startZone = "Stormwind City", startZoneMap = 1453, startedById = 5384, startedByDisplay = 5079, rewards = { 1490 } },
+	{ id = 1445, name = "The Temple of Atal'Hakkar", level = 50, minLevel = 38, side = "Horde", startedBy = "Fel'zerul", startZone = "Swamp Of Sorrows", startZoneMap = 1435, startedById = 1443, startedByDisplay = 4554, rewards = { 1490 } },
+	{ id = 3446, name = "Into the Depths", level = 51, minLevel = 46, startedBy = "Marvon Rivetseeker", startZone = "Tanaris", startZoneMap = 1446, startedById = 7771, startedByDisplay = 7188 },
+	{ id = 3447, name = "Secret of the Circle", level = 51, minLevel = 46, startedBy = "Marvon Rivetseeker", startZone = "Tanaris", startZoneMap = 1446, startedById = 7771, startedByDisplay = 7188, rewards = { 10773 } },
+	{ id = 3380, name = "The Sunken Temple", level = 51, minLevel = 46, side = "Horde", startedBy = "Witch Doctor Uzer'i", startZone = "Feralas", startZoneMap = 1444, startedById = 8115, startedByDisplay = 7328 },
+	{ id = 4146, name = "Zapper Fuel", level = 52, minLevel = 47, side = "Horde", startedBy = "Liv Rizzlefix", startZone = "The Barrens", startZoneMap = 1413, startedById = 8496, startedByDisplay = 7909 },
+	{ id = 1446, name = "Jammal'an the Prophet", level = 53, minLevel = 38, startedBy = "Atal'ai Exile", startZone = "The Hinterlands", startZoneMap = 1425, startedById = 5598, startedByDisplay = 6590, rewards = { 11123, 11124 } },
+	{ id = 3528, name = "The God Hakkar", level = 53, minLevel = 40, startedBy = "Yeh'kinya", startZone = "Tanaris", startZoneMap = 1446, startedById = 8579, startedByDisplay = 7902, rewards = { 10749, 10750, 10751 } },
 	{ id = 3373, name = "The Essence of Eranikus", level = 55, minLevel = 48, startedBy = "Filliwick Featherfizz", startedById = 10454, startedByDisplay = 9819, rewards = { 10455 } },
 })

@@ -12,11 +12,11 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Scarlet Monastery", {
-	{ id = 1113, name = "Hearts of Zeal", level = 33, minLevel = 30, side = "Horde", startedBy = "Master Apothecary Faranell", startZone = "Undercity", startedById = 2055, startedByDisplay = 1680 },
-	{ id = 1051, name = "Vorrel's Revenge", level = 33, minLevel = 25, side = "Horde", startedBy = "Vorrel Sengutz", startZone = "Scarlet Monastery", startedById = 3981, startedByDisplay = 2046, rewards = { 4643, 7750, 7751 } },
-	{ id = 1160, name = "Test of Lore", level = 36, minLevel = 25, side = "Horde", startedBy = "Parqual Fintallas", startZone = "Undercity", startedById = 4488, startedByDisplay = 10197 },
-	{ id = 1049, name = "Compendium of the Fallen", level = 38, minLevel = 28, side = "Horde", startedBy = "Sage Truthseeker", startZone = "Thunder Bluff", startedById = 3978, startedByDisplay = 4518, rewards = { 7747, 7749, 17508 } },
-	{ id = 1050, name = "Mythology of the Titans", level = 38, minLevel = 28, side = "Alliance", startedBy = "Librarian Mae Paledust", startZone = "Ironforge", startedById = 3979, startedByDisplay = 2049, rewards = { 7746 } },
-	{ id = 1053, name = "In the Name of the Light", level = 40, minLevel = 34, side = "Alliance", startedBy = "Raleigh the Devout", startZone = "Hillsbrad Foothills", startedById = 3980, startedByDisplay = 2048, rewards = { 6829, 6830, 6831, 11262 } },
-	{ id = 1048, name = "Into The Scarlet Monastery", level = 42, minLevel = 33, side = "Horde", startedBy = "Varimathras", startZone = "Undercity", startedById = 2425, startedByDisplay = 11658, rewards = { 6802, 6803, 10711 } },
+	{ id = 1113, name = "Hearts of Zeal", level = 33, minLevel = 30, side = "Horde", startedBy = "Master Apothecary Faranell", startZone = "Undercity", startZoneMap = 1458, startedById = 2055, startedByDisplay = 1680 },
+	{ id = 1051, name = "Vorrel's Revenge", level = 33, minLevel = 25, side = "Horde", startedBy = "Vorrel Sengutz", startZone = "Scarlet Monastery", startZoneMap = 302, startedById = 3981, startedByDisplay = 2046, rewards = { 4643, 7750, 7751 } },
+	{ id = 1160, name = "Test of Lore", level = 36, minLevel = 25, side = "Horde", startedBy = "Parqual Fintallas", startZone = "Undercity", startZoneMap = 1458, startedById = 4488, startedByDisplay = 10197 },
+	{ id = 1049, name = "Compendium of the Fallen", level = 38, minLevel = 28, side = "Horde", startedBy = "Sage Truthseeker", startZone = "Thunder Bluff", startZoneMap = 1456, startedById = 3978, startedByDisplay = 4518, rewards = { 7747, 7749, 17508 } },
+	{ id = 1050, name = "Mythology of the Titans", level = 38, minLevel = 28, side = "Alliance", startedBy = "Librarian Mae Paledust", startZone = "Ironforge", startZoneMap = 1455, startedById = 3979, startedByDisplay = 2049, rewards = { 7746 } },
+	{ id = 1053, name = "In the Name of the Light", level = 40, minLevel = 34, side = "Alliance", startedBy = "Raleigh the Devout", startZone = "Hillsbrad Foothills", startZoneMap = 1424, startedById = 3980, startedByDisplay = 2048, rewards = { 6829, 6830, 6831, 11262 } },
+	{ id = 1048, name = "Into The Scarlet Monastery", level = 42, minLevel = 33, side = "Horde", startedBy = "Varimathras", startZone = "Undercity", startZoneMap = 1458, startedById = 2425, startedByDisplay = 11658, rewards = { 6802, 6803, 10711 } },
 })

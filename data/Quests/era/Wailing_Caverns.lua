@@ -12,13 +12,13 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Wailing Caverns", {
-	{ id = 1489, name = "Hamuul Runetotem", level = 16, minLevel = 12, side = "Horde", startedBy = "Tonga Runetotem", startZone = "The Barrens", startedById = 3448, startedByDisplay = 3914 },
-	{ id = 1490, name = "Nara Wildmane", level = 16, minLevel = 12, side = "Horde", startedBy = "Arch Druid Hamuul Runetotem", startZone = "Thunder Bluff", startedById = 5769, startedByDisplay = 4519 },
-	{ id = 1486, name = "Deviate Hides", level = 17, minLevel = 13, startedBy = "Nalpak", startZone = "The Barrens", startedById = 5767, startedByDisplay = 4289, rewards = { 918, 6480 } },
-	{ id = 962, name = "Serpentbloom", level = 18, minLevel = 14, side = "Horde", startedBy = "Apothecary Zamah", startZone = "Thunder Bluff", startedById = 3419, startedByDisplay = 1814, rewards = { 10919 } },
-	{ id = 1491, name = "Smart Drinks", level = 18, minLevel = 13, startedBy = "Mebok Mizzyrix", startZone = "The Barrens", startedById = 3446, startedByDisplay = 7034 },
-	{ id = 959, name = "Trouble at the Docks", level = 18, minLevel = 14, startedBy = "Crane Operator Bigglefuzz", startZone = "The Barrens", startedById = 3665, startedByDisplay = 7051 },
-	{ id = 1487, name = "Deviate Eradication", level = 21, minLevel = 15, startedBy = "Ebru", startZone = "The Barrens", startedById = 5768, startedByDisplay = 4290, rewards = { 6476, 6481, 8071 } },
-	{ id = 914, name = "Leaders of the Fang", level = 22, minLevel = 11, side = "Horde", startedBy = "Nara Wildmane", startZone = "Thunder Bluff", startedById = 5770, startedByDisplay = 4513, rewards = { 6504, 6505 } },
+	{ id = 1489, name = "Hamuul Runetotem", level = 16, minLevel = 12, side = "Horde", startedBy = "Tonga Runetotem", startZone = "The Barrens", startZoneMap = 1413, startedById = 3448, startedByDisplay = 3914 },
+	{ id = 1490, name = "Nara Wildmane", level = 16, minLevel = 12, side = "Horde", startedBy = "Arch Druid Hamuul Runetotem", startZone = "Thunder Bluff", startZoneMap = 1456, startedById = 5769, startedByDisplay = 4519 },
+	{ id = 1486, name = "Deviate Hides", level = 17, minLevel = 13, startedBy = "Nalpak", startZone = "The Barrens", startZoneMap = 1413, startedById = 5767, startedByDisplay = 4289, rewards = { 918, 6480 } },
+	{ id = 962, name = "Serpentbloom", level = 18, minLevel = 14, side = "Horde", startedBy = "Apothecary Zamah", startZone = "Thunder Bluff", startZoneMap = 1456, startedById = 3419, startedByDisplay = 1814, rewards = { 10919 } },
+	{ id = 1491, name = "Smart Drinks", level = 18, minLevel = 13, startedBy = "Mebok Mizzyrix", startZone = "The Barrens", startZoneMap = 1413, startedById = 3446, startedByDisplay = 7034 },
+	{ id = 959, name = "Trouble at the Docks", level = 18, minLevel = 14, startedBy = "Crane Operator Bigglefuzz", startZone = "The Barrens", startZoneMap = 1413, startedById = 3665, startedByDisplay = 7051 },
+	{ id = 1487, name = "Deviate Eradication", level = 21, minLevel = 15, startedBy = "Ebru", startZone = "The Barrens", startZoneMap = 1413, startedById = 5768, startedByDisplay = 4290, rewards = { 6476, 6481, 8071 } },
+	{ id = 914, name = "Leaders of the Fang", level = 22, minLevel = 11, side = "Horde", startedBy = "Nara Wildmane", startZone = "Thunder Bluff", startZoneMap = 1456, startedById = 5770, startedByDisplay = 4513, rewards = { 6504, 6505 } },
 	{ id = 6981, name = "The Glowing Shard", level = 26, minLevel = 15, startedBy = "Plagued Rat", startedById = 10441, startedByDisplay = 1141 },
 })

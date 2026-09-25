@@ -107,10 +107,33 @@ local function BuildRow(row)
 	row.giverText:SetPoint("LEFT")
 	row.giver:SetFontString(row.giverText)
 
-	row.zone = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	row.zone:SetJustifyH("LEFT")
+	row.zone = CreateFrame("Button", nil, row)
+	row.zone:SetHeight(SOURCE_H)
 	row.zone:SetPoint("LEFT", row.giver, "RIGHT", 0, 0)
-	row.zone:SetTextColor(unpack(SUBTLE))
+	row.zoneText = row.zone:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	row.zoneText:SetJustifyH("LEFT")
+	row.zoneText:SetPoint("LEFT")
+	row.zone:SetFontString(row.zoneText)
+
+	--[[
+	Clicking the zone opens the world map there, which is the question the line exists
+	to answer: where do I go to pick this up. Only where the zone resolved to a map id,
+	so the name never looks clickable when nothing would happen.
+	]]
+	row.zone:SetScript("OnClick", function(self)
+		if self.mapID and OpenWorldMap then OpenWorldMap(self.mapID) end
+	end)
+	row.zone:SetScript("OnEnter", function(self)
+		if not self.mapID then return end
+		row.zoneText:SetTextColor(unpack(GOLD))
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Open the map at " .. (self.zoneName or ""), 1, 1, 1)
+		GameTooltip:Show()
+	end)
+	row.zone:SetScript("OnLeave", function()
+		row.zoneText:SetTextColor(unpack(SUBTLE))
+		GameTooltip_Hide()
+	end)
 
 	--[[
 	A tooltip first, then the model beneath it. The reward rows already work this way,
@@ -256,8 +279,13 @@ local function Initializer(row, quest)
 		row.giverText:SetTextColor(unpack(quest.startedByDisplay and GOLD or SUBTLE))
 		row.giver:SetWidth(row.giverText:GetStringWidth() + 2)
 		row.giver:SetAlpha(dim)
-		row.zone:SetText(quest.startZone and (" \226\128\162 " .. quest.startZone) or "")
+		row.zoneText:SetText(quest.startZone and (" \226\128\162 " .. quest.startZone) or "")
+		row.zoneText:SetTextColor(unpack(SUBTLE))
+		row.zone:SetWidth(row.zoneText:GetStringWidth() + 2)
 		row.zone:SetAlpha(dim)
+		row.zone.mapID = quest.startZoneMap
+		row.zone.zoneName = quest.startZone
+		row.zone:EnableMouse(quest.startZoneMap ~= nil)
 		--[[
 		Only a giver we have a model for is worth hovering. Without one the name still
 		shows, in the plain colour, so the row never offers a link that does nothing.
@@ -351,12 +379,7 @@ function component.Show(instance)
 	for _, quest in ipairs(quests) do
 		dataProvider:Insert(quest)
 	end
-	-- Rebuilds happen under the reader, so keep their place in the list.
-	local scrollPercent = scrollbox.GetScrollPercentage and scrollbox:GetScrollPercentage()
 	scrollbox:SetDataProvider(dataProvider)
-	if scrollPercent and scrollPercent > 0 and scrollbox.SetScrollPercentage then
-		scrollbox:SetScrollPercentage(scrollPercent)
-	end
 
 	component.frame.empty:SetShown(#quests == 0)
 	components.EncounterFrame.SetCurrentView(component.frame)
@@ -378,6 +401,26 @@ picking up a quest, and it collapses a burst of twenty events into one rebuild.
 local REFRESH_DELAY = 0.1
 local refreshPending = false
 
+--[[
+Re-draws the rows that are on screen, without touching the data provider.
+
+Replacing the provider rebuilds the list from the top, and these events fire while the
+player is reading: QUEST_LOG_UPDATE many times a second, and GET_ITEM_INFO_RECEIVED once
+per reward as a cold cache fills -- which hovering a row causes more of, because that is
+what requests the item. So the list kept jumping back under the pointer, and scrolling
+fought it every time the mouse moved.
+
+Nothing here changes which quests are in the list, only how they are drawn, so the rows
+already laid out are the right ones to restyle.
+]]
+local function RefreshVisibleRows()
+	if not scrollbox or type(scrollbox.ForEachFrame) ~= "function" then
+		return false
+	end
+	scrollbox:ForEachFrame(Initializer)
+	return true
+end
+
 local function RequestRefresh()
 	if refreshPending then return end
 	if not (component.frame and component.frame:IsShown() and currentInstance) then return end
@@ -385,7 +428,8 @@ local function RequestRefresh()
 	refreshPending = true
 	C_Timer.After(REFRESH_DELAY, function()
 		refreshPending = false
-		if component.frame and component.frame:IsShown() and currentInstance then
+		if not (component.frame and component.frame:IsShown() and currentInstance) then return end
+		if not RefreshVisibleRows() then
 			component.Show(currentInstance)
 		end
 	end)

@@ -124,6 +124,18 @@ def load_zone_names():
     return names
 
 
+def load_area_maps():
+    """AreaTable id -> uiMapID, so the guide can open the map at a quest giver's zone."""
+    path = os.path.join(Q_ROOT, "Database/Zones/data/areaIdToUiMapId.lua")
+    if not os.path.exists(path):
+        return {}
+    text = io.open(path, encoding="utf-8", errors="replace").read()
+    maps = {}
+    for m in re.finditer(r"^\s*\[(\d+)\]\s*=\s*(\d+)", text, re.M):
+        maps[int(m.group(1))] = int(m.group(2))
+    return maps
+
+
 def load_npcs():
     """NPC id -> (name, zone id)."""
     npcs = {}
@@ -176,7 +188,7 @@ def faction_for(races):
     return None      # both, so no marker needed
 
 
-def load_quests_by_area(rewards, npcs, zone_names, displays):
+def load_quests_by_area(rewards, npcs, zone_names, displays, area_maps):
     by_area = {}
     for quest_id, f in rows("Database/Classic/classicQuestDB.lua"):
         area = field(f, 17)
@@ -185,6 +197,7 @@ def load_quests_by_area(rewards, npcs, zone_names, displays):
 
         started_by = field(f, 2)
         start_name, start_zone, start_id, start_display = None, None, None, None
+        start_map = None
         if started_by:
             creatures = re.findall(r"\d+", started_by.split("}")[0])
             if creatures:
@@ -193,6 +206,7 @@ def load_quests_by_area(rewards, npcs, zone_names, displays):
                 start_name = name or None
                 start_zone = zone_names.get(zone) if zone else None
                 start_display = displays.get(start_id)
+                start_map = area_maps.get(zone) if zone else None
 
         level = field(f, 5)
         min_level = field(f, 4)
@@ -206,6 +220,7 @@ def load_quests_by_area(rewards, npcs, zone_names, displays):
             "startedById": start_id if start_name else None,
             "startedByDisplay": start_display if start_name else None,
             "startZone": start_zone,
+            "startZoneMap": start_map if start_zone else None,
             "rewards": sorted(rewards.get(quest_id, [])),
         })
     return by_area
@@ -244,6 +259,8 @@ def render(dungeon_name, quests):
             parts.append("startedBy = %s" % lua_string(q["startedBy"]))
         if q["startZone"]:
             parts.append("startZone = %s" % lua_string(q["startZone"]))
+        if q["startZoneMap"]:
+            parts.append("startZoneMap = %d" % q["startZoneMap"])
         if q["startedById"]:
             parts.append("startedById = %d" % q["startedById"])
         if q["startedByDisplay"]:
@@ -266,7 +283,8 @@ def main():
     npcs = load_npcs()
     rewards = load_quest_rewards()
     displays = load_npc_displays()
-    by_area = load_quests_by_area(rewards, npcs, zone_names, displays)
+    area_maps = load_area_maps()
+    by_area = load_quests_by_area(rewards, npcs, zone_names, displays, area_maps)
 
     src_dir = os.path.join(AG_ROOT, "data", "Dungeons", args.flavour)
     out_dir = os.path.join(AG_ROOT, "data", "Quests", args.flavour)

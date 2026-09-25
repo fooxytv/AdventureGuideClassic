@@ -12,9 +12,9 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Razorfen Kraul", {
-	{ id = 1221, name = "Blueleaf Tubers", level = 26, minLevel = 20, startedBy = "Mebok Mizzyrix", startZone = "The Barrens", startedById = 3446, startedByDisplay = 7034, rewards = { 6755 } },
-	{ id = 1142, name = "Mortality Wanes", level = 30, minLevel = 25, side = "Alliance", startedBy = "Heralath Fallowbrook", startZone = "Razorfen Kraul", startedById = 4510, startedByDisplay = 2596, rewards = { 6751, 6752 } },
-	{ id = 1144, name = "Willix the Importer", level = 30, minLevel = 23, startedBy = "Willix the Importer", startZone = "Razorfen Kraul", startedById = 4508, startedByDisplay = 7155, rewards = { 6748, 6749, 6750 } },
-	{ id = 1102, name = "A Vengeful Fate", level = 34, minLevel = 29, side = "Horde", startedBy = "Auld Stonespire", startZone = "Thunder Bluff", startedById = 4451, startedByDisplay = 4568, rewards = { 4197, 6725, 6742 } },
-	{ id = 1101, name = "The Crone of the Kraul", level = 34, minLevel = 29, side = "Alliance", startedBy = "Falfindel Waywarder", startZone = "Feralas", startedById = 4048, startedByDisplay = 4201, rewards = { 4197, 6725, 6742 } },
+	{ id = 1221, name = "Blueleaf Tubers", level = 26, minLevel = 20, startedBy = "Mebok Mizzyrix", startZone = "The Barrens", startZoneMap = 1413, startedById = 3446, startedByDisplay = 7034, rewards = { 6755 } },
+	{ id = 1142, name = "Mortality Wanes", level = 30, minLevel = 25, side = "Alliance", startedBy = "Heralath Fallowbrook", startZone = "Razorfen Kraul", startZoneMap = 301, startedById = 4510, startedByDisplay = 2596, rewards = { 6751, 6752 } },
+	{ id = 1144, name = "Willix the Importer", level = 30, minLevel = 23, startedBy = "Willix the Importer", startZone = "Razorfen Kraul", startZoneMap = 301, startedById = 4508, startedByDisplay = 7155, rewards = { 6748, 6749, 6750 } },
+	{ id = 1102, name = "A Vengeful Fate", level = 34, minLevel = 29, side = "Horde", startedBy = "Auld Stonespire", startZone = "Thunder Bluff", startZoneMap = 1456, startedById = 4451, startedByDisplay = 4568, rewards = { 4197, 6725, 6742 } },
+	{ id = 1101, name = "The Crone of the Kraul", level = 34, minLevel = 29, side = "Alliance", startedBy = "Falfindel Waywarder", startZone = "Feralas", startZoneMap = 1444, startedById = 4048, startedByDisplay = 4201, rewards = { 4197, 6725, 6742 } },
 })

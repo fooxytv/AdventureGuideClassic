@@ -12,10 +12,10 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Ragefire Chasm", {
-	{ id = 5723, name = "Testing an Enemy's Strength", level = 15, minLevel = 9, side = "Horde", startedBy = "Rahauro", startZone = "Thunder Bluff", startedById = 11833, startedByDisplay = 11754 },
-	{ id = 5728, name = "Hidden Enemies", level = 16, minLevel = 9, side = "Horde", startedBy = "Thrall", startZone = "Orgrimmar", startedById = 4949, startedByDisplay = 4527 },
-	{ id = 5724, name = "Returning the Lost Satchel", level = 16, minLevel = 9, side = "Horde", startedBy = "Maur Grimtotem", startZone = "Ragefire Chasm", startedById = 11834, startedByDisplay = 11755, rewards = { 15452, 15453 } },
-	{ id = 5722, name = "Searching for the Lost Satchel", level = 16, minLevel = 9, side = "Horde", startedBy = "Rahauro", startZone = "Thunder Bluff", startedById = 11833, startedByDisplay = 11754 },
-	{ id = 5761, name = "Slaying the Beast", level = 16, minLevel = 9, side = "Horde", startedBy = "Neeru Fireblade", startZone = "Orgrimmar", startedById = 3216, startedByDisplay = 3754 },
-	{ id = 5725, name = "The Power to Destroy...", level = 16, minLevel = 9, side = "Horde", startedBy = "Varimathras", startZone = "Undercity", startedById = 2425, startedByDisplay = 11658, rewards = { 15449, 15450, 15451 } },
+	{ id = 5723, name = "Testing an Enemy's Strength", level = 15, minLevel = 9, side = "Horde", startedBy = "Rahauro", startZone = "Thunder Bluff", startZoneMap = 1456, startedById = 11833, startedByDisplay = 11754 },
+	{ id = 5728, name = "Hidden Enemies", level = 16, minLevel = 9, side = "Horde", startedBy = "Thrall", startZone = "Orgrimmar", startZoneMap = 1454, startedById = 4949, startedByDisplay = 4527 },
+	{ id = 5724, name = "Returning the Lost Satchel", level = 16, minLevel = 9, side = "Horde", startedBy = "Maur Grimtotem", startZone = "Ragefire Chasm", startZoneMap = 213, startedById = 11834, startedByDisplay = 11755, rewards = { 15452, 15453 } },
+	{ id = 5722, name = "Searching for the Lost Satchel", level = 16, minLevel = 9, side = "Horde", startedBy = "Rahauro", startZone = "Thunder Bluff", startZoneMap = 1456, startedById = 11833, startedByDisplay = 11754 },
+	{ id = 5761, name = "Slaying the Beast", level = 16, minLevel = 9, side = "Horde", startedBy = "Neeru Fireblade", startZone = "Orgrimmar", startZoneMap = 1454, startedById = 3216, startedByDisplay = 3754 },
+	{ id = 5725, name = "The Power to Destroy...", level = 16, minLevel = 9, side = "Horde", startedBy = "Varimathras", startZone = "Undercity", startZoneMap = 1458, startedById = 2425, startedByDisplay = 11658, rewards = { 15449, 15450, 15451 } },
 })
