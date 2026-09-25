@@ -31,6 +31,21 @@ journal rather than reading as a grey box dropped onto it.
 ]]
 local GROUND = { 0.09, 0.075, 0.06 }
 
+--[[
+Not quite opaque, so the parchment grain reads faintly through the panel and it looks
+like part of the page rather than a hole cut in it.
+
+How far this can go is limited. The journal ground is a warm mid-brown, and every
+percent of it that comes through lifts the panel towards it -- which is what made the
+page unreadable when the fill was properly translucent. At 0.9 the texture is just
+visible and the panel still sits near black, so gold and white text keep their contrast.
+]]
+local GROUND_ALPHA = 0.9
+
+-- Steps in the soft edge. Each is a one-pixel line fading outwards, which turns the
+-- boundary from a drawn rectangle into the panel simply running out.
+local FEATHER = 10
+
 local STATE_ICON = {
 	available = "Interface/GossipFrame/AvailableQuestIcon",
 	active    = "Interface/GossipFrame/ActiveQuestIcon",
@@ -360,14 +375,38 @@ function component.Init(components_)
 	]]
 	local HEADER = 34
 	local ground = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
-	ground:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], 1)
+	ground:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], GROUND_ALPHA)
 	ground:SetPoint("TOPLEFT", 2, -HEADER)
 	ground:SetPoint("BOTTOMRIGHT", -2, 2)
 
-	local edge = quests:CreateTexture(nil, "BACKGROUND", nil, 0)
-	edge:SetColorTexture(0, 0, 0, 0.85)
-	edge:SetPoint("TOPLEFT", ground, -1, 1)
-	edge:SetPoint("BOTTOMRIGHT", ground, 1, -1)
+	for step = 1, FEATHER do
+		local alpha = GROUND_ALPHA * (1 - step / (FEATHER + 1))
+		local offset = step - 1
+
+		local top = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
+		top:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		top:SetHeight(1)
+		top:SetPoint("BOTTOMLEFT", ground, "TOPLEFT", 0, offset)
+		top:SetPoint("BOTTOMRIGHT", ground, "TOPRIGHT", 0, offset)
+
+		local bottom = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
+		bottom:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		bottom:SetHeight(1)
+		bottom:SetPoint("TOPLEFT", ground, "BOTTOMLEFT", 0, -offset)
+		bottom:SetPoint("TOPRIGHT", ground, "BOTTOMRIGHT", 0, -offset)
+
+		local left = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
+		left:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		left:SetWidth(1)
+		left:SetPoint("TOPRIGHT", ground, "TOPLEFT", -offset, 0)
+		left:SetPoint("BOTTOMRIGHT", ground, "BOTTOMLEFT", -offset, 0)
+
+		local right = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
+		right:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		right:SetWidth(1)
+		right:SetPoint("TOPLEFT", ground, "TOPRIGHT", offset, 0)
+		right:SetPoint("BOTTOMLEFT", ground, "BOTTOMRIGHT", offset, 0)
+	end
 
 	quests.empty = quests:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	quests.empty:SetPoint("TOPLEFT", 16, -(HEADER + 14))
