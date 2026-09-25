@@ -112,44 +112,9 @@ function component.Init(components_)
 		isModelTabSelected = false
 	end)
 
-	--[[
-		Quests belong to the instance rather than to a boss, so unlike Loot and Model
-		this one is live on the instance page and disabled once an encounter is open.
-
-		Its glyph is a standalone quest icon rather than a crop of
-		UI-EncounterJournalTextures: that sheet has no quest art, and every other
-		texture coordinate in this file was measured against it.
-	]]
-	questTab = AddTab("Quest")
-	EncounterJournal.encounter.info.questTab = questTab
-	questTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
-	questTab.unselected:SetSize(30, 30)
-	questTab.selected:SetSize(30, 30)
-	questTab.unselected:SetTexture("Interface/GossipFrame/AvailableQuestIcon")
-	questTab.selected:SetTexture("Interface/GossipFrame/ActiveQuestIcon")
-	questTab:SetScript("OnEnter", function (self)
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
-		GameTooltip:AddLine("Quests")
-		GameTooltip:Show()
-	end)
-	questTab:SetScript("OnLeave", function ()
-		GameTooltip:Hide()
-	end)
-	questTab:SetScript("OnClick", function()
-		components.QuestList.Show(AdventureGuideNavigationService.GetInstance())
-		selectedTab = questTab
-		component.Refresh()
-		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-		isOverviewTabSelected = false
-		isLootTabSelected = false
-		isQuestTabSelected = true
-		isAbilitiesTabSelected = false
-		isModelTabSelected = false
-	end)
-
 	modelTab = AddTab("Model")
 	EncounterJournal.encounter.info.modelTab = modelTab
-	modelTab:SetPoint("TOP", questTab, "BOTTOM", 0, 2)
+	modelTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
 	modelTab.unselected:SetTexCoord(0.90234375, 1, 0.662109375, 0.705078125)
 	modelTab.selected:SetTexCoord(0.8046875, 0.900390625, 0.662109375, 0.705078125)
 	modelTab:SetScript("OnEnter", function (self)
@@ -170,6 +135,45 @@ function component.Init(components_)
 		isQuestTabSelected = false
 		isAbilitiesTabSelected = false
 		isModelTabSelected = true
+	end)
+
+	--[[
+		Quests belong to the instance rather than to a boss, so unlike Loot and Model
+		this one is live on the instance page and disabled once an encounter is open.
+
+		The icon is a standalone quest texture, not a crop of
+		UI-EncounterJournalTextures: that sheet has no quest art. It needs re-anchoring
+		because AddTab lays its artwork out for that sheet's wide crops, and a square
+		icon left on those anchors sits off to the right.
+	]]
+	questTab = AddTab("Quest")
+	EncounterJournal.encounter.info.questTab = questTab
+	questTab:SetPoint("TOP", modelTab, "BOTTOM", 0, 2)
+	for _, texture in ipairs({ questTab.unselected, questTab.selected }) do
+		texture:ClearAllPoints()
+		texture:SetTexture("Interface/GossipFrame/AvailableQuestIcon")
+		texture:SetSize(25, 25)
+		texture:SetPoint("CENTER", questTab, "CENTER")
+		texture:SetDrawLayer("OVERLAY")
+	end
+	questTab:SetScript("OnEnter", function (self)
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
+		GameTooltip:AddLine("Quests")
+		GameTooltip:Show()
+	end)
+	questTab:SetScript("OnLeave", function ()
+		GameTooltip:Hide()
+	end)
+	questTab:SetScript("OnClick", function()
+		components.QuestList.Show(AdventureGuideNavigationService.GetInstance())
+		selectedTab = questTab
+		component.Refresh()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+		isOverviewTabSelected = false
+		isLootTabSelected = false
+		isQuestTabSelected = true
+		isAbilitiesTabSelected = false
+		isModelTabSelected = false
 	end)
 
 	-- abilitiesTab = AddTab("Abilities")
