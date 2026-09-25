@@ -46,12 +46,6 @@ local GROUND_ALPHA = 0.9
 -- boundary from a drawn rectangle into the panel simply running out.
 local FEATHER = 10
 
-local STATE_ICON = {
-	available = "Interface/GossipFrame/AvailableQuestIcon",
-	active    = "Interface/GossipFrame/ActiveQuestIcon",
-	completed = "Interface/RaidFrame/ReadyCheck-Ready",
-}
-
 -- A quest already in hand or already done is not something to go and pick up, so both
 -- fade. The icon is what separates them, and it stays at full strength so it still
 -- reads against a faded row.
@@ -295,7 +289,7 @@ local function Initializer(row, quest)
 	local state = QuestService.GetState(quest.id)
 	local dim = (state == "active" or state == "completed") and DIMMED_ALPHA or 1
 
-	row.icon:SetTexture(STATE_ICON[state] or STATE_ICON.available)
+	row.icon:SetTexture(QuestService.GetStateIcon(quest.id))
 	row.title:SetText(quest.name or "")
 	row.title:SetAlpha(dim)
 	row.level:SetText(quest.level and tostring(quest.level) or "")

@@ -267,6 +267,15 @@ function component.SelectOverview()
 	isModelTabSelected = false
 end
 
+function component.SelectQuests()
+	selectedTab = questTab
+	isOverviewTabSelected = false
+	isLootTabSelected = false
+	isQuestTabSelected = true
+	isAbilitiesTabSelected = false
+	isModelTabSelected = false
+end
+
 function component.Refresh()
 	selectTab(selectedTab)
 	if (selectedTab ~= overviewTab) then

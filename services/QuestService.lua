@@ -79,6 +79,40 @@ function QuestService.GetQuests(instanceName)
 	return result
 end
 
+--[[
+	The marker for a quest's state: an exclamation mark for one going spare, a question
+	mark for one in the log, a tick for one done.
+
+	Here rather than in the Quests tab because the search results show the same thing,
+	and two copies of this table would drift.
+]]
+local STATE_ICON = {
+	available = "Interface/GossipFrame/AvailableQuestIcon",
+	active    = "Interface/GossipFrame/ActiveQuestIcon",
+	completed = "Interface/RaidFrame/ReadyCheck-Ready",
+}
+
+function QuestService.GetStateIcon(questID)
+	return STATE_ICON[QuestService.GetState(questID)] or STATE_ICON.available
+end
+
+--[[
+	Every quest the addon knows about, paired with the instance it belongs to, faction
+	filtered the same way the tab is. For the search box, which has no instance in hand
+	to ask about.
+]]
+function QuestService.GetAllQuests()
+	local all = { }
+	for instanceName, quests in pairs(byInstance) do
+		for _, quest in ipairs(quests) do
+			if PassesFaction(quest) then
+				table.insert(all, { quest = quest, instanceName = instanceName })
+			end
+		end
+	end
+	return all
+end
+
 function QuestService.HasQuests(instanceName)
 	if not instanceName then return false end
 	local quests = byInstance[instanceName]

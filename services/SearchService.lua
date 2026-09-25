@@ -147,15 +147,52 @@ function SearchService.SearchLoot(searchText, callback)
 	return results
 end
 
+--[[
+	Quests matched on their own name, and on the name of whoever gives them -- someone
+	looking for "Gryan Stoutmantle" wants the quest he hands out as much as someone
+	typing its title does.
+]]
+function SearchService.SearchQuests(searchText)
+	local results = {}
+	if not QuestService or not QuestService.GetAllQuests then return results end
+
+	local searchLower = searchText:lower()
+	for _, entry in ipairs(QuestService.GetAllQuests()) do
+		local quest = entry.quest
+		local name = quest.name or ""
+		local giver = quest.startedBy or ""
+		if name:lower():find(searchLower, 1, true)
+			or giver:lower():find(searchLower, 1, true) then
+			local instance = InstanceService.GetInstanceByName(entry.instanceName)
+			if instance then
+				table.insert(results, {
+					type = "quest",
+					name = name,
+					quest = quest,
+					instance = instance,
+					sourceName = entry.instanceName,
+				})
+			end
+		end
+	end
+
+	table.sort(results, function(a, b)
+		if a.sourceName ~= b.sourceName then return a.sourceName < b.sourceName end
+		return (a.quest.level or 0) < (b.quest.level or 0)
+	end)
+	return results
+end
+
 function SearchService.Search(searchText, callback)
 	if not searchText or searchText == "" or #searchText < 2 then
-		return {}, {}
+		return {}, {}, {}
 	end
 
 	local instanceResults = SearchService.SearchInstances(searchText)
 	local lootResults = SearchService.SearchLoot(searchText, callback)
+	local questResults = SearchService.SearchQuests(searchText)
 
-	return instanceResults, lootResults
+	return instanceResults, lootResults, questResults
 end
 
 function SearchService.ClearSearch()
