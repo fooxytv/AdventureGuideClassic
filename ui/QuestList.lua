@@ -315,6 +315,17 @@ function component.Init(components_)
 	quests:SetPoint("BOTTOMRIGHT", -1, 2)
 
 	--[[
+	Sit above the journal's own furniture.
+
+	Every view on this side of the page is a sibling under EncounterJournal.encounter,
+	and a frame's textures only draw over a sibling's if its level is higher. Taking the
+	default left that to creation order, so whether the dark ground was visible depended
+	on which component happened to be built last -- which is why it came and went.
+	]]
+	local parentLevel = EncounterJournal.encounter:GetFrameLevel() or 0
+	quests:SetFrameLevel(parentLevel + 10)
+
+	--[[
 	The panel fills its side of the journal below the header, rather than floating
 	inside it.
 

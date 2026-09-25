@@ -83,10 +83,14 @@ local function ShowItemPreview(previewItem, anchorFrame)
 	frame.model:SetUnit("player")
 	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
 	frame.model:SetPortraitZoom(PREVIEW_ZOOM)
+	--[[
+	Undress once, not twenty times.
+
+	Undress already strips the model; the nineteen UndressSlot calls that followed it
+	each forced their own re-render, which is the burst of flashes before the preview
+	settles. One call does the same job in one frame.
+	]]
 	frame.model:Undress()
-	for slot = 1, 19 do
-		frame.model:UndressSlot(slot)
-	end
 	C_Timer.After(0.15, function()
 		if frame.model and frame:IsShown() then
 			frame.model:TryOn(previewItem)
