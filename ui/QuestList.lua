@@ -327,7 +327,12 @@ function component.Show(instance)
 	for _, quest in ipairs(quests) do
 		dataProvider:Insert(quest)
 	end
+	-- Rebuilds happen under the reader, so keep their place in the list.
+	local scrollPercent = scrollbox.GetScrollPercentage and scrollbox:GetScrollPercentage()
 	scrollbox:SetDataProvider(dataProvider)
+	if scrollPercent and scrollPercent > 0 and scrollbox.SetScrollPercentage then
+		scrollbox:SetScrollPercentage(scrollPercent)
+	end
 
 	component.frame.empty:SetShown(#quests == 0)
 	components.EncounterFrame.SetCurrentView(component.frame)
@@ -336,16 +341,37 @@ end
 --[[
 Quest state changes while the guide is open -- picking one up, handing it in -- and item
 names arrive late, so the list is rebuilt on both rather than only on show.
+
+Coalesced, because QUEST_LOG_UPDATE fires many times a second and
+GET_ITEM_INFO_RECEIVED arrives once per item as a cold cache fills. Rebuilding on each
+one tore the data provider down under the cursor: the quest giver button beneath the
+pointer went away and came back, so its preview was hidden and re-shown, and the model
+restarted its idle animation every time. That is the stutter.
+
+A tenth of a second is under a frame's notice for a list that only has to keep up with
+picking up a quest, and it collapses a burst of twenty events into one rebuild.
 ]]
+local REFRESH_DELAY = 0.1
+local refreshPending = false
+
+local function RequestRefresh()
+	if refreshPending then return end
+	if not (component.frame and component.frame:IsShown() and currentInstance) then return end
+
+	refreshPending = true
+	C_Timer.After(REFRESH_DELAY, function()
+		refreshPending = false
+		if component.frame and component.frame:IsShown() and currentInstance then
+			component.Show(currentInstance)
+		end
+	end)
+end
+
 local eventFrame = CreateFrame("Frame")
 Compat.RegisterEvents(eventFrame,
 	"QUEST_LOG_UPDATE",
 	"QUEST_TURNED_IN",
 	"GET_ITEM_INFO_RECEIVED")
-eventFrame:SetScript("OnEvent", function()
-	if component.frame and component.frame:IsShown() and currentInstance then
-		component.Show(currentInstance)
-	end
-end)
+eventFrame:SetScript("OnEvent", RequestRefresh)
 
 UI.Add(component)

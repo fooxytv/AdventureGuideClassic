@@ -30,6 +30,7 @@ local CURSOR_GAP = 26
 
 local frame, model, supported
 local currentDisplay
+local lastX, lastY
 
 local function CreatePreview()
 	frame = CreateFrame("Frame", "AdventureGuideClassicNpcPreview", UIParent, "BackdropTemplate")
@@ -79,6 +80,16 @@ local function FollowCursor()
 	if not scale or scale <= 0 then scale = 1 end
 	local x, y = GetCursorPosition()
 	x, y = x / scale, y / scale
+
+	--[[
+	Only move when the pointer has actually moved. Re-anchoring every frame is what a
+	tooltip does, but this frame holds a model, and clearing and resetting its points
+	sixty times a second makes the model jitter even while the cursor is still.
+	]]
+	if lastX and math.abs(x - lastX) < 0.5 and math.abs(y - lastY) < 0.5 then
+		return
+	end
+	lastX, lastY = x, y
 
 	local screenWidth = UIParent:GetWidth() or 0
 	local left = x + CURSOR_GAP
@@ -131,6 +142,7 @@ function component.Show(npc)
 	if type(model.SetPortraitZoom) == "function" then model:SetPortraitZoom(0) end
 
 	frame.title:SetText(npc.name or "")
+	lastX, lastY = nil, nil
 	FollowCursor()
 	frame:Show()
 	return true
