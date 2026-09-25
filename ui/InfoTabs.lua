@@ -112,9 +112,44 @@ function component.Init(components_)
 		isModelTabSelected = false
 	end)
 
+	--[[
+		Quests belong to the instance rather than to a boss, so unlike Loot and Model
+		this one is live on the instance page and disabled once an encounter is open.
+
+		Its glyph is a standalone quest icon rather than a crop of
+		UI-EncounterJournalTextures: that sheet has no quest art, and every other
+		texture coordinate in this file was measured against it.
+	]]
+	questTab = AddTab("Quest")
+	EncounterJournal.encounter.info.questTab = questTab
+	questTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
+	questTab.unselected:SetSize(30, 30)
+	questTab.selected:SetSize(30, 30)
+	questTab.unselected:SetTexture("Interface/GossipFrame/AvailableQuestIcon")
+	questTab.selected:SetTexture("Interface/GossipFrame/ActiveQuestIcon")
+	questTab:SetScript("OnEnter", function (self)
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
+		GameTooltip:AddLine("Quests")
+		GameTooltip:Show()
+	end)
+	questTab:SetScript("OnLeave", function ()
+		GameTooltip:Hide()
+	end)
+	questTab:SetScript("OnClick", function()
+		components.QuestList.Show(AdventureGuideNavigationService.GetInstance())
+		selectedTab = questTab
+		component.Refresh()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+		isOverviewTabSelected = false
+		isLootTabSelected = false
+		isQuestTabSelected = true
+		isAbilitiesTabSelected = false
+		isModelTabSelected = false
+	end)
+
 	modelTab = AddTab("Model")
 	EncounterJournal.encounter.info.modelTab = modelTab
-	modelTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
+	modelTab:SetPoint("TOP", questTab, "BOTTOM", 0, 2)
 	modelTab.unselected:SetTexCoord(0.90234375, 1, 0.662109375, 0.705078125)
 	modelTab.selected:SetTexCoord(0.8046875, 0.900390625, 0.662109375, 0.705078125)
 	modelTab:SetScript("OnEnter", function (self)
@@ -238,6 +273,15 @@ function component.Refresh()
 			unselectTab(lootTab)
 		else
 			disableTab(lootTab)
+		end
+	end
+	if (selectedTab ~= questTab) then
+		local instance = AdventureGuideNavigationService.GetInstance()
+		if (not AdventureGuideNavigationService.GetEncounter()
+			and instance and QuestService.HasQuests(instance.name)) then
+			unselectTab(questTab)
+		else
+			disableTab(questTab)
 		end
 	end
 	if (selectedTab ~= modelTab) then
