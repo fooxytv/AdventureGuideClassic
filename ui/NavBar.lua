@@ -77,8 +77,19 @@ function component.Init(components_)
 	NavBar_Initialize(navBar, "NavButtonTemplate", homeData, navBar.home, navBar.overflow);
 
 	-- Create search EditBox on the right side of NavBar
+	--[[
+	Wide enough for what is in the results now.
+
+	Both were 150, which suited instance names and item names. Quest titles are longer:
+	the median is 18 characters but nine in every hundred run past 28, and the worst is
+	"KILL ON SIGHT: High Ranking Dark Iron Officials" at 47. Rows do not wrap, so
+	anything that does not fit is simply cut off.
+
+	The results panel is the one that needed the room, so it is wider than the box it
+	hangs from, and right-aligned to it.
+	]]
 	searchBox = CreateFrame("EditBox", navBar:GetName() .. "SearchBox", navBar, "SearchBoxTemplate")
-	searchBox:SetSize(150, 20)
+	searchBox:SetSize(200, 20)
 	searchBox:SetPoint("RIGHT", navBar, "RIGHT", -10, 0)
 	searchBox:SetAutoFocus(false)
 	navBar.searchBox = searchBox
@@ -88,7 +99,7 @@ function component.Init(components_)
 	end
 
 	searchResults = CreateFrame("Frame", navBar:GetName() .. "SearchResults", navBar, "BackdropTemplate")
-	searchResults:SetSize(150, 200)
+	searchResults:SetSize(320, 200)
 	searchResults:SetPoint("TOPRIGHT", searchBox, "BOTTOMRIGHT", 0, 2)
 	searchResults:SetBackdrop({
 		bgFile = "Interface\\BUTTONS\\WHITE8X8",
@@ -104,7 +115,7 @@ function component.Init(components_)
 	navBar.searchResults = searchResults
 
 	searchResultsScrollBox = CreateFrame("Frame", nil, searchResults, "WowScrollBoxList")
-	searchResultsScrollBox:SetSize(142, 180)
+	searchResultsScrollBox:SetSize(312, 180)
 	searchResultsScrollBox:SetPoint("TOPLEFT", 4, -4)
 	searchResultsScrollBox:SetPoint("BOTTOMRIGHT", -4, 4)
 
