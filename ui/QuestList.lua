@@ -112,8 +112,20 @@ local function BuildRow(row)
 	row.zone:SetPoint("LEFT", row.giver, "RIGHT", 0, 0)
 	row.zone:SetTextColor(unpack(SUBTLE))
 
+	--[[
+	A tooltip first, then the model beneath it. The reward rows already work this way,
+	the loot tab before them, and hanging both previews off the tooltip puts them in the
+	same place on screen instead of one by the cursor and one by the row.
+	]]
 	row.giver:SetScript("OnEnter", function(self)
-		if self.npc and components and components.NpcPreview then
+		if not self.npc then return end
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(self.npc.name, 1, 0.82, 0)
+		if self.npc.zone then
+			GameTooltip:AddLine(self.npc.zone, 0.62, 0.57, 0.5)
+		end
+		GameTooltip:Show()
+		if components and components.NpcPreview then
 			components.NpcPreview.Show(self.npc)
 		end
 	end)
@@ -121,6 +133,7 @@ local function BuildRow(row)
 		if components and components.NpcPreview then
 			components.NpcPreview.Hide()
 		end
+		GameTooltip_Hide()
 	end)
 
 	row.rewards = { }
@@ -250,7 +263,8 @@ local function Initializer(row, quest)
 		shows, in the plain colour, so the row never offers a link that does nothing.
 		]]
 		row.giver.npc = quest.startedByDisplay
-			and { name = quest.startedBy, display = quest.startedByDisplay }
+			and { name = quest.startedBy, display = quest.startedByDisplay,
+				zone = quest.startZone }
 			or nil
 		row.giver:EnableMouse(row.giver.npc ~= nil)
 	end
@@ -284,8 +298,8 @@ function component.Init(components_)
 	It stops short at the top. The journal draws the instance name in that strip, and
 	running the ground the full height of the column covered it.
 
-	No title of its own either: the header has it, and so does the nav bar, so a third
-	copy cost a row of height the list wanted.
+	The strip it leaves clear carries a heading, so the column says what it is holding.
+	Not the instance name, which the journal header and the nav bar both already show.
 	]]
 	local HEADER = 34
 	local ground = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
@@ -297,6 +311,11 @@ function component.Init(components_)
 	edge:SetColorTexture(0, 0, 0, 0.85)
 	edge:SetPoint("TOPLEFT", ground, -1, 1)
 	edge:SetPoint("BOTTOMRIGHT", ground, 1, -1)
+
+	quests.title = quests:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	quests.title:SetPoint("BOTTOMLEFT", ground, "TOPLEFT", 4, 7)
+	quests.title:SetText("Quests")
+	quests.title:SetTextColor(unpack(GOLD))
 
 	quests.empty = quests:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	quests.empty:SetPoint("TOPLEFT", 16, -(HEADER + 14))

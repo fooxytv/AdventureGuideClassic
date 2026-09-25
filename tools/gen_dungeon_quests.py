@@ -75,6 +75,22 @@ def field(fields, index):
     return None if value in ("", "nil") else value
 
 
+def unquote(value):
+    """
+    A Questie string with its Lua quoting removed.
+
+    Names are single-quoted in the NPC table and double-quoted in the quest table, and
+    an apostrophe inside a single-quoted one arrives escaped, as in Zaetar's Spirit.
+    Stripping the outer quotes alone leaves that backslash in the name.
+    """
+    if not value:
+        return ""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+        value = value[1:-1]
+    return value.replace("\\'", "'").replace('\\"', '"').replace("\\\\", "\\")
+
+
 def load_dungeon_areas():
     """
     Dungeon name -> [areaID, subAreaID...].
@@ -114,7 +130,7 @@ def load_npcs():
     for npc_id, f in rows("Database/Classic/classicNpcDB.lua"):
         zone = field(f, 9)
         npcs[npc_id] = (
-            (field(f, 1) or "").strip("'\""),
+            unquote(field(f, 1)),
             int(zone) if zone and zone.isdigit() else None,
         )
     return npcs
@@ -182,7 +198,7 @@ def load_quests_by_area(rewards, npcs, zone_names, displays):
         min_level = field(f, 4)
         by_area.setdefault(int(area), []).append({
             "id": quest_id,
-            "name": (field(f, 1) or "").strip("'\""),
+            "name": unquote(field(f, 1)),
             "level": int(level) if level and level.isdigit() else None,
             "minLevel": int(min_level) if min_level and min_level.isdigit() else None,
             "side": faction_for(field(f, 6)),

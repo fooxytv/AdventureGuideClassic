@@ -12,7 +12,7 @@ edit by hand; re-run the tool instead.
 select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Maraudon", {
-	{ id = 7068, name = "Shadowshard Fragments", level = 42, minLevel = 38, side = "Horde", startedBy = "Uthel\\'nay", startZone = "Orgrimmar", startedById = 7311, startedByDisplay = 6060, rewards = { 17772, 17773 } },
+	{ id = 7068, name = "Shadowshard Fragments", level = 42, minLevel = 38, side = "Horde", startedBy = "Uthel'nay", startZone = "Orgrimmar", startedById = 7311, startedByDisplay = 6060, rewards = { 17772, 17773 } },
 	{ id = 7070, name = "Shadowshard Fragments", level = 42, minLevel = 38, side = "Alliance", startedBy = "Archmage Tervosh", startZone = "Dustwallow Marsh", startedById = 4967, startedByDisplay = 2969, rewards = { 17772, 17773 } },
 	{ id = 7028, name = "Twisted Evils", level = 47, minLevel = 41, startedBy = "Willow", startZone = "Desolace", startedById = 13656, startedByDisplay = 13909, rewards = { 17775, 17776, 17777, 17779 } },
 	{ id = 7029, name = "Vyletongue Corruption", level = 47, minLevel = 41, side = "Horde", startedBy = "Vark Battlescar", startZone = "Desolace", startedById = 11823, startedByDisplay = 11738, rewards = { 17768, 17770, 17778 } },
@@ -22,5 +22,5 @@ QuestService.Register("Maraudon", {
 	{ id = 7046, name = "The Scepter of Celebras", level = 49, minLevel = 41, startedBy = "Celebras the Redeemed", startedById = 13716, startedByDisplay = 13715, rewards = { 17191 } },
 	{ id = 7064, name = "Corruption of Earth and Seed", level = 51, minLevel = 45, side = "Horde", startedBy = "Selendra", startZone = "Desolace", startedById = 13699, startedByDisplay = 13672, rewards = { 17705, 17743, 17753 } },
 	{ id = 7065, name = "Corruption of Earth and Seed", level = 51, minLevel = 45, side = "Alliance", startedBy = "Keeper Marandis", startZone = "Desolace", startedById = 13698, startedByDisplay = 150, rewards = { 17705, 17743, 17753 } },
-	{ id = 7066, name = "Seed of Life", level = 51, minLevel = 45, startedBy = "Zaetar\\'s Spirit", startedById = 12238, startedByDisplay = 12369 },
+	{ id = 7066, name = "Seed of Life", level = 51, minLevel = 45, startedBy = "Zaetar's Spirit", startedById = 12238, startedByDisplay = 12369 },
 })

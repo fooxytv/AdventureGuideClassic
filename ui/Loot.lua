@@ -13,7 +13,8 @@ local components
 local lootContainer
 local lootScrollBox
 local previewFrame
-local rotationSpeed = 0.5
+-- A three-quarter view, so the model is not square-on to the camera.
+local PREVIEW_ROTATION = 0.45
 local pendingItemIds = {}
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
@@ -57,12 +58,15 @@ local function CreatePreviewFrame()
 	frame.model = CreateFrame("DressUpModel", nil, frame)
 	frame.model:SetSize(190, 260)
 	frame.model:SetPoint("CENTER", 0, 5)
-	frame.cameraAngle = 0
+	--[[
+	The model holds still.
+
+	It used to turn continuously, a SetRotation every frame, which read as a flicker
+	rather than a turn: the model re-renders on each call and at this size the
+	difference between one frame and the next is too small to look like movement. A
+	fixed three-quarter view shows the piece better than a slow spin did.
+	]]
 	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
-	frame:SetScript("OnUpdate", function(self, elapsed)
-		self.cameraAngle = self.cameraAngle + (rotationSpeed * elapsed)
-		self.model:SetRotation(self.cameraAngle)
-	end)
 	previewFrame = frame
 	return frame
 end
@@ -88,7 +92,9 @@ local function ShowItemPreview(previewItem, anchorFrame)
 			frame.model:TryOn(previewItem)
 		end
 	end)
-	frame.cameraAngle = 0
+	if type(frame.model.SetRotation) == "function" then
+		frame.model:SetRotation(PREVIEW_ROTATION)
+	end
 end
 
 local function HideItemPreview()

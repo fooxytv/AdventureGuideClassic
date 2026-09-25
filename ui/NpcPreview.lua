@@ -26,11 +26,9 @@ Quests tab leaves the text plain rather than offering links that do nothing.
 local component = UI.CreateComponent("NpcPreview")
 
 local FRAME_WIDTH, FRAME_HEIGHT = 190, 210
-local CURSOR_GAP = 26
 
 local frame, model, supported
 local currentDisplay
-local lastX, lastY
 
 local function CreatePreview()
 	frame = CreateFrame("Frame", "AdventureGuideClassicNpcPreview", UIParent, "BackdropTemplate")
@@ -79,46 +77,25 @@ local function CreatePreview()
 end
 
 --[[
-Beside the cursor, on whichever side there is room for it.
+Under the tooltip of whatever is being hovered, which is where the gear preview in the
+loot tab puts itself.
 
-GetCursorPosition reports in screen pixels, so it has to be divided by the effective
-scale before it means anything to a frame anchored on UIParent -- a UI scale other than
-1 otherwise puts the preview a long way from the pointer.
+It used to follow the cursor. That put it under the pointer, where it took the scroll
+wheel from the list behind it, and it re-anchored every frame, which made the model
+jitter. Hanging it off the tooltip instead means both previews appear in the same place
+and neither is ever beneath the cursor.
 ]]
-local function FollowCursor()
-	local scale = UIParent:GetEffectiveScale()
-	if not scale or scale <= 0 then scale = 1 end
-	local x, y = GetCursorPosition()
-	x, y = x / scale, y / scale
-
-	--[[
-	Only move when the pointer has actually moved. Re-anchoring every frame is what a
-	tooltip does, but this frame holds a model, and clearing and resetting its points
-	sixty times a second makes the model jitter even while the cursor is still.
-	]]
-	if lastX and math.abs(x - lastX) < 0.5 and math.abs(y - lastY) < 0.5 then
-		return
-	end
-	lastX, lastY = x, y
-
-	local screenWidth = UIParent:GetWidth() or 0
-	local left = x + CURSOR_GAP
-	if left + FRAME_WIDTH > screenWidth then
-		left = x - CURSOR_GAP - FRAME_WIDTH
-	end
-	local bottom = y - FRAME_HEIGHT / 2
-	if bottom < 8 then bottom = 8 end
-
+local function AnchorToTooltip()
 	frame:ClearAllPoints()
-	frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", left, bottom)
+	if GameTooltip and GameTooltip:IsShown() then
+		frame:SetPoint("TOP", GameTooltip, "BOTTOM", 0, -5)
+	else
+		frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	end
 end
 
 function component.Init()
 	CreatePreview()
-	if not frame then return end
-	frame:SetScript("OnUpdate", function()
-		if frame:IsShown() then FollowCursor() end
-	end)
 end
 
 function component.IsSupported()
@@ -152,8 +129,7 @@ function component.Show(npc)
 	if type(model.SetPortraitZoom) == "function" then model:SetPortraitZoom(0) end
 
 	frame.title:SetText(npc.name or "")
-	lastX, lastY = nil, nil
-	FollowCursor()
+	AnchorToTooltip()
 	frame:Show()
 	return true
 end

@@ -13,14 +13,14 @@ select(2, ...).SetupGlobalFacade()
 
 QuestService.Register("Blackfathom Deeps", {
 	{ id = 6564, name = "Allegiance to the Old Gods", level = 22, minLevel = 17, side = "Horde" },
-	{ id = 6563, name = "The Essence of Aku'Mai", level = 22, minLevel = 17, side = "Horde", startedBy = "Je\\'neu Sancrea", startZone = "Ashenvale", startedById = 12736, startedByDisplay = 12953 },
+	{ id = 6563, name = "The Essence of Aku'Mai", level = 22, minLevel = 17, side = "Horde", startedBy = "Je'neu Sancrea", startZone = "Ashenvale", startedById = 12736, startedByDisplay = 12953 },
 	{ id = 6562, name = "Trouble in the Deeps", level = 22, minLevel = 17, side = "Horde", startedBy = "Tsunaman", startZone = "Stonetalon Mountains", startedById = 11862, startedByDisplay = 5562 },
 	{ id = 971, name = "Knowledge in the Deeps", level = 23, minLevel = 10, side = "Alliance", startedBy = "Gerrig Bonegrip", startZone = "Ironforge", startedById = 2786, startedByDisplay = 3599, rewards = { 6743 } },
 	{ id = 1198, name = "In Search of Thaelrid", level = 24, minLevel = 18, side = "Alliance", startedBy = "Dawnwatcher Shaedlass", startZone = "Darnassus", startedById = 4786, startedByDisplay = 5225 },
 	{ id = 1275, name = "Researching the Corruption", level = 24, minLevel = 18, side = "Alliance", startedBy = "Gershala Nightwhisper", startZone = "Darkshore", startedById = 8997, startedByDisplay = 8229, rewards = { 7003, 7004 } },
 	{ id = 1199, name = "Twilight Falls", level = 25, minLevel = 20, side = "Alliance", startedBy = "Argent Guard Manados", startZone = "Darnassus", startedById = 4784, startedByDisplay = 5084, rewards = { 6998, 7000 } },
-	{ id = 6565, name = "Allegiance to the Old Gods", level = 26, minLevel = 17, side = "Horde", startedBy = "Je\\'neu Sancrea", startZone = "Ashenvale", startedById = 12736, startedByDisplay = 12953, rewards = { 17694, 17695 } },
-	{ id = 6921, name = "Amongst the Ruins", level = 27, minLevel = 21, side = "Horde", startedBy = "Je\\'neu Sancrea", startZone = "Ashenvale", startedById = 12736, startedByDisplay = 12953 },
+	{ id = 6565, name = "Allegiance to the Old Gods", level = 26, minLevel = 17, side = "Horde", startedBy = "Je'neu Sancrea", startZone = "Ashenvale", startedById = 12736, startedByDisplay = 12953, rewards = { 17694, 17695 } },
+	{ id = 6921, name = "Amongst the Ruins", level = 27, minLevel = 21, side = "Horde", startedBy = "Je'neu Sancrea", startZone = "Ashenvale", startedById = 12736, startedByDisplay = 12953 },
 	{ id = 1200, name = "Blackfathom Villainy", level = 27, minLevel = 18, side = "Alliance", startedBy = "Argent Guard Thaelrid", startZone = "Blackfathom Deeps", startedById = 4787, startedByDisplay = 4946, rewards = { 7001, 7002 } },
 	{ id = 6561, name = "Blackfathom Villainy", level = 27, minLevel = 18, side = "Horde", startedBy = "Argent Guard Thaelrid", startZone = "Blackfathom Deeps", startedById = 4787, startedByDisplay = 4946, rewards = { 7001, 7002 } },
 })
