@@ -337,8 +337,11 @@ function component.Init(components_)
 	It stops short at the top. The journal draws the instance name in that strip, and
 	running the ground the full height of the column covered it.
 
-	The strip it leaves clear carries a heading, so the column says what it is holding.
-	Not the instance name, which the journal header and the nav bar both already show.
+	The strip it leaves clear stays clear. It belongs to the journal's own instance
+	title -- covering it is what made the panel wrong in the first place -- so a heading
+	of ours competes with that for the same few pixels, and gets clipped by the frame's
+	top edge into the bargain. The tab's own icon says which view this is, and the nav
+	bar says which instance.
 	]]
 	local HEADER = 34
 	local ground = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
@@ -351,11 +354,6 @@ function component.Init(components_)
 	edge:SetPoint("TOPLEFT", ground, -1, 1)
 	edge:SetPoint("BOTTOMRIGHT", ground, 1, -1)
 
-	quests.title = quests:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	quests.title:SetPoint("BOTTOMLEFT", ground, "TOPLEFT", 4, 7)
-	quests.title:SetText("Quests")
-	quests.title:SetTextColor(unpack(GOLD))
-
 	quests.empty = quests:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	quests.empty:SetPoint("TOPLEFT", 16, -(HEADER + 14))
 	quests.empty:SetPoint("TOPRIGHT", -16, -(HEADER + 14))
@@ -367,6 +365,14 @@ function component.Init(components_)
 	scrollbox = CreateFrame("Frame", nil, quests, "WowScrollBoxList")
 	scrollbox:SetPoint("TOPLEFT", 6, -(HEADER + 6))
 	scrollbox:SetPoint("BOTTOMRIGHT", -20, 8)
+	--[[
+	Clip to the box. Without this a row scrolled half out of view keeps drawing past the
+	top of the panel and onto the parchment above it, which is the fragment of the
+	previous quest that was sitting in the header strip.
+	]]
+	if type(scrollbox.SetClipsChildren) == "function" then
+		scrollbox:SetClipsChildren(true)
+	end
 
 	local scrollbar = CreateFrame("EventFrame", nil, quests, "MinimalScrollBar")
 	scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 6, 0)
