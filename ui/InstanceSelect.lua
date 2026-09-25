@@ -116,7 +116,17 @@ function component.Init(components_)
 		button.instance = instance
 		button.instanceID = instance.instanceID
 		button.name:SetText(instance.name);
-		button.bgImage:SetTexture(instance.thumbnail);
+		--[[
+		An instance with no art of its own gets a plain dark tile, not a stand-in
+		texture. The name is drawn over the top either way, so the tile reads as one
+		that has not been illustrated yet rather than as one whose picture failed to
+		load -- which is how the question-mark placeholder read.
+		]]
+		if instance.thumbnail then
+			button.bgImage:SetTexture(instance.thumbnail)
+		else
+			button.bgImage:SetColorTexture(0.10, 0.09, 0.08, 1)
+		end
 		button:Show()
 	end
 	local view = CreateScrollBoxListGridView(4, 4, 0, 0, 0, 15, 15)
