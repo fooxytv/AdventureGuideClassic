@@ -55,16 +55,11 @@ local function CreatePreview()
 	frame.title:SetJustifyH("CENTER")
 	frame.title:SetWordWrap(true)
 
-	frame.subtitle = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	frame.subtitle:SetPoint("BOTTOMLEFT", 8, 8)
-	frame.subtitle:SetPoint("BOTTOMRIGHT", -8, 8)
-	frame.subtitle:SetJustifyH("CENTER")
-
 	local ok, created = pcall(CreateFrame, "PlayerModel", nil, frame)
 	if ok and created and type(created.SetDisplayInfo) == "function" then
 		model = created
 		model:SetPoint("TOPLEFT", 8, -26)
-		model:SetPoint("BOTTOMRIGHT", -8, 22)
+		model:SetPoint("BOTTOMRIGHT", -8, 8)
 		supported = true
 	else
 		supported = false
@@ -136,7 +131,6 @@ function component.Show(npc)
 	if type(model.SetPortraitZoom) == "function" then model:SetPortraitZoom(0) end
 
 	frame.title:SetText(npc.name or "")
-	frame.subtitle:SetText("Drag to turn")
 	FollowCursor()
 	frame:Show()
 	return true

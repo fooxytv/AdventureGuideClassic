@@ -97,6 +97,19 @@ local function HideItemPreview()
 	end
 end
 
+--[[
+	Exposed so the Quests tab can preview a reward on the character without standing up
+	a second DressUpModel. One preview frame, one place that knows how to undress the
+	model before trying an item on.
+]]
+function component.PreviewItem(link)
+	ShowItemPreview(link)
+end
+
+function component.HidePreview()
+	HideItemPreview()
+end
+
 local function GetPreviewTarget(lootItem)
 	if not lootItem then return nil end
 	if lootItem.itemId and TierTokenService and TierTokenService.IsToken(lootItem.itemId) then

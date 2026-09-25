@@ -24,32 +24,12 @@ end
 --[[
 A flat colour behind the panel rather than a texture.
 
-InsetFrameTemplate brings a translucent background of its own, and over the journal
-parchment that lands at a warm mid-brown, which is what made this page hard to read
-however the type was set. So hide the template's background and paint a solid colour
-inside the border instead: near-black, biased warm so it belongs to the journal rather
-than reading as a grey box dropped onto it.
-
-The fill sits high within BACKGROUND, above the template's own background at sublevel 0.
-Below it and the translucent texture simply draws over the top. It need not be below the
-content: the rows are child frames, and a child frame always draws above its parent's
-textures.
+The journal parchment shows through anything translucent laid over it, landing at a
+warm mid-brown that gold and white text cannot sit on however the type is set. So the
+panel paints a solid colour instead: near-black, biased warm so it belongs to the
+journal rather than reading as a grey box dropped onto it.
 ]]
 local GROUND = { 0.09, 0.075, 0.06 }
-
-local function AddDarkGround(inset)
-	for _, key in ipairs({ "Bg", "bg", "InsetBg" }) do
-		local texture = rawget(inset, key)
-		if type(texture) == "table" and type(texture.Hide) == "function" then
-			texture:Hide()
-		end
-	end
-	local fill = inset:CreateTexture(nil, "BACKGROUND", nil, 7)
-	fill:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], 1)
-	fill:SetPoint("TOPLEFT", 3, -3)
-	fill:SetPoint("BOTTOMRIGHT", -3, 3)
-	return fill
-end
 
 local STATE_ICON = {
 	available = "Interface/GossipFrame/AvailableQuestIcon",
@@ -96,7 +76,7 @@ local function BuildRow(row)
 	row.rule:SetHeight(1)
 	row.rule:SetPoint("BOTTOMLEFT", PAD_X, 0)
 	row.rule:SetPoint("BOTTOMRIGHT", -PAD_X, 0)
-	row.rule:SetColorTexture(1, 1, 1, 0.055)
+	row.rule:SetColorTexture(1, 0.92, 0.75, 0.16)
 
 	row.icon = row:CreateTexture(nil, "ARTWORK")
 	row.icon:SetSize(ICON, ICON)
@@ -147,6 +127,47 @@ local function BuildRow(row)
 	row.initialized = true
 end
 
+--[[
+A reward behaves like a loot row: its tooltip on hover, and holding Ctrl dresses the
+preview model in it. The preview frame belongs to the Loot component rather than being
+stood up again here, so there is one model and one place that knows how to undress it
+first.
+]]
+local function RewardOnEnter(self)
+	if not self.link then return end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	GameTooltip:SetHyperlink(self.link)
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddLine("|cffaaaaaa(Hold Ctrl to preview)|r")
+	GameTooltip:Show()
+	self.checkCtrl = true
+end
+
+local function RewardOnLeave(self)
+	self.checkCtrl = false
+	self.wasCtrlDown = false
+	if components and components.Loot then components.Loot.HidePreview() end
+	GameTooltip_Hide()
+end
+
+local function RewardOnUpdate(self)
+	if not self.checkCtrl then return end
+	local down = IsControlKeyDown()
+	if down and not self.wasCtrlDown then
+		if components and components.Loot then components.Loot.PreviewItem(self.link) end
+		self.wasCtrlDown = true
+	elseif not down and self.wasCtrlDown then
+		if components and components.Loot then components.Loot.HidePreview() end
+		self.wasCtrlDown = false
+	end
+end
+
+local function RewardOnClick(self)
+	if self.link and IsControlKeyDown() and DressUpItemLink then
+		DressUpItemLink(self.link)
+	end
+end
+
 local function SetRewards(row, rewards, anchor)
 	for _, reward in ipairs(row.rewards) do
 		reward:Hide()
@@ -156,8 +177,13 @@ local function SetRewards(row, rewards, anchor)
 	for index, itemId in ipairs(rewards) do
 		local reward = row.rewards[index]
 		if not reward then
-			reward = CreateFrame("Frame", nil, row)
+			reward = CreateFrame("Button", nil, row)
 			reward:SetHeight(REWARD_H)
+			reward:RegisterForClicks("LeftButtonUp")
+			reward:SetScript("OnEnter", RewardOnEnter)
+			reward:SetScript("OnLeave", RewardOnLeave)
+			reward:SetScript("OnUpdate", RewardOnUpdate)
+			reward:SetScript("OnClick", RewardOnClick)
 			reward.icon = reward:CreateTexture(nil, "ARTWORK")
 			reward.icon:SetSize(13, 13)
 			reward.icon:SetPoint("LEFT")
@@ -172,10 +198,12 @@ local function SetRewards(row, rewards, anchor)
 		is opened. A missing one is requested and the row shows its icon alone until the
 		cache answers; the component refreshes on GET_ITEM_INFO_RECEIVED.
 		]]
-		local name, _, quality, _, _, _, _, _, _, icon = GetItemInfoCompat(itemId)
+		local name, link, quality, _, _, _, _, _, _, icon = GetItemInfoCompat(itemId)
 		if not name then
 			RequestLoadItemDataCompat(itemId)
 		end
+		reward.itemId = itemId
+		reward.link = link
 		reward.icon:SetTexture(icon or "Interface/Icons/INV_Misc_QuestionMark")
 		reward.label:SetText(name or "")
 		local color = quality and ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[quality]
@@ -233,7 +261,6 @@ local function Initializer(row, quest)
 		reward:SetAlpha(dim)
 	end
 
-	row:SetHeight(RowHeight(quest))
 end
 
 function component.Init(components_)
@@ -245,29 +272,40 @@ function component.Init(components_)
 	quests:SetSize(390, 425)
 	quests:SetPoint("BOTTOMRIGHT", -1, 2)
 
-	quests.title = quests:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	quests.title:SetPoint("TOPLEFT", 16, -12)
-	quests.title:SetTextColor(unpack(GOLD))
+	--[[
+	The panel fills its whole side of the journal rather than floating inside it.
 
-	local inset = CreateFrame("Frame", nil, quests, "InsetFrameTemplate")
-	inset:SetPoint("TOPLEFT", 8, -36)
-	inset:SetPoint("BOTTOMRIGHT", -8, 8)
-	AddDarkGround(inset)
-	quests.inset = inset
+	InsetFrameTemplate was drawing a second border within the journal's own inset, so
+	the dark ground read as a box dropped onto the page with parchment showing round
+	it. The ground now runs edge to edge over the same footprint InstanceOverview uses,
+	with a one-pixel dark line round it to seat it in the page instead of a frame.
 
-	quests.empty = inset:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	quests.empty:SetPoint("TOPLEFT", 14, -14)
-	quests.empty:SetPoint("TOPRIGHT", -14, -14)
+	No title of its own either: the journal already names the instance in its header and
+	in the nav bar, and a third copy cost a row of height the list wanted.
+	]]
+	local ground = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
+	ground:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], 1)
+	ground:SetPoint("TOPLEFT", 2, -2)
+	ground:SetPoint("BOTTOMRIGHT", -2, 2)
+
+	local edge = quests:CreateTexture(nil, "BACKGROUND", nil, 0)
+	edge:SetColorTexture(0, 0, 0, 0.85)
+	edge:SetPoint("TOPLEFT", ground, -1, 1)
+	edge:SetPoint("BOTTOMRIGHT", ground, 1, -1)
+
+	quests.empty = quests:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	quests.empty:SetPoint("TOPLEFT", 16, -16)
+	quests.empty:SetPoint("TOPRIGHT", -16, -16)
 	quests.empty:SetJustifyH("LEFT")
 	quests.empty:SetText("No dungeon quests are known for this instance.")
 	quests.empty:SetTextColor(unpack(SUBTLE))
 	quests.empty:Hide()
 
-	scrollbox = CreateFrame("Frame", nil, inset, "WowScrollBoxList")
-	scrollbox:SetPoint("TOPLEFT", 8, -8)
+	scrollbox = CreateFrame("Frame", nil, quests, "WowScrollBoxList")
+	scrollbox:SetPoint("TOPLEFT", 6, -8)
 	scrollbox:SetPoint("BOTTOMRIGHT", -20, 8)
 
-	local scrollbar = CreateFrame("EventFrame", nil, inset, "MinimalScrollBar")
+	local scrollbar = CreateFrame("EventFrame", nil, quests, "MinimalScrollBar")
 	scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 6, 0)
 	scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 6, 0)
 
@@ -292,7 +330,6 @@ function component.Show(instance)
 	scrollbox:SetDataProvider(dataProvider)
 
 	component.frame.empty:SetShown(#quests == 0)
-	component.frame.title:SetText(instance and instance.name or "Quests")
 	components.EncounterFrame.SetCurrentView(component.frame)
 end
 
