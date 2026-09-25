@@ -65,7 +65,10 @@ local DIMMED_ALPHA = 0.45
 local GOLD = { 1, 0.82, 0 }
 local SUBTLE = { 0.62, 0.57, 0.5 }
 
-local PAD = 9
+-- Without a border the rule is the only separator, so the vertical gap is what keeps
+-- one quest from reading as part of the next.
+local PAD_X = 10
+local PAD_Y = 8
 local ICON = 16
 local TITLE_H = 16
 local SOURCE_H = 15
@@ -73,32 +76,35 @@ local REWARD_H = 17
 
 local function RowHeight(quest)
 	local rewards = quest.rewards and #quest.rewards or 0
-	return PAD + TITLE_H
+	return PAD_Y + TITLE_H
 		+ (quest.startedBy and SOURCE_H or 0)
 		+ rewards * REWARD_H
-		+ PAD
+		+ PAD_Y
 end
 
+--[[
+Quests are separated by a hairline rather than boxed.
+
+A bordered panel per quest is what the quest-chain browser on feature/suggested-content
+uses, but that is a full page with a 232px rail and rows that carry hover and selection
+states. This is a 390px tab with no row interaction and as many as 41 quests in
+Blackrock Depths: forty-one nested borders inside an already bordered inset reads as
+noise, and the edge art costs width the reward names need.
+]]
 local function BuildRow(row)
-	row.hasBackdrop = type(row.SetBackdrop) == "function"
-	if row.hasBackdrop then
-		row:SetBackdrop({
-			bgFile = "Interface/Buttons/WHITE8X8",
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-			tile = true, tileSize = 8, edgeSize = 12,
-			insets = { left = 3, right = 3, top = 3, bottom = 3 },
-		})
-		row:SetBackdropColor(1, 1, 1, 0.025)
-		row:SetBackdropBorderColor(0.45, 0.38, 0.26, 0.9)
-	end
+	row.rule = row:CreateTexture(nil, "ARTWORK")
+	row.rule:SetHeight(1)
+	row.rule:SetPoint("BOTTOMLEFT", PAD_X, 0)
+	row.rule:SetPoint("BOTTOMRIGHT", -PAD_X, 0)
+	row.rule:SetColorTexture(1, 1, 1, 0.055)
 
 	row.icon = row:CreateTexture(nil, "ARTWORK")
 	row.icon:SetSize(ICON, ICON)
-	row.icon:SetPoint("TOPLEFT", PAD, -PAD)
+	row.icon:SetPoint("TOPLEFT", PAD_X, -PAD_Y)
 
 	row.level = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 	row.level:SetJustifyH("RIGHT")
-	row.level:SetPoint("TOPRIGHT", -PAD, -PAD)
+	row.level:SetPoint("TOPRIGHT", -PAD_X, -PAD_Y)
 
 	row.title = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	row.title:SetJustifyH("LEFT")
@@ -181,7 +187,7 @@ local function SetRewards(row, rewards, anchor)
 
 		reward:ClearAllPoints()
 		reward:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", index == 1 and 2 or 0, index == 1 and -3 or 0)
-		reward:SetPoint("RIGHT", row, "RIGHT", -PAD, 0)
+		reward:SetPoint("RIGHT", row, "RIGHT", -PAD_X, 0)
 		reward:Show()
 		anchor = reward
 	end
@@ -266,7 +272,7 @@ function component.Init(components_)
 	scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 6, 0)
 
 	local view = CreateScrollBoxListLinearView()
-	view:SetElementInitializer("Button", Initializer)
+	view:SetElementInitializer("Frame", Initializer)
 	view:SetElementExtentCalculator(function(_, quest) return RowHeight(quest) end)
 	view:SetPadding(2, 2, 0, 0, 4)
 	ScrollUtil.InitScrollBoxWithScrollBar(scrollbox, scrollbar, view)
