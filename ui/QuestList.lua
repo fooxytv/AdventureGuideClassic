@@ -204,11 +204,26 @@ local function RewardOnClick(self)
 	end
 end
 
+--[[
+Only the surplus buttons are hidden.
+
+Hiding every reward and showing them all again looks harmless, but hiding a frame under
+the cursor fires its OnLeave and showing it back fires its OnEnter. A refresh under the
+pointer therefore put the hovered reward through leave-and-enter, which cleared the
+Ctrl-held flag and set it again, and the next frame started the preview over: undress,
+wait, try on. Refreshes come from GET_ITEM_INFO_RECEIVED, which is what hovering a
+reward causes in the first place, so previewing an item in a cold cache restarted itself
+once per item that arrived -- and settled the moment the cache was warm.
+
+Showing a frame that is already shown does nothing at all, so the ones that stay are
+left alone and only their contents are rewritten.
+]]
 local function SetRewards(row, rewards, anchor)
-	for _, reward in ipairs(row.rewards) do
-		reward:Hide()
+	local wanted = rewards and #rewards or 0
+	for index = wanted + 1, #row.rewards do
+		row.rewards[index]:Hide()
 	end
-	if not rewards then return end
+	if wanted == 0 then return end
 
 	for index, itemId in ipairs(rewards) do
 		local reward = row.rewards[index]

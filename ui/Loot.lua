@@ -71,6 +71,8 @@ local function CreatePreviewFrame()
 	return frame
 end
 
+local previewedItem
+
 local function ShowItemPreview(previewItem, anchorFrame)
 	if not previewItem then return end
 	local frame = CreatePreviewFrame()
@@ -80,6 +82,15 @@ local function ShowItemPreview(previewItem, anchorFrame)
 	frame:ClearAllPoints()
 	frame:SetPoint("TOP", GameTooltip, "BOTTOM", 0, -5)
 	frame:Show()
+
+	--[[
+	Asking for the item already on the model is not a request to put it on again.
+	Redressing means undressing first and waiting for the model to catch up, which is
+	visible as a flash, so a repeat call only re-anchors and leaves the model alone.
+	]]
+	if previewedItem == previewItem then return end
+	previewedItem = previewItem
+
 	frame.model:SetUnit("player")
 	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
 	frame.model:SetPortraitZoom(PREVIEW_ZOOM)
@@ -102,6 +113,7 @@ local function ShowItemPreview(previewItem, anchorFrame)
 end
 
 local function HideItemPreview()
+	previewedItem = nil
 	if previewFrame then
 		previewFrame:Hide()
 	end
