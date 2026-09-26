@@ -195,6 +195,14 @@ requests. Review changes to `CLAUDE.md` with the same care as code, and be suspi
 any that arrive alongside unrelated changes. Never put credentials, tokens or private
 URLs in it.
 
+## Commit and pull request attribution
+
+Commits and pull requests made by an agent end with a `Co-Authored-By:` line and nothing
+else. Do not add a `Claude-Session:` trailer, or a session URL to a pull request body.
+Those links are not readable without authentication, so they leak no conversation, but
+this repository is public and a session identifier is not something the maintainer has
+chosen to publish permanently in git history.
+
 ## Known, deliberate rough edges
 
 `todo.md` is the running list. Two worth knowing before you "fix" them:
