@@ -28,7 +28,6 @@ function component.ShowInstanceInfo(instance)
 		component.frame.info.instanceButton.icon:SetTexture(instance.icon)
 	end
 	components.InstanceOverview.Show(instance)
-	--components.AbilitiesScrollFrame.ShowEncounterOverview()
 	components.Encounters.SetInstance(instance)
 	components.EncounterJournal.SetCurrentView(component.frame)
 	components.NavBar.SetInstance(instance)
