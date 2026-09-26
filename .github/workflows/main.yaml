@@ -13,7 +13,7 @@ on:
       game_versions:
         description: "Game Version(s)"
         required: false
-        default: 1.15.8
+        default: 1.15.9,2.5.6,1.60.1
 
 jobs:
   publish-addon:
@@ -121,5 +121,5 @@ jobs:
           release_type: ${{ github.event.inputs.release_type || (contains(github.ref, 'alpha') && 'alpha') || (contains(github.ref, 'beta') && 'beta') || 'release' }}
           changelog: ${{ env.CHANGELOG }}
           changelog_type: "markdown"
-          game_versions: ${{ github.event.inputs.game_versions || '1.15.9,2.5.6' }}
+          game_versions: ${{ github.event.inputs.game_versions || '1.15.9,2.5.6,1.60.1' }}
 
