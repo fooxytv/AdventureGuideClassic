@@ -30,7 +30,14 @@ function AdventureGuideNavigationService.GetEncounterContent()
 	return encounter.overview or { }
 end
 
-function AdventureGuideNavigationService.GetEncounterLoot()
+--[[
+	Loot for an encounter, season/difficulty filtering already applied. Defaults to the
+	selected encounter; pass one explicitly to read another boss's table, which is how
+	the pinned-loot filter gathers a whole instance's picks without navigating to each
+	boss in turn.
+]]
+function AdventureGuideNavigationService.GetEncounterLoot(forEncounter)
+	local target = forEncounter or encounter
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or nil
 	local isTBC = Compat.isTBC
 	local isClassicClient = Compat.isVanillaLoot
@@ -124,11 +131,11 @@ function AdventureGuideNavigationService.GetEncounterLoot()
 		return filteredLoot
 	end
 	return {
-		loot = FilterLoot(encounter and encounter.loot),
-		sharedLoot = FilterLoot(encounter and encounter.sharedLoot),
-		rareLoot = FilterLoot(encounter and encounter.rareLoot),
-		veryRareLoot = FilterLoot(encounter and encounter.veryRareLoot),
-		extremelyRareLoot = FilterLoot(encounter and encounter.extremelyRareLoot)
+		loot = FilterLoot(target and target.loot),
+		sharedLoot = FilterLoot(target and target.sharedLoot),
+		rareLoot = FilterLoot(target and target.rareLoot),
+		veryRareLoot = FilterLoot(target and target.veryRareLoot),
+		extremelyRareLoot = FilterLoot(target and target.extremelyRareLoot)
 	}
 end
 

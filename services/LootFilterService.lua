@@ -81,7 +81,7 @@ local ARMOR_FALLBACK_NAMES = {
 
 -- Mirrors state into SavedVariables when it exists. Services load before
 -- ADDON_LOADED sets it up, so the in-memory copy is the source of truth.
-local state = { class = nil, armor = nil }
+local state = { class = nil, armor = nil, pinned = false }
 
 local function Store()
 	if not SavedVariables then return nil end
@@ -95,6 +95,7 @@ local function Load()
 	if store and not state.loaded then
 		state.class = store.class
 		state.armor = store.armor
+		state.pinned = store.pinned or false
 		state.loaded = true
 	end
 end
@@ -123,14 +124,32 @@ function LootFilterService.SetArmorFilter(armorSubclass)
 	if store then store.armor = armorSubclass end
 end
 
+--[[
+	Whether only wishlisted ("pinned") items should be shown. Kept here rather than in
+	WishlistService because it is a property of the view, not of the list: the wishlist
+	is the same whether or not the player is currently looking through it.
+]]
+function LootFilterService.GetPinnedFilter()
+	Load()
+	return state.pinned
+end
+
+function LootFilterService.SetPinnedFilter(pinnedOnly)
+	Load()
+	state.pinned = pinnedOnly and true or false
+	local store = Store()
+	if store then store.pinned = state.pinned end
+end
+
 function LootFilterService.IsFiltered()
 	Load()
-	return state.class ~= nil or state.armor ~= nil
+	return state.class ~= nil or state.armor ~= nil or state.pinned
 end
 
 function LootFilterService.ClearFilters()
 	LootFilterService.SetClassFilter(nil)
 	LootFilterService.SetArmorFilter(nil)
+	LootFilterService.SetPinnedFilter(false)
 end
 
 function LootFilterService.GetClasses()
@@ -199,8 +218,19 @@ local function PassesArmor(item, armorSubclass)
 	return item.classID == ITEM_CLASS_ARMOR and item.subclassID == armorSubclass
 end
 
+local function PassesPinned(item)
+	if not LootFilterService.GetPinnedFilter() then
+		return true
+	end
+	if not (WishlistService and item.itemId) then
+		return false
+	end
+	return WishlistService.IsOnWishlist(item.itemId) ~= nil
+end
+
 function LootFilterService.PassesFilter(lootItem)
 	if not lootItem or lootItem.isHeader then return true end
 	return PassesClass(lootItem, LootFilterService.GetClassFilter())
 		and PassesArmor(lootItem, LootFilterService.GetArmorFilter())
+		and PassesPinned(lootItem)
 end

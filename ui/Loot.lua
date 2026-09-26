@@ -233,7 +233,17 @@ local function ButtonOnClick(self, mouseButton)
 					print("|cffff9900[AGC]|r Removed from Wishlist:", lootItem.link)
 				end
 				GameTooltip:Hide()
-				ButtonOnEnter(self)
+				--[[
+					Unpinning while the pinned filter is on has to drop the row, so the list
+					is rebuilt rather than just restoring the tooltip. Safe here because the
+					rebuild is answering a click: it is hover-driven refreshes that pull rows
+					out from under the cursor.
+				]]
+				if LootFilterService.GetPinnedFilter() then
+					component.Show()
+				else
+					ButtonOnEnter(self)
+				end
 			end
 		end
 	elseif mouseButton == "LeftButton" and IsControlKeyDown() then
@@ -251,7 +261,7 @@ end
 local FILTER_ROW_HEIGHT = 26
 local ALL_CLASSES = "ALL"
 local ALL_ARMOR = "ALL"
-local classDropdown, armorDropdown, clearFiltersButton
+local classDropdown, armorDropdown, pinnedToggle, clearFiltersButton
 
 local function RefreshAfterFilterChange(dropdown, text)
 	UIDropDownMenu_SetText(dropdown, text)
@@ -314,6 +324,9 @@ local function RefreshFilterCaptions()
 	if clearFiltersButton then
 		clearFiltersButton:SetShown(LootFilterService.IsFiltered())
 	end
+	if pinnedToggle then
+		pinnedToggle:SetChecked(LootFilterService.GetPinnedFilter())
+	end
 	local class = LootFilterService.GetClassFilter()
 	local label = "All Classes"
 	if class then
@@ -346,9 +359,39 @@ local function CreateFilterDropdowns(parent)
 	UIDropDownMenu_SetWidth(armorDropdown, 90)
 	UIDropDownMenu_Initialize(armorDropdown, InitializeArmorDropdown)
 
+	--[[
+		Unlabelled on purpose: the filter row has no width left for a caption. The star
+		beside it is the same one drawn on a pinned row, so the toggle reads as "show only
+		the starred ones" without a word of explanation, and the tooltip covers the rest.
+	]]
+	pinnedToggle = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+	pinnedToggle:SetSize(24, 24)
+	pinnedToggle:SetPoint("LEFT", armorDropdown, "RIGHT", -8, 2)
+	pinnedToggle.star = pinnedToggle:CreateTexture(nil, "OVERLAY")
+	pinnedToggle.star:SetSize(14, 14)
+	pinnedToggle.star:SetPoint("LEFT", pinnedToggle, "RIGHT", -1, 0)
+	pinnedToggle.star:SetTexture("Interface\\COMMON\\ReputationStar")
+	pinnedToggle.star:SetTexCoord(0, 0.5, 0, 0.5)
+	pinnedToggle:SetScript("OnClick", function(self)
+		LootFilterService.SetPinnedFilter(self:GetChecked())
+		CloseDropDownMenus()
+		component.Show()
+	end)
+	pinnedToggle:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Pinned loot only")
+		GameTooltip:AddLine(
+			"Shows just the items on your wishlist, grouped by boss across this instance.",
+			1, 1, 1, true)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("|cffaaaaaaShift+Right-click an item to pin it.|r")
+		GameTooltip:Show()
+	end)
+	pinnedToggle:SetScript("OnLeave", GameTooltip_Hide)
+
 	clearFiltersButton = CreateFrame("Button", nil, parent, "UIPanelCloseButton")
 	clearFiltersButton:SetSize(22, 22)
-	clearFiltersButton:SetPoint("LEFT", armorDropdown, "RIGHT", -6, 2)
+	clearFiltersButton:SetPoint("LEFT", pinnedToggle.star, "RIGHT", 0, 0)
 	clearFiltersButton:SetScript("OnClick", function()
 		LootFilterService.ClearFilters()
 		CloseDropDownMenus()
@@ -479,6 +522,19 @@ function component.Init(components_)
 	lootView:SetElementExtent(47)
 	lootView:SetElementInitializer("Button", LootButtonInitializer)
 	ScrollUtil.InitScrollBoxListWithScrollBar(lootScrollBox, lootScrollBar, lootView)
+
+	--[[
+		WishlistService drops an item as soon as it is equipped. With the pinned filter on
+		that row has to go, and nothing clicked to cause it, so the view needs telling.
+		Nothing else claims this hook.
+	]]
+	if WishlistService then
+		WishlistService.OnWishlistChanged = function()
+			if lootContainer:IsShown() and LootFilterService.GetPinnedFilter() then
+				component.Show()
+			end
+		end
+	end
 end
 
 local function OnItemDataLoadResult(event, itemId, success)
@@ -500,6 +556,54 @@ end
 eventFrame:SetScript("OnEvent", function(self, event, ...)
 	OnItemDataLoadResult(event, ...)
 end)
+
+--[[
+	Pinned mode ignores the selected boss and lists the whole instance's pinned loot,
+	grouped under a header per boss.
+
+	The per-encounter alternative was to filter only the boss on screen, but a player's
+	pins are spread across an instance, so that view is empty on most bosses — which is
+	the opposite of what pinning is for. Reading every encounter costs nothing: the
+	instance table *is* the encounter list, and GetEncounterLoot takes an encounter.
+
+	An item is attributed to the first boss that drops it and not repeated. Shared loot
+	would otherwise appear under every boss in the instance.
+]]
+local function ShowPinnedAcrossInstance(dataProvider, Collect)
+	local instance = AdventureGuideNavigationService.GetInstance()
+	local encounters = instance
+	if not (encounters and #encounters > 0) then
+		encounters = { AdventureGuideNavigationService.GetEncounter() }
+	end
+
+	local shownCount = 0
+	local seen = {}
+	for _, boss in ipairs(encounters) do
+		if boss then
+			local bossLoot = AdventureGuideNavigationService.GetEncounterLoot(boss)
+			local items = {}
+			for _, itemIds in ipairs({
+				bossLoot.loot, bossLoot.sharedLoot, bossLoot.rareLoot,
+				bossLoot.veryRareLoot, bossLoot.extremelyRareLoot,
+			}) do
+				for _, lootItem in ipairs(Collect(itemIds)) do
+					if not seen[lootItem.itemId] then
+						seen[lootItem.itemId] = true
+						table.insert(items, lootItem)
+					end
+				end
+			end
+			if #items > 0 then
+				dataProvider:Insert({ isHeader = true, text = boss.name or "Unknown" })
+				for _, lootItem in ipairs(items) do
+					dataProvider:Insert(lootItem)
+					shownCount = shownCount + 1
+				end
+			end
+		end
+	end
+	return shownCount
+end
 
 function component.Show()
 	if not lootScrollBox then return end
@@ -525,29 +629,37 @@ function component.Show()
 		return items
 	end
 
-	for _, lootItem in ipairs(Collect(encounterLoot.loot)) do
-		dataProvider:Insert(lootItem)
-		shownCount = shownCount + 1
-	end
-	local lootCategories = {
-		{ loot = encounterLoot.sharedLoot, headerTitle = "Shared Loot" },
-		{ loot = encounterLoot.rareLoot, headerTitle = "Rare Loot" },
-		{ loot = encounterLoot.veryRareLoot, headerTitle = "Very Rare" },
-		{ loot = encounterLoot.extremelyRareLoot, headerTitle = "Extremely Rare" },
-	}
-	for _, category in ipairs(lootCategories) do
-		local items = Collect(category.loot)
-		if #items > 0 then
-			dataProvider:Insert({ isHeader = true, text = category.headerTitle })
-			for _, lootItem in ipairs(items) do
-				dataProvider:Insert(lootItem)
-				shownCount = shownCount + 1
+	if LootFilterService.GetPinnedFilter() then
+		shownCount = ShowPinnedAcrossInstance(dataProvider, Collect)
+	else
+		for _, lootItem in ipairs(Collect(encounterLoot.loot)) do
+			dataProvider:Insert(lootItem)
+			shownCount = shownCount + 1
+		end
+		local lootCategories = {
+			{ loot = encounterLoot.sharedLoot, headerTitle = "Shared Loot" },
+			{ loot = encounterLoot.rareLoot, headerTitle = "Rare Loot" },
+			{ loot = encounterLoot.veryRareLoot, headerTitle = "Very Rare" },
+			{ loot = encounterLoot.extremelyRareLoot, headerTitle = "Extremely Rare" },
+		}
+		for _, category in ipairs(lootCategories) do
+			local items = Collect(category.loot)
+			if #items > 0 then
+				dataProvider:Insert({ isHeader = true, text = category.headerTitle })
+				for _, lootItem in ipairs(items) do
+					dataProvider:Insert(lootItem)
+					shownCount = shownCount + 1
+				end
 			end
 		end
 	end
 
 	if shownCount == 0 and not next(pendingItemIds) and LootFilterService.IsFiltered() then
-		dataProvider:Insert({ isHeader = true, text = "No loot matches this filter" })
+		local emptyText = "No loot matches this filter"
+		if LootFilterService.GetPinnedFilter() then
+			emptyText = "Nothing pinned in this instance"
+		end
+		dataProvider:Insert({ isHeader = true, text = emptyText })
 	end
 
 	lootScrollBox:SetDataProvider(dataProvider)
