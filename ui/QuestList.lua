@@ -432,6 +432,43 @@ function component.Init(components_)
 	view:SetPadding(2, 2, 0, 0, 4)
 	ScrollUtil.InitScrollBoxWithScrollBar(scrollbox, scrollbar, view)
 
+	--[[
+	Fade the list out at the top and bottom, instead of cutting it off.
+
+	A row scrolling past either end used to stop against a hard line, which read as the
+	list being clipped rather than continuing. Fading it into the ground lets it recede
+	into the page, which is what the panel is meant to be.
+
+	It has to live on its own frame above the scroll box. A texture on the panel draws
+	underneath the box's rows however high its layer, because a child frame is drawn over
+	its parent's regions regardless.
+
+	The overlay stops at the scroll box's right edge so it does not wash over the
+	scrollbar, and takes no mouse input, so scrolling and row hovering still reach the
+	rows underneath it.
+	]]
+	local FADE = 16
+	local fade = CreateFrame("Frame", nil, quests)
+	fade:SetPoint("TOPLEFT", ground, "TOPLEFT", 0, 0)
+	fade:SetPoint("BOTTOMRIGHT", scrollbox, "BOTTOMRIGHT", 0, -6)
+	fade:SetFrameLevel(scrollbox:GetFrameLevel() + 5)
+	for step = 1, FADE do
+		local alpha = GROUND_ALPHA * (1 - (step - 1) / FADE)
+		local offset = step - 1
+
+		local top = fade:CreateTexture(nil, "OVERLAY")
+		top:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		top:SetHeight(1)
+		top:SetPoint("TOPLEFT", fade, "TOPLEFT", 0, -offset)
+		top:SetPoint("TOPRIGHT", fade, "TOPRIGHT", 0, -offset)
+
+		local bottom = fade:CreateTexture(nil, "OVERLAY")
+		bottom:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		bottom:SetHeight(1)
+		bottom:SetPoint("BOTTOMLEFT", fade, "BOTTOMLEFT", 0, offset)
+		bottom:SetPoint("BOTTOMRIGHT", fade, "BOTTOMRIGHT", 0, offset)
+	end
+
 	quests:Hide()
 end
 
