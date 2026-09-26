@@ -77,8 +77,8 @@ local function ProbeJournal()
 	ReportJournal("")
 
 	if C_EncounterJournal and C_EncounterJournal.InstanceHasLoot then
-		local firstID = EJ_GetInstanceByIndex(1, false)
-		if firstID then
+		local gotFirst, firstID = pcall(EJ_GetInstanceByIndex, 1, false)
+		if gotFirst and firstID then
 			local ok, hasLoot = pcall(C_EncounterJournal.InstanceHasLoot, firstID)
 			Line("InstanceHasLoot(" .. tostring(firstID) .. ")",
 				ok and tostring(hasLoot) or ("error: " .. tostring(hasLoot)))
@@ -111,7 +111,9 @@ local function Probe()
 	Line("WOW_PROJECT_ID", WOW_PROJECT_ID)
 	Line("WOW_PROJECT_MAINLINE", WOW_PROJECT_MAINLINE)
 	Line("WOW_PROJECT_CLASSIC", WOW_PROJECT_CLASSIC)
-	Line("build", (GetBuildInfo()))
+	local version, build = GetBuildInfo()
+	Line("version", version)
+	Line("build", build)
 	Line("tab template", Compat.TabButtonTemplate)
 
 	Header("Compat")
