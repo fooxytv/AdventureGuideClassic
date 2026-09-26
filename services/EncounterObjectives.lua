@@ -1,7 +1,6 @@
 select(2, ...).SetupGlobalFacade()
 
 local EncounterObjective = {}
-AdventureObjectives = AdventureObjectives or {}
 AdventureGuideClassic_DebugEvents = AdventureGuideClassic_DebugEvents or false
 
 local function DebugPrint(...)
@@ -89,9 +88,6 @@ function EncounterObjective.CheckEncounterDefeated(bossName)
             for i, encounter in ipairs(dungeon) do
                 if type(encounter) == "table" and encounter.name == bossName then
                     EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
-                    if AdventureObjectives and AdventureObjectives.UpdateVisibility then
-                        AdventureObjectives:UpdateVisibility()
-                    end
                     return
                 end
             end
@@ -104,9 +100,6 @@ function EncounterObjective.CheckEncounterDefeated(bossName)
             for i, encounter in ipairs(raid) do
                 if type(encounter) == "table" and encounter.name == bossName then
                     EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
-                    if AdventureObjectives and AdventureObjectives.UpdateVisibility then
-                        AdventureObjectives:UpdateVisibility()
-                    end
                     return
                 end
             end
@@ -141,11 +134,6 @@ function EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
             end
             break
         end
-    end
-
-    if AdventureObjectives and AdventureObjectives.LoadEncounters then
-        AdventureObjectives:LoadEncounters(dungeonName)
-        _G.AdventureGuideClassic_UI_Encounters_Refresh = true
     end
 end
 
