@@ -10,10 +10,14 @@ on:
         description: "CurseForge Release Type (alpha, beta, release)"
         required: false
         default: alpha
-      game_versions:
-        description: "Game Version(s)"
+      classic_game_versions:
+        description: "Classic-family game version(s), comma separated"
         required: false
-        default: 1.15.9,2.5.6,1.60.1
+        default: 1.15.9,2.5.6
+      forever_game_versions:
+        description: "Forever game version(s), comma separated"
+        required: false
+        default: 1.60.1
 
 jobs:
   publish-addon:
@@ -111,7 +115,11 @@ jobs:
           echo "Found artifact: $ZIP_FILE"
           echo "ZIP_PATH=$ZIP_FILE" >> $GITHUB_ENV
 
-      - name: Publish to CurseForge
+      # CurseForge keeps only one flavour family per uploaded file, so a single
+      # upload listing both classic and Forever versions lands as Forever only and
+      # silently drops Era and TBC. The same zip is therefore uploaded once per
+      # family; it carries every .toc, so one artifact serves them all.
+      - name: Publish to CurseForge (Classic Era and TBC)
         uses: itsmeow/curseforge-upload@v3
         with:
           file_path: ${{ env.ZIP_PATH }}
@@ -121,5 +129,16 @@ jobs:
           release_type: ${{ github.event.inputs.release_type || (contains(github.ref, 'alpha') && 'alpha') || (contains(github.ref, 'beta') && 'beta') || 'release' }}
           changelog: ${{ env.CHANGELOG }}
           changelog_type: "markdown"
-          game_versions: ${{ github.event.inputs.game_versions || '1.15.9,2.5.6,1.60.1' }}
+          game_versions: ${{ github.event.inputs.classic_game_versions || '1.15.9,2.5.6' }}
 
+      - name: Publish to CurseForge (Forever)
+        uses: itsmeow/curseforge-upload@v3
+        with:
+          file_path: ${{ env.ZIP_PATH }}
+          project_id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          game_endpoint: "wow"
+          token: ${{ secrets.CURSEFORGE_TOKEN }}
+          release_type: ${{ github.event.inputs.release_type || (contains(github.ref, 'alpha') && 'alpha') || (contains(github.ref, 'beta') && 'beta') || 'release' }}
+          changelog: ${{ env.CHANGELOG }}
+          changelog_type: "markdown"
+          game_versions: ${{ github.event.inputs.forever_game_versions || '1.60.1' }}
