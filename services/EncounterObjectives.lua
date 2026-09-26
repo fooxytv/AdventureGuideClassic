@@ -342,10 +342,54 @@ local function ResetAllEncounters()
     DebugPrint("All instance encounters have been reset")
 end
 
+--[[
+    "Deadmines has been reset." names one instance, so only that instance's defeats
+    should go. The name is pulled out with a pattern built from Blizzard's own string
+    where it exists, falling back to the English form this handler used to match
+    literally.
+]]
+local function GetResetInstanceName(message)
+    if not message then return nil end
+    local template = INSTANCE_RESET_SUCCESS
+    if type(template) == "string" then
+        local pattern = "^" .. template:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+            :gsub("%%%%s", "(.+)") .. "$"
+        local name = message:match(pattern)
+        if name then
+            return name
+        end
+    end
+    return message:match("^(.+) ha[sv]e? been reset%.?$")
+end
+
+--[[
+    Resetting instances does not clear a lockout you are saved to: the trash goes, the
+    bosses already dead stay dead. So a reset naming a saved instance must leave its
+    defeats alone, or clearing a dungeon throws away a raid night's progress. Era
+    dungeons are never saved, which is why they always clear.
+]]
+local function IsInstanceSaved(instanceName)
+    if not instanceName or not GetNumSavedInstances or not GetSavedInstanceInfo then
+        return false
+    end
+    for i = 1, GetNumSavedInstances() do
+        local name, _, _, _, locked, extended = GetSavedInstanceInfo(i)
+        if name == instanceName and (locked or extended) then
+            return true
+        end
+    end
+    return false
+end
+
 local function OnSystemMessage(message)
-    if message and (message:find("has been reset") or message:find("have been reset")) then
-        DebugPrint("Detected instance reset")
-        ResetAllEncounters()
+    local instanceName = GetResetInstanceName(message)
+    if instanceName then
+        if IsInstanceSaved(instanceName) then
+            DebugPrint("Ignoring reset of saved instance:", instanceName)
+            return
+        end
+        DebugPrint("Detected instance reset:", instanceName)
+        ResetEncountersForInstance(instanceName)
     end
 end
 
