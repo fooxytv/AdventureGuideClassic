@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -34,8 +34,8 @@ function component.Init(components_)
 	instanceSelect.title:SetPoint("TOPLEFT", 20, -15)
 	instanceSelect.filterDropdown = CreateFrame("Frame", instanceSelect:GetName() .. "FilterDropdown", instanceSelect, "UIDropDownMenuTemplate")
 	instanceSelect.filterDropdown:SetPoint("TOPRIGHT", instanceSelect, "TOPRIGHT", -20, -8)
-	local isTBC = select(4, GetBuildInfo()) >= 20000
-	if not isTBC then
+	-- The Classic/Burning Crusade switch only means anything on a TBC client.
+	if not Compat.isTBC then
 		instanceSelect.filterDropdown:Hide()
 	end
 	UIDropDownMenu_SetWidth(instanceSelect.filterDropdown, 150)
@@ -56,7 +56,7 @@ function component.Init(components_)
 	local function InitializeFilterDropdown(self, level)
 		local info = UIDropDownMenu_CreateInfo()
 		local currentFilter = InstanceService.GetExpansionFilter()
-		local isTBC = select(4, GetBuildInfo()) >= 20000
+		local isTBC = Compat.isTBC
 		info.text = "Classic"
 		info.value = "classic"
 		info.func = OnFilterClick
@@ -116,7 +116,17 @@ function component.Init(components_)
 		button.instance = instance
 		button.instanceID = instance.instanceID
 		button.name:SetText(instance.name);
-		button.bgImage:SetTexture(instance.thumbnail);
+		--[[
+		An instance with no art of its own gets a plain dark tile, not a stand-in
+		texture. The name is drawn over the top either way, so the tile reads as one
+		that has not been illustrated yet rather than as one whose picture failed to
+		load -- which is how the question-mark placeholder read.
+		]]
+		if instance.thumbnail then
+			button.bgImage:SetTexture(instance.thumbnail)
+		else
+			button.bgImage:SetColorTexture(0.10, 0.09, 0.08, 1)
+		end
 		button:Show()
 	end
 	local view = CreateScrollBoxListGridView(4, 4, 0, 0, 0, 15, 15)
@@ -139,7 +149,6 @@ end
 
 function component.Show()
 	local filter = InstanceService.GetExpansionFilter()
-	local isTBC = select(4, GetBuildInfo()) >= 20000
 	if filter == "all" or filter == "classic" then
 		UIDropDownMenu_SetText(component.frame.filterDropdown, "Classic")
 		component.frame.bg:SetTexture("Interface/EncounterJournal/UI-EJ-Classic")

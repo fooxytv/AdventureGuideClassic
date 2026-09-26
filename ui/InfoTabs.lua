@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -137,6 +137,45 @@ function component.Init(components_)
 		isModelTabSelected = true
 	end)
 
+	--[[
+		Quests belong to the instance rather than to a boss, so unlike Loot and Model
+		this one is live on the instance page and disabled once an encounter is open.
+
+		The icon is a standalone quest texture, not a crop of
+		UI-EncounterJournalTextures: that sheet has no quest art. It needs re-anchoring
+		because AddTab lays its artwork out for that sheet's wide crops, and a square
+		icon left on those anchors sits off to the right.
+	]]
+	questTab = AddTab("Quest")
+	EncounterJournal.encounter.info.questTab = questTab
+	questTab:SetPoint("TOP", modelTab, "BOTTOM", 0, 2)
+	for _, texture in ipairs({ questTab.unselected, questTab.selected }) do
+		texture:ClearAllPoints()
+		texture:SetTexture("Interface/GossipFrame/AvailableQuestIcon")
+		texture:SetSize(25, 25)
+		texture:SetPoint("CENTER", questTab, "CENTER")
+		texture:SetDrawLayer("OVERLAY")
+	end
+	questTab:SetScript("OnEnter", function (self)
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
+		GameTooltip:AddLine("Quests")
+		GameTooltip:Show()
+	end)
+	questTab:SetScript("OnLeave", function ()
+		GameTooltip:Hide()
+	end)
+	questTab:SetScript("OnClick", function()
+		components.QuestList.Show(AdventureGuideNavigationService.GetInstance())
+		selectedTab = questTab
+		component.Refresh()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+		isOverviewTabSelected = false
+		isLootTabSelected = false
+		isQuestTabSelected = true
+		isAbilitiesTabSelected = false
+		isModelTabSelected = false
+	end)
+
 	-- abilitiesTab = AddTab("Abilities")
 	-- EncounterJournal.encounter.info.abilitiesTab = abilitiesTab
 	-- abilitiesTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
@@ -228,6 +267,15 @@ function component.SelectOverview()
 	isModelTabSelected = false
 end
 
+function component.SelectQuests()
+	selectedTab = questTab
+	isOverviewTabSelected = false
+	isLootTabSelected = false
+	isQuestTabSelected = true
+	isAbilitiesTabSelected = false
+	isModelTabSelected = false
+end
+
 function component.Refresh()
 	selectTab(selectedTab)
 	if (selectedTab ~= overviewTab) then
@@ -238,6 +286,15 @@ function component.Refresh()
 			unselectTab(lootTab)
 		else
 			disableTab(lootTab)
+		end
+	end
+	if (selectedTab ~= questTab) then
+		local instance = AdventureGuideNavigationService.GetInstance()
+		if (not AdventureGuideNavigationService.GetEncounter()
+			and instance and QuestService.HasQuests(instance.name)) then
+			unselectTab(questTab)
+		else
+			disableTab(questTab)
 		end
 	end
 	if (selectedTab ~= modelTab) then

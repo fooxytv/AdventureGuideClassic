@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -31,13 +31,12 @@ function AdventureGuideNavigationService.GetEncounterContent()
 end
 
 function AdventureGuideNavigationService.GetEncounterLoot()
-	local activeSeason = C_Seasons and C_Seasons.GetActiveSeason and C_Seasons.GetActiveSeason() or 0
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or nil
-	local tocVersion = select(4, GetBuildInfo())
-	local isTBC = tocVersion >= 20000
-	local isClassicClient = tocVersion < 20000
-	local isSoD = isClassicClient and activeSeason == 2
-	local isEra = isClassicClient and activeSeason ~= 2
+	local isTBC = Compat.isTBC
+	local isClassicClient = Compat.isVanillaLoot
+	local isSoD = Compat.IsSoD()
+	local isEra = isClassicClient and not isSoD
+	local isForever = Compat.isForever
 	local difficulty = InstanceService.GetDifficulty and InstanceService.GetDifficulty() or "normal"
 	local function ShouldIncludeLootItem(item)
 		if not item.id then
@@ -80,6 +79,13 @@ function AdventureGuideNavigationService.GetEncounterLoot()
 			if isSoD then
 				if AdventureGuideClassic_DebugEvents then
 					print("  -> FILTERED: restricted item on SoD")
+				end
+				return false
+			end
+		elseif filterType == "forever" then
+			if not isForever then
+				if AdventureGuideClassic_DebugEvents then
+					print("  -> FILTERED: forever-only item on non-Forever client")
 				end
 				return false
 			end
@@ -147,16 +153,15 @@ function AdventureGuideNavigationService.SetInstances(ref)
 end
 
 _G.AGC_DebugLootFilter = function()
-	local activeSeason = C_Seasons and C_Seasons.GetActiveSeason and C_Seasons.GetActiveSeason() or 0
+	local activeSeason = Compat.GetActiveSeason()
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or "none"
-	local tocVersion = select(4, GetBuildInfo())
-	local isTBC = tocVersion >= 20000
-	local isClassicClient = tocVersion < 20000
-	local isSoD = isClassicClient and activeSeason == 2
-	local isEra = isClassicClient and activeSeason ~= 2
+	local isTBC = Compat.isTBC
+	local isClassicClient = Compat.isVanillaLoot
+	local isSoD = Compat.IsSoD()
+	local isEra = isClassicClient and not isSoD
 	local difficulty = InstanceService.GetDifficulty and InstanceService.GetDifficulty() or "normal"
 	print("|cffff9900[AGC Loot Debug]|r")
-	print("  TOC Version:", tocVersion)
+	print("  Client:", Compat.flavor, "(toc " .. tostring(Compat.tocVersion) .. ")")
 	print("  isTBC:", tostring(isTBC))
 	print("  isClassicClient:", tostring(isClassicClient))
 	print("  activeSeason:", tostring(activeSeason))

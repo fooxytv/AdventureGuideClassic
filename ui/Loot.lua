@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -13,7 +13,8 @@ local components
 local lootContainer
 local lootScrollBox
 local previewFrame
-local rotationSpeed = 0.5
+-- A three-quarter view, so the model is not square-on to the camera.
+local PREVIEW_ROTATION = 0.45
 local pendingItemIds = {}
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
@@ -57,15 +58,20 @@ local function CreatePreviewFrame()
 	frame.model = CreateFrame("DressUpModel", nil, frame)
 	frame.model:SetSize(190, 260)
 	frame.model:SetPoint("CENTER", 0, 5)
-	frame.cameraAngle = 0
+	--[[
+	The model holds still.
+
+	It used to turn continuously, a SetRotation every frame, which read as a flicker
+	rather than a turn: the model re-renders on each call and at this size the
+	difference between one frame and the next is too small to look like movement. A
+	fixed three-quarter view shows the piece better than a slow spin did.
+	]]
 	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
-	frame:SetScript("OnUpdate", function(self, elapsed)
-		self.cameraAngle = self.cameraAngle + (rotationSpeed * elapsed)
-		self.model:SetRotation(self.cameraAngle)
-	end)
 	previewFrame = frame
 	return frame
 end
+
+local previewedItem
 
 local function ShowItemPreview(previewItem, anchorFrame)
 	if not previewItem then return end
@@ -76,25 +82,54 @@ local function ShowItemPreview(previewItem, anchorFrame)
 	frame:ClearAllPoints()
 	frame:SetPoint("TOP", GameTooltip, "BOTTOM", 0, -5)
 	frame:Show()
+
+	--[[
+	Asking for the item already on the model is not a request to put it on again.
+	Redressing means undressing first and waiting for the model to catch up, which is
+	visible as a flash, so a repeat call only re-anchors and leaves the model alone.
+	]]
+	if previewedItem == previewItem then return end
+	previewedItem = previewItem
+
 	frame.model:SetUnit("player")
 	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
 	frame.model:SetPortraitZoom(PREVIEW_ZOOM)
+	--[[
+	Undress once, not twenty times.
+
+	Undress already strips the model; the nineteen UndressSlot calls that followed it
+	each forced their own re-render, which is the burst of flashes before the preview
+	settles. One call does the same job in one frame.
+	]]
 	frame.model:Undress()
-	for slot = 1, 19 do
-		frame.model:UndressSlot(slot)
-	end
 	C_Timer.After(0.15, function()
 		if frame.model and frame:IsShown() then
 			frame.model:TryOn(previewItem)
 		end
 	end)
-	frame.cameraAngle = 0
+	if type(frame.model.SetRotation) == "function" then
+		frame.model:SetRotation(PREVIEW_ROTATION)
+	end
 end
 
 local function HideItemPreview()
+	previewedItem = nil
 	if previewFrame then
 		previewFrame:Hide()
 	end
+end
+
+--[[
+	Exposed so the Quests tab can preview a reward on the character without standing up
+	a second DressUpModel. One preview frame, one place that knows how to undress the
+	model before trying an item on.
+]]
+function component.PreviewItem(link)
+	ShowItemPreview(link)
+end
+
+function component.HidePreview()
+	HideItemPreview()
 end
 
 local function GetPreviewTarget(lootItem)

@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -23,7 +23,10 @@ end
 function component.ShowInstanceInfo(instance)
 	component.frame.info.instanceTitle:SetText(instance.name)
 	component.frame.info.instanceButton.icon:SetMask(I.InstanceButtonIconMask);
-	component.frame.info.instanceButton.icon:SetTexture(instance.icon)
+	component.frame.info.instanceButton.icon:SetShown(instance.icon ~= nil)
+	if instance.icon then
+		component.frame.info.instanceButton.icon:SetTexture(instance.icon)
+	end
 	components.InstanceOverview.Show(instance)
 	--components.AbilitiesScrollFrame.ShowEncounterOverview()
 	components.Encounters.SetInstance(instance)

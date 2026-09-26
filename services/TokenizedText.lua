@@ -2,14 +2,15 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
 local handlers = {
 	["spell"] = {
 		tokenizer = function(data)
-			local spellName = GetSpellInfo(data)
+			-- An unknown spell id still links; it just shows the id rather than a name.
+			local spellName = Compat.GetSpellInfo(data) or data
 			return "|CFF0000FF|Hspell:" .. data .. "|h[" .. spellName .. "]|h|r"
 		end,
 	},

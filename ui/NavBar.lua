@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -77,8 +77,19 @@ function component.Init(components_)
 	NavBar_Initialize(navBar, "NavButtonTemplate", homeData, navBar.home, navBar.overflow);
 
 	-- Create search EditBox on the right side of NavBar
+	--[[
+	Wide enough for what is in the results now.
+
+	Both were 150, which suited instance names and item names. Quest titles are longer:
+	the median is 18 characters but nine in every hundred run past 28, and the worst is
+	"KILL ON SIGHT: High Ranking Dark Iron Officials" at 47. Rows do not wrap, so
+	anything that does not fit is simply cut off.
+
+	The results panel is the one that needed the room, so it is wider than the box it
+	hangs from, and right-aligned to it.
+	]]
 	searchBox = CreateFrame("EditBox", navBar:GetName() .. "SearchBox", navBar, "SearchBoxTemplate")
-	searchBox:SetSize(150, 20)
+	searchBox:SetSize(200, 20)
 	searchBox:SetPoint("RIGHT", navBar, "RIGHT", -10, 0)
 	searchBox:SetAutoFocus(false)
 	navBar.searchBox = searchBox
@@ -88,7 +99,7 @@ function component.Init(components_)
 	end
 
 	searchResults = CreateFrame("Frame", navBar:GetName() .. "SearchResults", navBar, "BackdropTemplate")
-	searchResults:SetSize(150, 200)
+	searchResults:SetSize(320, 200)
 	searchResults:SetPoint("TOPRIGHT", searchBox, "BOTTOMRIGHT", 0, 2)
 	searchResults:SetBackdrop({
 		bgFile = "Interface\\BUTTONS\\WHITE8X8",
@@ -104,7 +115,7 @@ function component.Init(components_)
 	navBar.searchResults = searchResults
 
 	searchResultsScrollBox = CreateFrame("Frame", nil, searchResults, "WowScrollBoxList")
-	searchResultsScrollBox:SetSize(142, 180)
+	searchResultsScrollBox:SetSize(312, 180)
 	searchResultsScrollBox:SetPoint("TOPLEFT", 4, -4)
 	searchResultsScrollBox:SetPoint("BOTTOMRIGHT", -4, 4)
 
@@ -167,6 +178,36 @@ function component.Init(components_)
 				self:GetHighlightTexture():Show()
 			end)
 			button:SetScript("OnLeave", nil)
+		elseif result.type == "quest" then
+			button.icon:SetTexture(QuestService.GetStateIcon(result.quest.id))
+			button.icon:Show()
+			button.text:SetText(result.name)
+			button.text:SetTextColor(1, 0.82, 0)
+			button.text:ClearAllPoints()
+			button.text:SetPoint("LEFT", button.icon, "RIGHT", 4, 2)
+			button.text:SetPoint("RIGHT", -4, 0)
+			local level = result.quest.level and (" (" .. result.quest.level .. ")") or ""
+			button.subText:SetText((result.sourceName or "") .. level)
+			button.subText:Show()
+			button:SetScript("OnClick", function()
+				component.OnSearchResultClick(result)
+			end)
+			button:SetScript("OnEnter", function(self)
+				self:GetHighlightTexture():Show()
+				if result.quest.startedBy then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+					GameTooltip:SetText(result.name, 1, 0.82, 0)
+					local source = result.quest.startedBy
+					if result.quest.startZone then
+						source = source .. " - " .. result.quest.startZone
+					end
+					GameTooltip:AddLine(source, 0.62, 0.57, 0.5)
+					GameTooltip:Show()
+				end
+			end)
+			button:SetScript("OnLeave", function()
+				GameTooltip:Hide()
+			end)
 		elseif result.type == "loot" then
 			button.icon:SetTexture(result.itemIcon or "Interface\\Icons\\INV_Misc_QuestionMark")
 			button.icon:Show()
@@ -287,16 +328,17 @@ function component.OnSearchTextChanged(text)
 end
 
 function component.ExecuteSearch(text)
-	local instanceResults, lootResults = SearchService.Search(text, function(searchText)
+	local instanceResults, lootResults, questResults = SearchService.Search(text, function(searchText)
 		if searchBox:GetText() == searchText then
 			component.ExecuteSearch(searchText)
 		end
 	end)
 
-	component.DisplaySearchResults(instanceResults, lootResults)
+	component.DisplaySearchResults(instanceResults, lootResults, questResults)
 end
 
-function component.DisplaySearchResults(instanceResults, lootResults)
+function component.DisplaySearchResults(instanceResults, lootResults, questResults)
+	questResults = questResults or { }
 	local dataProvider = CreateDataProvider()
 	local count = 0
 	local totalItems = 0
@@ -305,6 +347,18 @@ function component.DisplaySearchResults(instanceResults, lootResults)
 		dataProvider:Insert({ isHeader = true, text = "Instances" })
 		totalItems = totalItems + 1
 		for _, result in ipairs(instanceResults) do
+			if count < MAX_SEARCH_RESULTS then
+				dataProvider:Insert(result)
+				count = count + 1
+				totalItems = totalItems + 1
+			end
+		end
+	end
+
+	if #questResults > 0 and count < MAX_SEARCH_RESULTS then
+		dataProvider:Insert({ isHeader = true, text = "Quests" })
+		totalItems = totalItems + 1
+		for _, result in ipairs(questResults) do
 			if count < MAX_SEARCH_RESULTS then
 				dataProvider:Insert(result)
 				count = count + 1
@@ -351,6 +405,23 @@ function component.OnSearchResultClick(result)
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
 		components.EncounterFrame.ShowInstanceInfo(result.instance)
+	elseif result.type == "quest" then
+		--[[
+			Quests belong to the instance, so this lands on its page with the Quests tab
+			open rather than on a boss.
+		]]
+		AdventureGuideNavigationService.Reset()
+		AdventureGuideNavigationService.SetInstance(result.instance)
+		components.EncounterFrame.ShowInstanceInfo(result.instance)
+		if components.InfoTabs and components.InfoTabs.SelectQuests then
+			components.InfoTabs.SelectQuests()
+		end
+		if components.QuestList then
+			components.QuestList.Show(result.instance)
+		end
+		if components.InfoTabs then
+			components.InfoTabs.Refresh()
+		end
 	elseif result.type == "loot" then
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)

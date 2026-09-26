@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -101,7 +101,12 @@ end
 function component.Show(instance)
 	EncounterJournal.encounter.info.encounterTitle:SetText("")
 	component.frame.title:SetText(instance.name)
-	component.frame.loreBG:SetTexture(instance.splash)
+	-- Same as the tiles in the instance list: no art means a plain dark ground.
+	if instance.splash then
+		component.frame.loreBG:SetTexture(instance.splash)
+	else
+		component.frame.loreBG:SetColorTexture(0.10, 0.09, 0.08, 1)
+	end
 	-- component.frame.infoButton:SetText(instance.info)
 	component.frame.loreScrollingFont:SetText(instance.overview);
 	component.frame.loreScrollBar:SetShown(component.frame.loreScrollingFont:HasScrollableExtent());

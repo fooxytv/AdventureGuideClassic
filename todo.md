@@ -23,6 +23,7 @@
   | "sod"        | Season of Discovery only                       |
   | "classic"    | Classic client (both Era and SoD, but not TBC) |
   | "tbc"        | TBC client only                                |
+  | "forever"    | WoW Forever only (1.60.x)                      |
   | "exclusive"  | Legacy - same as "sod"                         |
   | "restricted" | Legacy - NOT on SoD                            |
 
@@ -59,3 +60,22 @@
       -- Only shows on heroic difficulty
       { id = 27448, seasonFilter = "all", difficulty = "heroic" },
   }
+
+  ## Known issues
+
+  ### Naxxramas shows on the TBC client (low priority)
+
+  Naxxramas (40) was removed when TBC launched, but it still appears on the BCC
+  client whenever the expansion dropdown is on "Classic".
+
+  `data/Raids/era/Naxxramas.lua` already carries `seasonFilter = "era"`, which
+  would hide it. The tag is never read: `ShouldIncludeInstance` in
+  `services/Instance.lua` takes an early `return true` in the `instance.season ~= nil`
+  branch, before any `seasonFilter` check. Every raid sets `season`, so no raid's
+  `seasonFilter` has any effect today.
+
+  Two mechanisms say the same thing -- raids use the `season` boolean, dungeons use
+  `seasonFilter = "exclusive"` -- and the boolean wins. Worth collapsing onto the tag
+  vocabulary rather than patching the one instance, since the same short-circuit is
+  why Zul'Gurub and both Ahn'Qiraj raids ignore their own tags too. Those three are
+  correct on TBC by accident, having stayed in the game when Naxxramas did not.

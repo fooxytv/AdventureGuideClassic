@@ -2,13 +2,24 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 
 
+-- C_Seasons is absent on Forever, where reaching it unguarded is a hard error.
+local function GetActiveSeasonID()
+    if not (C_Seasons and C_Seasons.HasActiveSeason and C_Seasons.GetActiveSeason) then
+        return nil
+    end
+    if not C_Seasons.HasActiveSeason() then
+        return nil
+    end
+    return C_Seasons.GetActiveSeason()
+end
+
 function GetDungeonInstanceMapping()
-    if C_Seasons.HasActiveSeason() then
-        local activeSeasonID = C_Seasons.GetActiveSeason()
+    local activeSeasonID = GetActiveSeasonID()
+    if activeSeasonID then
         if activeSeasonID == 2 then
             return {
                 [227] = false,

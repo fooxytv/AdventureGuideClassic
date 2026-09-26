@@ -361,12 +361,19 @@ local function OnSystemMessage(message)
     end
 end
 
+--[[
+	COMBAT_LOG_EVENT_UNFILTERED is restricted on Forever, so it is skipped there.
+	Losing it costs the UNIT_DIED path only; ENCOUNTER_END and BOSS_KILL both fire on
+	that client and cover boss detection between them. The combat log is the fallback
+	for Era, where those two do not fire.
+]]
 local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("ENCOUNTER_END")
-eventFrame:RegisterEvent("BOSS_KILL")
-eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-eventFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-eventFrame:RegisterEvent("CHAT_MSG_SYSTEM")
+Compat.RegisterEvents(eventFrame,
+	"ENCOUNTER_END",
+	"BOSS_KILL",
+	"COMBAT_LOG_EVENT_UNFILTERED",
+	"UPDATE_MOUSEOVER_UNIT",
+	"CHAT_MSG_SYSTEM")
 
 eventFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "ENCOUNTER_END" then
@@ -376,7 +383,10 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
         DebugPrint("BOSS_KILL event received")
         OnBossKill(...)
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        local _, subEvent, _, _, _, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
+        local GetEventInfo = CombatLogGetCurrentEventInfo
+            or (C_CombatLog and C_CombatLog.GetCurrentEventInfo)
+        if not GetEventInfo then return end
+        local _, subEvent, _, _, _, _, _, destGUID, destName = GetEventInfo()
         if subEvent == "UNIT_DIED" then
             DebugPrint("UNIT_DIED:", destName)
             OnUnitDied(destGUID, destName)
