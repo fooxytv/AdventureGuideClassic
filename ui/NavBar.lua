@@ -401,6 +401,12 @@ function component.HideSearchResults()
 end
 
 function component.OnSearchResultClick(result)
+	--[[
+		Clicking a result lands on the same page as clicking the instance or encounter in the
+		list, so it should sound the same. InstanceSelect and Encounters both play this on
+		the click that opens a page; searching straight there was the one silent way in.
+	]]
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
 	if result.type == "instance" then
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
