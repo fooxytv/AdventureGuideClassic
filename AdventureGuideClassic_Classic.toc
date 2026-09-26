@@ -4,7 +4,7 @@
 
 ## Interface: 11509
 ## Title: AdventureGuideClassic
-## Version: 1.8.0-alpha.f3e7d2f
+## Version: 1.8.0-alpha.0c3fd43
 ## Notes: Provides a dungeon and raid journal for Classic WoW
 ## X-TocFlavor: classic
 ## DefaultState: enabled
