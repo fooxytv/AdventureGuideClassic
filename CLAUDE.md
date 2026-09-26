@@ -28,7 +28,7 @@ break by accident.
 2. `lib/TomCats/GlobalFacade.lua` — must be first code
 3. `Compat.lua` — client detection, before anything that branches on the client
 4. `lib/TomCats/Images.lua`, MinimapButton, `DynamicTable.lua`, `Atlas.lua`
-5. `services/Services.xml`, `data/Data.xml`, `ui/UI.xml`
+5. `services/Services.xml`, `data/Data.xml`, `ui/UI.xml`, `ui/InstanceSelectTemplates.xml`
 6. `SlashCommands.lua`, `Bindings.lua`, `Main.lua`, `Probe.lua`
 
 ## The global facade — read this before writing any file
@@ -54,8 +54,8 @@ Consequences that catch people out:
 
 ## Client detection lives in exactly one place
 
-`Compat.lua` is the only file that may read `GetBuildInfo()` or `WOW_PROJECT_ID`.
-Everything else asks it:
+`Compat.lua` resolves the client once, and is the only file that should read `GetBuildInfo()`
+or `WOW_PROJECT_ID` *to decide anything*. Everything else asks it:
 
 - Flags: `Compat.flavor` (`era` / `tbc` / `wrath` / `cata` / `forever` / `retail`),
   `isForever`, `isRetail`, `isTBC`, `isClassicLine`, `isEraClient`, `isVanillaLoot`
@@ -65,6 +65,11 @@ Everything else asks it:
 - Shims: `GetSpellInfo(spellID)` (modern `C_Spell` returns a table, not a list),
   `TabButtonTemplate` (`CharacterFrameTabButtonTemplate` is missing on Forever)
 - Events: `RegisterEvents(frame, ...)`, `IsEventAvailable(event)`
+
+The one deliberate exception is `Probe.lua`, the `/agcprobe` diagnostic dump, which
+reports `GetBuildInfo()` and `WOW_PROJECT_ID` raw because that is the point of it —
+it answers "what does the addon think it is running on", so it must not go through
+the layer being checked.
 
 **If you need a new client difference, add an accessor to `Compat.lua`.** Do not add a
 build check elsewhere. Detecting Forever needs *both* the project ID and the interface
