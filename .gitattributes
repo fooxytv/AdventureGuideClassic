@@ -11,3 +11,9 @@
 *.lua text eol=crlf
 *.xml text eol=crlf
 *.toc text eol=crlf
+
+# CI workflow files run on Linux runners, and their `run:` blocks are bash. Keep
+# them LF for the same reason as the shell scripts above, so a CRLF checkout on
+# Windows cannot travel back into the repository.
+*.yaml text eol=lf
+*.yml text eol=lf
