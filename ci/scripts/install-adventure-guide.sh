@@ -44,11 +44,49 @@ FORGET=0
 SETTINGS_DIR="${XDG_CONFIG_HOME:-$HOME/Library/Application Support}/$ADDON_NAME"
 SETTINGS_FILE="$SETTINGS_DIR/install-settings"
 
-# Where WoW usually lives. A remembered root is searched as well, so a client
-# installed somewhere unusual only has to be named once.
-DEFAULT_ROOTS="/Applications/World of Warcraft
-$HOME/Applications/World of Warcraft
-/Applications/Battle.net/World of Warcraft"
+# Where WoW usually lives. macOS has no drive letters, but a second disk is
+# just as common and mounts under /Volumes, so every mounted volume is searched
+# the way the PowerShell script searches every fixed drive. A remembered root is
+# searched too, so a client installed somewhere unusual is named only once.
+default_roots() {
+    {
+        printf '%s\n' '/'
+        printf '%s\n' "$HOME"
+        if [ -d /Volumes ]; then
+            for vol in /Volumes/*/; do
+                [ -d "$vol" ] || continue
+                printf '%s\n' "${vol%/}"
+            done
+        fi
+    } | while IFS= read -r base; do
+        [ -n "$base" ] || continue
+        # "/" would otherwise produce "//Applications".
+        case "$base" in
+            /) base='' ;;
+        esac
+        printf '%s\n' "$base/Applications/World of Warcraft"
+        printf '%s\n' "$base/World of Warcraft"
+        printf '%s\n' "$base/Games/World of Warcraft"
+        printf '%s\n' "$base/Applications/Battle.net/World of Warcraft"
+    done
+}
+
+flavour_label() {
+    # Only the folders whose meaning is certain get a friendly name. Anything
+    # else keeps its own: a confident-sounding wrong label is worse than the raw
+    # folder, which is at least what the player sees in the launcher.
+    case "$1" in
+        _classic_era_ptr_) printf 'Classic Era PTR' ;;
+        _classic_era_)     printf 'Classic Era (incl. Season of Discovery, Hardcore)' ;;
+        _classic_ptr_)     printf 'Classic progression PTR' ;;
+        _classic_beta_)    printf 'Classic beta' ;;
+        _classic_)         printf 'Classic progression (Anniversary / TBC)' ;;
+        _retail_)          printf 'Retail' ;;
+        _ptr_)             printf 'Retail PTR' ;;
+        _beta_)            printf 'Retail beta' ;;
+        *)                 printf '%s' "$1" ;;
+    esac
+}
 
 say()  { printf '%s\n' "$*"; }
 dim()  { printf '\033[2m%s\033[0m\n' "$*"; }
@@ -80,34 +118,37 @@ remembered_path() {
     sed -n 's/^addons_path=//p' "$SETTINGS_FILE" | head -1
 }
 
-remembered_root() {
+remembered_roots() {
     [ -f "$SETTINGS_FILE" ] || return 0
-    sed -n 's/^root=//p' "$SETTINGS_FILE" | head -1
+    sed -n 's/^root=//p' "$SETTINGS_FILE"
 }
 
 remember() {
     # An AddOns path is <root>/<flavour>/Interface/AddOns, so its WoW root is
     # three levels up. Remembering the root as well as the leaf is what lets a
     # later --all find the other clients installed beside it.
-    local path="$1" root
+    local path="$1" root existing
     root="$(cd "$path/../../.." 2>/dev/null && pwd || true)"
+    existing="$(remembered_roots)"
     mkdir -p "$SETTINGS_DIR"
     {
         printf 'addons_path=%s\n' "$path"
+        # Roots accumulate rather than replace. Naming one unusual install by
+        # hand teaches the script where this machine keeps WoW, and a later
+        # --all then finds the clients sitting beside it.
+        printf '%s\n' "$existing" | while IFS= read -r known; do
+            [ -n "$known" ] && [ "$known" != "$root" ] && printf 'root=%s\n' "$known"
+        done
         [ -n "$root" ] && printf 'root=%s\n' "$root"
-    } > "$SETTINGS_FILE"
+    } > "$SETTINGS_FILE.new"
+    mv "$SETTINGS_FILE.new" "$SETTINGS_FILE"
 }
 
 # --- discovery ------------------------------------------------------------
 
 # Prints "flavour<TAB>path" for every AddOns folder found.
 discover() {
-    local roots="$DEFAULT_ROOTS" remembered
-    remembered="$(remembered_root)"
-    [ -n "$remembered" ] && roots="$remembered
-$roots"
-
-    printf '%s\n' "$roots" | while IFS= read -r root; do
+    { remembered_roots; default_roots; } | while IFS= read -r root; do
         [ -n "$root" ] && [ -d "$root" ] || continue
         for client in "$root"/*/; do
             [ -d "${client}Interface/AddOns" ] || continue
@@ -210,7 +251,8 @@ else
             say "More than one client found:"
             i=1
             while IFS="$(printf '\t')" read -r name path; do
-                printf '  [%d] %s' "$i" "$name"; dim "      $path"
+                printf '  [%d] %-18s %s\n' "$i" "$name" "$(flavour_label "$name")"
+                dim "      $path"
                 i=$((i + 1))
             done <<EOF
 $found
