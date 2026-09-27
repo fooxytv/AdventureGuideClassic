@@ -53,6 +53,9 @@ local DIMMED_ALPHA = 0.45
 
 local GOLD = { 1, 0.82, 0 }
 local SUBTLE = { 0.62, 0.57, 0.5 }
+local WHITE = { 1, 1, 1 }
+-- Faint enough to read as the row lifting rather than as a selection.
+local HIGHLIGHT = { 1, 0.82, 0, 0.07 }
 
 -- Without a border the rule is the only separator, so the vertical gap is what keeps
 -- one quest from reading as part of the next.
@@ -80,7 +83,35 @@ states. This is a 390px tab with no row interaction and as many as 41 quests in
 Blackrock Depths: forty-one nested borders inside an already bordered inset reads as
 noise, and the edge art costs width the reward names need.
 ]]
+--[[
+	Hovering a row lifts the whole row, the way the quest log does, rather than only
+	the piece under the cursor.
+
+	The giver, the zone and each reward are their own buttons inside the row, so moving
+	onto one of them fires the row's OnLeave. Hiding on that would flicker the highlight
+	off whenever the cursor crossed a name. IsMouseOver is a test against the row's own
+	rectangle and stays true over a child, so every leave asks it rather than assuming.
+]]
+local function HighlightRow(frame)
+	local row = frame.highlight and frame or frame:GetParent()
+	if row and row.highlight then row.highlight:Show() end
+end
+
+local function UnhighlightRow(frame)
+	local row = frame.highlight and frame or frame:GetParent()
+	if row and row.highlight then row.highlight:SetShown(row:IsMouseOver()) end
+end
+
 local function BuildRow(row)
+	row.highlight = row:CreateTexture(nil, "BACKGROUND")
+	row.highlight:SetPoint("TOPLEFT", 2, -1)
+	row.highlight:SetPoint("BOTTOMRIGHT", -2, 1)
+	row.highlight:SetColorTexture(unpack(HIGHLIGHT))
+	row.highlight:Hide()
+	row:EnableMouse(true)
+	row:SetScript("OnEnter", HighlightRow)
+	row:SetScript("OnLeave", UnhighlightRow)
+
 	row.rule = row:CreateTexture(nil, "ARTWORK")
 	row.rule:SetHeight(1)
 	row.rule:SetPoint("BOTTOMLEFT", PAD_X, 0)
@@ -154,15 +185,17 @@ local function BuildRow(row)
 		end
 	end)
 	row.zone:SetScript("OnEnter", function(self)
+		HighlightRow(self)
 		if not self.mapID then return end
 		row.zoneText:SetTextColor(unpack(GOLD))
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText("Open the map at " .. (self.zoneName or ""), 1, 1, 1)
 		GameTooltip:Show()
 	end)
-	row.zone:SetScript("OnLeave", function()
+	row.zone:SetScript("OnLeave", function(self)
 		row.zoneText:SetTextColor(unpack(SUBTLE))
 		GameTooltip_Hide()
+		UnhighlightRow(self)
 	end)
 
 	--[[
@@ -171,6 +204,8 @@ local function BuildRow(row)
 	same place on screen instead of one by the cursor and one by the row.
 	]]
 	row.giver:SetScript("OnEnter", function(self)
+		HighlightRow(self)
+		row.giverText:SetTextColor(unpack(GOLD))
 		if not self.npc then return end
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(self.npc.name, 1, 0.82, 0)
@@ -182,11 +217,13 @@ local function BuildRow(row)
 			components.NpcPreview.Show(self.npc)
 		end
 	end)
-	row.giver:SetScript("OnLeave", function()
+	row.giver:SetScript("OnLeave", function(self)
 		if components and components.NpcPreview then
 			components.NpcPreview.Hide()
 		end
 		GameTooltip_Hide()
+		row.giverText:SetTextColor(unpack(row.giverIsPreviewable and WHITE or SUBTLE))
+		UnhighlightRow(self)
 	end)
 
 	row.rewards = { }
@@ -200,6 +237,7 @@ stood up again here, so there is one model and one place that knows how to undre
 first.
 ]]
 local function RewardOnEnter(self)
+	HighlightRow(self)
 	if not self.link then return end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetHyperlink(self.link)
@@ -210,6 +248,7 @@ local function RewardOnEnter(self)
 end
 
 local function RewardOnLeave(self)
+	UnhighlightRow(self)
 	self.checkCtrl = false
 	self.wasCtrlDown = false
 	if components and components.Loot then components.Loot.HidePreview() end
@@ -321,7 +360,10 @@ local function Initializer(row, quest)
 	row.zone:SetShown(hasGiver and quest.startZone ~= nil)
 	if hasGiver then
 		row.giverText:SetText(quest.startedBy)
-		row.giverText:SetTextColor(unpack(quest.startedByDisplay and GOLD or SUBTLE))
+		-- White for a giver there is a model for, which brightens to gold on hover;
+		-- subdued for one there is not, so the difference still reads before hovering.
+		row.giverIsPreviewable = quest.startedByDisplay and true or false
+		row.giverText:SetTextColor(unpack(quest.startedByDisplay and WHITE or SUBTLE))
 		row.giver:SetWidth(row.giverText:GetStringWidth() + 2)
 		row.giver:SetAlpha(dim)
 		row.zoneText:SetText(quest.startZone and (" \226\128\162 " .. quest.startZone) or "")
