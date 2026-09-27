@@ -347,13 +347,21 @@ local function Initializer(row, quest)
 	end
 
 	local state = QuestService.GetState(quest.id)
+	--[[
+		Once a quest is taken or finished, the detail under the title dims and the title
+		itself does not, which is what the objective tracker does.
+
+		Dimming the whole row instead buried the title of every quest already in hand,
+		so the list stopped reading as a list of quests at a glance. The gold stays put
+		and the giver, the zone and the rewards carry the state.
+	]]
 	local dim = (state == "active" or state == "completed") and DIMMED_ALPHA or 1
 
 	row.icon:SetTexture(QuestService.GetStateIcon(quest.id))
 	row.title:SetText(quest.name or "")
-	row.title:SetAlpha(dim)
+	row.title:SetAlpha(1)
 	row.level:SetText(quest.level and tostring(quest.level) or "")
-	row.level:SetAlpha(dim)
+	row.level:SetAlpha(1)
 
 	local hasGiver = quest.startedBy ~= nil
 	row.giver:SetShown(hasGiver)
