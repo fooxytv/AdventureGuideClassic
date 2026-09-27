@@ -128,9 +128,30 @@ local function BuildRow(row)
 	Clicking the zone opens the world map there, which is the question the line exists
 	to answer: where do I go to pick this up. Only where the zone resolved to a map id,
 	so the name never looks clickable when nothing would happen.
+
+	Not through OpenWorldMap, even though it exists everywhere. It is a one-line wrapper
+	for WorldMapFrame:HandleUserActionOpenSelf, which Era's world map does not have, so
+	on Era the call got past the guard and then raised inside Blizzard's own file.
+
+	SetMapID comes from MapCanvasMixin and is there on every client this addon supports,
+	so it is the one asked first, with OpenWorldMap kept only as a fallback.
 	]]
 	row.zone:SetScript("OnClick", function(self)
-		if self.mapID and OpenWorldMap then OpenWorldMap(self.mapID) end
+		if not self.mapID then return end
+		local frame = WorldMapFrame
+		if frame and type(frame.SetMapID) == "function" then
+			if not frame:IsShown() then
+				if type(ShowUIPanel) == "function" then
+					ShowUIPanel(frame)
+				else
+					frame:Show()
+				end
+			end
+			if pcall(frame.SetMapID, frame, self.mapID) then return end
+		end
+		if type(OpenWorldMap) == "function" then
+			pcall(OpenWorldMap, self.mapID)
+		end
 	end)
 	row.zone:SetScript("OnEnter", function(self)
 		if not self.mapID then return end
