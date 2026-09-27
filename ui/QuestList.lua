@@ -335,8 +335,16 @@ function component.Init(components_)
 	local quests = CreateFrame("Frame", nil, EncounterJournal.encounter)
 	component.frame = quests
 	EncounterJournal.encounter.quests = quests
-	quests:SetSize(390, 425)
-	quests:SetPoint("BOTTOMRIGHT", -1, 2)
+	--[[
+		Held off the journal's own border at the bottom and the right, where the panel
+		used to run over it. The Loot container sits in the same parent without doing
+		that and keeps five pixels from the right edge, so the panel now does too.
+
+		The size shrinks by as much as the anchor moves, which leaves the top and left
+		edges exactly where they were: only the two edges that overlapped move.
+	]]
+	quests:SetSize(386, 421)
+	quests:SetPoint("BOTTOMRIGHT", -5, 6)
 
 	--[[
 	Sit above the journal's own furniture.
