@@ -443,14 +443,17 @@ function component.Init(components_)
 	underneath the box's rows however high its layer, because a child frame is drawn over
 	its parent's regions regardless.
 
-	The overlay stops at the scroll box's right edge so it does not wash over the
-	scrollbar, and takes no mouse input, so scrolling and row hovering still reach the
-	rows underneath it.
+	It covers the scroll box exactly. Anchored to the panel instead, most of the top
+	fade landed in the gap above the first row, where there is nothing to fade, while
+	the bottom hung below the box and drew onto the journal's own frame.
+
+	Matching the box also keeps it clear of the scrollbar to its right, and it takes no
+	mouse input, so scrolling and row hovering still reach the rows underneath it.
 	]]
 	local FADE = 16
 	local fade = CreateFrame("Frame", nil, quests)
-	fade:SetPoint("TOPLEFT", ground, "TOPLEFT", 0, 0)
-	fade:SetPoint("BOTTOMRIGHT", scrollbox, "BOTTOMRIGHT", 0, -6)
+	fade:SetPoint("TOPLEFT", scrollbox, "TOPLEFT", 0, 0)
+	fade:SetPoint("BOTTOMRIGHT", scrollbox, "BOTTOMRIGHT", 0, 0)
 	fade:SetFrameLevel(scrollbox:GetFrameLevel() + 5)
 	for step = 1, FADE do
 		local alpha = GROUND_ALPHA * (1 - (step - 1) / FADE)
