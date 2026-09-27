@@ -343,16 +343,31 @@ New-Item -ItemType Directory -Path $staging -Force -WhatIf:$false | Out-Null
 
 try {
     $archive = Join-Path $staging 'source.zip'
-    $url = "https://codeload.github.com/$Owner/$Repo/zip/refs/heads/$Branch"
+    # -Branch takes a branch, a tag or a commit, and codeload spells each one
+    # differently: refs/heads for a branch, refs/tags for a tag, and the sha on its
+    # own for a commit. Only the first was tried, so every tag and commit the help
+    # advertises failed with a message about branches.
+    $forms = @("refs/heads/$Branch", "refs/tags/$Branch", $Branch)
+    $downloaded = $false
+    $lastError = $null
 
     Write-Host "Downloading $Branch..."
-    try {
-        Invoke-WebRequest -Uri $url -OutFile $archive -Headers @{ 'User-Agent' = $AddonName } -TimeoutSec 120
-    } catch {
-        throw ("Could not download branch '$Branch'.`n" +
-               "GitHub returns 404 for a branch that does not exist. Check the spelling, " +
-               "or list branches at https://github.com/$Owner/$Repo/branches`n" +
-               "Underlying error: $($_.Exception.Message)")
+    foreach ($form in $forms) {
+        try {
+            $url = "https://codeload.github.com/$Owner/$Repo/zip/$form"
+            Invoke-WebRequest -Uri $url -OutFile $archive -Headers @{ 'User-Agent' = $AddonName } -TimeoutSec 120
+            $downloaded = $true
+            break
+        } catch {
+            $lastError = $($_.Exception.Message)
+        }
+    }
+
+    if (-not $downloaded) {
+        throw ("Could not download '$Branch'.`n" +
+               "Tried it as a branch, a tag and a commit, and GitHub returned 404 for each. " +
+               "Check the spelling, or list branches at https://github.com/$Owner/$Repo/branches`n" +
+               "Underlying error: $lastError")
     }
 
     Expand-Archive -LiteralPath $archive -DestinationPath $staging -Force -WhatIf:$false
