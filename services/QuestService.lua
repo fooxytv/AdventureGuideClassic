@@ -50,7 +50,29 @@ end
 	Completed is checked first: a repeatable quest can be both flagged complete and
 	sitting in the log, and the tick is the more useful thing to say about it.
 ]]
+--[[
+	A state forced for previewing. Seeing how a row is drawn in progress or handed in
+	otherwise means finding, accepting and completing a real quest for each one.
+
+	nil is the normal case and means ask the game, so nothing but an explicit call
+	changes what a player sees.
+]]
+local previewState
+
+local VALID_STATES = { available = true, active = true, completed = true }
+
+function QuestService.SetPreviewState(state)
+	if state ~= nil and not VALID_STATES[state] then return false end
+	previewState = state
+	return true
+end
+
+function QuestService.GetPreviewState()
+	return previewState
+end
+
 function QuestService.GetState(questID)
+	if previewState then return previewState end
 	if not questID then return "available" end
 	if IsCompleted(questID) then return "completed" end
 	if IsOnQuest(questID) then return "active" end

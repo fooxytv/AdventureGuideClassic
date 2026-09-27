@@ -577,3 +577,30 @@ Compat.RegisterEvents(eventFrame,
 eventFrame:SetScript("OnEvent", RequestRefresh)
 
 UI.Add(component)
+
+--[[
+	Draw every row as though the quest were in that state, so the three cases can be
+	seen without finding, accepting and handing in a real quest for each.
+
+	  /run AGC_PreviewQuests("active")     as though in progress
+	  /run AGC_PreviewQuests("completed")  as though handed in
+	  /run AGC_PreviewQuests("available")  as though untouched
+	  /run AGC_PreviewQuests()             back to what the game says
+
+	It goes through QuestService rather than through this file, so the state icons in
+	the search results agree with the list instead of the two disagreeing on screen.
+]]
+_G.AGC_PreviewQuests = function(state)
+	if not QuestService.SetPreviewState(state) then
+		print("|cffff9900[AGC]|r AGC_PreviewQuests(\"available\"|\"active\"|\"completed\") or no argument to clear")
+		return
+	end
+	if state then
+		print("|cff00ff00[AGC]|r Quest rows drawn as: " .. state)
+	else
+		print("|cff00ff00[AGC]|r Quest rows back to their real state")
+	end
+	if component.frame and component.frame:IsShown() and currentInstance then
+		component.Show(currentInstance)
+	end
+end
