@@ -356,8 +356,16 @@ function component.Init(components_)
 	local quests = CreateFrame("Frame", nil, EncounterJournal.encounter)
 	component.frame = quests
 	EncounterJournal.encounter.quests = quests
-	quests:SetSize(390, 425)
-	quests:SetPoint("BOTTOMRIGHT", -1, 2)
+	--[[
+		Held off the journal's own border at the bottom and the right, where the panel
+		used to run over it. The Loot container sits in the same parent without doing
+		that and keeps five pixels from the right edge, so the panel now does too.
+
+		The size shrinks by as much as the anchor moves, which leaves the top and left
+		edges exactly where they were: only the two edges that overlapped move.
+	]]
+	quests:SetSize(386, 421)
+	quests:SetPoint("BOTTOMRIGHT", -5, 6)
 
 	--[[
 	Sit above the journal's own furniture.
@@ -452,6 +460,46 @@ function component.Init(components_)
 	view:SetElementExtentCalculator(function(_, quest) return RowHeight(quest) end)
 	view:SetPadding(2, 2, 0, 0, 4)
 	ScrollUtil.InitScrollBoxWithScrollBar(scrollbox, scrollbar, view)
+
+	--[[
+	Fade the list out at the top and bottom, instead of cutting it off.
+
+	A row scrolling past either end used to stop against a hard line, which read as the
+	list being clipped rather than continuing. Fading it into the ground lets it recede
+	into the page, which is what the panel is meant to be.
+
+	It has to live on its own frame above the scroll box. A texture on the panel draws
+	underneath the box's rows however high its layer, because a child frame is drawn over
+	its parent's regions regardless.
+
+	It covers the scroll box exactly. Anchored to the panel instead, most of the top
+	fade landed in the gap above the first row, where there is nothing to fade, while
+	the bottom hung below the box and drew onto the journal's own frame.
+
+	Matching the box also keeps it clear of the scrollbar to its right, and it takes no
+	mouse input, so scrolling and row hovering still reach the rows underneath it.
+	]]
+	local FADE = 16
+	local fade = CreateFrame("Frame", nil, quests)
+	fade:SetPoint("TOPLEFT", scrollbox, "TOPLEFT", 0, 0)
+	fade:SetPoint("BOTTOMRIGHT", scrollbox, "BOTTOMRIGHT", 0, 0)
+	fade:SetFrameLevel(scrollbox:GetFrameLevel() + 5)
+	for step = 1, FADE do
+		local alpha = GROUND_ALPHA * (1 - (step - 1) / FADE)
+		local offset = step - 1
+
+		local top = fade:CreateTexture(nil, "OVERLAY")
+		top:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		top:SetHeight(1)
+		top:SetPoint("TOPLEFT", fade, "TOPLEFT", 0, -offset)
+		top:SetPoint("TOPRIGHT", fade, "TOPRIGHT", 0, -offset)
+
+		local bottom = fade:CreateTexture(nil, "OVERLAY")
+		bottom:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], alpha)
+		bottom:SetHeight(1)
+		bottom:SetPoint("BOTTOMLEFT", fade, "BOTTOMLEFT", 0, offset)
+		bottom:SetPoint("BOTTOMRIGHT", fade, "BOTTOMRIGHT", 0, offset)
+	end
 
 	quests:Hide()
 end
