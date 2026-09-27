@@ -43,6 +43,10 @@ ADDON_NAME='AdventureGuideClassic'   # must match the .toc basename
 # where an allow-list would silently leave it out.
 EXCLUDE_DIRS='.git .github ci tools docs code dist .vscode .claude'
 EXCLUDE_FILES='README.md CLAUDE.md CLAUDE.local.md todo.md .luacheckrc .gitignore .gitattributes'
+# .env is gitignored so it should never reach a GitHub archive, but package.sh drops
+# it too, and an installer that copies a stray one straight into AddOns is not worth
+# the saving.
+EXCLUDE_GLOBS='.env*'
 
 BRANCH='main'
 ADDONS_PATH=''
@@ -151,6 +155,10 @@ remembered_roots() {
 }
 
 remember() {
+    # Written with ifs rather than [ ... ] && cmd on purpose. Such a line is the last
+    # command in its block, so when the test is false the block fails, set -e fires
+    # and the script stops -- which it did, silently, after printing the version and
+    # before copying anything.
     # An AddOns path is <root>/<flavour>/Interface/AddOns, so its WoW root is
     # three levels up. Remembering the root as well as the leaf is what lets a
     # later --all find the other clients installed beside it.
@@ -164,9 +172,11 @@ remember() {
         # hand teaches the script where this machine keeps WoW, and a later
         # --all then finds the clients sitting beside it.
         printf '%s\n' "$existing" | while IFS= read -r known; do
-            [ -n "$known" ] && [ "$known" != "$root" ] && printf 'root=%s\n' "$known"
+            if [ -n "$known" ] && [ "$known" != "$root" ]; then
+                printf 'root=%s\n' "$known"
+            fi
         done
-        [ -n "$root" ] && printf 'root=%s\n' "$root"
+        if [ -n "$root" ]; then printf 'root=%s\n' "$root"; fi
     } > "$SETTINGS_FILE.new"
     mv "$SETTINGS_FILE.new" "$SETTINGS_FILE"
 }
@@ -215,10 +225,20 @@ trap cleanup EXIT
 
 say "Downloading $BRANCH ..."
 archive="$staging/source.zip"
-curl -fsSL --max-time 120 -H "User-Agent: $ADDON_NAME" \
-    -o "$archive" \
-    "https://codeload.github.com/$OWNER/$REPO/zip/refs/heads/$BRANCH" \
-    || die "Could not download '$BRANCH'. Is it a branch of $OWNER/$REPO?"
+# --branch takes a branch, a tag or a commit, and codeload spells each differently:
+# refs/heads for a branch, refs/tags for a tag, and the sha on its own for a commit.
+# Only the first was tried, so the tags and commits the help advertises all failed.
+downloaded=0
+for form in "refs/heads/$BRANCH" "refs/tags/$BRANCH" "$BRANCH"; do
+    if curl -fsSL --max-time 120 -H "User-Agent: $ADDON_NAME" \
+        -o "$archive" \
+        "https://codeload.github.com/$OWNER/$REPO/zip/$form" 2>/dev/null; then
+        downloaded=1
+        break
+    fi
+done
+[ "$downloaded" -eq 1 ] \
+    || die "Could not download '$BRANCH'. Is it a branch, tag or commit of $OWNER/$REPO?"
 
 unzip -q "$archive" -d "$staging" || die "The download was not a readable zip."
 extracted="$(find "$staging" -maxdepth 1 -type d -name "$REPO-*" | head -1)"
@@ -256,7 +276,7 @@ if [ -n "$ADDONS_PATH" ]; then
     targets="$ADDONS_PATH"
     remember "$ADDONS_PATH"
 else
-    [ "$FORGET" -eq 1 ] && rm -f "$SETTINGS_FILE"
+    if [ "$FORGET" -eq 1 ]; then rm -f "$SETTINGS_FILE"; fi
     found="$(discover)"
     [ -n "$found" ] || die "No WoW AddOns folder found. Pass --addons-path to name one."
 
@@ -311,6 +331,7 @@ fi
 rsync_excludes=''
 for d in $EXCLUDE_DIRS; do rsync_excludes="$rsync_excludes --exclude=/$d/"; done
 for f in $EXCLUDE_FILES; do rsync_excludes="$rsync_excludes --exclude=/$f"; done
+for g in $EXCLUDE_GLOBS; do rsync_excludes="$rsync_excludes --exclude=/$g"; done
 
 printf '%s\n' "$targets" | while IFS= read -r addons; do
     [ -n "$addons" ] || continue
@@ -328,6 +349,7 @@ printf '%s\n' "$targets" | while IFS= read -r addons; do
         cp -R "$extracted/." "$destination/"
         for d in $EXCLUDE_DIRS; do rm -rf "${destination:?}/$d"; done
         for f in $EXCLUDE_FILES; do rm -f "${destination:?}/$f"; done
+        for g in $EXCLUDE_GLOBS; do rm -f "${destination:?}"/$g; done
     fi
 
     say "Installed to $destination"
