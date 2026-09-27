@@ -200,6 +200,57 @@ requests. Review changes to `CLAUDE.md` with the same care as code, and be suspi
 any that arrive alongside unrelated changes. Never put credentials, tokens or private
 URLs in it.
 
+## Loot and instance data tags
+
+Loot entries carry a client tag, as `filter` or `seasonFilter` -- both keys work and mean
+the same thing:
+
+| Tag | Shown on |
+|---|---|
+| `all` | every client (the default) |
+| `era` | Classic Era only, not SoD, not TBC |
+| `sod` | Season of Discovery only |
+| `classic` | Era and SoD, not TBC |
+| `tbc` | TBC only |
+| `forever` | Forever (1.60.x) only |
+| `exclusive` | legacy spelling of `sod` |
+| `restricted` | legacy: everywhere *except* SoD |
+
+TBC items may also carry `difficulty = "normal"` or `"heroic"`; without it an item shows
+on both.
+
+```lua
+loot = {
+    { id = 872, filter = "era" },                          -- Era only
+    { id = 872, filter = "classic" },                      -- Era and SoD
+    { id = 27448, filter = "tbc", difficulty = "heroic" },  -- TBC heroic only
+}
+```
+
+Instances tag the same way, with one caveat: raids also set a `season` boolean, and the
+branch reading it in `services/Instance.lua` returns before any `seasonFilter` is checked,
+so **no raid's tag currently has any effect**. Tracked in the issues; do not assume a raid
+tag works until that is fixed.
+
+## In-game helpers
+
+`/agc` opens the journal. `/run` the rest:
+
+| Helper | Does |
+|---|---|
+| `AGC_Probe()` | what the addon thinks it is running on |
+| `AGC_PreviewQuests("active")` | draw every quest row in that state (`available`, `active`, `completed`; no argument to clear) |
+| `AGC_DebugLootFilter()` | why the selected encounter's loot was filtered |
+| `AGC_ToggleDebug()` | encounter-detection debug printing |
+| `AGC_ResetInstance("Deadmines")` | clear defeated marks for one instance |
+| `AGC_ResetAllEncounters()` | clear them everywhere |
+| `AGC_Wishlist()` | print the wishlist |
+| `AGC_CheckEquipped()` | re-run the equipped-item wishlist sweep |
+| `AGC_NpcPreview(id)` | show an NPC model |
+| `TestLevelUpToast()`, `TestLevelUpToastAt(level)` | level-up toast |
+| `TestBossDefeatedToast()`, `TestBossDefeatedToastCustom(name)` | defeat toast |
+| `TestWishlistToast()`, `TestWishlistToastCustom(itemID)` | wishlist toast |
+
 ## Commit and pull request attribution
 
 Commits made by an agent end with a `Co-Authored-By:` line and nothing else. Pull
