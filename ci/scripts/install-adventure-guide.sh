@@ -21,6 +21,15 @@
 #       --forget            Ignore the remembered folder and pick again
 #   -h, --help              Show this
 #
+# Download it once and keep it:
+#   curl -fsSLO https://raw.githubusercontent.com/fooxytv/AdventureGuideClassic/main/ci/scripts/install-adventure-guide.sh
+#   chmod +x install-adventure-guide.sh
+#   ./install-adventure-guide.sh --branch feat/my-thing
+#
+# Or run it straight from the pipe, naming a client since there is no terminal
+# to ask at:
+#   curl -fsSL <that url> | bash -s -- --branch feat/my-thing --flavour era
+#
 # Written for bash 3.2, which is what macOS ships.
 
 set -euo pipefail
@@ -93,7 +102,25 @@ dim()  { printf '\033[2m%s\033[0m\n' "$*"; }
 warn() { printf '\033[33m%s\033[0m\n' "$*" >&2; }
 die()  { printf '\033[31m%s\033[0m\n' "$*" >&2; exit 1; }
 
-usage() { sed -n '3,26p' "$0" | sed 's/^# \{0,1\}//'; exit 0; }
+usage() {
+    # Piped from curl there is no script file to read the header out of, so the
+    # summary is spelled out rather than extracted.
+    if [ -r "$0" ] && [ "$0" != "bash" ] && [ "$0" != "-" ]; then
+        sed -n '3,26p' "$0" | sed 's/^# \{0,1\}//'
+    else
+        cat <<'USAGE'
+Installs Adventure Guide Classic from GitHub into a WoW AddOns folder.
+
+  -b, --branch <name>     Branch, tag or commit to install (default: main)
+  -p, --addons-path <dir> Install into this Interface/AddOns folder
+  -f, --flavour <text>    Install to the client whose folder matches, e.g. era
+  -a, --all               Install to every client found
+      --forget            Ignore the remembered folder and pick again
+  -h, --help              Show this
+USAGE
+    fi
+    exit 0
+}
 
 while [ $# -gt 0 ]; do
     case "$1" in
