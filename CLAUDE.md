@@ -202,11 +202,16 @@ URLs in it.
 
 ## Commit and pull request attribution
 
-Commits and pull requests made by an agent end with a `Co-Authored-By:` line and nothing
-else. Do not add a `Claude-Session:` trailer, or a session URL to a pull request body.
-Those links are not readable without authentication, so they leak no conversation, but
+Commits made by an agent end with a `Co-Authored-By:` line and nothing else. Pull
+request bodies carry no attribution footer at all.
+
+So: no `Claude-Session:` trailer, no session URL, and no "Generated with Claude Code"
+line on a pull request.
+
+Session links are not readable without authentication, so they leak no conversation, but
 this repository is public and a session identifier is not something the maintainer has
-chosen to publish permanently in git history.
+chosen to publish permanently in git history. The footer is simply noise: there is one
+contributor, and he knows.
 
 ## Known, deliberate rough edges
 
