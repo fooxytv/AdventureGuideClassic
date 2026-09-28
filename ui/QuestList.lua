@@ -66,6 +66,51 @@ local TITLE_H = 16
 local SOURCE_H = 15
 local REWARD_H = 17
 
+--[[
+Floors for the giver and zone names when the pair is too wide for the row.
+
+Both were sized to their own text with no cap, so a long quest giver followed by a long
+zone ran past the panel edge. Neither may collapse to nothing when the row runs out of
+width: a giver clipped to "Mar" or a zone clipped to the bullet alone is worse than an
+ellipsis, so each keeps at least this much and the overflow is truncated instead.
+]]
+local GIVER_MIN = 60
+local ZONE_MIN = 70
+
+-- Wide enough that no name is constrained by it, so a string can be measured at its
+-- natural width before the real cap is applied. Rows are recycled, and a string
+-- measured while still narrowed by the previous quest would ratchet smaller on reuse.
+local MEASURE_W = 600
+
+--[[
+Whether this client's map database actually knows a map id.
+
+A start zone inside a dungeon carries the modern uiMapID of the instance -- Blackrock
+Depths is 243 -- and not every client has those. Forever does not, and `SetMapID` does
+not validate: it takes the id, and then Blizzard's own world quest data provider indexes
+`GetMapInfo(243)` on each refresh and errors. Fifty times over, from inside Blizzard's
+files, long after our `pcall` around `SetMapID` has returned.
+
+So the id has to be rejected before it is offered rather than caught afterwards, which
+is not possible once Blizzard's own refresh loop owns the error. The zone name still
+shows; it simply stops being clickable where the click would go nowhere.
+
+Asked fresh every time rather than cached. Forever is a beta and its map data is not
+all present yet, so a nil answer is a statement about this client right now and not a
+permanent fact. When the data arrives the link starts working on its own, with no
+change here -- which a cached "no" held for the session would quietly prevent. The call
+is a C lookup, and the whole of Blackrock Depths is forty-one of them.
+
+`GetMapInfo` is asked inside `pcall` because API on these clients has raised where it
+was expected to return nil -- `C_Texture.GetAtlasInfo` did exactly that.
+]]
+local function IsMapIDUsable(mapID)
+	if not mapID then return false end
+	if not (C_Map and C_Map.GetMapInfo) then return false end
+	local ok, info = pcall(C_Map.GetMapInfo, mapID)
+	return (ok and info ~= nil) and true or false
+end
+
 local function RowHeight(quest)
 	local rewards = quest.rewards and #quest.rewards or 0
 	return PAD_Y + TITLE_H
@@ -144,7 +189,11 @@ local function BuildRow(row)
 
 	row.giverText = row.giver:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.giverText:SetJustifyH("LEFT")
+	-- Anchored to both sides so the string is as wide as the button, which is what makes
+	-- a non-wrapping string truncate with an ellipsis rather than overrun.
 	row.giverText:SetPoint("LEFT")
+	row.giverText:SetPoint("RIGHT")
+	row.giverText:SetWordWrap(false)
 	row.giver:SetFontString(row.giverText)
 
 	row.zone = CreateFrame("Button", nil, row)
@@ -153,6 +202,8 @@ local function BuildRow(row)
 	row.zoneText = row.zone:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	row.zoneText:SetJustifyH("LEFT")
 	row.zoneText:SetPoint("LEFT")
+	row.zoneText:SetPoint("RIGHT")
+	row.zoneText:SetWordWrap(false)
 	row.zone:SetFontString(row.zoneText)
 
 	--[[
@@ -287,6 +338,38 @@ once per item that arrived -- and settled the moment the cache was warm.
 Showing a frame that is already shown does nothing at all, so the ones that stay are
 left alone and only their contents are rewritten.
 ]]
+--[[
+Fit the giver and the zone into the width the row actually has.
+
+They sit side by side on one line and each was sized to its own text, so a long pair --
+a full quest giver name followed by a long zone -- ran past the panel edge and out of
+the journal. The line has to be budgeted instead.
+
+The zone gives up space first. The giver is the thing being looked for, and a zone is
+still recognisable from its opening words, whereas a truncated name may not be. Neither
+goes below its floor: if the pair still does not fit once the zone has shrunk, the giver
+is truncated too.
+
+Only ever shrinks. Sizing a button wider than its text would push the zone rightwards
+and reintroduce the overflow the budget exists to prevent.
+]]
+local function FitSourceLine(row)
+	local available = row:GetWidth()
+	if not available or available <= 0 then
+		available = scrollbox and scrollbox:GetWidth() or 0
+	end
+	local budget = available - (PAD_X + ICON + 6) - PAD_X
+	local giverW = row.giverText:GetStringWidth() + 2
+	local zoneW = row.zoneText:GetStringWidth() + 2
+	if budget > 0 and giverW + zoneW > budget then
+		zoneW = math.min(zoneW, math.max(budget - giverW, math.min(zoneW, ZONE_MIN)))
+		giverW = math.min(giverW, math.max(budget - zoneW, GIVER_MIN))
+		zoneW = math.min(zoneW, math.max(budget - giverW, 0))
+	end
+	row.giver:SetWidth(giverW)
+	row.zone:SetWidth(zoneW)
+end
+
 local function SetRewards(row, rewards, anchor)
 	local wanted = rewards and #rewards or 0
 	for index = wanted + 1, #row.rewards do
@@ -367,20 +450,24 @@ local function Initializer(row, quest)
 	row.giver:SetShown(hasGiver)
 	row.zone:SetShown(hasGiver and quest.startZone ~= nil)
 	if hasGiver then
+		-- Widened before measuring so each string reports its natural width and not the
+		-- cap left behind by whichever quest last used this recycled row.
+		row.giver:SetWidth(MEASURE_W)
+		row.zone:SetWidth(MEASURE_W)
 		row.giverText:SetText(quest.startedBy)
 		-- White for a giver there is a model for, which brightens to gold on hover;
 		-- subdued for one there is not, so the difference still reads before hovering.
 		row.giverIsPreviewable = quest.startedByDisplay and true or false
 		row.giverText:SetTextColor(unpack(quest.startedByDisplay and WHITE or SUBTLE))
-		row.giver:SetWidth(row.giverText:GetStringWidth() + 2)
 		row.giver:SetAlpha(dim)
 		row.zoneText:SetText(quest.startZone and (" \226\128\162 " .. quest.startZone) or "")
 		row.zoneText:SetTextColor(unpack(SUBTLE))
-		row.zone:SetWidth(row.zoneText:GetStringWidth() + 2)
 		row.zone:SetAlpha(dim)
-		row.zone.mapID = quest.startZoneMap
+		FitSourceLine(row)
+		-- Not every start zone resolves on every client; see IsMapIDUsable.
+		row.zone.mapID = IsMapIDUsable(quest.startZoneMap) and quest.startZoneMap or nil
 		row.zone.zoneName = quest.startZone
-		row.zone:EnableMouse(quest.startZoneMap ~= nil)
+		row.zone:EnableMouse(row.zone.mapID ~= nil)
 		--[[
 		Only a giver we have a model for is worth hovering. Without one the name still
 		shows, in the plain colour, so the row never offers a link that does nothing.
