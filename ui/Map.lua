@@ -80,7 +80,6 @@ local function InitializeLayerDropdown(self, level)
             info.text = layerInfo.title ~= "" and layerInfo.title or "Layer " .. layerIndex
             info.value = layerIndex
             info.func = LayerDropdown_OnClick
-            -- info.notCheckable = true
             UIDropDownMenu_AddButton(info, level)
         end
     else

@@ -36,7 +36,6 @@ end
 function widgetType:SetContents(widget, contents)
 	widget.title:SetText(contents.heading)
 	self:SetAnchors(widget)
-	--widget:SetHeight(widget.text:GetStringHeight() + 12)
 	widget:Show()
 end
 

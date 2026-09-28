@@ -107,7 +107,6 @@ function component.Show(instance)
 	else
 		component.frame.loreBG:SetColorTexture(0.10, 0.09, 0.08, 1)
 	end
-	-- component.frame.infoButton:SetText(instance.info)
 	component.frame.loreScrollingFont:SetText(instance.overview);
 	component.frame.loreScrollBar:SetShown(component.frame.loreScrollingFont:HasScrollableExtent());
 	components.EncounterFrame.SetCurrentView(component.frame)

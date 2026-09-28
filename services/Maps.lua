@@ -3,10 +3,6 @@ select(2, ...).SetupGlobalFacade()
 local dungeonMaps = { }
 DungeonMapService = { }
 
--- function DungeonMapService.AddTiles(dungeonMap)
---     table.insert(dungeonMaps, dungeonMap)
--- end
-
 function DungeonMapService.AddTiles(dungeonMap)
     if not dungeonMap.layers or type(dungeonMap.layers) ~= "table" then
         return

@@ -47,12 +47,9 @@ local function EncounterButton_OnClick(self)
 		components.Loot.Show()
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Quest" then
-		--[[
-			Quests belong to the instance, so an encounter has none of its own. The tab
-			only refreshed itself here, which left its now-disabled view on screen
-			showing the instance's list with no way back. Fall back to the encounter's
-			overview, the same way Model does when a boss has no model.
-		]]
+		-- Quests belong to the instance, so an encounter has none. Refreshing the tab alone left
+		-- its now-disabled view on screen with no way back, so fall back to the encounter's
+		-- overview as Model does when a boss has no model.
 		components.DynamicContentScroller.ShowOverview()
 		components.InfoTabs.SelectOverview()
 		components.InfoTabs.Refresh()

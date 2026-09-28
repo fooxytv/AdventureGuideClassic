@@ -13,7 +13,6 @@ local version = C_AddOns.GetAddOnMetadata(addonName, "Version")
 
 function component.Init(components_)
     components = components_
-    -- Create the base window and portrait image
     EncounterJournal = CreateFrame("Frame", addonName .. "_EncounterJournal", UIParent, "PortraitFrameTemplate")
     component.frame = EncounterJournal
     EncounterJournal:SetSize(800, 496)
@@ -40,7 +39,6 @@ function component.Init(components_)
     EncounterJournal.versionText:SetText("v" .. version)
     EncounterJournal.versionText:Hide()
     EncounterJournal.versionIcon:SetScript("OnEnter", function (self)
-        -- EncounterJournal.versionText:Show()
         EncounterJournal.versionIcon.emptyRingTexture:SetAllPoints(EncounterJournal.versionIcon)
         EncounterJournal.versionIcon.emptyRingTexture:SetTexture(highlightTexture)
         local name = UnitName("player")
@@ -54,7 +52,6 @@ function component.Init(components_)
     end)
 
     EncounterJournal.versionIcon:SetScript("OnLeave", function(self)
-        -- EncounterJournal.versionText:Hide()
         EncounterJournal.versionIcon.emptyRingTexture:SetAllPoints(EncounterJournal.versionIcon)
         EncounterJournal.versionIcon.emptyRingTexture:SetTexture(emptyRingTexture)
         GameTooltip:Hide()

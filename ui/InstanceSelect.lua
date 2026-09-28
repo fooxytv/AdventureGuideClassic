@@ -116,12 +116,8 @@ function component.Init(components_)
 		button.instance = instance
 		button.instanceID = instance.instanceID
 		button.name:SetText(instance.name);
-		--[[
-		An instance with no art of its own gets a plain dark tile, not a stand-in
-		texture. The name is drawn over the top either way, so the tile reads as one
-		that has not been illustrated yet rather than as one whose picture failed to
-		load -- which is how the question-mark placeholder read.
-		]]
+		-- An instance with no art gets a plain dark tile rather than a stand-in texture, so it
+		-- reads as not yet illustrated instead of as a picture that failed to load.
 		if instance.thumbnail then
 			button.bgImage:SetTexture(instance.thumbnail)
 		else
