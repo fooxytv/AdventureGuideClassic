@@ -182,6 +182,35 @@ pushing the tag is a separate, deliberate step. `<bump>` is `major`, `minor`, `p
 anything else bumps from the base version with an existing suffix stripped (so `minor`
 on `1.8.0-alpha.x` gives `1.9.0`, not `1.8.1`).
 
+### Which number to bump
+
+A pre-release is a pre-release **of** the version it names: `1.8.0-alpha.abc1234` sorts
+*before* `1.8.0`. So every alpha cut while 1.8.0 is being built keeps the same base and
+only re-stamps the suffix, which is what `none` is for and is the normal case during
+development.
+
+The base changes when a new release **starts**, not while one is being built:
+
+| Situation | Bump |
+|---|---|
+| More alphas toward the release being built | `none` |
+| Fixes after a stable release shipped | `patch` |
+| Features after a stable release shipped | `minor` |
+
+**Measure the scope from the last stable, not from the last alpha.** A release that took
+a dozen alphas reads as nothing but fixes if you compare it with the alpha before it,
+while being a large release next to what players actually last received.
+
+The trap this avoids is reaching for `patch` because the recent work was fixes, when the
+version those fixes belong to has not shipped yet. Cutting 1.8.1 while 1.8.0 exists only
+as an alpha leaves a version number that was never released and understates the release.
+
+So the first question is which versions actually shipped:
+
+```sh
+git tag | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$'
+```
+
 Publish from the branch matching the release type, never from a feature branch.
 `develop` and `main` both require a pull request.
 
