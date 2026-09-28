@@ -13,7 +13,7 @@ InstanceService.AddRaid({
 	icon = 136347,
 	splash = 1396506,
 	mapID = 533,
-	season = false,
+	seasonFilter = "all",
 	overview = "Naxxramas is the dread citadel of the lich Kel'Thuzad, floating above the plagued lands of the Eastern Kingdoms. Once a member of the Kirin Tor, Kel'Thuzad betrayed his people to serve the Lich King and now commands the Scourge's most powerful forces from within this necropolis. Divided into four wings - the Arachnid Quarter, Plague Quarter, Military Quarter, and Construct Quarter - Naxxramas represents the pinnacle of undead might and the greatest challenge heroes will face in their war against the Scourge.",
 	{
 		name = "Anub'Rekhan",

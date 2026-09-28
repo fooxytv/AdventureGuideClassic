@@ -13,7 +13,7 @@ InstanceService.AddRaid({
 	icon = 134153,
 	splash = 1379000,
 	mapID = 249,
-	season = false,
+	seasonFilter = "all",
 	overview = "Deep within the mountains of Dustwallow Marsh lies Onyxia's Lair, home to the black dragon Onyxia, daughter of Deathwing. Disguised as Lady Katrana Prestor, she manipulated the nobles of Stormwind while secretly plotting to destroy the kingdom from within. This legendary 40-player raid features a single, challenging three-phase encounter that tests coordination, positioning, and raid awareness.",
 	{
 		name = "Onyxia",

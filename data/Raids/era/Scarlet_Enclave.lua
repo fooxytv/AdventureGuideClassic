@@ -13,7 +13,7 @@ InstanceService.AddRaid({
 	icon = 136354,
 	splash = 608253,
 	mapID = 48,
-	season = true,
+	seasonFilter = "exclusive",
 	overview = "The Scarlet Enclave represents the last bastion of the Scarlet Crusade's zealous power, now corrupted from within by sinister forces. What began as a righteous order dedicated to purging the undead has fallen to demonic manipulation and fanatical madness. The dreadlord Balnazzar, disguised as Grand Crusader Saidan Dathrohan, has twisted the Crusade to serve the Burning Legion's ends. Heroes must cleanse this stronghold of both its demonic puppeteers and the misguided zealots who have succumbed to corruption.",
 	{
 		name = "Balnazzar",
