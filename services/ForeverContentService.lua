@@ -9,31 +9,22 @@ select(2, ...).SetupGlobalFacade()
 ForeverContentService = { }
 
 --[[
-	Which instances the Forever client actually has.
-
-	Forever keeps most of the vanilla dungeons, adds several of its own, and of the
-	vanilla raids carries over only Onyxia's Lair. The list is still moving, so ask the
-	client rather than hand-tag every data file against it.
-
-	Blizzard_EncounterJournal does not load here -- it is gated to the "standard" and
-	"classic" game types, and Forever's is "camelot" -- but the EJ_ functions are
-	engine-side and answer anyway. Our own instanceID is the journal's instance id, so
-	the two line up without name matching, which keeps this locale-proof.
-
-	EJ_GetNumTiers() returns 0 here, so the tier walk Blizzard's UI uses is unavailable.
-	Indexing instances directly is not.
+	Blizzard_EncounterJournal does not load on Forever -- it is gated to the "standard"
+	and "classic" game types and Forever's is "camelot" -- but the EJ_ functions are
+	engine-side and answer anyway. EJ_GetNumTiers() returns 0, so the tier walk
+	Blizzard's UI uses is unavailable; indexing instances directly is not. Our own
+	instanceID is the journal's instance id, so the two line up without name matching.
 ]]
 
 -- A client that never returns nil would otherwise spin here.
 local MAX_INSTANCES = 250
 
--- How much overlap with our own data before the enumeration is trusted. If Forever
--- renumbers its journal, a confident but wrong id set would hide the entire guide, and
--- showing too much beats showing nothing.
+-- Overlap with our own data required before the enumeration is trusted; a wrong id set
+-- would otherwise hide the whole guide.
 local MIN_TRUSTED_MATCHES = 5
 
 -- Vanilla raids Forever does not have, for when the journal does not answer. Onyxia's
--- Lair (249) is absent from the list on purpose: it is the one that carries over.
+-- Lair (249) is absent on purpose: it is the one that carries over.
 local ABSENT_ON_FOREVER = {
 	[741] = true,   -- Molten Core
 	[742] = true,   -- Blackwing Lair
@@ -48,17 +39,11 @@ local trusted
 local resolved
 
 --[[
-	A plain enumeration, with no attempt to wake the journal first.
-
-	Blizzard's UI calls C_EncounterJournal.OnOpen() and InitalizeSelectedTier() when it
-	opens, which looks like the way to get data out of a journal nothing else
-	initialises here. It is not. Both are protected, so they raise
-	ADDON_ACTION_FORBIDDEN and taint the addon, and pcall prevents neither -- the call is
-	refused rather than erroring, so it returns ok while the event fires anyway. Tested
-	on Forever: the journal reads empty before and after, so the taint bought nothing.
-
-	EJ_GetInstanceByIndex is unprotected and answers honestly. One pass per session, and
-	it starts working on its own if this client ever ships journal data.
+	Do not try to wake the journal first. C_EncounterJournal.OnOpen() and
+	InitalizeSelectedTier() are protected: they raise ADDON_ACTION_FORBIDDEN and taint
+	the addon, and pcall prevents neither -- the call is refused rather than erroring, so
+	it returns ok while the event fires anyway. Tested on Forever, the journal reads
+	empty either way. EJ_GetInstanceByIndex is unprotected and answers honestly.
 ]]
 local function EnumerateJournal()
 	if type(EJ_GetInstanceByIndex) ~= "function" then return nil end
@@ -122,8 +107,7 @@ function ForeverContentService.IsJournalUsable()
 	return trusted == true
 end
 
--- The journal decides whenever it answers. Unknown beats hidden, so an instance it has
--- never heard of stays visible rather than vanishing on a guess.
+-- True for an instance the journal has never heard of: unknown beats hidden.
 function ForeverContentService.HasInstance(instance)
 	if not instance or not instance.instanceID then return true end
 
@@ -135,8 +119,7 @@ function ForeverContentService.HasInstance(instance)
 	return not ABSENT_ON_FOREVER[instance.instanceID]
 end
 
--- Journal instances this client has that our data does not cover yet, so the gap can be
--- listed rather than guessed at. Used by /agcprobe.
+-- Journal instances this client has that our data does not cover. Used by /agcprobe.
 function ForeverContentService.GetUnknownInstanceIDs()
 	Resolve()
 	if not journalInstanceIDs then return { } end
@@ -156,9 +139,7 @@ function ForeverContentService.GetUnknownInstanceIDs()
 	return unknown
 end
 
--- The journal is not always ready at load, so rebuild once the world is in. Only on
--- Forever: nothing else consults this service, and a frame registered on a client that
--- will never call it is just something to go wrong later.
+-- The journal is not always ready at load, so rebuild once the world is in.
 if Compat.isForever then
 	local refreshFrame = CreateFrame("Frame")
 	refreshFrame:RegisterEvent("PLAYER_ENTERING_WORLD")

@@ -21,34 +21,17 @@ local function RequestLoadItemDataCompat(itemId)
 	end
 end
 
---[[
-A flat colour behind the panel rather than a texture.
-
-The journal parchment shows through anything translucent laid over it, landing at a
-warm mid-brown that gold and white text cannot sit on however the type is set. So the
-panel paints a solid colour instead: near-black, biased warm so it belongs to the
-journal rather than reading as a grey box dropped onto it.
-]]
+-- A flat near-black, biased warm. The journal parchment shows through anything
+-- translucent at a mid-brown that gold and white text cannot sit on.
 local GROUND = { 0.09, 0.075, 0.06 }
 
---[[
-Not quite opaque, so the parchment grain reads faintly through the panel and it looks
-like part of the page rather than a hole cut in it.
-
-How far this can go is limited. The journal ground is a warm mid-brown, and every
-percent of it that comes through lifts the panel towards it -- which is what made the
-page unreadable when the fill was properly translucent. At 0.9 the texture is just
-visible and the panel still sits near black, so gold and white text keep their contrast.
-]]
+-- Lower and the warm parchment bleeds through enough to kill text contrast.
 local GROUND_ALPHA = 0.9
 
--- Steps in the soft edge. Each is a one-pixel line fading outwards, which turns the
--- boundary from a drawn rectangle into the panel simply running out.
+-- Steps in the soft edge, each a one-pixel line fading outwards.
 local FEATHER = 10
 
--- A quest already in hand or already done is not something to go and pick up, so both
--- fade. The icon is what separates them, and it stays at full strength so it still
--- reads against a faded row.
+-- Detail fades for a quest in hand or done; the icon stays at full strength.
 local DIMMED_ALPHA = 0.45
 
 local GOLD = { 1, 0.82, 0 }
@@ -57,8 +40,6 @@ local WHITE = { 1, 1, 1 }
 -- Faint enough to read as the row lifting rather than as a selection.
 local HIGHLIGHT = { 1, 0.82, 0, 0.07 }
 
--- Without a border the rule is the only separator, so the vertical gap is what keeps
--- one quest from reading as part of the next.
 local PAD_X = 10
 local PAD_Y = 8
 local ICON = 16
@@ -66,47 +47,27 @@ local TITLE_H = 16
 local SOURCE_H = 15
 local REWARD_H = 17
 
---[[
-Preferred minimum widths for the giver and zone names when the pair is too wide.
-
-Both were sized to their own text with no cap, so a long quest giver followed by a long
-zone ran past the panel edge. Shrinking them is the fix, but not to nothing: a giver
-clipped to "Mar" or a zone clipped to the bullet alone is worse than an ellipsis, so
-each is held at this width for as long as the row can afford it.
-
-Preferences rather than guarantees. Staying inside the row wins over either floor, so on
-a row too narrow to honour them both they are given up -- the zone first, then the
-giver. At the width this panel actually is there is room for both.
-]]
+-- Preferred minimum widths for the giver and zone names. Preferences, not guarantees:
+-- staying inside the row outranks both floors. See FitSourceLine.
 local GIVER_MIN = 60
 local ZONE_MIN = 70
 
--- Wide enough that no name is constrained by it, so a string can be measured at its
--- natural width before the real cap is applied. Rows are recycled, and a string
--- measured while still narrowed by the previous quest would ratchet smaller on reuse.
+-- Measure at this width first. Rows are recycled, and a string still narrowed by the
+-- previous quest would ratchet smaller on every reuse.
 local MEASURE_W = 600
 
 --[[
-Whether this client's map database actually knows a map id.
+	A start zone inside a dungeon carries the instance's modern uiMapID -- Blackrock
+	Depths is 243 -- and not every client has those. Forever does not, and SetMapID does
+	not validate: it takes the id, then Blizzard's world quest data provider indexes
+	GetMapInfo(243) on every refresh and errors, from inside Blizzard's own files and long
+	after our pcall around SetMapID has returned. So the id is rejected before it is
+	offered, not caught afterwards.
 
-A start zone inside a dungeon carries the modern uiMapID of the instance -- Blackrock
-Depths is 243 -- and not every client has those. Forever does not, and `SetMapID` does
-not validate: it takes the id, and then Blizzard's own world quest data provider indexes
-`GetMapInfo(243)` on each refresh and errors. Fifty times over, from inside Blizzard's
-files, long after our `pcall` around `SetMapID` has returned.
-
-So the id has to be rejected before it is offered rather than caught afterwards, which
-is not possible once Blizzard's own refresh loop owns the error. The zone name still
-shows; it simply stops being clickable where the click would go nowhere.
-
-Asked fresh every time rather than cached. Forever is a beta and its map data is not
-all present yet, so a nil answer is a statement about this client right now and not a
-permanent fact. When the data arrives the link starts working on its own, with no
-change here -- which a cached "no" held for the session would quietly prevent. The call
-is a C lookup, and the whole of Blackrock Depths is forty-one of them.
-
-`GetMapInfo` is asked inside `pcall` because API on these clients has raised where it
-was expected to return nil -- `C_Texture.GetAtlasInfo` did exactly that.
+	Asked fresh rather than cached. Forever is a beta with incomplete map data, so nil
+	means "not on this client yet" and the link starts working on its own once the data
+	lands. GetMapInfo goes through pcall because API on these clients has raised where it
+	was expected to return nil.
 ]]
 local function IsMapIDUsable(mapID)
 	if not mapID then return false end
@@ -124,22 +85,9 @@ local function RowHeight(quest)
 end
 
 --[[
-Quests are separated by a hairline rather than boxed.
-
-A bordered panel per quest is what the quest-chain browser on feature/suggested-content
-uses, but that is a full page with a 232px rail and rows that carry hover and selection
-states. This is a 390px tab with no row interaction and as many as 41 quests in
-Blackrock Depths: forty-one nested borders inside an already bordered inset reads as
-noise, and the edge art costs width the reward names need.
-]]
---[[
-	Hovering a row lifts the whole row, the way the quest log does, rather than only
-	the piece under the cursor.
-
-	The giver, the zone and each reward are their own buttons inside the row, so moving
-	onto one of them fires the row's OnLeave. Hiding on that would flicker the highlight
-	off whenever the cursor crossed a name. IsMouseOver is a test against the row's own
-	rectangle and stays true over a child, so every leave asks it rather than assuming.
+	Hovering lifts the whole row. The giver, the zone and each reward are their own
+	buttons inside it, so moving onto one fires the row's OnLeave -- IsMouseOver tests the
+	row's own rectangle and stays true over a child, so every leave asks it.
 ]]
 local function HighlightRow(frame)
 	local row = frame.highlight and frame or frame:GetParent()
@@ -182,11 +130,6 @@ local function BuildRow(row)
 	row.title:SetPoint("RIGHT", row.level, "LEFT", -6, 0)
 	row.title:SetTextColor(unpack(GOLD))
 
-	--[[
-	The quest giver is its own small button rather than a hyperlink inside a sentence.
-	There is exactly one per quest, so hovering it needs no text parsing, and a button
-	gives the model preview a real frame to anchor its enter and leave to.
-	]]
 	row.giver = CreateFrame("Button", nil, row)
 	row.giver:SetHeight(SOURCE_H)
 	row.giver:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -2)
@@ -211,16 +154,11 @@ local function BuildRow(row)
 	row.zone:SetFontString(row.zoneText)
 
 	--[[
-	Clicking the zone opens the world map there, which is the question the line exists
-	to answer: where do I go to pick this up. Only where the zone resolved to a map id,
-	so the name never looks clickable when nothing would happen.
-
-	Not through OpenWorldMap, even though it exists everywhere. It is a one-line wrapper
-	for WorldMapFrame:HandleUserActionOpenSelf, which Era's world map does not have, so
-	on Era the call got past the guard and then raised inside Blizzard's own file.
-
-	SetMapID comes from MapCanvasMixin and is there on every client this addon supports,
-	so it is the one asked first, with OpenWorldMap kept only as a fallback.
+		Not through OpenWorldMap, even though it exists everywhere: it wraps
+		WorldMapFrame:HandleUserActionOpenSelf, which Era's world map does not have, so on
+		Era the call got past the guard and raised inside Blizzard's own file. SetMapID comes
+		from MapCanvasMixin and is on every client this addon supports, so it is asked first
+		with OpenWorldMap kept only as a fallback.
 	]]
 	row.zone:SetScript("OnClick", function(self)
 		if not self.mapID then return end
@@ -253,11 +191,6 @@ local function BuildRow(row)
 		UnhighlightRow(self)
 	end)
 
-	--[[
-	A tooltip first, then the model beneath it. The reward rows already work this way,
-	the loot tab before them, and hanging both previews off the tooltip puts them in the
-	same place on screen instead of one by the cursor and one by the row.
-	]]
 	row.giver:SetScript("OnEnter", function(self)
 		HighlightRow(self)
 		row.giverText:SetTextColor(unpack(GOLD))
@@ -285,12 +218,9 @@ local function BuildRow(row)
 	row.initialized = true
 end
 
---[[
-A reward behaves like a loot row: its tooltip on hover, and holding Ctrl dresses the
-preview model in it. The preview frame belongs to the Loot component rather than being
-stood up again here, so there is one model and one place that knows how to undress it
-first.
-]]
+-- A reward behaves like a loot row: tooltip on hover, Ctrl dresses the preview model.
+-- The preview frame belongs to the Loot component, so there is one model and one place
+-- that knows how to undress it first.
 local function RewardOnEnter(self)
 	HighlightRow(self)
 	if not self.link then return end
@@ -329,39 +259,20 @@ local function RewardOnClick(self)
 end
 
 --[[
-Only the surplus buttons are hidden.
-
-Hiding every reward and showing them all again looks harmless, but hiding a frame under
-the cursor fires its OnLeave and showing it back fires its OnEnter. A refresh under the
-pointer therefore put the hovered reward through leave-and-enter, which cleared the
-Ctrl-held flag and set it again, and the next frame started the preview over: undress,
-wait, try on. Refreshes come from GET_ITEM_INFO_RECEIVED, which is what hovering a
-reward causes in the first place, so previewing an item in a cold cache restarted itself
-once per item that arrived -- and settled the moment the cache was warm.
-
-Showing a frame that is already shown does nothing at all, so the ones that stay are
-left alone and only their contents are rewritten.
+	Only the surplus buttons are hidden. Hiding a frame under the cursor fires its
+	OnLeave and showing it back fires its OnEnter, so a refresh under the pointer put the
+	hovered reward through leave-and-enter, clearing the Ctrl-held flag and setting it
+	again, and the preview started over. Refreshes come from GET_ITEM_INFO_RECEIVED,
+	which hovering a reward causes, so previewing on a cold cache restarted itself once
+	per item that arrived. Showing an already-shown frame does nothing, so the ones that
+	stay are left alone and only their contents are rewritten.
 ]]
 --[[
-Fit the giver and the zone into the width the row actually has.
-
-They sit side by side on one line and each was sized to its own text, so a long pair --
-a full quest giver name followed by a long zone -- ran past the panel edge and out of
-the journal. The line has to be budgeted instead.
-
-The zone gives up space first. The giver is the thing being looked for, and a zone is
-still recognisable from its opening words, whereas a truncated name may not be. If the
-pair still does not fit once the zone is down to ZONE_MIN, the giver is truncated too.
-
-The floors are preferences, and the budget outranks them. A row narrower than
-GIVER_MIN + ZONE_MIN cannot honour both, so the last two lines hold the total to the
-budget whatever the floors asked for -- the zone reaching zero before the giver is cut
-below its own floor. No row is anywhere near that narrow at this panel's width; it is
-here so the function has no width at which it overflows rather than one that is merely
-never reached.
-
-Only ever shrinks. Sizing a button wider than its text would push the zone rightwards
-and reintroduce the overflow the budget exists to prevent.
+	Budgets the giver and the zone against the row width; each was sized to its own text,
+	so a long pair ran past the panel edge. The zone gives up space first, and the floors
+	are preferences the budget outranks -- the last two lines hold the total to the budget
+	whatever the floors asked for. Only ever shrinks: a button wider than its text would
+	push the zone rightwards and overflow again.
 ]]
 local function FitSourceLine(row)
 	local available = row:GetWidth()
@@ -407,11 +318,8 @@ local function SetRewards(row, rewards, anchor)
 			row.rewards[index] = reward
 		end
 
-		--[[
-		Reward names come from the item cache, which is cold the first time an instance
-		is opened. A missing one is requested and the row shows its icon alone until the
-		cache answers; the component refreshes on GET_ITEM_INFO_RECEIVED.
-		]]
+		-- The item cache is cold the first time an instance is opened, so a row shows its icon
+		-- alone until GET_ITEM_INFO_RECEIVED answers.
 		local name, link, quality, _, _, _, _, _, _, icon = GetItemInfoCompat(itemId)
 		if not name then
 			RequestLoadItemDataCompat(itemId)
@@ -441,14 +349,7 @@ local function Initializer(row, quest)
 	end
 
 	local state = QuestService.GetState(quest.id)
-	--[[
-		Once a quest is taken or finished, the detail under the title dims and the title
-		itself does not, which is what the objective tracker does.
-
-		Dimming the whole row instead buried the title of every quest already in hand,
-		so the list stopped reading as a list of quests at a glance. The gold stays put
-		and the giver, the zone and the rewards carry the state.
-	]]
+	-- The title keeps its gold; only the detail under it dims, as the tracker does.
 	local dim = (state == "active" or state == "completed") and DIMMED_ALPHA or 1
 
 	row.icon:SetTexture(QuestService.GetStateIcon(quest.id))
@@ -461,13 +362,9 @@ local function Initializer(row, quest)
 	row.giver:SetShown(hasGiver)
 	row.zone:SetShown(hasGiver and quest.startZone ~= nil)
 	if hasGiver then
-		-- Widened before measuring so each string reports its natural width and not the
-		-- cap left behind by whichever quest last used this recycled row.
 		row.giver:SetWidth(MEASURE_W)
 		row.zone:SetWidth(MEASURE_W)
 		row.giverText:SetText(quest.startedBy)
-		-- White for a giver there is a model for, which brightens to gold on hover;
-		-- subdued for one there is not, so the difference still reads before hovering.
 		row.giverIsPreviewable = quest.startedByDisplay and true or false
 		row.giverText:SetTextColor(unpack(quest.startedByDisplay and WHITE or SUBTLE))
 		row.giver:SetAlpha(dim)
@@ -479,10 +376,6 @@ local function Initializer(row, quest)
 		row.zone.mapID = IsMapIDUsable(quest.startZoneMap) and quest.startZoneMap or nil
 		row.zone.zoneName = quest.startZone
 		row.zone:EnableMouse(row.zone.mapID ~= nil)
-		--[[
-		Only a giver we have a model for is worth hovering. Without one the name still
-		shows, in the plain colour, so the row never offers a link that does nothing.
-		]]
 		row.giver.npc = quest.startedByDisplay
 			and { name = quest.startedBy, display = quest.startedByDisplay,
 				zone = quest.startZone }
@@ -504,46 +397,21 @@ function component.Init(components_)
 	local quests = CreateFrame("Frame", nil, EncounterJournal.encounter)
 	component.frame = quests
 	EncounterJournal.encounter.quests = quests
-	--[[
-		Held off the journal's own border at the bottom and the right, where the panel
-		used to run over it. The Loot container sits in the same parent without doing
-		that and keeps five pixels from the right edge, so the panel now does too.
-
-		The size shrinks by as much as the anchor moves, which leaves the top and left
-		edges exactly where they were: only the two edges that overlapped move.
-	]]
+	-- Held off the journal's own border at the bottom and the right, where the panel used
+	-- to run over it -- five pixels in, matching the Loot container in the same parent. The
+	-- size shrinks by as much as the anchor moves, so the top and left edges do not move.
 	quests:SetSize(386, 421)
 	quests:SetPoint("BOTTOMRIGHT", -5, 6)
 
-	--[[
-	Sit above the journal's own furniture.
-
-	Every view on this side of the page is a sibling under EncounterJournal.encounter,
-	and a frame's textures only draw over a sibling's if its level is higher. Taking the
-	default left that to creation order, so whether the dark ground was visible depended
-	on which component happened to be built last -- which is why it came and went.
-	]]
+	-- Sit above the journal's own furniture. Every view here is a sibling under
+	-- EncounterJournal.encounter, and a frame's textures draw over a sibling's only if its
+	-- level is higher; the default left that to creation order.
 	local parentLevel = EncounterJournal.encounter:GetFrameLevel() or 0
 	quests:SetFrameLevel(parentLevel + 10)
 
-	--[[
-	The panel fills its side of the journal below the header, rather than floating
-	inside it.
-
-	InsetFrameTemplate was drawing a second border within the journal's own inset, so
-	the dark ground read as a box dropped onto the page with parchment showing round it.
-	The ground now runs to the edges, seated with a one-pixel dark line rather than a
-	frame of its own.
-
-	It stops short at the top. The journal draws the instance name in that strip, and
-	running the ground the full height of the column covered it.
-
-	The strip it leaves clear stays clear. It belongs to the journal's own instance
-	title -- covering it is what made the panel wrong in the first place -- so a heading
-	of ours competes with that for the same few pixels, and gets clipped by the frame's
-	top edge into the bargain. The tab's own icon says which view this is, and the nav
-	bar says which instance.
-	]]
+	-- Fills its side of the journal below the header, and must stop short at the top: the
+	-- journal draws the instance name in that strip, and running the ground the full height
+	-- of the column covered it.
 	local HEADER = 34
 	local ground = quests:CreateTexture(nil, "BACKGROUND", nil, 1)
 	ground:SetColorTexture(GROUND[1], GROUND[2], GROUND[3], GROUND_ALPHA)
@@ -590,11 +458,7 @@ function component.Init(components_)
 	scrollbox = CreateFrame("Frame", nil, quests, "WowScrollBoxList")
 	scrollbox:SetPoint("TOPLEFT", 6, -(HEADER + 6))
 	scrollbox:SetPoint("BOTTOMRIGHT", -20, 8)
-	--[[
-	Clip to the box. Without this a row scrolled half out of view keeps drawing past the
-	top of the panel and onto the parchment above it, which is the fragment of the
-	previous quest that was sitting in the header strip.
-	]]
+	-- Clip to the box, or a row scrolled half out keeps drawing onto the parchment above.
 	if type(scrollbox.SetClipsChildren) == "function" then
 		scrollbox:SetClipsChildren(true)
 	end
@@ -609,24 +473,10 @@ function component.Init(components_)
 	view:SetPadding(2, 2, 0, 0, 4)
 	ScrollUtil.InitScrollBoxWithScrollBar(scrollbox, scrollbar, view)
 
-	--[[
-	Fade the list out at the top and bottom, instead of cutting it off.
-
-	A row scrolling past either end used to stop against a hard line, which read as the
-	list being clipped rather than continuing. Fading it into the ground lets it recede
-	into the page, which is what the panel is meant to be.
-
-	It has to live on its own frame above the scroll box. A texture on the panel draws
-	underneath the box's rows however high its layer, because a child frame is drawn over
-	its parent's regions regardless.
-
-	It covers the scroll box exactly. Anchored to the panel instead, most of the top
-	fade landed in the gap above the first row, where there is nothing to fade, while
-	the bottom hung below the box and drew onto the journal's own frame.
-
-	Matching the box also keeps it clear of the scrollbar to its right, and it takes no
-	mouse input, so scrolling and row hovering still reach the rows underneath it.
-	]]
+	-- Fades the list out at the top and bottom. Must be its own frame anchored to the
+	-- scroll box exactly: a texture on the panel draws underneath the box's rows however
+	-- high its layer, because a child frame draws over its parent's regions regardless.
+	-- Anchored to the panel instead, the fades missed the rows. Takes no mouse input.
 	local FADE = 16
 	local fade = CreateFrame("Frame", nil, quests)
 	fade:SetPoint("TOPLEFT", scrollbox, "TOPLEFT", 0, 0)
@@ -667,34 +517,15 @@ function component.Show(instance)
 	components.EncounterFrame.SetCurrentView(component.frame)
 end
 
---[[
-Quest state changes while the guide is open -- picking one up, handing it in -- and item
-names arrive late, so the list is rebuilt on both rather than only on show.
-
-Coalesced, because QUEST_LOG_UPDATE fires many times a second and
-GET_ITEM_INFO_RECEIVED arrives once per item as a cold cache fills. Rebuilding on each
-one tore the data provider down under the cursor: the quest giver button beneath the
-pointer went away and came back, so its preview was hidden and re-shown, and the model
-restarted its idle animation every time. That is the stutter.
-
-A tenth of a second is under a frame's notice for a list that only has to keep up with
-picking up a quest, and it collapses a burst of twenty events into one rebuild.
-]]
+-- Coalesced. QUEST_LOG_UPDATE fires many times a second and GET_ITEM_INFO_RECEIVED
+-- once per item as a cold cache fills; rebuilding on each tore the data provider down
+-- under the cursor and restarted the hovered giver's model preview every time.
 local REFRESH_DELAY = 0.1
 local refreshPending = false
 
---[[
-Re-draws the rows that are on screen, without touching the data provider.
-
-Replacing the provider rebuilds the list from the top, and these events fire while the
-player is reading: QUEST_LOG_UPDATE many times a second, and GET_ITEM_INFO_RECEIVED once
-per reward as a cold cache fills -- which hovering a row causes more of, because that is
-what requests the item. So the list kept jumping back under the pointer, and scrolling
-fought it every time the mouse moved.
-
-Nothing here changes which quests are in the list, only how they are drawn, so the rows
-already laid out are the right ones to restyle.
-]]
+-- Re-draws the rows on screen without replacing the data provider, which would rebuild
+-- the list from the top while the player is reading it. Nothing here changes which
+-- quests are listed, only how they are drawn.
 local function RefreshVisibleRows()
 	if not scrollbox or type(scrollbox.ForEachFrame) ~= "function" then
 		return false
@@ -726,18 +557,9 @@ eventFrame:SetScript("OnEvent", RequestRefresh)
 
 UI.Add(component)
 
---[[
-	Draw every row as though the quest were in that state, so the three cases can be
-	seen without finding, accepting and handing in a real quest for each.
-
-	  /run AGC_PreviewQuests("active")     as though in progress
-	  /run AGC_PreviewQuests("completed")  as though handed in
-	  /run AGC_PreviewQuests("available")  as though untouched
-	  /run AGC_PreviewQuests()             back to what the game says
-
-	It goes through QuestService rather than through this file, so the state icons in
-	the search results agree with the list instead of the two disagreeing on screen.
-]]
+-- Draws every row as though the quest were in that state: "available", "active",
+-- "completed", or no argument to clear. Goes through QuestService so the state icons in
+-- the search results agree with the list.
 _G.AGC_PreviewQuests = function(state)
 	if not QuestService.SetPreviewState(state) then
 		print("|cffff9900[AGC]|r AGC_PreviewQuests(\"available\"|\"active\"|\"completed\") or no argument to clear")
