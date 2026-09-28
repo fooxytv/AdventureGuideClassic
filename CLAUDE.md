@@ -141,6 +141,13 @@ them out as **CRLF**; `*.sh` is LF everywhere so CI shebangs work. Any script th
 rewrites a file wholesale will turn a one-line change into a whole-file diff. If a diff
 looks far too large, `git add --renormalize .` is the fix.
 
+**Everything else has no rule**, so git falls back to whoever's `core.autocrlf` is
+running. A Windows checkout has it `true` and writes CRLF working copies; the CI
+container's git has it unset and reads that CRLF as genuine content. So a `git add .`
+run in the container commits a repo-wide line-ending flip -- thousands of changed
+lines with no content change. **Stage named files, never `git add .`, from inside a
+container.** A commit whose insertions exactly equal its deletions is this bug.
+
 ## Checking work without the game
 
 Most logic here can be verified before it ever reaches a client:

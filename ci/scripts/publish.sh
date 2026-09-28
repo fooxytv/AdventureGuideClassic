@@ -22,7 +22,11 @@ new_version="$(echo "$raw_version" | tr -d '[:cntrl:]')"
 echo "Version to publish: [$new_version]"
 
 echo "Committing version bump (if any changes)..."
-git add .
+# Stage only the TOCs. `git add .` would sweep up anything else in the tree --
+# and when this runs in the CI container, whose git has core.autocrlf unset, the
+# CRLF working copies of files with no .gitattributes rule get committed as real
+# content, turning a version bump into a whole-repo line-ending flip.
+git add -- ./*.toc
 git commit -m "Bump version to $new_version" || {
     echo "No changes to commit (or commit failed)."
 }
