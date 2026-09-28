@@ -147,8 +147,6 @@ function SearchService.SearchLoot(searchText, callback)
 	return results
 end
 
--- Quests match on their own name and on the name of whoever gives them: someone looking
--- for "Gryan Stoutmantle" wants the quest he hands out.
 function SearchService.SearchQuests(searchText)
 	local results = {}
 	if not QuestService or not QuestService.GetAllQuests then return results end

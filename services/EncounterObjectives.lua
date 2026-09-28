@@ -341,11 +341,8 @@ local function ResetAllEncounters()
     DebugPrint("All instance encounters have been reset")
 end
 
---[[
-    "Deadmines has been reset." names one instance, so only that instance's defeats go.
-    The name is pulled out with a pattern built from Blizzard's own string where it
-    exists, falling back to the English form this handler used to match literally.
-]]
+-- The instance name is pulled out with a pattern built from Blizzard's own string where it
+-- exists, falling back to the English form.
 local function GetResetInstanceName(message)
     if not message then return nil end
     local template = INSTANCE_RESET_SUCCESS
@@ -360,12 +357,8 @@ local function GetResetInstanceName(message)
     return message:match("^(.+) ha[sv]e? been reset%.?$")
 end
 
---[[
-    Resetting instances does not clear a lockout you are saved to: the trash goes, the
-    bosses already dead stay dead. So a reset naming a saved instance must leave its
-    defeats alone, or clearing a dungeon throws away a raid night's progress. Era dungeons
-    are never saved, which is why they always clear.
-]]
+-- Resetting instances does not clear a lockout you are saved to: the bosses already dead
+-- stay dead. Era dungeons are never saved, which is why they always clear.
 local function IsInstanceSaved(instanceName)
     if not instanceName or not GetNumSavedInstances or not GetSavedInstanceInfo then
         return false
@@ -391,12 +384,8 @@ local function OnSystemMessage(message)
     end
 end
 
---[[
-	COMBAT_LOG_EVENT_UNFILTERED is restricted on Forever, so it is skipped there. Losing
-	it costs the UNIT_DIED path only; ENCOUNTER_END and BOSS_KILL both fire on that client
-	and cover boss detection between them. The combat log is the fallback for Era, where
-	those two do not fire.
-]]
+-- COMBAT_LOG_EVENT_UNFILTERED is restricted on Forever. ENCOUNTER_END and BOSS_KILL fire
+-- there and cover boss detection; the combat log is the Era fallback, where they do not.
 local eventFrame = CreateFrame("Frame")
 Compat.RegisterEvents(eventFrame,
 	"ENCOUNTER_END",

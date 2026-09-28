@@ -6,14 +6,8 @@ Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
---[[
-A small 3D model of a creature, shown beside the cursor when a name in a quest objective
-is hovered.
-
-Feature-detected throughout: PlayerModel and SetDisplayInfo are present on Era and BCC,
-but if either is missing the component reports that it can show nothing and the Quests tab
-leaves the text plain rather than offering links that do nothing.
-]]
+-- PlayerModel and SetDisplayInfo are present on Era and BCC, but if either is missing the
+-- component reports it can show nothing and the Quests tab leaves the text plain.
 
 local component = UI.CreateComponent("NpcPreview")
 
@@ -27,10 +21,8 @@ local function CreatePreview()
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
 	frame:SetFrameStrata("TOOLTIP")
 	frame:SetClampedToScreen(true)
-	-- Takes no mouse input at all. It sits at tooltip strata, so anything it accepts is
-	-- taken from whatever is underneath -- the scroll wheel stopped reaching the quest list,
-	-- and a scrollbar drag lost its mouse-up to this frame and carried on following the
-	-- cursor.
+	-- Takes no mouse input. At tooltip strata anything it accepts is taken from underneath --
+	-- the scroll wheel stopped reaching the list, and a scrollbar drag lost its mouse-up.
 	frame:EnableMouse(false)
 	frame:EnableMouseWheel(false)
 	frame:Hide()
@@ -66,9 +58,6 @@ local function CreatePreview()
 	return supported
 end
 
--- Under the tooltip of whatever is hovered, where the loot tab's gear preview puts
--- itself. Following the cursor instead put it under the pointer, where it took the scroll
--- wheel from the list behind it, and re-anchored every frame, which made the model jitter.
 local function AnchorToTooltip()
 	frame:ClearAllPoints()
 	if GameTooltip and GameTooltip:IsShown() then
@@ -86,8 +75,6 @@ function component.IsSupported()
 	return supported == true
 end
 
--- Returns whether anything was actually drawn, so a caller can decide not to offer the
--- link rather than open an empty box.
 function component.Show(npc)
 	if not supported or not frame or not npc or not npc.display then return false end
 
@@ -97,8 +84,7 @@ function component.Show(npc)
 		model:SetDisplayInfo(npc.display)
 	end
 
-	-- Pull the camera back for the big ones, using the heights the boss viewer already
-	-- carries. Unknown heights come back as the minimum, leaving the default framing alone.
+	-- Unknown heights come back as the minimum, leaving the default framing alone.
 	if type(model.SetCamDistanceScale) == "function" then
 		local scale = 1
 		if CreatureModelService and CreatureModelService.GetCameraScale then

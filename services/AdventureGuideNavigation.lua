@@ -30,9 +30,6 @@ function AdventureGuideNavigationService.GetEncounterContent()
 	return encounter.overview or { }
 end
 
--- Loot for an encounter, season and difficulty filtering already applied. Defaults to the
--- selected encounter; pass one explicitly to read another boss's table, which is how the
--- pinned-loot filter gathers a whole instance without navigating to each boss.
 function AdventureGuideNavigationService.GetEncounterLoot(forEncounter)
 	local target = forEncounter or encounter
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or nil

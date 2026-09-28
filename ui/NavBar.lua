@@ -66,9 +66,8 @@ function component.Init(components_)
 	}
 	NavBar_Initialize(navBar, "NavButtonTemplate", homeData, navBar.home, navBar.overflow);
 
-	-- Wide enough for what is in the results now. Both were 150, which suited instance and
-	-- item names; quest titles are longer -- nine in every hundred run past 28 characters and
-	-- the worst is 47. Rows do not wrap, so anything that does not fit is cut off.
+	-- 150 suited instance and item names; quest titles run to 47 characters and rows do not
+	-- wrap.
 	searchBox = CreateFrame("EditBox", navBar:GetName() .. "SearchBox", navBar, "SearchBoxTemplate")
 	searchBox:SetSize(200, 20)
 	searchBox:SetPoint("RIGHT", navBar, "RIGHT", -10, 0)
@@ -382,16 +381,12 @@ function component.HideSearchResults()
 end
 
 function component.OnSearchResultClick(result)
-	-- InstanceSelect and Encounters both play this on the click that opens a page;
-	-- searching straight there was the one silent way in.
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
 	if result.type == "instance" then
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
 		components.EncounterFrame.ShowInstanceInfo(result.instance)
 	elseif result.type == "quest" then
-		-- Quests belong to the instance, so this lands on its page with the Quests tab open
-		-- rather than on a boss.
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
 		components.EncounterFrame.ShowInstanceInfo(result.instance)

@@ -101,7 +101,6 @@ end
 function component.Show(instance)
 	EncounterJournal.encounter.info.encounterTitle:SetText("")
 	component.frame.title:SetText(instance.name)
-	-- Same as the tiles in the instance list: no art means a plain dark ground.
 	if instance.splash then
 		component.frame.loreBG:SetTexture(instance.splash)
 	else

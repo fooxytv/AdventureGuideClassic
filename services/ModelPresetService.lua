@@ -8,10 +8,7 @@ select(2, ...).SetupGlobalFacade()
 
 ModelPresetService = {}
 
--- Per-creature camera overrides for the model viewer. Height alone does not frame every
--- model -- a long serpent and a tall giant of the same height need different framing, and
--- some models sit well off their own origin. An override is stored per creature display
--- id and wins over the height-derived default.
+-- An override is stored per creature display id and wins over the height-derived default.
 
 local function Store()
 	if not SavedVariables then return nil end
@@ -19,17 +16,11 @@ local function Store()
 	return SavedVariables.ModelPresets
 end
 
--- Baked-in presets, for values worth shipping rather than leaving in one
--- person's saved variables. Overrides saved in game take precedence.
 local defaults = {}
 
---[[
-	Titles are keyed by encounter AND display, not by display alone. A model is often
-	reused: display 6377 is Ebonroc, Firemaw and Flamegor, 11561 is all three Dire Maul
-	guards, 5781 is both Garr and Lord Roccor. Keying by display would label every one
-	with whichever name was saved last. Camera settings stay per display, since the same
-	model does want the same framing wherever it appears.
-]]
+-- Titles are keyed by encounter AND display. A model is often reused: display 6377 is
+-- Ebonroc, Firemaw and Flamegor, 11561 is all three Dire Maul guards, 5781 is Garr and Lord
+-- Roccor. Camera settings stay per display; the same model wants the same framing.
 local titles = {}
 
 function ModelPresetService.Register(presets)
@@ -52,8 +43,6 @@ function ModelPresetService.HasOverride(displayId)
 	return (store and store[displayId]) ~= nil
 end
 
--- Never returns nil: an unknown creature falls back to the height-derived scale at the
--- model's own origin.
 function ModelPresetService.Get(displayId)
 	local store = Store()
 	local saved = (store and store[displayId]) or defaults[displayId]
@@ -74,8 +63,6 @@ function ModelPresetService.Get(displayId)
 	}
 end
 
--- The name to show for a creature, or nil to fall back to the encounter name. An
--- encounter showing several creatures otherwise labels them all with the encounter name.
 function ModelPresetService.GetTitle(displayId, encounterId)
 	if not displayId or not encounterId then return nil end
 	local store = Store()
@@ -120,8 +107,6 @@ function ModelPresetService.ClearAll()
 	if store then wipe(store) end
 end
 
--- Every saved override as pasteable Lua, so a preset dialled in on one character can be
--- committed rather than living in SavedVariables.
 function ModelPresetService.Export()
 	local store = Store()
 	if not store then return nil end
@@ -151,8 +136,6 @@ function ModelPresetService.Export()
 		table.insert(lines, "})")
 	end
 
-	-- Titles go out as their own call, keyed by encounter, so a model shared by several
-	-- bosses keeps a separate name under each.
 	local encounters = {}
 	for encounterId in pairs(store.titles or {}) do table.insert(encounters, encounterId) end
 	table.sort(encounters)

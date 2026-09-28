@@ -134,10 +134,8 @@ function component.Init(components_)
 		isModelTabSelected = true
 	end)
 
-	-- Quests belong to the instance rather than a boss, so this tab is live on the instance
-	-- page and disabled once an encounter is open. Its icon is a standalone quest texture --
-	-- UI-EncounterJournalTextures has no quest art -- and needs re-anchoring because AddTab
-	-- lays its artwork out for that sheet's wide crops.
+	-- UI-EncounterJournalTextures has no quest art, so this icon is a standalone texture and
+	-- needs re-anchoring: AddTab lays artwork out for that sheet's wide crops.
 	questTab = AddTab("Quest")
 	EncounterJournal.encounter.info.questTab = questTab
 	questTab:SetPoint("TOP", modelTab, "BOTTOM", 0, 2)

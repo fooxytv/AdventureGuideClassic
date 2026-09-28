@@ -8,19 +8,14 @@ select(2, ...).SetupGlobalFacade()
 
 ForeverContentService = { }
 
---[[
-	Blizzard_EncounterJournal does not load on Forever -- it is gated to the "standard"
-	and "classic" game types and Forever's is "camelot" -- but the EJ_ functions are
-	engine-side and answer anyway. EJ_GetNumTiers() returns 0, so the tier walk
-	Blizzard's UI uses is unavailable; indexing instances directly is not. Our own
-	instanceID is the journal's instance id, so the two line up without name matching.
-]]
+-- Blizzard_EncounterJournal does not load on Forever -- gated to "standard" and "classic",
+-- and Forever's game type is "camelot" -- but the EJ_ functions are engine-side and answer.
+-- EJ_GetNumTiers() returns 0 here. Our instanceID is already the journal's instance id.
 
 -- A client that never returns nil would otherwise spin here.
 local MAX_INSTANCES = 250
 
--- Overlap with our own data required before the enumeration is trusted; a wrong id set
--- would otherwise hide the whole guide.
+-- Overlap required before the enumeration is trusted; a wrong id set would hide the guide.
 local MIN_TRUSTED_MATCHES = 5
 
 -- Vanilla raids Forever does not have, for when the journal does not answer. Onyxia's
@@ -38,13 +33,9 @@ local journalInstanceIDs        -- journalInstanceID -> true
 local trusted
 local resolved
 
---[[
-	Do not try to wake the journal first. C_EncounterJournal.OnOpen() and
-	InitalizeSelectedTier() are protected: they raise ADDON_ACTION_FORBIDDEN and taint
-	the addon, and pcall prevents neither -- the call is refused rather than erroring, so
-	it returns ok while the event fires anyway. Tested on Forever, the journal reads
-	empty either way. EJ_GetInstanceByIndex is unprotected and answers honestly.
-]]
+-- Do not try to wake the journal first. C_EncounterJournal.OnOpen() and
+-- InitalizeSelectedTier() are protected: they raise ADDON_ACTION_FORBIDDEN, and pcall does
+-- not help because the call is refused rather than erroring.
 local function EnumerateJournal()
 	if type(EJ_GetInstanceByIndex) ~= "function" then return nil end
 
@@ -95,7 +86,6 @@ function ForeverContentService.Refresh()
 	trusted = nil
 end
 
--- nil when the journal could not be read or its answer was not trustworthy.
 function ForeverContentService.GetJournalInstanceIDs()
 	Resolve()
 	if not trusted then return nil end
@@ -139,7 +129,6 @@ function ForeverContentService.GetUnknownInstanceIDs()
 	return unknown
 end
 
--- The journal is not always ready at load, so rebuild once the world is in.
 if Compat.isForever then
 	local refreshFrame = CreateFrame("Frame")
 	refreshFrame:RegisterEvent("PLAYER_ENTERING_WORLD")

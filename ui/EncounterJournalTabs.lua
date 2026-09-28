@@ -13,8 +13,7 @@ local tabs = { }
 local tabNameFormat = "%s_%sTab"
 local tabDisabledTextureFormat = "%s_%sTab%sDisabled"
 
--- Only the Era and TBC template has disabled-state artwork, and only that one exposes it
--- as globals, so a miss here is expected rather than a fault.
+-- Only the Era and TBC template has disabled-state artwork, and only it exposes globals.
 local function HideDisabledTextures(name)
     for _, side in ipairs({ "Left", "Middle", "Right" }) do
         local texture = _G[string.format(tabDisabledTextureFormat, addonName, name, side)]
@@ -29,16 +28,9 @@ local function AddTab(name, label, onclickFunc)
     -- PanelTemplates_Tab_OnClick selects by the button's id, so it has to have one.
     tab:SetID(tabIdx)
     tab:SetText(label)
---[[
-    The two templates butt their tabs together differently. Era and TBC overlap by 16 so
-    the wide edge art of one tab meets the next. The mainline template has no such
-    allowance: PanelTemplates_AnchorTabs puts each tab 3pt right of the previous one's
-    TOPRIGHT, so overlapping those by 16 sits them on top of each other.
-
-    Blizzard's own camelot XML still carries the old -16 between its PanelTabButtonTemplate
-    tabs, but InspectFrame calls PanelTemplates_SetNumTabs on load and that re-anchors
-    them, so the XML never takes effect. Reading it as the live layout is misleading.
-]]
+-- Era and TBC overlap tabs by 16 so the wide edge art meets. PanelTemplates_AnchorTabs puts
+-- each mainline tab 3pt right of the previous TOPRIGHT, so that overlap stacks them.
+-- Blizzard's camelot XML still carries the -16, but InspectFrame re-anchors on load.
     if (tabIdx == 1) then
         tab:SetPoint("TOPLEFT", EncounterJournal, "BOTTOMLEFT", 16, 2)
     elseif Compat.isForever then
@@ -46,15 +38,9 @@ local function AddTab(name, label, onclickFunc)
     else
         tab:SetPoint("LEFT", tabs[tabIdx - 1], "RIGHT", -16, 0)
     end
---[[
-    The Era and TBC template's OnShow and OnEvent belong to CharacterFrame, not to a tab
-    borrowed from it, so they are cleared there as they always were.
-
-    The mainline template's are its layout. PanelTabButtonMixin resizes the tab on show
-    and on DISPLAY_SIZE_CHANGED, because a font string does not report its width reliably
-    before it is shown -- clearing them left every tab at the 36pt minimum, narrower than
-    its own artwork, which is what made them overlap.
-]]
+-- The Era and TBC template's OnShow and OnEvent belong to CharacterFrame. The mainline
+-- template's are its layout: PanelTabButtonMixin resizes on show and DISPLAY_SIZE_CHANGED,
+-- and clearing them strands every tab at its 36pt minimum, narrower than its own artwork.
     if not Compat.isForever then
         tab:SetScript("OnEvent", nil)
         tab:SetScript("OnShow", nil)
@@ -83,11 +69,8 @@ function component.Init(components_)
     components = components_
     EncounterJournal.Tabs = tabs
 
---[[
-    PanelTabButtonMixin reads its sizing off the frame the tabs belong to, so the numbers
-    passed to PanelTemplates_TabResize below have to live here too or a resize on show
-    would undo them. Unread on Era and TBC.
-]]
+-- PanelTabButtonMixin reads its sizing off the frame the tabs belong to, so these numbers
+-- have to live here too or a resize on show would undo them. Unread on Era and TBC.
     EncounterJournal.tabPadding = 0
     EncounterJournal.minTabWidth = 36
     EncounterJournal.maxTabWidth = 300

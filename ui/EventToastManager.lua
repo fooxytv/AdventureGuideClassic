@@ -3,9 +3,8 @@ select(2, ...).SetupGlobalFacade()
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 local GetSpellTextureCompat = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
 
--- The learnable-spell rows are authored against vanilla's training levels, so they apply
--- to Era and SoD only. Forever has a vanilla-shaped interface version but its own
--- progression, and shows new abilities itself.
+-- The learnable-spell rows are authored against vanilla's training levels. Forever has a
+-- vanilla-shaped interface version but its own progression, and shows new abilities itself.
 local IS_ERA = Compat.isEraClient
 
 local function GetLevelUpSpells(level)

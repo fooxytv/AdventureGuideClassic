@@ -36,8 +36,6 @@ local function IsCompleted(questID)
 	return false
 end
 
--- A state forced for previewing. nil is the normal case and means ask the game, so
--- nothing but an explicit call changes what a player sees.
 local previewState
 
 local VALID_STATES = { available = true, active = true, completed = true }
@@ -62,8 +60,7 @@ function QuestService.GetState(questID)
 	return "available"
 end
 
--- A quest's own faction, or nil when either side can take it. The generator only writes
--- the field when the quest is restricted.
+-- The generator only writes the field when the quest is faction-restricted.
 local function PassesFaction(quest)
 	if not quest.side then return true end
 	return quest.side == UnitFactionGroup("player")
@@ -82,8 +79,6 @@ function QuestService.GetQuests(instanceName)
 	return result
 end
 
--- Here rather than in the Quests tab because the search results show the same markers,
--- and two copies of this table would drift.
 local STATE_ICON = {
 	available = "Interface/GossipFrame/AvailableQuestIcon",
 	active    = "Interface/GossipFrame/ActiveQuestIcon",
@@ -94,8 +89,6 @@ function QuestService.GetStateIcon(questID)
 	return STATE_ICON[QuestService.GetState(questID)] or STATE_ICON.available
 end
 
--- Every quest the addon knows about, paired with its instance and faction filtered the
--- same way the tab is. For the search box, which has no instance in hand to ask about.
 function QuestService.GetAllQuests()
 	local all = { }
 	for instanceName, quests in pairs(byInstance) do

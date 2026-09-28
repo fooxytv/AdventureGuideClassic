@@ -116,8 +116,6 @@ function component.Init(components_)
 		button.instance = instance
 		button.instanceID = instance.instanceID
 		button.name:SetText(instance.name);
-		-- An instance with no art gets a plain dark tile rather than a stand-in texture, so it
-		-- reads as not yet illustrated instead of as a picture that failed to load.
 		if instance.thumbnail then
 			button.bgImage:SetTexture(instance.thumbnail)
 		else

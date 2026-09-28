@@ -34,9 +34,7 @@ function TierTokenService.HasClass(tokenId, class)
 	return entry[class] ~= nil or entry[class .. "_SOD"] ~= nil
 end
 
--- Whether the pieces this token grants are of a given armour type, so the armour filter
--- can place tokens, which carry no armour type themselves. GetItemInfoInstant is safe
--- here: it resolves from static client data and works for items never cached.
+-- GetItemInfoInstant resolves from static client data, so it works for uncached items.
 function TierTokenService.HasArmorType(tokenId, armorSubclass, class)
 	local entry = tokens[tokenId]
 	if not entry then return false end
@@ -66,9 +64,6 @@ local function IsSeasonOfDiscovery()
 	return Compat.IsSoD()
 end
 
--- A token carries no appearance of its own, so previewing it dresses the model in
--- nothing. Resolve to the piece the player's class trades it for, then a
--- non-class-specific list, then any class's piece, so it always previews as something.
 function TierTokenService.GetPreviewItemId(tokenId, class)
 	local entry = tokens[tokenId]
 	if not entry then return nil end
@@ -86,8 +81,6 @@ function TierTokenService.GetPreviewItemId(tokenId, class)
 
 	if entry.ANY and entry.ANY[1] then return entry.ANY[1] end
 
-	-- No piece for this class: show the token's first known piece, sorted for a stable pick
-	-- across sessions.
 	local keys = {}
 	for key in pairs(entry) do
 		if not key:find("_SOD$") then table.insert(keys, key) end

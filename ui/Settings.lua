@@ -165,8 +165,6 @@ local function CreateOptionsCheckbox(parent, name, label, description, rowIndex,
 	row.getValue = getValue
 	row.setValue = setValue
 
-	-- Greys the row out where the setting cannot apply, rather than leaving a live checkbox
-	-- that does nothing.
 	function row.SetAvailable(available, reason)
 		if available then
 			checkbox:Enable()
@@ -232,8 +230,7 @@ function component.Init(components_)
 		function(val) SettingsService.SetLevelUpSpellsEnabled(val) end
 	)
 
-	-- The spell rows are authored against vanilla's training levels, so this is inert
-	-- anywhere but Era and SoD.
+	-- The spell rows are authored against vanilla's training levels: inert outside Era and SoD.
 	settingsPanel.levelUpSpellsRow.SetAvailable(Compat.isEraClient,
 		Compat.isForever
 			and "Not available on Forever, which shows new abilities itself"

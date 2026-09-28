@@ -6,10 +6,6 @@ Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
--- Client diagnostic, /agcprobe. Written for the Forever port: which .toc loaded, whether
--- the Encounter Journal functions answer, and which instances the client actually has --
--- none of which can be settled from outside the game.
-
 local function Line(label, value)
 	print("  |cffffd100" .. label .. ":|r", tostring(value))
 end
@@ -23,13 +19,9 @@ local function DescribeToc()
 	return C_AddOns.GetAddOnMetadata(addonName, "X-TocFlavor") or "untagged"
 end
 
---[[
-	Reads the journal, then wakes it up and reads it again. Blizzard's UI calls
-	C_EncounterJournal.OnOpen() when the frame is shown, and that UI does not load on
-	Forever, so a first read finds it cold. Both states are printed so it is clear which
-	one is being looked at, and it rechecks a few seconds later because the data may come
-	from the server.
-]]
+-- Blizzard's UI calls C_EncounterJournal.OnOpen() when the frame is shown, and that UI
+-- does not load on Forever, so a first read finds the journal cold. Data may also arrive
+-- from the server, hence the recheck.
 local function CountInstances()
 	local dungeons, raids, sample = 0, 0, { }
 	for _, kind in ipairs({ { false, "dungeon" }, { true, "raid" } }) do
@@ -79,7 +71,6 @@ local function ProbeJournal()
 		end
 	end
 
-	-- Journal data can arrive from the server, so look again shortly.
 	C_Timer.After(3, function()
 		Header("Encounter Journal API, 3s later")
 		local later = ReportJournal("delayed: ")
@@ -157,6 +148,5 @@ _G.AGC_Probe = Probe
 _G.SLASH_AGCPROBE1 = "/agcprobe"
 SlashCmdList["AGCPROBE"] = Probe
 
--- Kept for muscle memory; /agctest was the original name.
 _G.SLASH_AGCTEST1 = "/agctest"
 SlashCmdList["AGCTEST"] = Probe

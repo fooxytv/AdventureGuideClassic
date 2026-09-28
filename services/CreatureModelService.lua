@@ -12,17 +12,9 @@ CreatureModelService = {}
 local displaysByEncounter = {}   -- [encounterID] = { creatureDisplayID, ... }
 local heightByDisplay = {}       -- [creatureDisplayID] = model height in world units
 
---[[
-	Camera tuning. Heights are of the model as the frame renders it, which is not the size
-	the creature appears in the world: the game multiplies many of them when spawning and
-	the model frame does not. Hakkar is 2.9 units here against 20 in the world, Supremus
-	4.2 against 66.
-
-	BASELINE is the height needing no correction, and the one number to change if
-	everything comes out uniformly too small or too large. The exponent softens the curve,
-	since pulling back in strict proportion would leave the largest models as specks. The
-	scale never goes below 1, so this only ever pulls the camera back.
-]]
+-- Heights are of the model as the frame renders it, not the size the creature appears in
+-- the world: the game multiplies many on spawn and the model frame does not. Hakkar is 2.9
+-- units here against 20 in the world, Supremus 4.2 against 66. BASELINE is the knob.
 local BASELINE_HEIGHT = 3.0
 local SCALE_EXPONENT = 0.6
 local MIN_SCALE, MAX_SCALE = 1.0, 8.0
@@ -42,8 +34,6 @@ function CreatureModelService.GetHeight(displayId)
 	return displayId and heightByDisplay[displayId] or nil
 end
 
--- A SetCamDistanceScale value for a display id. Returns MIN_SCALE when the height is
--- unknown, leaving the model at whatever framing it already had.
 function CreatureModelService.GetCameraScale(displayId)
 	local height = CreatureModelService.GetHeight(displayId)
 	if not height or height <= 0 then return MIN_SCALE end
@@ -53,9 +43,8 @@ function CreatureModelService.GetCameraScale(displayId)
 	return scale
 end
 
--- The creature display ids for an encounter, or nil when we have none. Keyed by
--- encounter rather than npc: AtlasLoot lists one display per distinct creature while an
--- encounter's npc list also carries the heroic copies, so the two do not line up.
+-- AtlasLoot lists one display per distinct creature while an encounter's npc list also
+-- carries the heroic copies, so the two do not line up.
 function CreatureModelService.GetDisplayIds(encounterID)
 	if not encounterID then return nil end
 	local displayIds = displaysByEncounter[encounterID]

@@ -35,8 +35,6 @@ function InstanceService.SetDifficulty(difficulty)
 	SavedVariables.Difficulty = difficulty
 end
 
--- Every registered instance, before any filtering. ForeverContentService needs the raw
--- set to decide whether the client's journal agrees with our data.
 function InstanceService.GetAllInstances()
 	local all = { }
 	for _, dungeon in ipairs(dungeons) do table.insert(all, dungeon) end
@@ -44,10 +42,8 @@ function InstanceService.GetAllInstances()
 	return all
 end
 
--- Forever has its own instance list, so the client's journal decides what shows rather
--- than our season tags. The tags still rule out SoD and TBC content, because the journal
--- id for a SoD instance is borrowed from the vanilla instance it reuses and would
--- otherwise match.
+-- The journal decides what shows on Forever. Season tags still rule out SoD and TBC,
+-- because a SoD instance borrows its journal id from the vanilla instance it reuses.
 local function ShouldIncludeOnForever(instance, filterType)
 	if instance.season == true then return false end
 	if filterType == "exclusive" or filterType == "sod" then return false end
@@ -58,9 +54,7 @@ end
 local function ShouldIncludeInstance(instance)
 	local filterType = instance.seasonFilter or "all"
 
-	-- Forever's own instances, checked ahead of everything else so the tag can never leak
-	-- onto a client without the content: on Era, SoD and TBC it is an unrecognised tag, and
-	-- unrecognised tags fall through to "show".
+	-- On Era, SoD and TBC this is an unrecognised tag, and unrecognised tags fall through to show.
 	if filterType == "forever" then
 		return Compat.isForever
 	end
@@ -106,9 +100,8 @@ local function ShouldIncludeInstance(instance)
 	return true
 end
 
--- Listed by the name the player sees. Registration order is by file name, which is close
--- but not the same -- Stormwind Stockade lives in The_Stockade.lua, and Forever's
--- instances are registered after the vanilla ones.
+-- Registration order is by file name, which differs: Stormwind Stockade lives in
+-- The_Stockade.lua.
 local function ByDisplayName(a, b)
 	return (a.name or "") < (b.name or "")
 end
