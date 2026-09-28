@@ -67,12 +67,16 @@ local SOURCE_H = 15
 local REWARD_H = 17
 
 --[[
-Floors for the giver and zone names when the pair is too wide for the row.
+Preferred minimum widths for the giver and zone names when the pair is too wide.
 
 Both were sized to their own text with no cap, so a long quest giver followed by a long
-zone ran past the panel edge. Neither may collapse to nothing when the row runs out of
-width: a giver clipped to "Mar" or a zone clipped to the bullet alone is worse than an
-ellipsis, so each keeps at least this much and the overflow is truncated instead.
+zone ran past the panel edge. Shrinking them is the fix, but not to nothing: a giver
+clipped to "Mar" or a zone clipped to the bullet alone is worse than an ellipsis, so
+each is held at this width for as long as the row can afford it.
+
+Preferences rather than guarantees. Staying inside the row wins over either floor, so on
+a row too narrow to honour them both they are given up -- the zone first, then the
+giver. At the width this panel actually is there is room for both.
 ]]
 local GIVER_MIN = 60
 local ZONE_MIN = 70
@@ -346,9 +350,15 @@ a full quest giver name followed by a long zone -- ran past the panel edge and o
 the journal. The line has to be budgeted instead.
 
 The zone gives up space first. The giver is the thing being looked for, and a zone is
-still recognisable from its opening words, whereas a truncated name may not be. Neither
-goes below its floor: if the pair still does not fit once the zone has shrunk, the giver
-is truncated too.
+still recognisable from its opening words, whereas a truncated name may not be. If the
+pair still does not fit once the zone is down to ZONE_MIN, the giver is truncated too.
+
+The floors are preferences, and the budget outranks them. A row narrower than
+GIVER_MIN + ZONE_MIN cannot honour both, so the last two lines hold the total to the
+budget whatever the floors asked for -- the zone reaching zero before the giver is cut
+below its own floor. No row is anywhere near that narrow at this panel's width; it is
+here so the function has no width at which it overflows rather than one that is merely
+never reached.
 
 Only ever shrinks. Sizing a button wider than its text would push the zone rightwards
 and reintroduce the overflow the budget exists to prevent.
@@ -363,7 +373,8 @@ local function FitSourceLine(row)
 	local zoneW = row.zoneText:GetStringWidth() + 2
 	if budget > 0 and giverW + zoneW > budget then
 		zoneW = math.min(zoneW, math.max(budget - giverW, math.min(zoneW, ZONE_MIN)))
-		giverW = math.min(giverW, math.max(budget - zoneW, GIVER_MIN))
+		giverW = math.min(giverW, math.max(budget - zoneW, math.min(giverW, GIVER_MIN)))
+		giverW = math.min(giverW, budget)
 		zoneW = math.min(zoneW, math.max(budget - giverW, 0))
 	end
 	row.giver:SetWidth(giverW)
