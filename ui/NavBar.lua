@@ -64,30 +64,11 @@ function component.Init(components_)
 			end
 		end,
 	}
-	-- local homeData = {
-	-- 	name = "Home",
-	-- 	OnClick = function()
-	-- 		AdventureGuideNavigationService.SetInstances(InstanceService.GetDungeons())
-	-- 		local instances = AdventureGuideNavigationService.GetInstances()
-	-- 		if (instances) then
-	-- 			components.InstanceSelect.Show()
-	-- 		end
-	-- 	end,
-	-- }
 	NavBar_Initialize(navBar, "NavButtonTemplate", homeData, navBar.home, navBar.overflow);
 
-	-- Create search EditBox on the right side of NavBar
-	--[[
-	Wide enough for what is in the results now.
-
-	Both were 150, which suited instance names and item names. Quest titles are longer:
-	the median is 18 characters but nine in every hundred run past 28, and the worst is
-	"KILL ON SIGHT: High Ranking Dark Iron Officials" at 47. Rows do not wrap, so
-	anything that does not fit is simply cut off.
-
-	The results panel is the one that needed the room, so it is wider than the box it
-	hangs from, and right-aligned to it.
-	]]
+	-- Wide enough for what is in the results now. Both were 150, which suited instance and
+	-- item names; quest titles are longer -- nine in every hundred run past 28 characters and
+	-- the worst is 47. Rows do not wrap, so anything that does not fit is cut off.
 	searchBox = CreateFrame("EditBox", navBar:GetName() .. "SearchBox", navBar, "SearchBoxTemplate")
 	searchBox:SetSize(200, 20)
 	searchBox:SetPoint("RIGHT", navBar, "RIGHT", -10, 0)
@@ -401,21 +382,16 @@ function component.HideSearchResults()
 end
 
 function component.OnSearchResultClick(result)
-	--[[
-		Clicking a result lands on the same page as clicking the instance or encounter in the
-		list, so it should sound the same. InstanceSelect and Encounters both play this on
-		the click that opens a page; searching straight there was the one silent way in.
-	]]
+	-- InstanceSelect and Encounters both play this on the click that opens a page;
+	-- searching straight there was the one silent way in.
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
 	if result.type == "instance" then
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
 		components.EncounterFrame.ShowInstanceInfo(result.instance)
 	elseif result.type == "quest" then
-		--[[
-			Quests belong to the instance, so this lands on its page with the Quests tab
-			open rather than on a boss.
-		]]
+		-- Quests belong to the instance, so this lands on its page with the Quests tab open
+		-- rather than on a boss.
 		AdventureGuideNavigationService.Reset()
 		AdventureGuideNavigationService.SetInstance(result.instance)
 		components.EncounterFrame.ShowInstanceInfo(result.instance)

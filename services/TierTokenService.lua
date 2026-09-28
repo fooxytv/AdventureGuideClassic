@@ -25,10 +25,7 @@ end
 local ITEM_CLASS_ARMOR = 4
 local GetItemInfoInstantCompat = C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant
 
---[[
-	Whether a class can trade this token in. `ANY` marks tokens that aren't
-	class-specific, so those pass for everyone.
-]]
+-- `ANY` marks tokens that are not class-specific, so those pass for everyone.
 function TierTokenService.HasClass(tokenId, class)
 	local entry = tokens[tokenId]
 	if not entry then return false end
@@ -37,15 +34,9 @@ function TierTokenService.HasClass(tokenId, class)
 	return entry[class] ~= nil or entry[class .. "_SOD"] ~= nil
 end
 
---[[
-	Whether the pieces this token grants are of a given armour type. Used so the
-	armour filter can place tokens, which carry no armour type themselves. When a
-	class filter is also active only that class's piece is considered, otherwise
-	any class's piece counts.
-
-	GetItemInfoInstant is safe here: it resolves from static client data and so
-	works for items that have never been cached.
-]]
+-- Whether the pieces this token grants are of a given armour type, so the armour filter
+-- can place tokens, which carry no armour type themselves. GetItemInfoInstant is safe
+-- here: it resolves from static client data and works for items never cached.
 function TierTokenService.HasArmorType(tokenId, armorSubclass, class)
 	local entry = tokens[tokenId]
 	if not entry then return false end
@@ -75,14 +66,9 @@ local function IsSeasonOfDiscovery()
 	return Compat.IsSoD()
 end
 
---[[
-	The set piece a token should preview as.
-
-	A token carries no appearance of its own, so previewing it dresses the model
-	in nothing. Resolve it to the piece the player's own class trades it for;
-	fall back to a non-class-specific list, then to any class's piece, so a token
-	always previews as something rather than silently doing nothing.
-]]
+-- A token carries no appearance of its own, so previewing it dresses the model in
+-- nothing. Resolve to the piece the player's class trades it for, then a
+-- non-class-specific list, then any class's piece, so it always previews as something.
 function TierTokenService.GetPreviewItemId(tokenId, class)
 	local entry = tokens[tokenId]
 	if not entry then return nil end
@@ -100,8 +86,8 @@ function TierTokenService.GetPreviewItemId(tokenId, class)
 
 	if entry.ANY and entry.ANY[1] then return entry.ANY[1] end
 
-	-- No piece for this class: show the token's first known piece so the preview
-	-- still conveys the set, sorted for a stable pick across sessions.
+	-- No piece for this class: show the token's first known piece, sorted for a stable pick
+	-- across sessions.
 	local keys = {}
 	for key in pairs(entry) do
 		if not key:find("_SOD$") then table.insert(keys, key) end

@@ -7,20 +7,12 @@ Programming by: FooxyTV
 select(2, ...).SetupGlobalFacade()
 
 --[[
-A small 3D model of a creature, shown beside the cursor.
+A small 3D model of a creature, shown beside the cursor when a name in a quest objective
+is hovered.
 
-The Quests tab turns the names inside a quest's objective sentence into links -- "Speak
-with Marshal McBride", "Kill 10 Kobold Vermin" -- and hovering one shows what that
-creature actually looks like. A player who has never been to Northshire learns more
-from the model than from the name.
-
-Positioned like a tooltip rather than anchored to the row: the rows are inside a scroll
-frame and a fixed anchor would be clipped by it, so the preview lives on UIParent and
-follows the cursor, flipping side and edge when it would run off screen.
-
-Feature-detected throughout. PlayerModel and SetDisplayInfo are present on Era and BCC,
-but if either is missing the component reports that it cannot show anything and the
-Quests tab leaves the text plain rather than offering links that do nothing.
+Feature-detected throughout: PlayerModel and SetDisplayInfo are present on Era and BCC,
+but if either is missing the component reports that it can show nothing and the Quests tab
+leaves the text plain rather than offering links that do nothing.
 ]]
 
 local component = UI.CreateComponent("NpcPreview")
@@ -35,12 +27,10 @@ local function CreatePreview()
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
 	frame:SetFrameStrata("TOOLTIP")
 	frame:SetClampedToScreen(true)
-	--[[
-	The preview takes no mouse input at all. It sits at tooltip strata and follows the
-	pointer, so anything it accepts is taken from whatever is underneath: the scroll
-	wheel stopped reaching the quest list, and a scrollbar drag lost its mouse-up to
-	this frame and carried on following the cursor.
-	]]
+	-- Takes no mouse input at all. It sits at tooltip strata, so anything it accepts is
+	-- taken from whatever is underneath -- the scroll wheel stopped reaching the quest list,
+	-- and a scrollbar drag lost its mouse-up to this frame and carried on following the
+	-- cursor.
 	frame:EnableMouse(false)
 	frame:EnableMouseWheel(false)
 	frame:Hide()
@@ -76,15 +66,9 @@ local function CreatePreview()
 	return supported
 end
 
---[[
-Under the tooltip of whatever is being hovered, which is where the gear preview in the
-loot tab puts itself.
-
-It used to follow the cursor. That put it under the pointer, where it took the scroll
-wheel from the list behind it, and it re-anchored every frame, which made the model
-jitter. Hanging it off the tooltip instead means both previews appear in the same place
-and neither is ever beneath the cursor.
-]]
+-- Under the tooltip of whatever is hovered, where the loot tab's gear preview puts
+-- itself. Following the cursor instead put it under the pointer, where it took the scroll
+-- wheel from the list behind it, and re-anchored every frame, which made the model jitter.
 local function AnchorToTooltip()
 	frame:ClearAllPoints()
 	if GameTooltip and GameTooltip:IsShown() then
@@ -102,10 +86,8 @@ function component.IsSupported()
 	return supported == true
 end
 
---[[
-Shows a creature. Returns whether anything was actually drawn, so a caller can decide
-not to offer the link at all rather than open an empty box.
-]]
+-- Returns whether anything was actually drawn, so a caller can decide not to offer the
+-- link rather than open an empty box.
 function component.Show(npc)
 	if not supported or not frame or not npc or not npc.display then return false end
 
@@ -116,8 +98,7 @@ function component.Show(npc)
 	end
 
 	-- Pull the camera back for the big ones, using the heights the boss viewer already
-	-- carries. Unknown heights come back as the minimum, which leaves the default
-	-- framing alone -- right for the ordinary humanoids most quest givers are.
+	-- carries. Unknown heights come back as the minimum, leaving the default framing alone.
 	if type(model.SetCamDistanceScale) == "function" then
 		local scale = 1
 		if CreatureModelService and CreatureModelService.GetCameraScale then

@@ -26,12 +26,9 @@ local function Set(...)
 	return t
 end
 
---[[
-	The armour tier a class actually wants, matching the retail journal: a Paladin
-	sees plate, not the leather and cloth it could also technically equip. Filtering
-	on "can equip" instead would show a Warrior every cloth drop in the instance,
-	which makes the filter close to useless.
-]]
+-- The armour tier a class actually wants, matching the retail journal: a Paladin sees
+-- plate, not the leather and cloth it could also equip. Filtering on "can equip" would
+-- show a Warrior every cloth drop in the instance.
 local CLASS_ARMOR = {
 	WARRIOR = ARMOR_PLATE, PALADIN = ARMOR_PLATE, DEATHKNIGHT = ARMOR_PLATE,
 	HUNTER = ARMOR_MAIL, SHAMAN = ARMOR_MAIL,
@@ -58,11 +55,9 @@ local CLASS_WEAPONS = {
 	DEATHKNIGHT = Set(AXE1H, AXE2H, MACE1H, MACE2H, SWORD1H, SWORD2H, POLEARM),
 }
 
---[[
-	Slots every class can use whatever its armour proficiency. Cloaks are the
-	reason this exists: they carry the Cloth subclass, so without an explicit pass
-	a plate wearer would never be shown one.
-]]
+-- Slots every class can use whatever its armour proficiency. Cloaks are the reason this
+-- exists: they carry the Cloth subclass, so without an explicit pass a plate wearer would
+-- never be shown one.
 local ALL_CLASS_SLOTS = Set(
 	"INVTYPE_CLOAK", "INVTYPE_FINGER", "INVTYPE_NECK", "INVTYPE_TRINKET",
 	"INVTYPE_BODY", "INVTYPE_TABARD", "INVTYPE_HOLDABLE"
@@ -124,11 +119,8 @@ function LootFilterService.SetArmorFilter(armorSubclass)
 	if store then store.armor = armorSubclass end
 end
 
---[[
-	Whether only wishlisted ("pinned") items should be shown. Kept here rather than in
-	WishlistService because it is a property of the view, not of the list: the wishlist
-	is the same whether or not the player is currently looking through it.
-]]
+-- Kept here rather than in WishlistService because it is a property of the view, not of
+-- the list.
 function LootFilterService.GetPinnedFilter()
 	Load()
 	return state.pinned

@@ -140,7 +140,6 @@ end
 local function TriggerDefeatNotification(encounterName)
     DebugPrint("TriggerDefeatNotification called for:", encounterName)
 
-    -- Check debounce
     local now = GetTime()
     if recentlyDefeated[encounterName] and (now - recentlyDefeated[encounterName]) < DEBOUNCE_TIME then
         DebugPrint("Debounced, skipping")
@@ -343,10 +342,9 @@ local function ResetAllEncounters()
 end
 
 --[[
-    "Deadmines has been reset." names one instance, so only that instance's defeats
-    should go. The name is pulled out with a pattern built from Blizzard's own string
-    where it exists, falling back to the English form this handler used to match
-    literally.
+    "Deadmines has been reset." names one instance, so only that instance's defeats go.
+    The name is pulled out with a pattern built from Blizzard's own string where it
+    exists, falling back to the English form this handler used to match literally.
 ]]
 local function GetResetInstanceName(message)
     if not message then return nil end
@@ -365,8 +363,8 @@ end
 --[[
     Resetting instances does not clear a lockout you are saved to: the trash goes, the
     bosses already dead stay dead. So a reset naming a saved instance must leave its
-    defeats alone, or clearing a dungeon throws away a raid night's progress. Era
-    dungeons are never saved, which is why they always clear.
+    defeats alone, or clearing a dungeon throws away a raid night's progress. Era dungeons
+    are never saved, which is why they always clear.
 ]]
 local function IsInstanceSaved(instanceName)
     if not instanceName or not GetNumSavedInstances or not GetSavedInstanceInfo then
@@ -394,10 +392,10 @@ local function OnSystemMessage(message)
 end
 
 --[[
-	COMBAT_LOG_EVENT_UNFILTERED is restricted on Forever, so it is skipped there.
-	Losing it costs the UNIT_DIED path only; ENCOUNTER_END and BOSS_KILL both fire on
-	that client and cover boss detection between them. The combat log is the fallback
-	for Era, where those two do not fire.
+	COMBAT_LOG_EVENT_UNFILTERED is restricted on Forever, so it is skipped there. Losing
+	it costs the UNIT_DIED path only; ENCOUNTER_END and BOSS_KILL both fire on that client
+	and cover boss detection between them. The combat log is the fallback for Era, where
+	those two do not fire.
 ]]
 local eventFrame = CreateFrame("Frame")
 Compat.RegisterEvents(eventFrame,

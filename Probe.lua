@@ -6,14 +6,9 @@ Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
---[[
-	Client diagnostic, /agcprobe.
-
-	Written for the Forever port: a handful of things about that client cannot be
-	settled from outside the game -- which .toc it loads, whether the Encounter
-	Journal functions answer, and which instances it actually has. This prints all of
-	it in one go so a single login settles them.
-]]
+-- Client diagnostic, /agcprobe. Written for the Forever port: which .toc loaded, whether
+-- the Encounter Journal functions answer, and which instances the client actually has --
+-- none of which can be settled from outside the game.
 
 local function Line(label, value)
 	print("  |cffffd100" .. label .. ":|r", tostring(value))
@@ -29,12 +24,11 @@ local function DescribeToc()
 end
 
 --[[
-	Reads the journal, then wakes it up and reads it again.
-
-	Blizzard's UI calls C_EncounterJournal.OnOpen() when the frame is shown. That UI
-	does not load on Forever, so on a first read the journal is cold and reports
-	nothing. This shows both states so it is clear which one we are looking at, and
-	rechecks a few seconds later because the data may come from the server.
+	Reads the journal, then wakes it up and reads it again. Blizzard's UI calls
+	C_EncounterJournal.OnOpen() when the frame is shown, and that UI does not load on
+	Forever, so a first read finds it cold. Both states are printed so it is clear which
+	one is being looked at, and it rechecks a few seconds later because the data may come
+	from the server.
 ]]
 local function CountInstances()
 	local dungeons, raids, sample = 0, 0, { }
