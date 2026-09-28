@@ -77,9 +77,6 @@ function component.Init(components_)
 		end
 		selectedTab = overviewTab
 		component.Refresh()
-		--tab.onclickFunc()
-		--PanelTemplates_Tab_OnClick(tab, EncounterJournal.encounter.info)
-		--PanelTemplates_SetTab(EncounterJournal.encounter.info, tabIdx)
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 		isOverviewTabSelected = true
 		isLootTabSelected = false
@@ -137,15 +134,10 @@ function component.Init(components_)
 		isModelTabSelected = true
 	end)
 
-	--[[
-		Quests belong to the instance rather than to a boss, so unlike Loot and Model
-		this one is live on the instance page and disabled once an encounter is open.
-
-		The icon is a standalone quest texture, not a crop of
-		UI-EncounterJournalTextures: that sheet has no quest art. It needs re-anchoring
-		because AddTab lays its artwork out for that sheet's wide crops, and a square
-		icon left on those anchors sits off to the right.
-	]]
+	-- Quests belong to the instance rather than a boss, so this tab is live on the instance
+	-- page and disabled once an encounter is open. Its icon is a standalone quest texture --
+	-- UI-EncounterJournalTextures has no quest art -- and needs re-anchoring because AddTab
+	-- lays its artwork out for that sheet's wide crops.
 	questTab = AddTab("Quest")
 	EncounterJournal.encounter.info.questTab = questTab
 	questTab:SetPoint("TOP", modelTab, "BOTTOM", 0, 2)
@@ -176,30 +168,6 @@ function component.Init(components_)
 		isModelTabSelected = false
 	end)
 
-	-- abilitiesTab = AddTab("Abilities")
-	-- EncounterJournal.encounter.info.abilitiesTab = abilitiesTab
-	-- abilitiesTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
-	-- abilitiesTab.unselected:SetTexCoord(0.904296875, 0.99609375, 0.70703125, 0.748046875)
-	-- abilitiesTab.selected:SetTexCoord(0.806640625, 0.8984375, 0.70703125, 0.748046875)
-	-- abilitiesTab:SetScript("OnEnter", function (self)
-	-- 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
-	-- 	GameTooltip:AddLine("Abilities")
-	-- 	GameTooltip:Show()
-	-- end)
-	-- abilitiesTab:SetScript("OnLeave", function (self)
-	-- 	GameTooltip:Hide()
-	-- end)
-	-- abilitiesTab:SetScript("OnClick", function()
-	-- 	selectedTab = abilitiesTab
-	-- 	components.DynamicContentScroller.ShowAbilities()
-	-- 	component.Refresh()
-	-- 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-	-- 	isOverviewTabSelected = false
-	-- 	isLootTabSelected = false
-	-- 	isQuestTabSelected = false
-	-- 	isAbilitiesTabSelected = true
-	-- 	isModelTabSelected = false
-	-- end)
 end
 
 local function selectTab(tab)
@@ -224,39 +192,6 @@ local function disableTab(tab)
 	tab:SetEnabled(false)
 	tab.unselected:SetDesaturated(true)
 end
-
--- function component.Refresh()
--- 	selectTab(selectedTab)
--- 	if (selectedTab ~= overviewTab) then
--- 		unselectTab(overviewTab)
--- 	end
--- 	if (selectedTab ~= lootTab) then
--- 		if (AdventureGuideNavigationService.GetEncounter()) then
--- 			unselectTab(lootTab)
--- 		else
--- 			disableTab(lootTab)
--- 		end
--- 	end
-
-	-- Comment out the below code
-	-- disableTab(questTab)
-	-- disableTab(abilitiesTab)
-	-- disableTab(modelTab)
-	-- if (selectedTab ~= abilitiesTab) then
-	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
-	-- 		unselectTab(abilitiesTab)
-	-- 	else
-	-- 		disableTab(abilitiesTab)
-	-- 	end
-	-- end
-	-- if (selectedTab ~= modelTab) then
-	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
-	-- 		unselectTab(modelTab)
-	-- 	else
-	-- 		disableTab(modelTab)
-	-- 	end
-	-- end
--- end
 
 function component.SelectOverview()
 	selectedTab = overviewTab
@@ -305,13 +240,6 @@ function component.Refresh()
 			disableTab(modelTab)
 		end
 	end
-	-- if (selectedTab ~= abilitiesTab) then
-	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
-	-- 		unselectTab(abilitiesTab)
-	-- 	else
-	-- 		disableTab(abilitiesTab)
-	-- 	end
-	-- end
 end
 
 function component.GetSelectedTabName()

@@ -10,22 +10,14 @@ QuestService = { }
 
 local byInstance = { }
 
---[[
-	Registered from data/Quests/<flavour>/<Dungeon>.lua, which tools/gen_dungeon_quests.py
-	generates from a Questie checkout. Keyed on the instance name because that is what
-	the data files and the UI both already have to hand.
-]]
+-- Registered from data/Quests/<flavour>/<Dungeon>.lua, which tools/gen_dungeon_quests.py
+-- generates from a Questie checkout. Keyed on instance name.
 function QuestService.Register(instanceName, quests)
 	byInstance[instanceName] = quests
 end
 
---[[
-	Whether the player has this quest in their log.
-
-	C_QuestLog.IsOnQuest is the direct answer and is present on Era, SoD, TBC and
-	Forever alike. The log-index fallback is there for a client that has the namespace
-	without that particular call rather than for any one we know of.
-]]
+-- C_QuestLog.IsOnQuest is present on Era, SoD, TBC and Forever alike; the log-index
+-- fallback is for a client with the namespace but not that call.
 local function IsOnQuest(questID)
 	if not C_QuestLog then return false end
 	if C_QuestLog.IsOnQuest then
@@ -44,19 +36,8 @@ local function IsCompleted(questID)
 	return false
 end
 
---[[
-	"completed", "active" or "available".
-
-	Completed is checked first: a repeatable quest can be both flagged complete and
-	sitting in the log, and the tick is the more useful thing to say about it.
-]]
---[[
-	A state forced for previewing. Seeing how a row is drawn in progress or handed in
-	otherwise means finding, accepting and completing a real quest for each one.
-
-	nil is the normal case and means ask the game, so nothing but an explicit call
-	changes what a player sees.
-]]
+-- A state forced for previewing. nil is the normal case and means ask the game, so
+-- nothing but an explicit call changes what a player sees.
 local previewState
 
 local VALID_STATES = { available = true, active = true, completed = true }
@@ -71,6 +52,8 @@ function QuestService.GetPreviewState()
 	return previewState
 end
 
+-- Completed is checked before active: a repeatable quest can be both flagged complete
+-- and sitting in the log.
 function QuestService.GetState(questID)
 	if previewState then return previewState end
 	if not questID then return "available" end
@@ -79,10 +62,8 @@ function QuestService.GetState(questID)
 	return "available"
 end
 
---[[
-	A quest's own faction, or nil when either side can take it. The generator only
-	writes the field when the quest is restricted, so nil is the common case.
-]]
+-- A quest's own faction, or nil when either side can take it. The generator only writes
+-- the field when the quest is restricted.
 local function PassesFaction(quest)
 	if not quest.side then return true end
 	return quest.side == UnitFactionGroup("player")
@@ -101,13 +82,8 @@ function QuestService.GetQuests(instanceName)
 	return result
 end
 
---[[
-	The marker for a quest's state: an exclamation mark for one going spare, a question
-	mark for one in the log, a tick for one done.
-
-	Here rather than in the Quests tab because the search results show the same thing,
-	and two copies of this table would drift.
-]]
+-- Here rather than in the Quests tab because the search results show the same markers,
+-- and two copies of this table would drift.
 local STATE_ICON = {
 	available = "Interface/GossipFrame/AvailableQuestIcon",
 	active    = "Interface/GossipFrame/ActiveQuestIcon",
@@ -118,11 +94,8 @@ function QuestService.GetStateIcon(questID)
 	return STATE_ICON[QuestService.GetState(questID)] or STATE_ICON.available
 end
 
---[[
-	Every quest the addon knows about, paired with the instance it belongs to, faction
-	filtered the same way the tab is. For the search box, which has no instance in hand
-	to ask about.
-]]
+-- Every quest the addon knows about, paired with its instance and faction filtered the
+-- same way the tab is. For the search box, which has no instance in hand to ask about.
 function QuestService.GetAllQuests()
 	local all = { }
 	for instanceName, quests in pairs(byInstance) do

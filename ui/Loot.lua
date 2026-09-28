@@ -58,14 +58,9 @@ local function CreatePreviewFrame()
 	frame.model = CreateFrame("DressUpModel", nil, frame)
 	frame.model:SetSize(190, 260)
 	frame.model:SetPoint("CENTER", 0, 5)
-	--[[
-	The model holds still.
-
-	It used to turn continuously, a SetRotation every frame, which read as a flicker
-	rather than a turn: the model re-renders on each call and at this size the
-	difference between one frame and the next is too small to look like movement. A
-	fixed three-quarter view shows the piece better than a slow spin did.
-	]]
+	-- Deliberately still. A SetRotation every frame read as a flicker rather than a turn:
+	-- the model re-renders on each call, and at this size one frame barely differs from the
+	-- next.
 	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
 	previewFrame = frame
 	return frame
@@ -83,24 +78,17 @@ local function ShowItemPreview(previewItem, anchorFrame)
 	frame:SetPoint("TOP", GameTooltip, "BOTTOM", 0, -5)
 	frame:Show()
 
-	--[[
-	Asking for the item already on the model is not a request to put it on again.
-	Redressing means undressing first and waiting for the model to catch up, which is
-	visible as a flash, so a repeat call only re-anchors and leaves the model alone.
-	]]
+	-- Asking for the item already on the model is not a request to put it on again --
+	-- redressing means undressing first and shows as a flash -- so a repeat call only
+	-- re-anchors.
 	if previewedItem == previewItem then return end
 	previewedItem = previewItem
 
 	frame.model:SetUnit("player")
 	frame.model:SetCamDistanceScale(PREVIEW_CAM_DISTANCE_SCALE)
 	frame.model:SetPortraitZoom(PREVIEW_ZOOM)
-	--[[
-	Undress once, not twenty times.
-
-	Undress already strips the model; the nineteen UndressSlot calls that followed it
-	each forced their own re-render, which is the burst of flashes before the preview
-	settles. One call does the same job in one frame.
-	]]
+	-- Undress once. It already strips the model, and the nineteen UndressSlot calls that
+	-- followed each forced their own re-render.
 	frame.model:Undress()
 	C_Timer.After(0.15, function()
 		if frame.model and frame:IsShown() then
@@ -119,11 +107,8 @@ local function HideItemPreview()
 	end
 end
 
---[[
-	Exposed so the Quests tab can preview a reward on the character without standing up
-	a second DressUpModel. One preview frame, one place that knows how to undress the
-	model before trying an item on.
-]]
+-- Exposed so the Quests tab can preview a reward without standing up a second
+-- DressUpModel. One preview frame, one place that knows how to undress it first.
 function component.PreviewItem(link)
 	ShowItemPreview(link)
 end
@@ -233,12 +218,9 @@ local function ButtonOnClick(self, mouseButton)
 					print("|cffff9900[AGC]|r Removed from Wishlist:", lootItem.link)
 				end
 				GameTooltip:Hide()
-				--[[
-					Unpinning while the pinned filter is on has to drop the row, so the list
-					is rebuilt rather than just restoring the tooltip. Safe here because the
-					rebuild is answering a click: it is hover-driven refreshes that pull rows
-					out from under the cursor.
-				]]
+				-- Unpinning while the pinned filter is on has to drop the row, so the list is
+				-- rebuilt. Safe here because the rebuild answers a click; it is hover-driven
+				-- refreshes that pull rows out from under the cursor.
 				if LootFilterService.GetPinnedFilter() then
 					component.Show()
 				else
@@ -316,9 +298,8 @@ local function InitializeArmorDropdown()
 	end
 end
 
--- Restores the dropdown captions from saved state, so a filter kept across
--- sessions is visible rather than silently hiding loot. Also shows the clear
--- button only while something is actually filtered.
+-- Restores the dropdown captions from saved state, so a filter kept across sessions is
+-- visible rather than silently hiding loot.
 local function RefreshFilterCaptions()
 	if not classDropdown then return end
 	if clearFiltersButton then
@@ -359,11 +340,8 @@ local function CreateFilterDropdowns(parent)
 	UIDropDownMenu_SetWidth(armorDropdown, 90)
 	UIDropDownMenu_Initialize(armorDropdown, InitializeArmorDropdown)
 
-	--[[
-		Unlabelled on purpose: the filter row has no width left for a caption. The star
-		beside it is the same one drawn on a pinned row, so the toggle reads as "show only
-		the starred ones" without a word of explanation, and the tooltip covers the rest.
-	]]
+	-- Unlabelled on purpose: the filter row has no width for a caption. The star is the
+	-- same one drawn on a pinned row, and the tooltip covers the rest.
 	pinnedToggle = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
 	pinnedToggle:SetSize(24, 24)
 	pinnedToggle:SetPoint("LEFT", armorDropdown, "RIGHT", -8, 2)
@@ -523,11 +501,8 @@ function component.Init(components_)
 	lootView:SetElementInitializer("Button", LootButtonInitializer)
 	ScrollUtil.InitScrollBoxListWithScrollBar(lootScrollBox, lootScrollBar, lootView)
 
-	--[[
-		WishlistService drops an item as soon as it is equipped. With the pinned filter on
-		that row has to go, and nothing clicked to cause it, so the view needs telling.
-		Nothing else claims this hook.
-	]]
+	-- WishlistService drops an item as soon as it is equipped, and with the pinned filter
+	-- on that row has to go with nothing clicked to cause it. Nothing else claims this hook.
 	if WishlistService then
 		WishlistService.OnWishlistChanged = function()
 			if lootContainer:IsShown() and LootFilterService.GetPinnedFilter() then
@@ -559,15 +534,11 @@ end)
 
 --[[
 	Pinned mode ignores the selected boss and lists the whole instance's pinned loot,
-	grouped under a header per boss.
-
-	The per-encounter alternative was to filter only the boss on screen, but a player's
-	pins are spread across an instance, so that view is empty on most bosses — which is
-	the opposite of what pinning is for. Reading every encounter costs nothing: the
-	instance table *is* the encounter list, and GetEncounterLoot takes an encounter.
-
-	An item is attributed to the first boss that drops it and not repeated. Shared loot
-	would otherwise appear under every boss in the instance.
+	grouped under a header per boss. A player's pins are spread across an instance, so
+	filtering only the boss on screen leaves the view empty on most of them. Reading every
+	encounter costs nothing: the instance table *is* the encounter list, and
+	GetEncounterLoot takes an encounter. An item is attributed to the first boss that
+	drops it, or shared loot would appear under every boss.
 ]]
 local function ShowPinnedAcrossInstance(dataProvider, Collect)
 	local instance = AdventureGuideNavigationService.GetInstance()

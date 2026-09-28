@@ -8,18 +8,10 @@ select(2, ...).SetupGlobalFacade()
 
 ModelPresetService = {}
 
---[[
-	Per-creature camera overrides for the model viewer.
-
-	Height alone gets most models into frame but not all of them: a long serpent
-	and a tall giant of the same height need different framing, and some models
-	sit well off their own origin. Rather than keep guessing at a formula, this
-	lets a preset be dialled in against the real model and saved.
-
-	An override is stored per creature display id and wins over the computed
-	default. Anything not overridden keeps using the height-derived camera, so
-	saving one preset never disturbs another model.
-]]
+-- Per-creature camera overrides for the model viewer. Height alone does not frame every
+-- model -- a long serpent and a tall giant of the same height need different framing, and
+-- some models sit well off their own origin. An override is stored per creature display
+-- id and wins over the height-derived default.
 
 local function Store()
 	if not SavedVariables then return nil end
@@ -32,13 +24,11 @@ end
 local defaults = {}
 
 --[[
-	Titles are keyed by encounter AND display, not by display alone.
-
-	A creature model is often reused: display 6377 is Ebonroc, Firemaw and
-	Flamegor, 11561 is all three Dire Maul guards, and 5781 is both Garr and Lord
-	Roccor. Naming per display would label every one of them with whichever name
-	was saved last. Camera settings are still per display, since the same model
-	does want the same framing wherever it appears.
+	Titles are keyed by encounter AND display, not by display alone. A model is often
+	reused: display 6377 is Ebonroc, Firemaw and Flamegor, 11561 is all three Dire Maul
+	guards, 5781 is both Garr and Lord Roccor. Keying by display would label every one
+	with whichever name was saved last. Camera settings stay per display, since the same
+	model does want the same framing wherever it appears.
 ]]
 local titles = {}
 
@@ -62,10 +52,8 @@ function ModelPresetService.HasOverride(displayId)
 	return (store and store[displayId]) ~= nil
 end
 
---[[
-	The camera settings for a display id. Never returns nil: an unknown creature
-	falls back to the height-derived scale at the model's own origin.
-]]
+-- Never returns nil: an unknown creature falls back to the height-derived scale at the
+-- model's own origin.
 function ModelPresetService.Get(displayId)
 	local store = Store()
 	local saved = (store and store[displayId]) or defaults[displayId]
@@ -86,13 +74,8 @@ function ModelPresetService.Get(displayId)
 	}
 end
 
---[[
-	The name to show for a creature, or nil to fall back to the encounter name.
-
-	An encounter that shows several creatures labels them all with the encounter
-	name, so Majordomo Executus' three models all read "Majordomo Executus". A
-	title override names them individually.
-]]
+-- The name to show for a creature, or nil to fall back to the encounter name. An
+-- encounter showing several creatures otherwise labels them all with the encounter name.
 function ModelPresetService.GetTitle(displayId, encounterId)
 	if not displayId or not encounterId then return nil end
 	local store = Store()
@@ -137,10 +120,8 @@ function ModelPresetService.ClearAll()
 	if store then wipe(store) end
 end
 
---[[
-	Every saved override as pasteable Lua, so a preset dialled in on one
-	character can be committed to the addon rather than living in SavedVariables.
-]]
+-- Every saved override as pasteable Lua, so a preset dialled in on one character can be
+-- committed rather than living in SavedVariables.
 function ModelPresetService.Export()
 	local store = Store()
 	if not store then return nil end
@@ -170,8 +151,8 @@ function ModelPresetService.Export()
 		table.insert(lines, "})")
 	end
 
-	-- Titles go out as their own call, keyed by encounter, so a model shared by
-	-- several bosses keeps a separate name under each of them.
+	-- Titles go out as their own call, keyed by encounter, so a model shared by several
+	-- bosses keeps a separate name under each.
 	local encounters = {}
 	for encounterId in pairs(store.titles or {}) do table.insert(encounters, encounterId) end
 	table.sort(encounters)
