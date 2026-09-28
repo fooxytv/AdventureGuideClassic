@@ -105,8 +105,6 @@ function component.Hide()
 	if frame then frame:Hide() end
 end
 
--- Debug helpers (see CLAUDE.md) -----------------------------------------------
-
 _G.AGC_NpcPreview = function(displayId)
 	if not component.IsSupported() then
 		print("|cffff0000AGC|r npc preview is not supported on this client")

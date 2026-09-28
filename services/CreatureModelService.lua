@@ -8,7 +8,6 @@ select(2, ...).SetupGlobalFacade()
 
 CreatureModelService = {}
 
--- Both from data/CreatureModels.lua.
 local displaysByEncounter = {}   -- [encounterID] = { creatureDisplayID, ... }
 local heightByDisplay = {}       -- [creatureDisplayID] = model height in world units
 

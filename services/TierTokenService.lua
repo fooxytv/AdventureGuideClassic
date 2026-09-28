@@ -9,7 +9,6 @@ select(2, ...).SetupGlobalFacade()
 TierTokenService = {}
 
 -- [tokenItemId] = { WARRIOR = { itemId, ... }, WARRIOR_SOD = { ... }, ANY = { ... } }
--- Populated from data/TierTokens.lua, generated from AtlasLoot's Token.lua.
 local tokens = {}
 
 function TierTokenService.Register(data)

@@ -8,10 +8,9 @@ select(2, ...).SetupGlobalFacade()
 
 SettingsService = { }
 
-
 local defaults = {
 	Toasts = {
-		-- Forever shows its own level-up notification, so ours stays out of the way
+		-- Forever shows its own level-up notification.
 		-- there unless the player asks for it.
 		LevelUp = not Compat.isForever,
 		BossDefeated = true,
@@ -20,14 +19,13 @@ local defaults = {
 	Scale = 1.0,
 	ToastScale = 1.0,
 	ToastPosition = { anchor = "TOP", relativeAnchor = "TOP", x = 0, y = -120 },
-	-- Learnable-spell row on the level-up toast. Off by default while the data is
+	-- Off by default while the spell data is still being validated.
 	-- still being validated; opt-in from the settings panel.
 	LevelUpSpells = false,
 }
 local SCALE_MIN = 0.5
 local SCALE_MAX = 1.5
 local TOAST_TYPES = { "LevelUp", "BossDefeated", "WishlistItem" }
-
 
 local function EnsureSettings()
 	if not SavedVariables.Settings then
@@ -65,7 +63,7 @@ function SettingsService.GetToastEnabled(toastType)
 	local value = SavedVariables.Settings.Toasts[toastType]
 	if value == nil then
 		value = defaults.Toasts[toastType]
-		-- Distinguish "defaults to off" from "no such toast", which the previous
+		-- Distinguishes "defaults to off" from "no such toast"; `or true` made it always-on.
 		-- `or true` collapsed into always-on.
 		if value == nil then return true end
 	end

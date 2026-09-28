@@ -8,8 +8,6 @@ select(2, ...).SetupGlobalFacade()
 
 ModelPresetService = {}
 
--- An override is stored per creature display id and wins over the height-derived default.
-
 local function Store()
 	if not SavedVariables then return nil end
 	SavedVariables.ModelPresets = SavedVariables.ModelPresets or {}

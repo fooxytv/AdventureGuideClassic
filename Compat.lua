@@ -40,7 +40,6 @@ Compat.isForever = (flavor == "forever")
 Compat.isRetail = (flavor == "retail")
 Compat.isTBC = (flavor == "tbc")
 
--- Forever excluded on purpose: vanilla-shaped interface version, separate content line.
 Compat.isClassicLine = not isMainlineProject
 
 Compat.isEraClient = Compat.isClassicLine and tocVersion < 20000

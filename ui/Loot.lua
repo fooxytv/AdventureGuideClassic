@@ -101,7 +101,6 @@ local function HideItemPreview()
 	end
 end
 
--- Exposed so the Quests tab previews a reward without a second DressUpModel.
 function component.PreviewItem(link)
 	ShowItemPreview(link)
 end
@@ -518,8 +517,8 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 	OnItemDataLoadResult(event, ...)
 end)
 
--- Pinned mode lists the whole instance, grouped per boss: the instance table *is* the
--- encounter list. An item is attributed to the first boss that drops it, or shared loot
+-- An item is attributed to the first boss that drops it, or shared loot would appear
+-- under every boss.
 -- would appear under every boss.
 local function ShowPinnedAcrossInstance(dataProvider, Collect)
 	local instance = AdventureGuideNavigationService.GetInstance()

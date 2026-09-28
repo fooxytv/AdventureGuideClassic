@@ -97,7 +97,6 @@ function ForeverContentService.IsJournalUsable()
 	return trusted == true
 end
 
--- True for an instance the journal has never heard of: unknown beats hidden.
 function ForeverContentService.HasInstance(instance)
 	if not instance or not instance.instanceID then return true end
 
@@ -109,7 +108,6 @@ function ForeverContentService.HasInstance(instance)
 	return not ABSENT_ON_FOREVER[instance.instanceID]
 end
 
--- Journal instances this client has that our data does not cover. Used by /agcprobe.
 function ForeverContentService.GetUnknownInstanceIDs()
 	Resolve()
 	if not journalInstanceIDs then return { } end

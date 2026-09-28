@@ -341,8 +341,6 @@ local function ResetAllEncounters()
     DebugPrint("All instance encounters have been reset")
 end
 
--- The instance name is pulled out with a pattern built from Blizzard's own string where it
--- exists, falling back to the English form.
 local function GetResetInstanceName(message)
     if not message then return nil end
     local template = INSTANCE_RESET_SUCCESS

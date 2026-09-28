@@ -41,7 +41,6 @@ local TITLE_H = 16
 local SOURCE_H = 15
 local REWARD_H = 17
 
--- Preferences, not guarantees: the row width outranks both. See FitSourceLine.
 local GIVER_MIN = 60
 local ZONE_MIN = 70
 
@@ -191,7 +190,6 @@ local function BuildRow(row)
 	row.initialized = true
 end
 
--- The preview frame belongs to the Loot component: one model, one place that undresses it.
 local function RewardOnEnter(self)
 	HighlightRow(self)
 	if not self.link then return end
@@ -328,7 +326,6 @@ local function Initializer(row, quest)
 		row.zoneText:SetTextColor(unpack(SUBTLE))
 		row.zone:SetAlpha(dim)
 		FitSourceLine(row)
-		-- Not every start zone resolves on every client; see IsMapIDUsable.
 		row.zone.mapID = IsMapIDUsable(quest.startZoneMap) and quest.startZoneMap or nil
 		row.zone.zoneName = quest.startZone
 		row.zone:EnableMouse(row.zone.mapID ~= nil)
@@ -502,8 +499,6 @@ eventFrame:SetScript("OnEvent", RequestRefresh)
 
 UI.Add(component)
 
--- "available", "active" or "completed", or no argument to clear. Via QuestService so the
--- search result icons agree.
 _G.AGC_PreviewQuests = function(state)
 	if not QuestService.SetPreviewState(state) then
 		print("|cffff9900[AGC]|r AGC_PreviewQuests(\"available\"|\"active\"|\"completed\") or no argument to clear")
