@@ -3,7 +3,12 @@ select(2, ...).SetupGlobalFacade()
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 local GetSpellTextureCompat = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
 
-local IS_ERA = select(4, GetBuildInfo()) < 20000
+--[[
+	The learnable-spell rows are authored against vanilla's training levels, so they
+	only apply to the Era client (SoD included). Forever has a vanilla-shaped
+	interface version but its own progression, and shows new abilities itself.
+]]
+local IS_ERA = Compat.isEraClient
 
 local function GetLevelUpSpells(level)
 	if not IS_ERA or not SpellsByLevelService then return {} end

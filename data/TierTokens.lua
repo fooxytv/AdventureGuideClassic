@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 
 GENERATED FILE -- do not edit by hand. Regenerate with:
     python tools/gen_tier_tokens.py

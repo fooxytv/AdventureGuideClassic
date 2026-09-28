@@ -15,7 +15,7 @@ function widgetType:IsTypeFor(content)
 end
 
 function widgetType:SetContents(widget, contents)
-	local spellName = GetSpellInfo(contents.spell)
+	local spellName = Compat.GetSpellInfo(contents.spell) or tostring(contents.spell)
 	widget.button.title:SetText(spellName)
 	CollapsibleSectionWidgetTypeMixin.SetContents(self, widget, contents)
 end

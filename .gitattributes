@@ -2,3 +2,12 @@
 # shebang works on Linux / in CI containers. Without this, core.autocrlf=true
 # rewrites them to CRLF on checkout and `env` fails with `bash\r: No such file`.
 *.sh text eol=lf
+
+# Addon source is normalised to LF in the repository and checked out as CRLF,
+# which is what the existing files and the WoW toolchain already use. Without
+# this the repository stores a mix -- some files CRLF, some LF, and the spell data
+# CRLF in the body with an LF header -- and any editor or script that rewrites a
+# whole file turns a one-line change into a whole-file diff.
+*.lua text eol=crlf
+*.xml text eol=crlf
+*.toc text eol=crlf

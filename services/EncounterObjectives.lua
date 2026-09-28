@@ -1,7 +1,6 @@
 select(2, ...).SetupGlobalFacade()
 
 local EncounterObjective = {}
-AdventureObjectives = AdventureObjectives or {}
 AdventureGuideClassic_DebugEvents = AdventureGuideClassic_DebugEvents or false
 
 local function DebugPrint(...)
@@ -89,9 +88,6 @@ function EncounterObjective.CheckEncounterDefeated(bossName)
             for i, encounter in ipairs(dungeon) do
                 if type(encounter) == "table" and encounter.name == bossName then
                     EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
-                    if AdventureObjectives and AdventureObjectives.UpdateVisibility then
-                        AdventureObjectives:UpdateVisibility()
-                    end
                     return
                 end
             end
@@ -104,9 +100,6 @@ function EncounterObjective.CheckEncounterDefeated(bossName)
             for i, encounter in ipairs(raid) do
                 if type(encounter) == "table" and encounter.name == bossName then
                     EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
-                    if AdventureObjectives and AdventureObjectives.UpdateVisibility then
-                        AdventureObjectives:UpdateVisibility()
-                    end
                     return
                 end
             end
@@ -141,11 +134,6 @@ function EncounterObjective.MarkEncounterAsDefeated(dungeonName, bossName)
             end
             break
         end
-    end
-
-    if AdventureObjectives and AdventureObjectives.LoadEncounters then
-        AdventureObjectives:LoadEncounters(dungeonName)
-        _G.AdventureGuideClassic_UI_Encounters_Refresh = true
     end
 end
 
@@ -354,19 +342,70 @@ local function ResetAllEncounters()
     DebugPrint("All instance encounters have been reset")
 end
 
+--[[
+    "Deadmines has been reset." names one instance, so only that instance's defeats
+    should go. The name is pulled out with a pattern built from Blizzard's own string
+    where it exists, falling back to the English form this handler used to match
+    literally.
+]]
+local function GetResetInstanceName(message)
+    if not message then return nil end
+    local template = INSTANCE_RESET_SUCCESS
+    if type(template) == "string" then
+        local pattern = "^" .. template:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+            :gsub("%%%%s", "(.+)") .. "$"
+        local name = message:match(pattern)
+        if name then
+            return name
+        end
+    end
+    return message:match("^(.+) ha[sv]e? been reset%.?$")
+end
+
+--[[
+    Resetting instances does not clear a lockout you are saved to: the trash goes, the
+    bosses already dead stay dead. So a reset naming a saved instance must leave its
+    defeats alone, or clearing a dungeon throws away a raid night's progress. Era
+    dungeons are never saved, which is why they always clear.
+]]
+local function IsInstanceSaved(instanceName)
+    if not instanceName or not GetNumSavedInstances or not GetSavedInstanceInfo then
+        return false
+    end
+    for i = 1, GetNumSavedInstances() do
+        local name, _, _, _, locked, extended = GetSavedInstanceInfo(i)
+        if name == instanceName and (locked or extended) then
+            return true
+        end
+    end
+    return false
+end
+
 local function OnSystemMessage(message)
-    if message and (message:find("has been reset") or message:find("have been reset")) then
-        DebugPrint("Detected instance reset")
-        ResetAllEncounters()
+    local instanceName = GetResetInstanceName(message)
+    if instanceName then
+        if IsInstanceSaved(instanceName) then
+            DebugPrint("Ignoring reset of saved instance:", instanceName)
+            return
+        end
+        DebugPrint("Detected instance reset:", instanceName)
+        ResetEncountersForInstance(instanceName)
     end
 end
 
+--[[
+	COMBAT_LOG_EVENT_UNFILTERED is restricted on Forever, so it is skipped there.
+	Losing it costs the UNIT_DIED path only; ENCOUNTER_END and BOSS_KILL both fire on
+	that client and cover boss detection between them. The combat log is the fallback
+	for Era, where those two do not fire.
+]]
 local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("ENCOUNTER_END")
-eventFrame:RegisterEvent("BOSS_KILL")
-eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-eventFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-eventFrame:RegisterEvent("CHAT_MSG_SYSTEM")
+Compat.RegisterEvents(eventFrame,
+	"ENCOUNTER_END",
+	"BOSS_KILL",
+	"COMBAT_LOG_EVENT_UNFILTERED",
+	"UPDATE_MOUSEOVER_UNIT",
+	"CHAT_MSG_SYSTEM")
 
 eventFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "ENCOUNTER_END" then
@@ -376,7 +415,10 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
         DebugPrint("BOSS_KILL event received")
         OnBossKill(...)
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        local _, subEvent, _, _, _, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
+        local GetEventInfo = CombatLogGetCurrentEventInfo
+            or (C_CombatLog and C_CombatLog.GetCurrentEventInfo)
+        if not GetEventInfo then return end
+        local _, subEvent, _, _, _, _, _, destGUID, destName = GetEventInfo()
         if subEvent == "UNIT_DIED" then
             DebugPrint("UNIT_DIED:", destName)
             OnUnitDied(destGUID, destName)

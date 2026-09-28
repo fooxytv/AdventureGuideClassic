@@ -18,7 +18,6 @@
     <Script file="ui/mappings/Colors.lua" />
     <Script file="ui/mappings/InstanceMapping.lua" />
 
-    <!-- <Script file="ui/AdventureObjectives.lua" /> -->
     <Script file="ui/EventToastManager.lua" />
     <Script file="ui/Map.lua" />
     <Script file="ui/Component.lua" />
@@ -31,6 +30,8 @@
     <Script file="ui/CreatureButtons.lua" />
     <Script file="ui/ModelTuner.lua" />
     <Script file="ui/InstanceOverview.lua" />
+    <Script file="ui/NpcPreview.lua" />
+    <Script file="ui/QuestList.lua" />
     <Script file="ui/DynamicContentScroller.lua" />
     <Script file="ui/Encounters.lua" />
     <Script file="ui/EncounterJournalTabs.lua" />

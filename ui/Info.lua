@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -103,7 +103,7 @@ end
 function component.UpdateDifficultyDropdown(instance)
 	local info = EncounterJournal.encounter.info
 	if not info or not info.difficultyDropdown then return end
-	local isTBC = select(4, GetBuildInfo()) >= 20000
+	local isTBC = Compat.isTBC
 	local instanceFilter = instance.seasonFilter or "all"
 
 	if isTBC and instanceFilter == "tbc" then

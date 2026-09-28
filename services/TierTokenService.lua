@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -72,9 +72,7 @@ function TierTokenService.HasArmorType(tokenId, armorSubclass, class)
 end
 
 local function IsSeasonOfDiscovery()
-	local activeSeason = C_Seasons and C_Seasons.GetActiveSeason and C_Seasons.GetActiveSeason() or 0
-	local tocVersion = select(4, GetBuildInfo())
-	return tocVersion < 20000 and activeSeason == 2
+	return Compat.IsSoD()
 end
 
 --[[

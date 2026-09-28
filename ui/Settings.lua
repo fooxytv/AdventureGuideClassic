@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -160,8 +160,26 @@ local function CreateOptionsCheckbox(parent, name, label, description, rowIndex,
 		PlaySound(checked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 	end)
 	row.checkbox = checkbox
+	row.label = labelText
+	row.description = descText
 	row.getValue = getValue
 	row.setValue = setValue
+
+	--[[
+		Greys the row out where the setting cannot apply, rather than leaving a live
+		checkbox that does nothing.
+	]]
+	function row.SetAvailable(available, reason)
+		if available then
+			checkbox:Enable()
+			labelText:SetTextColor(1, 0.82, 0)
+			return
+		end
+		checkbox:Disable()
+		labelText:SetTextColor(0.5, 0.5, 0.5)
+		if reason then descText:SetText(reason) end
+	end
+
 	return row
 end
 
@@ -215,6 +233,15 @@ function component.Init(components_)
 		function() return SettingsService.GetLevelUpSpellsEnabled() end,
 		function(val) SettingsService.SetLevelUpSpellsEnabled(val) end
 	)
+
+	--[[
+		The spell rows are authored against vanilla's training levels, so the setting
+		is inert anywhere but Era and SoD.
+	]]
+	settingsPanel.levelUpSpellsRow.SetAvailable(Compat.isEraClient,
+		Compat.isForever
+			and "Not available on Forever, which shows new abilities itself"
+			or "Only available on Classic Era")
 
 	settingsPanel.bossDefeatedRow = CreateOptionsCheckbox(
 		toastContainer,

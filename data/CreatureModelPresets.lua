@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 
 Hand-tuned camera presets for the model viewer, for creatures the height-derived
 default does not frame well. Height gets most models into frame, but a long

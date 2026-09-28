@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: TomCat / TomCat's Gaming
+Programming by: FooxyTV
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -30,14 +30,20 @@ function AdventureGuideNavigationService.GetEncounterContent()
 	return encounter.overview or { }
 end
 
-function AdventureGuideNavigationService.GetEncounterLoot()
-	local activeSeason = C_Seasons and C_Seasons.GetActiveSeason and C_Seasons.GetActiveSeason() or 0
+--[[
+	Loot for an encounter, season/difficulty filtering already applied. Defaults to the
+	selected encounter; pass one explicitly to read another boss's table, which is how
+	the pinned-loot filter gathers a whole instance's picks without navigating to each
+	boss in turn.
+]]
+function AdventureGuideNavigationService.GetEncounterLoot(forEncounter)
+	local target = forEncounter or encounter
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or nil
-	local tocVersion = select(4, GetBuildInfo())
-	local isTBC = tocVersion >= 20000
-	local isClassicClient = tocVersion < 20000
-	local isSoD = isClassicClient and activeSeason == 2
-	local isEra = isClassicClient and activeSeason ~= 2
+	local isTBC = Compat.isTBC
+	local isClassicClient = Compat.isVanillaLoot
+	local isSoD = Compat.IsSoD()
+	local isEra = isClassicClient and not isSoD
+	local isForever = Compat.isForever
 	local difficulty = InstanceService.GetDifficulty and InstanceService.GetDifficulty() or "normal"
 	local function ShouldIncludeLootItem(item)
 		if not item.id then
@@ -83,6 +89,13 @@ function AdventureGuideNavigationService.GetEncounterLoot()
 				end
 				return false
 			end
+		elseif filterType == "forever" then
+			if not isForever then
+				if AdventureGuideClassic_DebugEvents then
+					print("  -> FILTERED: forever-only item on non-Forever client")
+				end
+				return false
+			end
 		end
 		if isTBC and filterType == "tbc" then
 			if itemDifficulty == "both" then
@@ -118,11 +131,11 @@ function AdventureGuideNavigationService.GetEncounterLoot()
 		return filteredLoot
 	end
 	return {
-		loot = FilterLoot(encounter and encounter.loot),
-		sharedLoot = FilterLoot(encounter and encounter.sharedLoot),
-		rareLoot = FilterLoot(encounter and encounter.rareLoot),
-		veryRareLoot = FilterLoot(encounter and encounter.veryRareLoot),
-		extremelyRareLoot = FilterLoot(encounter and encounter.extremelyRareLoot)
+		loot = FilterLoot(target and target.loot),
+		sharedLoot = FilterLoot(target and target.sharedLoot),
+		rareLoot = FilterLoot(target and target.rareLoot),
+		veryRareLoot = FilterLoot(target and target.veryRareLoot),
+		extremelyRareLoot = FilterLoot(target and target.extremelyRareLoot)
 	}
 end
 
@@ -147,16 +160,15 @@ function AdventureGuideNavigationService.SetInstances(ref)
 end
 
 _G.AGC_DebugLootFilter = function()
-	local activeSeason = C_Seasons and C_Seasons.GetActiveSeason and C_Seasons.GetActiveSeason() or 0
+	local activeSeason = Compat.GetActiveSeason()
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or "none"
-	local tocVersion = select(4, GetBuildInfo())
-	local isTBC = tocVersion >= 20000
-	local isClassicClient = tocVersion < 20000
-	local isSoD = isClassicClient and activeSeason == 2
-	local isEra = isClassicClient and activeSeason ~= 2
+	local isTBC = Compat.isTBC
+	local isClassicClient = Compat.isVanillaLoot
+	local isSoD = Compat.IsSoD()
+	local isEra = isClassicClient and not isSoD
 	local difficulty = InstanceService.GetDifficulty and InstanceService.GetDifficulty() or "normal"
 	print("|cffff9900[AGC Loot Debug]|r")
-	print("  TOC Version:", tocVersion)
+	print("  Client:", Compat.flavor, "(toc " .. tostring(Compat.tocVersion) .. ")")
 	print("  isTBC:", tostring(isTBC))
 	print("  isClassicClient:", tostring(isClassicClient))
 	print("  activeSeason:", tostring(activeSeason))
