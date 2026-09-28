@@ -296,41 +296,6 @@ InstanceService.AddRaid({
 	},
 	-- Old Serra'kis is NOT a raid boss in Season of Discovery
 	-- He appears only as a corpse used for crafting quests (Shard of the Void)
-	-- {
-	-- 	name = "Old Serra'kis",
-	-- 	encounterID = 4830,
-	-- 	portrait = 607733,
-	-- 	loot = {
-	-- 		{ id = 6901, seasonFilter = "all" },
-	-- 		{ id = 6902, seasonFilter = "all" },
-	-- 		{ id = 6904, seasonFilter = "all" },
-	-- 	},
-	-- 	sharedLoot = {},
-	-- 	rareLoot = {},
-	-- 	veryRareLoot = {},
-	-- 	extremelyRareLoot = {},
-	-- 	npcs = { 4830 },
-	-- 	overview = {
-	-- 		"Old Serra'kis is a massive and ancient hydra that dwells within the watery depths of Blackfathom Deeps. This colossal creature is a testament to the primal forces of nature that still exist deep underground. Old Serra'kis's multiple heads and devastating attacks make it a formidable and iconic inhabitant of the submerged realm.",
-	-- 		{ heading = "Overview" },
-	-- 		"Old Serra'kis is an optional boss in Blackfathom Deeps who will periodcally heal himself when attacking. The notable aspect of this boss is that you fight him underwater.",
-	-- 		{
-	-- 			role = DAMAGE,
-	-- 			"maximize your damage output without overthrowing the tank from the primary threat position, or running out of breath.",
-	-- 		},
-	-- 		{
-	-- 			role = HEALER,
-	-- 			"Keep your party members up and heal the tank without running out of breath.",
-	-- 		},
-	-- 		{
-	-- 			role = TANK,
-	-- 			"Maintain threat on the boss without running out of breath.",
-	-- 		}
-	-- 	},
-	-- 	abilities = {
-	--
-	-- 	}
-	-- },
 	{
 		name = "Aku'mai",
 		encounterID = 4829,

@@ -47,7 +47,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -84,7 +83,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -121,7 +119,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -159,7 +156,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -202,7 +198,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -248,7 +243,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -282,7 +276,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -322,7 +315,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -361,7 +353,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -398,36 +389,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
-	-- {
-	-- 	name = "Cho'Rush the Observer",
-	-- 	encounterID = 14324,
-	-- 	portrait = 607565,
-	-- 	loot = { 18523, 18527, 18524, 18525, 18526, 18521, 18520, 18522, 18485, 18484, 18490, 18483 },
-	-- 	npcs = { 2135, 12456, 12314 },
-	-- 	overview = {
-	-- 		"Cho'Rush the Observer is a mysterious ogre mage who holds a prominent position within Dire Maul's North Wing. His command of arcane magic and enigmatic presence make him a unique and formidable figure. Cho'Rush's role within Dire Maul reflects the complex and arcane nature of the ruins.",
-	-- 		{ heading = "Overview" },
-	-- 		"For the Tribute Run, keep Cho'Rush alive. Damage dealers should focus on Gordok, interrupting Cho'Rush. Healers must balance healing between tank and the damage dealers. Tanks should establish and maintain threat on King Gordok, managing Cho'Rush's abilities.",
-	-- 		{
-	-- 			role = DAMAGE,
-	-- 			"Focus on Gordok, interrupt Cho'Rush's {spell:11642} and {spell:17194}."
-	-- 		},
-	-- 		{
-	-- 			role = HEALER,
-	-- 			"Heal tank and the damage dealers, manage fear with abilities like {spell:6346} or {spell:8143}."
-	-- 		},
-	-- 		{
-	-- 			role = TANK,
-	-- 			"Maintain threat on Gordok, focus on Cho'Rush if not attempting Tribute Run."
-	-- 		}
-	-- 	},
-	-- 	abilities = {
-	-- 		-- Abilities details go here
-	-- 	}
-	-- },
 	{
 		name = "King Gordok",
 		defeated = 0,
@@ -470,7 +433,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -507,7 +469,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -545,7 +506,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -582,7 +542,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -625,7 +584,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	},
 	{
@@ -668,7 +626,6 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			-- Abilities details go here
 		}
 	}
 })

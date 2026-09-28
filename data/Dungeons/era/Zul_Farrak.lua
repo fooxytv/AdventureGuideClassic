@@ -131,33 +131,6 @@ InstanceService.AddDungeon({
 		abilities = {
 		}
 	},
-	-- {
-	-- 	name = "Nekrum Gutchewer",
-	-- 	defeated = 0,
-	-- 	encounterID = 7796,
-	-- 	portrait = 607723,
-	-- 	loot = { },
-	-- 	npcs = { 2135, 12456, 12314 },
-	-- 	overview = {
-	-- 		"Nekrum Gutchewer is a ruthless troll warrior who serves as a protector of Zul'Farrak. His role within the city involves defending it from intruders and maintaining its security. Nekrum's combat prowess and unyielding dedication make him a formidable enforcer in the troll hierarchy.",
-	-- 		{ heading = "Overview" },
-	-- 		"information goes here..",
-	-- 		{
-	-- 			role = DAMAGE,
-	-- 			"",
-	-- 		},
-	-- 		{
-	-- 			role = HEALER,
-	-- 			"",
-	-- 		},
-	-- 		{
-	-- 			role = TANK,
-	-- 			"",
-	-- 		}
-	-- 	},
-	-- 	abilities = {
-	-- 	}
-	-- },
 	{
 		name = "Shadowpriest Sezz'ziz",
 		defeated = 0,
@@ -308,31 +281,4 @@ InstanceService.AddDungeon({
 		abilities = {
 		}
 	},
-	-- {
-	-- 	name = "Ruuzlu",
-	-- 	defeated = 0,
-	-- 	encounterID = 7797,
-	-- 	portrait = 607762,
-	-- 	loot = { },
-	-- 	npcs = { 2135, 12456, 12314 },
-	-- 	overview = {
-	-- 		"Ruuzlu is a menacing basilisk that dwells within the depths of Zul'Farrak. His presence in the city represents the diverse array of creatures that have found refuge in its labyrinthine passages. Ruuzlu's petrifying gaze and stone-shattering attacks make him a formidable inhabitant of this underground realm.",
-	-- 		{ heading = "Overview" },
-	-- 		"information goes here..",
-	-- 		{
-	-- 			role = DAMAGE,
-	-- 			"",
-	-- 		},
-	-- 		{
-	-- 			role = HEALER,
-	-- 			"",
-	-- 		},
-	-- 		{
-	-- 			role = TANK,
-	-- 			"",
-	-- 		}
-	-- 	},
-	-- 	abilities = {
-	-- 	}
-	-- },
 })
