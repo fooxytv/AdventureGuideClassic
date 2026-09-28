@@ -4,7 +4,7 @@ All rights reserved.
 
 Programming by: FooxyTV
 ]]
-
+select(2, ...).SetupGlobalFacade()
 
 -- nil, not 0, for no active season: the caller branches on `if activeSeasonID then`, and
 -- 0 is truthy in Lua, so Compat.GetActiveSeason's 0 would take the wrong branch.
@@ -67,5 +67,3 @@ function GetDungeonInstanceMapping()
         -- placeholder
     end
 end
-
-select(2, ...).SetupGlobalFacade("GetDungeonInstanceMapping", GetDungeonInstanceMapping)
