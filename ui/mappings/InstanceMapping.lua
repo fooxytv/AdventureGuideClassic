@@ -4,17 +4,15 @@ All rights reserved.
 
 Programming by: FooxyTV
 ]]
+select(2, ...).SetupGlobalFacade()
 
-
--- C_Seasons is absent on Forever, where reaching it unguarded is a hard error.
+-- nil, not 0, for no active season: the caller branches on `if activeSeasonID then`, and
+-- 0 is truthy in Lua, so Compat.GetActiveSeason's 0 would take the wrong branch.
 local function GetActiveSeasonID()
-    if not (C_Seasons and C_Seasons.HasActiveSeason and C_Seasons.GetActiveSeason) then
+    if not Compat.HasActiveSeason() then
         return nil
     end
-    if not C_Seasons.HasActiveSeason() then
-        return nil
-    end
-    return C_Seasons.GetActiveSeason()
+    return Compat.GetActiveSeason()
 end
 
 function GetDungeonInstanceMapping()
@@ -69,5 +67,3 @@ function GetDungeonInstanceMapping()
         -- placeholder
     end
 end
-
-select(2, ...).SetupGlobalFacade("GetDungeonInstanceMapping", GetDungeonInstanceMapping)
