@@ -267,7 +267,9 @@ def render(dungeon_name, quests):
             parts.append("startedByDisplay = %d" % q["startedByDisplay"])
         if q["rewards"]:
             parts.append("rewards = { %s }" % ", ".join(str(i) for i in q["rewards"]))
-        out.append("\t{ " + ", ".join(parts) + " },")
+        out.append("\t{")
+        out.extend("\t\t%s," % part for part in parts)
+        out.append("\t},")
     out.append("})")
     return "\r\n".join(out) + "\r\n"
 
