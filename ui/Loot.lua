@@ -26,8 +26,8 @@ local pendingItemIds = {}
 	until someone on the realm has actually obtained the item.
 
 	Tracked separately from pendingItemIds so a refusal is not mistaken for a load still
-	in flight -- which is what left the tab blank with no message, since the empty-state
-	row is suppressed while anything is pending.
+	in flight. Left in there it would sit for ever, and the empty-state row is suppressed
+	while anything is pending, so a filter message could never appear on that boss either.
 
 	Not permanent, and not cached beyond the encounter being viewed: the data appears once
 	the item is obtained somewhere, so switching boss clears this and asks again.
@@ -561,14 +561,12 @@ local function OnItemDataLoadResult(event, itemId, success)
 	if not pendingItemIds[itemId] then return end
 	pendingItemIds[itemId] = nil
 	if not success then
+		-- Nothing is drawn for a refusal, so there is nothing to redraw for. Rebuilding
+		-- here made the list visibly snap for no gain.
 		failedItemIds[itemId] = true
+		return
 	end
-	-- Redraw as soon as an item arrives, but wait for the rest to settle before redrawing
-	-- on a refusal, so a boss whose items are all refused rebuilds once rather than once
-	-- per item.
-	if success or not next(pendingItemIds) then
-		component.Show()
-	end
+	component.Show()
 end
 
 --[[
@@ -694,33 +692,16 @@ function component.Show()
 		end
 	end
 
-	--[[
-		Say why the list is short, because otherwise an intentional gap reads as a broken
-		addon. On a beta the client refuses item data it has not released, so a boss can
-		show nothing at all or only the few items that are available, and neither state
-		explains itself.
-	]]
-	local refusedCount = 0
-	for _ in pairs(failedItemIds) do
-		refusedCount = refusedCount + 1
-	end
-
 	if shownCount == 0 and not next(pendingItemIds) then
 		local emptyText
 		if LootFilterService.GetPinnedFilter() then
 			emptyText = "Nothing pinned in this instance"
 		elseif LootFilterService.IsFiltered() then
 			emptyText = "No loot matches this filter"
-		elseif refusedCount > 0 then
-			emptyText = "Item details are not available on this client yet"
 		end
 		if emptyText then
 			dataProvider:Insert({ isHeader = true, text = emptyText })
 		end
-	elseif refusedCount > 0 then
-		dataProvider:Insert({ isHeader = true, text = refusedCount == 1
-			and "1 more item is not available on this client yet"
-			or (refusedCount .. " more items are not available on this client yet") })
 	end
 
 	lootScrollBox:SetDataProvider(dataProvider)
