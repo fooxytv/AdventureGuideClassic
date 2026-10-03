@@ -13,7 +13,7 @@ InstanceService.AddRaid({
 	icon = 136320,
 	splash = 1396510,
 	mapID = 509,
-	season = false,
+	seasonFilter = "all",
 	overview = "The Ruins of Ahn'Qiraj lie within the ancient fortress city of the qiraji, located in the southern reaches of Silithus. Thousands of years ago, the night elves and the bronze dragonflight sealed the qiraji behind the Scarab Wall following the devastating War of the Shifting Sands. When the Scarab Gong was rung and the gates of Ahn'Qiraj opened once more, heroes of the Horde and Alliance ventured into these ruins to confront the insectoid servants of the Old God C'Thun and prevent a second qiraji war.",
 	{
 		name = "Kurinnaxx",

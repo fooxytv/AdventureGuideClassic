@@ -13,7 +13,7 @@ InstanceService.AddRaid({
 	icon = 136321,
 	splash = 1396512,
 	mapID = 531,
-	season = false,
+	seasonFilter = "all",
 	overview = "The Temple of Ahn'Qiraj is the inner sanctum of the qiraji empire, where the Old God C'Thun slumbers and directs his minions from the depths. For millennia, the qiraji amassed their forces behind the Scarab Wall, breeding silithid swarms and forging twisted abominations in preparation for conquest. Now the gates have opened, and champions must delve into the heart of this ancient evil to destroy C'Thun before his corruption spreads across all of Azeroth.",
 	{
 		name = "The Prophet Skeram",
