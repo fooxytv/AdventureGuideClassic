@@ -221,6 +221,30 @@ git tag | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$'
 Publish from the branch matching the release type, never from a feature branch.
 `develop` and `main` both require a pull request.
 
+### After a stable release ships
+
+Two steps, both mechanical, both easy to forget and both needed before the next piece of
+work. They were skipped after 1.7.1 and had to be done later before 1.8.1 could start.
+
+**Merge `main` back into `develop`.** The release's version stamp lives on the release
+branch and reaches `main` through the release pull request, so without this `develop` never
+sees it and the two histories drift. Done after 1.6.1 (`4a4575b`), skipped after 1.7.1.
+
+**Bump `develop`'s base.** A pre-release sorts *before* the version it names, so leaving
+`develop` on `X.Y.Z-alpha` once `X.Y.Z` has shipped leaves it below what players have:
+
+```sh
+./ci/scripts/version.sh patch alpha    # -> X.Y.(Z+1)-alpha.<sha>
+./ci/scripts/version.sh minor alpha    # -> X.(Y+1).0-alpha.<sha>  if features are next
+```
+
+`version.sh` rather than `publish.sh` when only the `.toc` should change: `publish.sh`
+also commits and creates a tag.
+
+The distinction that matters: `none` is right *while* a release is being built, and wrong
+*after* it has shipped. `1.8.1-alpha.x` is correct on `develop` until `v1.8.1` is tagged,
+and below what players have the moment it is.
+
 Who is allowed to approve, merge and publish is a personal delegation rather than a
 property of this project, so it is not recorded here — committing it would hand the same
 standing authority to anyone else's agent working in a clone or fork. It lives in
