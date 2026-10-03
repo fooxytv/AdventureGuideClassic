@@ -694,18 +694,33 @@ function component.Show()
 		end
 	end
 
+	--[[
+		Say why the list is short, because otherwise an intentional gap reads as a broken
+		addon. On a beta the client refuses item data it has not released, so a boss can
+		show nothing at all or only the few items that are available, and neither state
+		explains itself.
+	]]
+	local refusedCount = 0
+	for _ in pairs(failedItemIds) do
+		refusedCount = refusedCount + 1
+	end
+
 	if shownCount == 0 and not next(pendingItemIds) then
 		local emptyText
 		if LootFilterService.GetPinnedFilter() then
 			emptyText = "Nothing pinned in this instance"
 		elseif LootFilterService.IsFiltered() then
 			emptyText = "No loot matches this filter"
-		elseif next(failedItemIds) then
-			emptyText = "This client has no data for these items yet"
+		elseif refusedCount > 0 then
+			emptyText = "Item details are not available on this client yet"
 		end
 		if emptyText then
 			dataProvider:Insert({ isHeader = true, text = emptyText })
 		end
+	elseif refusedCount > 0 then
+		dataProvider:Insert({ isHeader = true, text = refusedCount == 1
+			and "1 more item is not available on this client yet"
+			or (refusedCount .. " more items are not available on this client yet") })
 	end
 
 	lootScrollBox:SetDataProvider(dataProvider)
