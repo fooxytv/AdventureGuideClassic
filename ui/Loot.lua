@@ -16,6 +16,23 @@ local previewFrame
 -- A three-quarter view, so the model is not square-on to the camera.
 local PREVIEW_ROTATION = 0.45
 local pendingItemIds = {}
+
+--[[
+	Items the client says it cannot give us.
+
+	ITEM_DATA_LOAD_RESULT can come back with success = false: the item exists, is not
+	cached, and the server declines to send it. On the Forever beta that is most of
+	Blackrock Depths while the Deadmines is fine, which fits item data being withheld
+	until someone on the realm has actually obtained the item.
+
+	Tracked separately from pendingItemIds so a refusal is not mistaken for a load still
+	in flight -- which is what left the tab blank with no message, since the empty-state
+	row is suppressed while anything is pending.
+
+	Not permanent, and not cached beyond the encounter being viewed: the data appears once
+	the item is obtained somewhere, so switching boss clears this and asks again.
+]]
+local failedItemIds = {}
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
 local currentEncounterId = nil
@@ -541,18 +558,34 @@ local function OnItemDataLoadResult(event, itemId, success)
 	if event == "GET_ITEM_INFO_RECEIVED" then
 		success = true
 	end
-	if success and pendingItemIds[itemId] then
-		pendingItemIds[itemId] = nil
+	if not pendingItemIds[itemId] then return end
+	pendingItemIds[itemId] = nil
+	if not success then
+		failedItemIds[itemId] = true
+	end
+	-- Redraw as soon as an item arrives, but wait for the rest to settle before redrawing
+	-- on a refusal, so a boss whose items are all refused rebuilds once rather than once
+	-- per item.
+	if success or not next(pendingItemIds) then
 		component.Show()
 	end
 end
 
+--[[
+	Both events, not whichever the client's API surface suggests.
+
+	This picked ITEM_DATA_LOAD_RESULT when C_Item.RequestLoadItemDataByID existed and
+	GET_ITEM_INFO_RECEIVED otherwise. Forever has both functions and both events, so it
+	took the first branch -- and the loot list stayed empty, because an item whose data
+	had to be fetched was never redrawn when it arrived. Which event a client documents
+	says nothing about which one it raises for this path.
+
+	Registering both costs nothing. OnItemDataLoadResult normalises them, and the second
+	to arrive for an item finds it already cleared from pendingItemIds and returns without
+	rebuilding.
+]]
 local eventFrame = CreateFrame("Frame")
-if C_Item and C_Item.RequestLoadItemDataByID then
-	eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
-else
-	eventFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-end
+Compat.RegisterEvents(eventFrame, "ITEM_DATA_LOAD_RESULT", "GET_ITEM_INFO_RECEIVED")
 eventFrame:SetScript("OnEvent", function(self, event, ...)
 	OnItemDataLoadResult(event, ...)
 end)
@@ -610,6 +643,13 @@ function component.Show()
 	local encounterLoot = AdventureGuideNavigationService.GetEncounterLoot()
 	if not encounterLoot then return end
 	RefreshFilterCaptions()
+	-- A refusal is about this client right now, not about the item, so every time the
+	-- view moves to another boss the refused ones are asked for again.
+	local encounter = AdventureGuideNavigationService.GetEncounter()
+	if encounter ~= currentEncounterId then
+		currentEncounterId = encounter
+		wipe(failedItemIds)
+	end
 	wipe(pendingItemIds)
 	local dataProvider = CreateDataProvider()
 	local shownCount = 0
@@ -621,7 +661,7 @@ function component.Show()
 				if LootFilterService.PassesFilter(lootItem) then
 					table.insert(items, lootItem)
 				end
-			else
+			elseif not failedItemIds[itemId] then
 				pendingItemIds[itemId] = true
 				RequestLoadItemDataCompat(itemId)
 			end
@@ -654,12 +694,33 @@ function component.Show()
 		end
 	end
 
-	if shownCount == 0 and not next(pendingItemIds) and LootFilterService.IsFiltered() then
-		local emptyText = "No loot matches this filter"
+	--[[
+		Say why the list is short, because otherwise an intentional gap reads as a broken
+		addon. On a beta the client refuses item data it has not released, so a boss can
+		show nothing at all or only the few items that are available, and neither state
+		explains itself.
+	]]
+	local refusedCount = 0
+	for _ in pairs(failedItemIds) do
+		refusedCount = refusedCount + 1
+	end
+
+	if shownCount == 0 and not next(pendingItemIds) then
+		local emptyText
 		if LootFilterService.GetPinnedFilter() then
 			emptyText = "Nothing pinned in this instance"
+		elseif LootFilterService.IsFiltered() then
+			emptyText = "No loot matches this filter"
+		elseif refusedCount > 0 then
+			emptyText = "Item details are not available on this client yet"
 		end
-		dataProvider:Insert({ isHeader = true, text = emptyText })
+		if emptyText then
+			dataProvider:Insert({ isHeader = true, text = emptyText })
+		end
+	elseif refusedCount > 0 then
+		dataProvider:Insert({ isHeader = true, text = refusedCount == 1
+			and "1 more item is not available on this client yet"
+			or (refusedCount .. " more items are not available on this client yet") })
 	end
 
 	lootScrollBox:SetDataProvider(dataProvider)
