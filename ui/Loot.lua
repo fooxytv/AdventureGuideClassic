@@ -16,6 +16,23 @@ local previewFrame
 -- A three-quarter view, so the model is not square-on to the camera.
 local PREVIEW_ROTATION = 0.45
 local pendingItemIds = {}
+
+--[[
+	Items the client says it cannot give us.
+
+	ITEM_DATA_LOAD_RESULT can come back with success = false: the item exists, is not
+	cached, and the server declines to send it. On the Forever beta that is most of
+	Blackrock Depths while the Deadmines is fine, which fits item data being withheld
+	until someone on the realm has actually obtained the item.
+
+	Tracked separately from pendingItemIds so a refusal is not mistaken for a load still
+	in flight -- which is what left the tab blank with no message, since the empty-state
+	row is suppressed while anything is pending.
+
+	Not permanent, and not cached beyond the encounter being viewed: the data appears once
+	the item is obtained somewhere, so switching boss clears this and asks again.
+]]
+local failedItemIds = {}
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
 local currentEncounterId = nil
@@ -541,8 +558,15 @@ local function OnItemDataLoadResult(event, itemId, success)
 	if event == "GET_ITEM_INFO_RECEIVED" then
 		success = true
 	end
-	if success and pendingItemIds[itemId] then
-		pendingItemIds[itemId] = nil
+	if not pendingItemIds[itemId] then return end
+	pendingItemIds[itemId] = nil
+	if not success then
+		failedItemIds[itemId] = true
+	end
+	-- Redraw as soon as an item arrives, but wait for the rest to settle before redrawing
+	-- on a refusal, so a boss whose items are all refused rebuilds once rather than once
+	-- per item.
+	if success or not next(pendingItemIds) then
 		component.Show()
 	end
 end
@@ -619,6 +643,13 @@ function component.Show()
 	local encounterLoot = AdventureGuideNavigationService.GetEncounterLoot()
 	if not encounterLoot then return end
 	RefreshFilterCaptions()
+	-- A refusal is about this client right now, not about the item, so every time the
+	-- view moves to another boss the refused ones are asked for again.
+	local encounter = AdventureGuideNavigationService.GetEncounter()
+	if encounter ~= currentEncounterId then
+		currentEncounterId = encounter
+		wipe(failedItemIds)
+	end
 	wipe(pendingItemIds)
 	local dataProvider = CreateDataProvider()
 	local shownCount = 0
@@ -630,7 +661,7 @@ function component.Show()
 				if LootFilterService.PassesFilter(lootItem) then
 					table.insert(items, lootItem)
 				end
-			else
+			elseif not failedItemIds[itemId] then
 				pendingItemIds[itemId] = true
 				RequestLoadItemDataCompat(itemId)
 			end
@@ -663,12 +694,18 @@ function component.Show()
 		end
 	end
 
-	if shownCount == 0 and not next(pendingItemIds) and LootFilterService.IsFiltered() then
-		local emptyText = "No loot matches this filter"
+	if shownCount == 0 and not next(pendingItemIds) then
+		local emptyText
 		if LootFilterService.GetPinnedFilter() then
 			emptyText = "Nothing pinned in this instance"
+		elseif LootFilterService.IsFiltered() then
+			emptyText = "No loot matches this filter"
+		elseif next(failedItemIds) then
+			emptyText = "This client has no data for these items yet"
 		end
-		dataProvider:Insert({ isHeader = true, text = emptyText })
+		if emptyText then
+			dataProvider:Insert({ isHeader = true, text = emptyText })
+		end
 	end
 
 	lootScrollBox:SetDataProvider(dataProvider)
