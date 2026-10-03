@@ -30,8 +30,54 @@ local isMainlineProject = WOW_PROJECT_ID ~= nil
 -- Retail's interface versions run to six digits (110000 and up). Forever's are five.
 local RETAIL_MIN_TOC = 100000
 
+--[[
+	Which .toc the client chose to load, which is the client's own answer about what it is.
+
+	Forever used to report WOW_PROJECT_MAINLINE, so that plus a five-digit interface
+	version identified it. Build 1.60.1.70205 reports WOW_PROJECT_ID 18 instead -- neither
+	mainline nor classic -- so the test failed and Forever was detected as Era, hiding its
+	own instances and offering Era's.
+
+	An unfamiliar project id will keep happening on a beta. The loaded .toc does not have
+	that problem: the client matches our file suffixes itself, so only a camelot client
+	loads AdventureGuideClassic_Camelot.toc. The project-id rule is kept underneath for
+	older Forever builds and for any client where the metadata cannot be read.
+]]
+local function LoadedTocFlavor()
+	if not (C_AddOns and C_AddOns.GetAddOnMetadata) then return nil end
+	local ok, value = pcall(C_AddOns.GetAddOnMetadata, addonName, "X-TocFlavor")
+	if ok then return value end
+	return nil
+end
+
+local tocFlavor = LoadedTocFlavor()
+local isForeverToc = (tocFlavor == "camelot")
+	or (tocFlavor == "mainline" and tocVersion < RETAIL_MIN_TOC)
+
+--[[
+	A third signal, because the first two can both fail at once.
+
+	The .toc test needs metadata that may not be readable while the addon is still
+	loading, and the project-id test needs an id we have seen before. The interface
+	version is readable from the first line of the file and belongs to nobody else:
+	Forever's 1.60.x reports 16001, while Era is 115xx, TBC 205xx, Wrath 3xxxx, Cata
+	4xxxx and retail 11xxxx. Nothing on the Classic line is anywhere near 16xxx.
+
+	Excluded for a client reporting WOW_PROJECT_CLASSIC, so that if Era ever does reach
+	1.60 it is not mistaken for Forever.
+]]
+local isClassicProject = WOW_PROJECT_ID ~= nil
+	and WOW_PROJECT_CLASSIC ~= nil
+	and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+
+local isForeverVersion = tocVersion >= 16000
+	and tocVersion <= 16999
+	and not isClassicProject
+
 local flavor
-if isMainlineProject then
+if isForeverToc or isForeverVersion then
+	flavor = "forever"
+elseif isMainlineProject then
 	flavor = (tocVersion < RETAIL_MIN_TOC) and "forever" or "retail"
 elseif tocVersion >= 40000 then
 	flavor = "cata"
@@ -42,6 +88,11 @@ elseif tocVersion >= 20000 then
 else
 	flavor = "era"
 end
+
+-- What LoadedTocFlavor() saw during load, kept so /agcprobe can show it. Metadata read
+-- later may differ from metadata read while the addon is still loading, and that
+-- difference is the first thing to check when detection looks wrong.
+Compat.tocFlavorAtLoad = tocFlavor
 
 Compat.tocVersion = tocVersion
 Compat.flavor = flavor
@@ -57,7 +108,10 @@ Compat.isTBC = (flavor == "tbc")
 	it is a separate content line with its own instance list, and treating it as Era
 	offers the player raids that do not exist there.
 ]]
-Compat.isClassicLine = not isMainlineProject
+-- Era, SoD, TBC, Wrath, Cata. Derived from the resolved flavour rather than from the
+-- project id, which said "not mainline" for Forever's new id and so counted it as Classic.
+Compat.isClassicLine = (flavor == "era" or flavor == "tbc"
+	or flavor == "wrath" or flavor == "cata")
 
 --[[
 	The 1.x Classic client specifically -- Era or SoD, but not TBC and not Forever.
@@ -148,8 +202,15 @@ Compat.TabButtonTemplate = Compat.isForever
 	the only event the addon uses that this applies to -- every other one was checked
 	against the same documentation and is clear.
 ]]
+--[[
+	The combat log is wanted only on the Classic line, as the fallback for ENCOUNTER_END
+	and BOSS_KILL not firing there. Asked as a positive test rather than "not Forever", so
+	a client this file does not recognise is treated as not needing it rather than being
+	handed an event it may refuse. Registering a restricted event raises
+	ADDON_ACTION_FORBIDDEN, which pcall does not stop.
+]]
 local RESTRICTED_EVENTS = { }
-if Compat.isForever then
+if not Compat.isClassicLine then
 	RESTRICTED_EVENTS.COMBAT_LOG_EVENT_UNFILTERED = true
 end
 
