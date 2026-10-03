@@ -547,12 +547,21 @@ local function OnItemDataLoadResult(event, itemId, success)
 	end
 end
 
+--[[
+	Both events, not whichever the client's API surface suggests.
+
+	This picked ITEM_DATA_LOAD_RESULT when C_Item.RequestLoadItemDataByID existed and
+	GET_ITEM_INFO_RECEIVED otherwise. Forever has both functions and both events, so it
+	took the first branch -- and the loot list stayed empty, because an item whose data
+	had to be fetched was never redrawn when it arrived. Which event a client documents
+	says nothing about which one it raises for this path.
+
+	Registering both costs nothing. OnItemDataLoadResult normalises them, and the second
+	to arrive for an item finds it already cleared from pendingItemIds and returns without
+	rebuilding.
+]]
 local eventFrame = CreateFrame("Frame")
-if C_Item and C_Item.RequestLoadItemDataByID then
-	eventFrame:RegisterEvent("ITEM_DATA_LOAD_RESULT")
-else
-	eventFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-end
+Compat.RegisterEvents(eventFrame, "ITEM_DATA_LOAD_RESULT", "GET_ITEM_INFO_RECEIVED")
 eventFrame:SetScript("OnEvent", function(self, event, ...)
 	OnItemDataLoadResult(event, ...)
 end)
