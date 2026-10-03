@@ -280,6 +280,7 @@ it to be read.
 | Helper | Does |
 |---|---|
 | `AGC_Probe()` | what the addon thinks it is running on |
+| `AGC_ProbeEvents()` | which events this client refuses to register (`/agcprobeevents`); raises one real error per restricted event |
 | `AGC_PreviewQuests("active")` | draw every quest row in that state (`available`, `active`, `completed`; no argument to clear) |
 | `AGC_DebugLootFilter()` | why the selected encounter's loot was filtered |
 | `AGC_ToggleDebug()` | encounter-detection debug printing |
