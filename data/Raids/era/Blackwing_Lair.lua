@@ -13,7 +13,7 @@ InstanceService.AddRaid({
 	icon = 136329,
 	splash = 1396499,
 	mapID = 469,
-	season = false,
+	seasonFilter = "all",
 	overview = "Blackwing Lair is the fortress of Nefarian, eldest son of Deathwing and lord of the black dragonflight. Hidden within the fiery depths of Blackrock Mountain, Nefarian conducts twisted experiments to create a new breed of chromatic dragons by combining the powers of all dragonflights. His machinations threaten not only the mortal races but the very balance of dragonkind. Heroes must ascend through his lair of dark iron and flame to end Nefarian's schemes before his chromatic monstrosities are unleashed upon the world.",
 	{
 		name = "Razorgore the Untamed",

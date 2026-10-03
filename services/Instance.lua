@@ -54,7 +54,6 @@ end
 	vanilla instance it reuses, so it would otherwise match.
 ]]
 local function ShouldIncludeOnForever(instance, filterType)
-	if instance.season == true then return false end
 	if filterType == "exclusive" or filterType == "sod" then return false end
 	if filterType == "tbc" then return false end
 	return ForeverContentService.HasInstance(instance)
@@ -79,16 +78,6 @@ local function ShouldIncludeInstance(instance)
 	local activeSeason = Compat.GetActiveSeason()
 	local isTBC = Compat.isTBC
 	local userFilter = InstanceService.GetExpansionFilter()
-
-	if instance.season ~= nil then
-		if instance.season and activeSeason ~= 2 then
-			return false
-		end
-		if userFilter == "tbc" then
-			return false
-		end
-		return true
-	end
 
 	if filterType == "tbc" and not isTBC then
 		return false

@@ -13,7 +13,7 @@ InstanceService.AddRaid({
 	icon = 136346,
 	splash = 1396505,
 	mapID = 409,
-	season = false,
+	seasonFilter = "all",
 	overview = "The Molten Core lies at the very bottom of Blackrock Depths, within the fiery heart of Blackrock Mountain. It is here that Ragnaros the Firelord, summoned by the Dark Iron dwarf emperor Thaurissan centuries ago, makes his lair. The Firelord's presence transformed the mountain into a volcanic wasteland, and his servants - the flamewakers and fire elementals - now guard the approach to their master. Heroes must brave the scorching depths to confront Ragnaros before his armies of flame can march upon the surface world.",
 	{
 		name = "Lucifron",
