@@ -221,6 +221,36 @@ git tag | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$'
 Publish from the branch matching the release type, never from a feature branch.
 `develop` and `main` both require a pull request.
 
+### Cutting a stable release
+
+`develop` -> `release/X.Y.Z` -> `main`, never `develop` -> `main`. Each step is small; the
+order is what matters, because only the last one is public.
+
+```sh
+git checkout -b release/X.Y.Z develop
+./ci/scripts/publish.sh none          # strips the prerelease suffix: 1.8.1-alpha.x -> 1.8.1
+git tag -d vX.Y.Z                     # publish.sh tags locally; this one belongs on main
+git push -u origin release/X.Y.Z
+gh pr create --base main --head release/X.Y.Z
+gh pr merge <n> --merge --admin       # a merge commit, not a squash
+git checkout main && git pull
+git tag -a vX.Y.Z -m "Release X.Y.Z"
+git push origin vX.Y.Z                # this is the step that publishes
+```
+
+Four things that are easy to get wrong:
+
+- **`--merge`, not `--squash`.** The release branch has to stay an ancestor of `main`, or
+  the merge-back below has nothing to merge and the histories diverge for good.
+- **`--admin` is needed.** `main` requires an approving review and GitHub will not let a
+  pull request be approved by its own author, so a solo maintainer cannot satisfy it
+  honestly. This is the documented bypass, not a shortcut.
+- **The tag goes on `main`'s merge commit**, which is where `v1.7.1` and `v1.8.0` sit.
+  `publish.sh` makes one on the release branch; delete it.
+- **Nothing is public until the last line.** Branch pushes and merges publish nothing;
+  only a `v*.*.*` tag triggers the workflow, which rewrites `## Version:` from the tag
+  before building.
+
 ### After a stable release ships
 
 Two steps, both mechanical, both easy to forget and both needed before the next piece of
@@ -229,6 +259,24 @@ work. They were skipped after 1.7.1 and had to be done later before 1.8.1 could 
 **Merge `main` back into `develop`.** The release's version stamp lives on the release
 branch and reaches `main` through the release pull request, so without this `develop` never
 sees it and the two histories drift. Done after 1.6.1 (`4a4575b`), skipped after 1.7.1.
+
+The five `.toc` files **conflict on every merge-back**, and always will: `develop` carries
+a prerelease stamp while `main` carries the released one, so the `## Version:` line differs
+by construction. Take `main`'s side -- recovering that stamp is the point of the merge --
+and let the bump below move it on:
+
+```sh
+git merge --no-ff --no-commit origin/main
+for f in $(git diff --name-only --diff-filter=U); do
+    git checkout --theirs -- "$f" && git add "$f"
+done
+git commit
+```
+
+**Resolve and commit the merge before stamping.** `version.sh` rewrites `## Version:` with
+`sed`, which has no idea what a conflict marker is: run on a conflicted tree it rewrites
+both sides and leaves every `.toc` with two version lines. Check with
+`grep -c '^## Version:' *.toc` -- the answer is 1 for each.
 
 **Bump `develop`'s base.** A pre-release sorts *before* the version it names, so leaving
 `develop` on `X.Y.Z-alpha` once `X.Y.Z` has shipped leaves it below what players have:
