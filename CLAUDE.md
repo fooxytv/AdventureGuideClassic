@@ -263,10 +263,15 @@ loot = {
 }
 ```
 
-Instances tag the same way, with one caveat: raids also set a `season` boolean, and the
-branch reading it in `services/Instance.lua` returns before any `seasonFilter` is checked,
-so **no raid's tag currently has any effect**. Tracked in the issues; do not assume a raid
-tag works until that is fixed.
+Dungeons tag the same way. **Era raids do not tag at all**: all eleven in
+`data/Raids/era/` carry a `season` boolean instead and have no instance-level
+`seasonFilter`. `ShouldIncludeInstance` in `services/Instance.lua` returns inside its
+`instance.season ~= nil` branch, so adding a tag to one of them would have no effect
+either. TBC and Forever raids do carry tags, and those work.
+
+The consequence is that nothing excludes an Era raid from a TBC client, which is why
+Naxxramas shows on BCC. Tracked in the issues; do not add a tag to an Era raid and expect
+it to be read.
 
 ## In-game helpers
 
@@ -275,6 +280,7 @@ tag works until that is fixed.
 | Helper | Does |
 |---|---|
 | `AGC_Probe()` | what the addon thinks it is running on |
+| `AGC_ProbeEvents()` | which events this client refuses to register (`/agcprobeevents`); raises one real error per restricted event |
 | `AGC_PreviewQuests("active")` | draw every quest row in that state (`available`, `active`, `completed`; no argument to clear) |
 | `AGC_DebugLootFilter()` | why the selected encounter's loot was filtered |
 | `AGC_ToggleDebug()` | encounter-detection debug printing |
@@ -304,8 +310,9 @@ contributor, and he knows.
 
 `todo.md` is the running list. Two worth knowing before you "fix" them:
 
-- Naxxramas, Zul'Gurub and both Ahn'Qiraj raids ignore their own `seasonFilter`, because
-  every raid sets the `season` boolean and the branch reading it returns before any tag
-  is checked. Left alone because it changes what live SoD and TBC players see.
+- Era raids carry no instance-level `seasonFilter`, only a `season` boolean, and
+  `ShouldIncludeInstance` returns inside the branch that reads it. So nothing excludes
+  them from a TBC client and Naxxramas shows on BCC. Left alone because fixing it changes
+  what live SoD and TBC players see.
 - `data/Raids/era/Onyxias_Lair.lua` is intentionally not registered in `data/Data.xml`;
   its data is wrong. There is a note where its `<Script>` line would go.
