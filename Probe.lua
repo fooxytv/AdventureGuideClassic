@@ -99,9 +99,14 @@ end
 
 local function Probe()
 	Header("Client")
+	Line("addon version", (C_AddOns and C_AddOns.GetAddOnMetadata
+		and C_AddOns.GetAddOnMetadata(addonName, "Version")) or "unknown")
 	Line("flavor", Compat.flavor)
 	Line("interface version", Compat.tocVersion)
 	Line("loaded .toc", DescribeToc())
+	-- Read now, versus what Compat read during load. If these differ, the metadata
+	-- was not available while the addon was loading and detection could not use it.
+	Line("toc flavor at load", Compat.tocFlavorAtLoad or "nil (unreadable at load)")
 	if C_AddOns and C_AddOns.GetAddOnInfo then
 		-- "reason" is INTERFACE_VERSION when the client rejects our declared number,
 		-- which is the only way to tell 16001 was the right one to declare.

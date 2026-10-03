@@ -54,8 +54,28 @@ local tocFlavor = LoadedTocFlavor()
 local isForeverToc = (tocFlavor == "camelot")
 	or (tocFlavor == "mainline" and tocVersion < RETAIL_MIN_TOC)
 
+--[[
+	A third signal, because the first two can both fail at once.
+
+	The .toc test needs metadata that may not be readable while the addon is still
+	loading, and the project-id test needs an id we have seen before. The interface
+	version is readable from the first line of the file and belongs to nobody else:
+	Forever's 1.60.x reports 16001, while Era is 115xx, TBC 205xx, Wrath 3xxxx, Cata
+	4xxxx and retail 11xxxx. Nothing on the Classic line is anywhere near 16xxx.
+
+	Excluded for a client reporting WOW_PROJECT_CLASSIC, so that if Era ever does reach
+	1.60 it is not mistaken for Forever.
+]]
+local isClassicProject = WOW_PROJECT_ID ~= nil
+	and WOW_PROJECT_CLASSIC ~= nil
+	and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+
+local isForeverVersion = tocVersion >= 16000
+	and tocVersion <= 16999
+	and not isClassicProject
+
 local flavor
-if isForeverToc then
+if isForeverToc or isForeverVersion then
 	flavor = "forever"
 elseif isMainlineProject then
 	flavor = (tocVersion < RETAIL_MIN_TOC) and "forever" or "retail"
@@ -68,6 +88,11 @@ elseif tocVersion >= 20000 then
 else
 	flavor = "era"
 end
+
+-- What LoadedTocFlavor() saw during load, kept so /agcprobe can show it. Metadata read
+-- later may differ from metadata read while the addon is still loading, and that
+-- difference is the first thing to check when detection looks wrong.
+Compat.tocFlavorAtLoad = tocFlavor
 
 Compat.tocVersion = tocVersion
 Compat.flavor = flavor
