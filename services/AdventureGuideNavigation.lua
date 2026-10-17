@@ -26,6 +26,19 @@ function AdventureGuideNavigationService.GetEncounterName()
     return encounter and encounter.name or "Unknown Encounter"
 end
 
+--[[
+	The selected boss's abilities, or another boss's if one is passed -- the same
+	optional-argument convention as GetEncounterLoot.
+
+	Empty rather than nil when there is no encounter or none were recorded, so a
+	caller can ask `#... > 0` without first checking both. 240 of the 389 encounters
+	in the data have none yet, so that is the common case, not the edge one.
+]]
+function AdventureGuideNavigationService.GetEncounterAbilities(forEncounter)
+	local target = forEncounter or encounter
+	return target and target.abilities or { }
+end
+
 function AdventureGuideNavigationService.GetEncounterContent()
 	return encounter.overview or { }
 end

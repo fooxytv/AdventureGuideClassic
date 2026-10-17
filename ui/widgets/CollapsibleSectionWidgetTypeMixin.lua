@@ -24,6 +24,24 @@ local function AbilityIcon_OnHide(self)
 	parent.title:SetPoint("RIGHT")
 end
 
+--[[
+	With an icon the title sits to the right of it, without one it sits next to the
+	expand arrow. The OnShow/OnHide pair above keeps that in step when the texture is
+	shown or hidden directly; this is the same thing for a caller that already has an
+	icon, or has none to show.
+]]
+function CollapsibleSectionWidgetTypeMixin:SetAbilityIcon(widget, icon)
+	local texture = widget.button.abilityIcon
+	if (icon) then
+		texture:SetTexture(icon)
+		texture:Show()
+		AbilityIcon_OnShow(texture)
+	else
+		texture:Hide()
+		AbilityIcon_OnHide(texture)
+	end
+end
+
 local function SetIcon(texture, index)
 	local iconSize = 32;
 	local columns = 256/iconSize;
@@ -163,8 +181,13 @@ function CollapsibleSectionWidgetTypeMixin:SetContents(widget, contents, bullete
 			type:SetContents(child, contentPart, bulleted)
 		end
 	end
-	local height = widget:GetTop() - widget.widgets[#widget.widgets]:GetBottom()
-	widget:SetHeight(height)
+	-- An entry with no array part -- { spell = <id>, category = ... }, which is how
+	-- 92 encounters record their abilities -- acquires no children at all, and
+	-- widget.widgets[0] is nil. Same guard UpdateExpandedState already uses.
+	if (#widget.widgets > 0) then
+		local height = widget:GetTop() - widget.widgets[#widget.widgets]:GetBottom()
+		widget:SetHeight(height)
+	end
 	widget:Show()
 end
 
