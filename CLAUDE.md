@@ -367,16 +367,16 @@ it to be read.
 
 ## Commit and pull request attribution
 
-Commits made by an agent end with a `Co-Authored-By:` line and nothing else. Pull
-request bodies carry no attribution footer at all.
+Commits and pull request bodies made by an agent carry **no attribution of any kind**.
 
-So: no `Claude-Session:` trailer, no session URL, and no "Generated with Claude Code"
-line on a pull request.
+So: no `Co-Authored-By:` trailer, no `Claude-Session:` trailer, no session URL, and no
+"Generated with Claude Code" line.
 
 Session links are not readable without authentication, so they leak no conversation, but
 this repository is public and a session identifier is not something the maintainer has
-chosen to publish permanently in git history. The footer is simply noise: there is one
-contributor, and he knows.
+chosen to publish permanently in git history. The rest is simply noise: there is one
+contributor, he knows which commits an agent wrote, and the commit author field already
+records it.
 
 ## Known, deliberate rough edges
 
