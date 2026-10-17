@@ -4,13 +4,19 @@ All rights reserved.
 
 Programming by: FooxyTV
 
-A Forever dungeon, added in World of Warcraft: Forever.
+Boss names only. Abilities, loot and tactics are deliberately absent rather than
+guessed at, as they were before -- there is still nothing to draw them from.
 
-Names are from community datamining of the 1.60.1 beta and want confirming against
-the client. Encounters and loot are deliberately absent rather than guessed at:
-AtlasLoot has no Forever data yet, so there is nothing to draw them from. It carries no
-art either: the guide draws a plain dark tile for an instance without any, which
-reads as not yet illustrated rather than as a picture that failed to load.
+The names are as the 1.60.1 beta records them, by way of the Aegis Forever Instance
+Journal, and cross-checked against the community guides. They are facts about the
+client rather than anyone's writing, which is the only part taken.
+
+Treat the count as provisional. Forever's beta caps at level 30, so an instance
+reaching past it is only partly walkable: sources agree on Hall of Thanes and
+Excavation Site, and disagree on Ruins of Lordaeron (six or seven) and City of
+Dalaran (seven or nine), both of which run to 33. No encounterID either -- the
+client's own journal is the place to get those, and it reads cold so far. Defeat
+tracking does not need them: BuildNpcLookup keys every encounter by name as well.
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -19,5 +25,82 @@ InstanceService.AddDungeon({
 	icon = 527422,
 	splash = 527422,
 	seasonFilter = "forever",
-	overview = "Encounter and loot details for this instance are not yet available. They will be added as Forever's dungeons and raids are documented.",
+	overview = "The bosses known from Forever's beta are listed here. Their abilities, loot and tactics are not yet recorded, and will be added as the content is documented.",
+	{
+		name = "Atrexis the Grave Knight",
+		defeated = 0,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		abilities = {},
+	},
+	{
+		name = "Arcane Anomaly",
+		defeated = 0,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		abilities = {},
+	},
+	{
+		name = "Fel Ancient",
+		defeated = 0,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		abilities = {},
+	},
+	{
+		name = "Unstable Sentinel",
+		defeated = 0,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		abilities = {},
+	},
+	{
+		name = "Mana Devourer",
+		defeated = 0,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		abilities = {},
+	},
+	{
+		name = "Arcanic Enigma",
+		defeated = 0,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		abilities = {},
+	},
+	{
+		name = "Shade of the Archmage",
+		defeated = 0,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		abilities = {},
+	},
 })
