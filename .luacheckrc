@@ -63,7 +63,6 @@ globals = {
     "AGC_ResetInstance", "AGC_ToggleDebug", "AGC_Wishlist",
     "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "SLASH_AGCPROBE1", "SLASH_AGCPROBEEVENTS1",
-    "TestLevelUpToastAt",
     "TestBossDefeatedToast", "TestBossDefeatedToastCustom",
     "TestLevelUpToast", "TestLevelUpToastAt",
     "TestWishlistToast", "TestWishlistToastCustom",
