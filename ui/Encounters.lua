@@ -13,7 +13,12 @@ local sharedHighlightFrame
 
 local function EncounterButton_OnClick(self)
 	local currentEncounter = AdventureGuideNavigationService.GetEncounter()
-	if currentEncounter and currentEncounter.encounterID == self.encounter.encounterID then
+	-- Compare the encounter tables, not their encounterIDs. Forever's bosses carry
+	-- no encounterID yet, so ID equality made every one of them look like the
+	-- selected boss -- nil == nil -- and the list refused to change selection.
+	-- SetEncounter stores the reference it is given, so identity is exact and is
+	-- a stronger test than the ID was.
+	if currentEncounter and currentEncounter == self.encounter then
 		return
 	end
 
