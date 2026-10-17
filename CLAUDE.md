@@ -168,6 +168,49 @@ env.LootFilterService.PassesFilter(...)  -- the real code, no game needed
 Anything touching frames, templates or textures still needs an in-game pass, and so
 does anything client-specific. Say plainly which of the two a change has had.
 
+### The three gates
+
+```sh
+python ci/tests/smoke_test.py      # loads the addon five times, once per client
+python ci/scripts/check_globals.py # every global read must be declared
+./ci/scripts/lint.sh               # luacheck, 11x on
+```
+
+`.github/workflows/ci.yaml` runs all three on every push. They are deliberately
+**not** in `main.yaml`: a release has already been decided by the time a `v*.*.*` tag
+exists, and a lint nit is not a reason to fail a CurseForge upload.
+
+**`ci/tests/smoke_test.py` is the one to reach for first.** It follows `Script` and
+`Include` from `Main.xml`, loads all 141 files against `ci/tests/wow_stub.lua`, and
+asserts `Compat`'s flags, the loot filter's verdicts and the instance counts -- once
+each for `era`, `sod`, `tbc`, `forever` and `forever_old`. The stub owns
+`GetBuildInfo`, `WOW_PROJECT_ID` and whether `C_Seasons` exists at all, so a
+client-specific change can be checked here instead of on four machines. It needs
+`pip install lupa` and exits 0 without it.
+
+Rather than reimplement the facade, the stub **captures** it: `GlobalFacade.lua` loads
+normally and the table handed to the stubbed `setfenv` becomes the `_ENV` every later
+file loads with. So the addon's own facade is under test, not a copy of it. Anything
+loaded that way -- including a throwaway probe chunk -- must be compiled with that
+table as its `_ENV`, or `Compat` and the services read as nil.
+
+Two things it does not cover: `ui/`, which additionally needs `ScrollUtil`,
+`CreateDataProvider` and `CreateScrollBoxListLinearView` stubbed, and anything whose
+behaviour is visual. **If an expectation and the code disagree, suspect the
+expectation.** Both times it has fired so far the harness was wrong and the addon was
+right.
+
+`.luacheckrc` is not decorative. `lint.sh` leaves the `11x` undefined-global codes
+**on**, so it is the enumeration of every name allowed to resolve through the facade
+to `_G`. A legitimate new API goes in that list; do not restore the ignore.
+
+### Testing a branch in game
+
+`./ci/scripts/deploy-branch.sh <flavour>` stamps the branch name into the `.toc`
+version before packaging, so the in-game addon list says which build is loaded rather
+than two builds both reporting the same version. The `.toc` edits are restored on the
+way out, including on failure.
+
 ## Releasing
 
 Branch to release type:
