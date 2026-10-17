@@ -46,7 +46,7 @@ end
 
 function component.ShowAbilities()
 	components.EncounterFrame.SetCurrentView(component.frame)
-	component.scrollFrame.child:SetContents(AdventureGuideNavigationService.GetEncounter().abilities)
+	component.scrollFrame.child:SetContents(AdventureGuideNavigationService.GetEncounterAbilities())
 end
 
 UI.Add(component)

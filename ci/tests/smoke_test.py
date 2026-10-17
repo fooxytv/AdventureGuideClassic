@@ -51,6 +51,26 @@ SKIP = (
 failures = []
 
 
+# The widget layer, loaded on top of the addon rather than as part of it. These
+# files are under ui/ and so skipped above, but only their Construct functions need
+# a real frame, and Construct is not called here -- IsTypeFor needs nothing at all.
+# Order follows ui/UI.xml, because each type registers itself as it loads and
+# GetTypeForContent returns the first match.
+WIDGET_FILES = (
+    "ui/widgets/Widgets.lua",
+    "ui/widgets/WidgetTypeMixin.lua",
+    "ui/widgets/CollapsibleSectionWidgetTypeMixin.lua",
+    "ui/widgets/Root.lua",
+    "ui/widgets/Text.lua",
+    "ui/widgets/Heading.lua",
+    "ui/widgets/Role.lua",
+    "ui/widgets/Section.lua",
+    "ui/widgets/Spell.lua",
+    "ui/widgets/Ability.lua",
+    "ui/widgets/NPC.lua",
+)
+
+
 def check(name, actual, expected):
     if actual != expected:
         failures.append(f"{name}: expected {expected!r}, got {actual!r}")
@@ -125,6 +145,16 @@ def load_addon(lua, files):
     return facade, loaded
 
 
+def load_widgets(lua, facade):
+    """Load the widget type files into the same facade environment."""
+    make_chunk = lua.eval(
+        'function(src, name, env) return assert(load(src, name, "t", env)) end'
+    )
+    for rel in WIDGET_FILES:
+        source = (ROOT / rel).read_text(encoding="utf-8", errors="replace")
+        make_chunk(source, "@" + rel, facade)(ADDON, lua.globals().__ns)
+
+
 # Asserted in Lua and handed back as plain values, so nothing depends on how lupa
 # marshals a table whose __index falls through to _G.
 #
@@ -178,7 +208,40 @@ PROBE = """
         kept[#kept + 1] = tostring(id)
     end
     out.loot = table.concat(kept, ",")
+
+    --[[
+        Every ability entry in the data has to be claimed by a widget type. Root.lua
+        calls SetContents on whatever GetTypeForContent hands back, so an unclaimed
+        entry is a Lua error in the journal rather than a gap in the panel -- which
+        is what kept the Abilities tab switched off.
+
+        Counted under both expansion filters: GetDungeons hides the TBC instances
+        under "classic" and the Era ones under "tbc", so one pass sees half the
+        data.
+    ]]
+    local claimed, unclaimed = 0, 0
+    local previousFilter = SavedVariables.ExpansionFilter
+    for _, expansionFilter in ipairs({ "classic", "tbc" }) do
+        SavedVariables.ExpansionFilter = expansionFilter
+        for _, list in ipairs({ InstanceService.GetDungeons(), InstanceService.GetRaids() }) do
+            for _, instance in ipairs(list) do
+                for _, encounter in ipairs(instance) do
+                    for _, entry in ipairs(encounter.abilities or {}) do
+                        if Widgets.GetTypeForContent(entry) then
+                            claimed = claimed + 1
+                        else
+                            unclaimed = unclaimed + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+    SavedVariables.ExpansionFilter = previousFilter
+    out.unclaimedAbilities = unclaimed
+    out.claimedAbilities = claimed
     return out
+
 """
 
 # flavor, isForever, isClassicLine, isEraClient, isVanillaLoot, isSoD, combat log,
@@ -190,6 +253,7 @@ EXPECTED = {
         "loot": "1,2,4,7", "dungeons": 19, "raids": 6,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "unclaimedAbilities": 0,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -197,6 +261,7 @@ EXPECTED = {
         "loot": "1,3,4", "dungeons": 18, "raids": 10,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "unclaimedAbilities": 0,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -204,6 +269,7 @@ EXPECTED = {
         "loot": "1,5,7", "dungeons": 19, "raids": 6,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "unclaimedAbilities": 0,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -225,6 +291,7 @@ EXPECTED = {
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
+        "unclaimedAbilities": 0,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -233,6 +300,7 @@ EXPECTED = {
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
+        "unclaimedAbilities": 0,
     },
 }
 
@@ -248,11 +316,13 @@ def main():
         lua.globals().__SetClient(name)
 
         facade, loaded = load_addon(lua, files)
+        load_widgets(lua, facade)
         make_probe = lua.eval(
             'function(src, env) return assert(load(src, "@probe", "t", env)) end'
         )
         probe = make_probe(PROBE, facade)()
         print(f"    ok   loaded {loaded} files, toc {probe['tocVersion']}")
+        print(f"    ok   {probe['claimedAbilities']} ability entries claimed by a widget type")
 
         for key, want in expected.items():
             check(f"{name}.{key}", probe[key], want)

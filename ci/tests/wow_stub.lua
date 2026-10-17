@@ -387,6 +387,17 @@ _G.Settings = {
 }
 _G.SlashCmdList = {}
 
+-- Blizzard's own, verbatim in behaviour: the widget types are built with it, so a
+-- stub that merged differently would test a different inheritance chain.
+_G.Mixin = function(object, ...)
+	for i = 1, select("#", ...) do
+		for key, value in pairs((select(i, ...))) do
+			object[key] = value
+		end
+	end
+	return object
+end
+
 _G.strsplit = function(sep, text)
 	local out = {}
 	for piece in tostring(text):gmatch("([^" .. sep .. "]+)") do

@@ -176,30 +176,39 @@ function component.Init(components_)
 		isModelTabSelected = false
 	end)
 
-	-- abilitiesTab = AddTab("Abilities")
-	-- EncounterJournal.encounter.info.abilitiesTab = abilitiesTab
-	-- abilitiesTab:SetPoint("TOP", lootTab, "BOTTOM", 0, 2)
-	-- abilitiesTab.unselected:SetTexCoord(0.904296875, 0.99609375, 0.70703125, 0.748046875)
-	-- abilitiesTab.selected:SetTexCoord(0.806640625, 0.8984375, 0.70703125, 0.748046875)
-	-- abilitiesTab:SetScript("OnEnter", function (self)
-	-- 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
-	-- 	GameTooltip:AddLine("Abilities")
-	-- 	GameTooltip:Show()
-	-- end)
-	-- abilitiesTab:SetScript("OnLeave", function (self)
-	-- 	GameTooltip:Hide()
-	-- end)
-	-- abilitiesTab:SetScript("OnClick", function()
-	-- 	selectedTab = abilitiesTab
-	-- 	components.DynamicContentScroller.ShowAbilities()
-	-- 	component.Refresh()
-	-- 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-	-- 	isOverviewTabSelected = false
-	-- 	isLootTabSelected = false
-	-- 	isQuestTabSelected = false
-	-- 	isAbilitiesTabSelected = true
-	-- 	isModelTabSelected = false
-	-- end)
+	--[[
+		Anchored under Quest rather than under Loot, where the commented-out version
+		had it: that was written before Model and Quest existed, and would push both
+		down a row. Appending leaves the four tabs already verified in game alone.
+
+		Enabled only for a boss that has abilities recorded. 240 of the 389 encounters
+		in the data have none, so this is greyed out more often than not -- the same
+		way Model is when a boss has no creature display.
+	]]
+	abilitiesTab = AddTab("Abilities")
+	EncounterJournal.encounter.info.abilitiesTab = abilitiesTab
+	abilitiesTab:SetPoint("TOP", questTab, "BOTTOM", 0, 2)
+	abilitiesTab.unselected:SetTexCoord(0.904296875, 0.99609375, 0.70703125, 0.748046875)
+	abilitiesTab.selected:SetTexCoord(0.806640625, 0.8984375, 0.70703125, 0.748046875)
+	abilitiesTab:SetScript("OnEnter", function (self)
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, 0)
+		GameTooltip:AddLine("Abilities")
+		GameTooltip:Show()
+	end)
+	abilitiesTab:SetScript("OnLeave", function ()
+		GameTooltip:Hide()
+	end)
+	abilitiesTab:SetScript("OnClick", function()
+		components.DynamicContentScroller.ShowAbilities()
+		selectedTab = abilitiesTab
+		component.Refresh()
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+		isOverviewTabSelected = false
+		isLootTabSelected = false
+		isQuestTabSelected = false
+		isAbilitiesTabSelected = true
+		isModelTabSelected = false
+	end)
 end
 
 local function selectTab(tab)
@@ -305,13 +314,15 @@ function component.Refresh()
 			disableTab(modelTab)
 		end
 	end
-	-- if (selectedTab ~= abilitiesTab) then
-	-- 	if (AdventureGuideNavigationService.GetEncounter()) then
-	-- 		unselectTab(abilitiesTab)
-	-- 	else
-	-- 		disableTab(abilitiesTab)
-	-- 	end
-	-- end
+	if (selectedTab ~= abilitiesTab) then
+		-- Empty when there is no encounter at all, so the instance page disables it
+		-- without a second check.
+		if (#AdventureGuideNavigationService.GetEncounterAbilities() > 0) then
+			unselectTab(abilitiesTab)
+		else
+			disableTab(abilitiesTab)
+		end
+	end
 end
 
 function component.GetSelectedTabName()

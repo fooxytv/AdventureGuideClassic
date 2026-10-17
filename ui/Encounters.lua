@@ -62,7 +62,18 @@ local function EncounterButton_OnClick(self)
 		components.InfoTabs.SelectOverview()
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Abilities" then
-		components.DynamicContentScroller.ShowAbilities()
+		--[[
+			Most bosses have no abilities recorded, and the tab is disabled for those,
+			so switching to one would otherwise leave the previous boss's abilities on
+			screen under the new boss's name. Fall back to the overview, the same way
+			Quest and Model already do.
+		]]
+		if (#AdventureGuideNavigationService.GetEncounterAbilities() > 0) then
+			components.DynamicContentScroller.ShowAbilities()
+		else
+			components.DynamicContentScroller.ShowOverview()
+			components.InfoTabs.SelectOverview()
+		end
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Model" then
 		if not components.ModelFrame.Show() then
