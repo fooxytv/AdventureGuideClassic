@@ -187,6 +187,13 @@ function CollapsibleSectionWidgetTypeMixin:SetContents(widget, contents, bullete
 	if (#widget.widgets > 0) then
 		local height = widget:GetTop() - widget.widgets[#widget.widgets]:GetBottom()
 		widget:SetHeight(height)
+	else
+		-- Back to just the header. These widgets are pooled and neither Acquire nor
+		-- Release resets the height, so a childless section landing on a widget that
+		-- last drew a long body would keep that height -- and siblings anchor to the
+		-- previous one's BOTTOMLEFT, so it shows up as a gap. 24 is what Construct
+		-- sizes it to and what the collapsed branch of UpdateExpandedState uses.
+		widget:SetHeight(24)
 	end
 	widget:Show()
 end
