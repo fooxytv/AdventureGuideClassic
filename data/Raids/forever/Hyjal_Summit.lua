@@ -16,6 +16,8 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddRaid({
 	name = "Hyjal Summit",
+	icon = 527422,
+	splash = 527422,
 	seasonFilter = "forever",
 	groupSize = 20,
 	overview = "Encounter and loot details for this instance are not yet available. They will be added as Forever's dungeons and raids are documented.",

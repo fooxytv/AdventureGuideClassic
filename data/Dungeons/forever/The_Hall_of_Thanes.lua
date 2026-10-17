@@ -10,6 +10,8 @@ InstanceService.AddDungeon({
 	name = "The Hall of Thanes",
 	instanceID = 1234,
 	thumbnail = I.UIEJDungeonButtonTheHallOfThanes,
+	icon = 527422,
+	splash = 527422,
 	mapID = 1234,
 	seasonFilter = "forever",
 	overview = "Encounter and loot details for this instance are not yet available. They will be added as Forever's dungeons and raids are documented.",

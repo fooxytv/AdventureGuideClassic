@@ -138,7 +138,12 @@ function component.Init(components_)
 		end
 		button.encounter = encounter
 		button.name:SetText(encounter.name);
-		button.bgImage:SetTexture(encounter.portrait);
+		-- These buttons are recycled by the scroll box, so a boss with no portrait
+		-- must be given the default explicitly: the one set when the button was
+		-- created has long since been overwritten by whichever boss used it last.
+		-- Same fallback as ModelFrame does for a missing instance splash.
+		button.bgImage:SetTexture(encounter.portrait
+			or "Interface/EncounterJournal/UI-EJ-BOSS-Default");
 		if (encounter.defeated == 1) then
 			button.DefeatedOverlay:Show()
 		else
