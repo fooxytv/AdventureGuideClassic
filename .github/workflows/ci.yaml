@@ -20,7 +20,10 @@ concurrency:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    # Pinned, not `ubuntu-latest`: that label migrates to Ubuntu 26 on
+    # 2026-10-19, and a gate that changes under you is worse than one a
+    # release behind. Bump deliberately, with the run green first.
+    runs-on: ubuntu-24.04
     # These gates take about a minute. Anything approaching this is stuck, not
     # slow. Sized to clear the per-step budgets below so it only fires as a
     # backstop for something they miss.
