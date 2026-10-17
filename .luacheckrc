@@ -37,6 +37,7 @@ globals = {
     -- onto it, and SlashCmdList because it registers handlers into it -- both
     -- are writes, and read_globals would reject them as read-only.
     "EncounterJournal", "SlashCmdList",
+    "Compat", "ForeverContentService", "QuestService",
     "AdventureGuideClassicEventToastManager", "DungeonMapFrame", "DungeonMap",
     "MapNavBar", "CollapsibleSectionWidgetTypeMixin", "WidgetTypeMixin",
 
@@ -60,6 +61,9 @@ globals = {
     "AdventureGuideClassic_DebugEvents",
     "AGC_CheckEquipped", "AGC_DebugLootFilter", "AGC_ResetAllEncounters",
     "AGC_ResetInstance", "AGC_ToggleDebug", "AGC_Wishlist",
+    "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
+    "SLASH_AGCPROBE1", "SLASH_AGCPROBEEVENTS1",
+    "TestLevelUpToastAt",
     "TestBossDefeatedToast", "TestBossDefeatedToastCustom",
     "TestLevelUpToast", "TestLevelUpToastAt",
     "TestWishlistToast", "TestWishlistToastCustom",
@@ -93,6 +97,16 @@ read_globals = {
     -- `if Settings and Settings.RegisterCanvasLayoutCategory` guard, for
     -- clients predating the Settings API.
     "InterfaceOptions_AddCategory", "InterfaceOptionsFrame_OpenToCategory",
+
+    -- Encounter journal, quest log, map and lockout APIs
+    "C_EncounterJournal", "C_QuestLog", "C_Map", "C_CombatLog",
+    "EJ_GetInstanceByIndex", "EJ_GetNumTiers",
+    "GetNumSavedInstances", "GetSavedInstanceInfo", "INSTANCE_RESET_SUCCESS",
+    "WorldMapFrame", "OpenWorldMap", "ShowUIPanel",
+
+    -- Project constants. Only Compat.lua and Probe.lua should read these
+    -- directly; everything else asks Compat. Declared because those two do.
+    "WOW_PROJECT_ID", "WOW_PROJECT_CLASSIC", "WOW_PROJECT_MAINLINE",
 
     -- Unit, item and world queries
     "GetBuildInfo", "GetInstanceInfo", "GetRealmName", "GetTime",
