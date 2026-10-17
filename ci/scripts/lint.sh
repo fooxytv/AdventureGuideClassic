@@ -48,8 +48,13 @@ echo "Running Lua lint checks on directory: $(pwd)"
 # .lua and .luarocks are the toolchain the CI actions unpack into the
 # workspace, so linting $ADDON_DIR would otherwise walk straight into
 # luarocks' own source.
+# --std lua51, not max: luacheck's CLI --std overrides the config file, so
+# `--std max` silently discarded .luacheckrc's `std = "lua51"` and admitted
+# names that exist only in 5.2+ -- utf8, warn, rawlen. Those are exactly the
+# silent nils the 11x codes are here to catch, so the baseline has to match
+# the client. The addon uses none of them today, so this adds no findings.
 luacheck "$ADDON_DIR" \
-    --std max \
+    --std lua51 \
     --codes \
     --ignore 211 \
     --ignore 212 \
