@@ -45,23 +45,23 @@ _G.getfenv = function() return _G end
 local CLIENTS = {
 	era = {
 		version = "1.15.9", build = "60000", toc = 11509,
-		projectID = 2, season = 0, tocFlavor = "vanilla",
+		projectID = 2, season = 0, tocFlavor = "vanilla", retailShaped = false,
 	},
 	sod = {
 		version = "1.15.9", build = "60000", toc = 11509,
-		projectID = 2, season = 2, tocFlavor = "vanilla",
+		projectID = 2, season = 2, tocFlavor = "vanilla", retailShaped = false,
 	},
 	tbc = {
 		version = "2.5.4", build = "45000", toc = 20506,
-		projectID = 2, season = 0, tocFlavor = "tbc",
+		projectID = 2, season = 0, tocFlavor = "tbc", retailShaped = false,
 	},
 	forever = {
 		version = "1.60.1", build = "70205", toc = 16001,
-		projectID = 18, season = nil, tocFlavor = "camelot",
+		projectID = 18, season = nil, tocFlavor = "camelot", retailShaped = true,
 	},
 	forever_old = {
 		version = "1.60.1", build = "60000", toc = 16001,
-		projectID = 1, season = nil, tocFlavor = "camelot",
+		projectID = 1, season = nil, tocFlavor = "camelot", retailShaped = true,
 	},
 }
 
@@ -88,6 +88,49 @@ function _G.__SetClient(name)
 			GetActiveSeason = function() return client.season end,
 			HasActiveSeason = function() return client.season ~= 0 end,
 		}
+	end
+
+	--[[
+		Forever is mainline-derived, so its API surface is retail-shaped where the
+		Classic line's is not. Presenting one shape to every client would leave half
+		of every shim untested -- and the shim is the part most likely to be wrong.
+
+		Only the three divergences this addon documents are modelled:
+
+		- GetSpellInfo. The global is gone on the mainline family, Forever included,
+		  where calling it is a nil-value error; C_Spell.GetSpellInfo replaces it and
+		  returns a table rather than a list. Both Compat.GetSpellInfo branches are
+		  therefore reachable, one per client.
+		- C_Seasons, above.
+		- The tab template. CharacterFrameTabButtonTemplate's defining file is gated
+		  to the cata and mists game types, so on Forever it does not exist and the
+		  mainline family's PanelTabButtonTemplate is what does.
+
+		Deliberately not modelled: C_Item, C_KeyBindings and GetItemSubClassInfo. The
+		addon guards all three, but which clients actually carry them is not recorded
+		anywhere here, and a stub that guesses makes a test assert a fiction. They stay
+		present everywhere until someone checks on a real client.
+	]]
+	if client.retailShaped then
+		_G.GetSpellInfo = nil
+		_G.C_Spell = {
+			GetSpellInfo = function(spellID)
+				if not spellID then return nil end
+				return { name = "Spell " .. tostring(spellID), iconID = 1 }
+			end,
+			GetSpellTexture = function() return 1 end,
+		}
+		_G.PanelTabButtonTemplate = {}
+		_G.CharacterFrameTabButtonTemplate = nil
+	else
+		-- The Classic global returns a list, and its third value is the icon.
+		_G.GetSpellInfo = function(spellID)
+			if not spellID then return nil end
+			return "Spell " .. tostring(spellID), nil, 1
+		end
+		_G.C_Spell = nil
+		_G.PanelTabButtonTemplate = nil
+		_G.CharacterFrameTabButtonTemplate = {}
 	end
 end
 
@@ -256,13 +299,6 @@ end
 
 _G.C_Seasons = nil   -- set by __SetClient
 
-_G.C_Spell = {
-	GetSpellInfo = function(spellID)
-		if not spellID then return nil end
-		return { name = "Spell " .. tostring(spellID), iconID = 1 }
-	end,
-}
-
 _G.C_Item = {
 	DoesItemExistByID = function() return true end,
 	IsItemDataCachedByID = function() return true end,
@@ -332,7 +368,6 @@ _G.UnitGUID = function() return "Player-1-00000001" end
 _G.GetInventoryItemID = function() return nil end
 _G.GetItemInfo = function() return nil end
 _G.GetItemInfoInstant = function() return nil end
-_G.GetSpellInfo = nil   -- absent on the mainline family, Forever included
 _G.GetNumLootItems = function() return 0 end
 _G.GetLootSlotLink = function() return nil end
 _G.GetNumSavedInstances = function() return 0 end

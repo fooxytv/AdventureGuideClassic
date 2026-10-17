@@ -150,7 +150,15 @@ PROBE = """
     out.isEra = Compat.IsEra() and 1 or 0
     out.season = Compat.GetActiveSeason()
     out.combatLogAvailable = Compat.IsEventAvailable("COMBAT_LOG_EVENT_UNFILTERED") and 1 or 0
-    out.spellName = (Compat.GetSpellInfo(123)) or "nil"
+    -- Exercises both Compat.GetSpellInfo branches: C_Spell on Forever, the global on
+    -- the Classic line. One shape for every client would leave one branch dead.
+    local spellName, spellIcon = Compat.GetSpellInfo(123)
+    out.spellName = spellName or "nil"
+    out.spellIcon = spellIcon or 0
+
+    out.tabTemplate = Compat.TabButtonTemplate
+    -- The template Compat picks must actually exist on the client it picked it for.
+    out.tabTemplateExists = _G[Compat.TabButtonTemplate] ~= nil and 1 or 0
     out.dungeons = #InstanceService.GetDungeons()
     out.raids = #InstanceService.GetRaids()
     out.instances = #InstanceService.GetAllInstances()
@@ -180,16 +188,22 @@ EXPECTED = {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 1, "combatLogAvailable": 1,
         "loot": "1,2,4,7", "dungeons": 19, "raids": 6,
+        "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
+        "tabTemplate": "CharacterFrameTabButtonTemplate",
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
         "isVanillaLoot": 1, "isSoD": 1, "isEra": 0, "combatLogAvailable": 1,
         "loot": "1,3,4", "dungeons": 18, "raids": 10,
+        "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
+        "tabTemplate": "CharacterFrameTabButtonTemplate",
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
         "isVanillaLoot": 0, "isSoD": 0, "isEra": 0, "combatLogAvailable": 1,
         "loot": "1,5,7", "dungeons": 19, "raids": 6,
+        "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
+        "tabTemplate": "CharacterFrameTabButtonTemplate",
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -209,12 +223,16 @@ EXPECTED = {
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
+        "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
+        "tabTemplate": "PanelTabButtonTemplate",
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
+        "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
+        "tabTemplate": "PanelTabButtonTemplate",
     },
 }
 
