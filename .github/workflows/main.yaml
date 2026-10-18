@@ -17,7 +17,11 @@ on:
 
 jobs:
   publish-addon:
-    runs-on: ubuntu-latest
+    # Pinned, not ubuntu-latest: that label starts migrating to Ubuntu 26 on
+    # 2026-10-19 and the image can change under a release mid-window. This is
+    # the workflow that uploads to CurseForge, so a surprise is found at publish
+    # time.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
