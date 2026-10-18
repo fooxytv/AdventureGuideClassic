@@ -105,7 +105,7 @@ echo
 if [[ -z "$flavour" ]]; then
     bash ./ci/scripts/package.sh
     echo
-    echo -e "\033[32mPackaged only -- pass a flavour (local|tbc|ptr) to install.\033[0m"
+    echo -e "\033[32mPackaged only -- pass a flavour (local|tbc|forever|ptr) to install.\033[0m"
 else
     bash ./ci/scripts/deploy.sh "$flavour"
 fi

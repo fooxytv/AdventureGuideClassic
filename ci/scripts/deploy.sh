@@ -63,6 +63,16 @@ ptr_deploy() {
     echo "Done."
 }
 
+forever_deploy() {
+    if [ -z "$wow_addons_dir_forever" ]; then
+        echo "Error: wow_addons_dir_forever is not set in .env file."
+        exit 1
+    fi
+    echo "Copying $zip_file to \"$wow_addons_dir_forever/$addon_name\"..."
+    unzip -o "$zip_file" -d "$wow_addons_dir_forever/$addon_name"
+    echo "Deployment to Forever complete."
+}
+
 tbc_deploy() {
     if [ -z "$wow_addons_dir_tbc" ]; then
         echo "Error: wow_addons_dir_tbc is not set in .env file."
@@ -79,7 +89,9 @@ elif [ "$1" == "ptr" ]; then
     ptr_deploy
 elif [ "$1" == "tbc" ]; then
     tbc_deploy
+elif [ "$1" == "forever" ]; then
+    forever_deploy
 else
-    echo "Error: Invalid argument. Use 'local' or 'lcl', or 'ptr' to deploy."
+    echo "Error: Invalid argument. Use 'local' or 'lcl', 'tbc', 'forever', or 'ptr'."
     exit 1
 fi
