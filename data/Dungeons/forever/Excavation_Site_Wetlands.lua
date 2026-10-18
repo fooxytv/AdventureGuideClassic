@@ -11,11 +11,13 @@ InstanceService.AddDungeon({
 	thumbnail = I.UIEJDungeonButtonExcavationSiteWetlands,
 	icon = 527422,
 	splash = 527422,
+	mapID = 2998,
 	seasonFilter = "forever",
 	overview = "A Titan dig site opened up in the Wetlands marshes, and everything living in that country has moved into it -- crocolisks off the lake, raptors along the ridges, spiders in the tall grass, and a Dragonmaw camp working the edges. What the diggers were trying to reach is still sealed, and still guarded.",
 	{
 		name = "Saltspine",
 		defeated = 0,
+		encounterID = 3480,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -49,6 +51,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Shadetooth",
 		defeated = 0,
+		encounterID = 3481,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -82,6 +85,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Highland Horror",
 		defeated = 0,
+		encounterID = 3644,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -114,6 +118,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Relic Guardian",
 		defeated = 0,
+		encounterID = 3482,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},

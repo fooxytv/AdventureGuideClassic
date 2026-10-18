@@ -11,42 +11,13 @@ InstanceService.AddDungeon({
 	thumbnail = I.UIEJDungeonButtonRuinsOfLordaeron,
 	icon = 527422,
 	splash = 527422,
+	mapID = 2999,
 	seasonFilter = "forever",
-	overview = "The broken city above the Undercity, walked now by the dead of its own garrison. Six encounters spread across the alleys, the market and the overlook, two of them only appearing once something has been disturbed. Horde adventurers come up through the Undercity; the Alliance walk in from Southshore.",
-	{
-		name = "The Baron",
-		defeated = 0,
-		portrait = 521744,
-		loot = {},
-		sharedLoot = {},
-		rareLoot = {},
-		veryRareLoot = {},
-		extremelyRareLoot = {},
-		npcs = {},
-		overview = {
-			"A skeletal lord holding court in the ruins with soldiers and mages still standing to attention around him.",
-			{ heading = "Overview" },
-			"A short fight with one spike in it. {spell:17307} takes close to half the tank's health and follows with a stun, so the tank wants to be near full whenever it is due.",
-			{
-				role = DAMAGE,
-				"He can be stunned -- use what you have to cut the fight short. Clear the Skeletal Soldiers and Mages guarding him first.",
-			},
-			{
-				role = HEALER,
-				"Keep the tank topped off rather than reactive: {spell:17307} removes nearly half their health and then stuns them, so a late heal has nowhere to go.",
-			},
-			{
-				role = TANK,
-				"Stay high on health throughout. {spell:17307} is followed by a stun, and his ordinary swings are heavy as well.",
-			}
-		},
-		abilities = {
-			{ spell = 17307, heading = true }, -- Knockout
-		}
-	},
+	overview = "The broken city above the Undercity, walked now by the dead of its own garrison. Seven encounters spread across the alleys, the market and the overlook, several of them only appearing once something has been disturbed. Horde adventurers come up through the Undercity; the Alliance walk in from Southshore.",
 	{
 		name = "Witherfang",
 		defeated = 0,
+		encounterID = 3353,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -78,6 +49,7 @@ InstanceService.AddDungeon({
 	{
 		name = "The Abandoned",
 		defeated = 0,
+		encounterID = 3357,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -108,8 +80,9 @@ InstanceService.AddDungeon({
 		}
 	},
 	{
-		name = "Bjork",
+		name = "The Butcher",
 		defeated = 0,
+		encounterID = 3355,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -118,29 +91,15 @@ InstanceService.AddDungeon({
 		extremelyRareLoot = {},
 		npcs = {},
 		overview = {
-			"A patrolling horror working the centre of the ruins, with the deadly ghoul packs for company.",
-			{ heading = "Overview" },
-			"Barely a fight once the pull is clean. {spell:1301635} only holds for three seconds, so the answer is to wait it out rather than to burn through it.",
-			{
-				role = DAMAGE,
-				"Let {spell:1301635} fade -- three seconds -- then burn him down. Keep him off the nearby trash, the ghouls especially.",
-			},
-			{
-				role = HEALER,
-				"Little to manage.",
-			},
-			{
-				role = TANK,
-				"Pull him away from the ghoul packs patrolling the centre; they are the real threat here.",
-			}
+			"Encounter details for this boss are not yet recorded. The client lists it, but no tactics have been confirmed for it.",
 		},
 		abilities = {
-			{ spell = 1301635, heading = true }, -- Anti-Magic Shield
 		}
 	},
 	{
 		name = "Rath'mael",
 		defeated = 0,
+		encounterID = 3354,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -151,7 +110,7 @@ InstanceService.AddDungeon({
 		overview = {
 			"The last of the ruins' dead to still hold a position worth defending.",
 			{ heading = "Overview" },
-			"The final encounter, and not a hard one. {spell:1279983} puts fire on the ground and everything else is a matter of standing somewhere else.",
+			"Not a hard fight. {spell:1279983} puts fire on the ground and everything else is a matter of standing somewhere else.",
 			{
 				role = DAMAGE,
 				"Move out of {spell:1279983}. He can be stunned to cut his casts short entirely.",
@@ -170,8 +129,26 @@ InstanceService.AddDungeon({
 		}
 	},
 	{
+		name = "Lordaeron Captain",
+		defeated = 0,
+		encounterID = 3408,
+		portrait = 521744,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		overview = {
+			"Encounter details for this boss are not yet recorded. The client lists it, but no tactics have been confirmed for it.",
+		},
+		abilities = {
+		}
+	},
+	{
 		name = "Viktor the Vile",
 		defeated = 0,
+		encounterID = 3411,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -198,6 +175,38 @@ InstanceService.AddDungeon({
 		},
 		abilities = {
 			{ spell = 3358, heading = true }, -- Leech Poison
+		}
+	},
+	{
+		name = "Bjork",
+		defeated = 0,
+		encounterID = 3412,
+		portrait = 521744,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		overview = {
+			"A patrolling horror working the centre of the ruins, with the deadly ghoul packs for company.",
+			{ heading = "Overview" },
+			"Barely a fight once the pull is clean. {spell:1301635} only holds for three seconds, so the answer is to wait it out rather than to burn through it.",
+			{
+				role = DAMAGE,
+				"Let {spell:1301635} fade -- three seconds -- then burn him down. Keep him off the nearby trash, the ghouls especially.",
+			},
+			{
+				role = HEALER,
+				"Little to manage.",
+			},
+			{
+				role = TANK,
+				"Pull him away from the ghoul packs patrolling the centre; they are the real threat here.",
+			}
+		},
+		abilities = {
+			{ spell = 1301635, heading = true }, -- Anti-Magic Shield
 		}
 	},
 })

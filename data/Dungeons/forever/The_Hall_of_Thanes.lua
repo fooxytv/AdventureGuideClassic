@@ -11,11 +11,13 @@ InstanceService.AddDungeon({
 	thumbnail = I.UIEJDungeonButtonTheHallOfThanes,
 	icon = 527422,
 	splash = 527422,
+	mapID = 3065,
 	seasonFilter = "forever",
 	overview = "Old Ironforge lay sealed beneath the High Seat for generations, and the Dark Iron have broken it open. The hall runs in a single line through the tombs of the old thanes, and what the incursion has stirred up -- risen dwarves, bound fire and the stone guardians set to watch the dead -- is still down there with them.",
 	{
 		name = "Faldrim Anvilmar",
 		defeated = 0,
+		encounterID = 3493,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -46,8 +48,9 @@ InstanceService.AddDungeon({
 		}
 	},
 	{
-		name = "Magmatus",
+		name = "Infurnus",
 		defeated = 0,
+		encounterID = 3495,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -58,7 +61,7 @@ InstanceService.AddDungeon({
 		overview = {
 			"Fire given shape and set loose in the deep hall. The Dark Iron summoner who called it up is still standing nearby, which says something about how much control anyone has over it.",
 			{ heading = "Overview" },
-			"The Dark Iron Summoner patrolling near Magmatus is the real opening problem -- kill it before the boss. Once the fight is on, {spell:11970} goes off on everything standing close, so the group spreads and the boss gets dragged clear.",
+			"The Dark Iron Summoner patrolling nearby is the real opening problem -- kill it before the boss. Once the fight is on, {spell:11970} goes off on everything standing close, so the group spreads and the boss gets dragged clear.",
 			{
 				role = DAMAGE,
 				"Kill the patrolling Dark Iron Summoner before pulling the boss. Spread out so {spell:11970} catches as few of you as possible.",
@@ -69,7 +72,7 @@ InstanceService.AddDungeon({
 			},
 			{
 				role = TANK,
-				"Drag Magmatus away from the group while the rest of the party finishes the Dark Iron Summoner.",
+				"Drag the boss away from the group while the rest of the party finishes the Dark Iron Summoner.",
 			}
 		},
 		abilities = {
@@ -80,6 +83,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Plunder",
 		defeated = 0,
+		encounterID = 3494,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
@@ -111,6 +115,7 @@ InstanceService.AddDungeon({
 	{
 		name = "Durgen Dirgehammer",
 		defeated = 0,
+		encounterID = 3496,
 		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
