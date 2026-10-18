@@ -164,6 +164,7 @@ local function MarkEncounterDefeatedInInstanceData(dungeonName, encounterName)
                 local enc = dungeon[i]
                 if type(enc) == "table" and enc.name == encounterName then
                     enc.defeated = 1
+                    ProgressService.MarkDefeated(dungeon.name, enc)
                     DebugPrint("Marked defeated in dungeon data:", encounterName)
                     return true
                 end
@@ -178,6 +179,7 @@ local function MarkEncounterDefeatedInInstanceData(dungeonName, encounterName)
                 local enc = raid[i]
                 if type(enc) == "table" and enc.name == encounterName then
                     enc.defeated = 1
+                    ProgressService.MarkDefeated(raid.name, enc)
                     DebugPrint("Marked defeated in raid data:", encounterName)
                     return true
                 end
@@ -310,6 +312,8 @@ local function ResetEncountersForInstance(instanceName)
     end
 
     if found then
+        -- Clear the stored set as well, or the defeats return on the next login.
+        ProgressService.ClearInstance(instanceName)
         _G.AdventureGuideClassic_UI_Encounters_Refresh = true
         DebugPrint("Reset encounters for:", instanceName)
     end
@@ -338,6 +342,7 @@ local function ResetAllEncounters()
         end
     end
 
+    ProgressService.ClearAll()
     _G.AdventureGuideClassic_UI_Encounters_Refresh = true
     DebugPrint("All instance encounters have been reset")
 end

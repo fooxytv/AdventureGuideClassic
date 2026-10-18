@@ -28,6 +28,7 @@ globals = {
     "SavedVariablesName", "addonName",
     "AdventureGuideNavigationService", "AdventureObjectives",
     "CreatureModelService", "DungeonMapService", "HyperlinkService",
+    "ProgressService",
     "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
     "TierTokenService", "TokenizedTextService", "WishlistService",

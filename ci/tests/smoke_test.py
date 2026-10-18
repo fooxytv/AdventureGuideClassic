@@ -252,6 +252,42 @@ PROBE = """
     out.unclaimedAbilities = unclaimed
     out.miscastAbilities = miscast
     out.claimedAbilities = claimed
+
+    --[[
+        Defeat progress has to survive a reload. It used to live only on the instance
+        table, which is rebuilt from the data files on every login, so every tick was
+        lost. Round-trip it the way a session would: record, wipe the in-memory field
+        the way a fresh login does, hydrate, and check it came back.
+    ]]
+    -- The first dungeon is not necessarily populated: Forever ships instances the
+    -- client lists but we have no encounters for yet. Take the first that has one.
+    local probeInstance, probeEncounter
+    for _, candidate in ipairs(InstanceService.GetDungeons()) do
+        if candidate[1] then
+            probeInstance, probeEncounter = candidate, candidate[1]
+            break
+        end
+    end
+    if probeEncounter then
+        ProgressService.ClearAll()
+        out.progressStartsClear = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
+
+        ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+        out.progressRecorded = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 1 or 0
+
+        -- Written through to SavedVariables under this character, not the account.
+        local charKey = UnitName("player") .. "-" .. GetRealmName()
+        local stored = SavedVariables.Progress and SavedVariables.Progress[charKey]
+        out.progressPersisted = (stored and stored.defeated and next(stored.defeated)) and 1 or 0
+
+        probeEncounter.defeated = 0
+        ProgressService.Hydrate()
+        out.progressHydrated = probeEncounter.defeated == 1 and 1 or 0
+
+        ProgressService.ClearInstance(probeInstance.name)
+        out.progressCleared = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
+        probeEncounter.defeated = 0
+    end
     return out
 
 """
@@ -267,6 +303,11 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -276,6 +317,11 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -285,6 +331,11 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -308,6 +359,11 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -318,6 +374,11 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
     },
 }
 
