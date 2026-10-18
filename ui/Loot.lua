@@ -589,13 +589,9 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 end)
 
 --[[
-	Pinned mode ignores the selected boss and lists the whole instance's pinned loot,
-	grouped under a header per boss.
-
-	The per-encounter alternative was to filter only the boss on screen, but a player's
-	pins are spread across an instance, so that view is empty on most bosses — which is
-	the opposite of what pinning is for. Reading every encounter costs nothing: the
-	instance table *is* the encounter list, and GetEncounterLoot takes an encounter.
+	Every boss's loot in one list, grouped under a header per boss. Used by the pinned
+	filter, whose picks are spread across an instance, and by the instance page, where
+	no boss is selected. Only the predicate inside Collect differs between them.
 
 	An item is attributed to the first boss that drops it and not repeated. Shared loot
 	would otherwise appear under every boss in the instance.
