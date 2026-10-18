@@ -88,6 +88,20 @@ reach each other as `components.EncounterFrame`. `UI.GetComponent(name)` also wo
 Register the file in `ui/UI.xml`. By convention `component.Show()` rebuilds and displays
 the view.
 
+### Widget types are matched in registration order
+
+`Widgets.GetTypeForContent` returns the **first** type whose `IsTypeFor` passes, and the
+order is the order of the `<Script>` lines in `ui/UI.xml`. So two types that both claim a
+content table are resolved by load order, not by which fits better.
+
+Keep each `IsTypeFor` narrow enough that only one can match. Testing a key for mere
+truthiness is how this goes wrong: `Heading` claimed any table with a `heading` key, so
+abilities written `{ spell = N, heading = true }` reached it instead of `Spell` and it
+called `SetText(true)`. A heading is its text, so it now requires a string.
+
+`ci/tests/smoke_test.py` asserts both that every ability entry is claimed and that the
+claimant is `Spell` or `Ability` — claimed by *something* was not a strong enough check.
+
 ## Data shapes that will surprise you
 
 - **An instance table *is* its array of encounters**, and also carries `name`. So

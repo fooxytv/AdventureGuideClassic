@@ -47,7 +47,7 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 3358, heading = true }, -- Leech Poison
+			{ spell = 3358 }, -- Leech Poison
 		}
 	},
 	{
@@ -83,8 +83,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 1220855, heading = true }, -- Frost Nova
-			{ spell = 1266011, heading = true }, -- Life Drain
+			{ spell = 1220855 }, -- Frost Nova
+			{ spell = 1266011 }, -- Life Drain
 		}
 	},
 	{
@@ -143,7 +143,7 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 1279983, heading = true }, -- Flamestrike
+			{ spell = 1279983 }, -- Flamestrike
 		}
 	},
 	{
@@ -199,7 +199,7 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 3358, heading = true }, -- Leech Poison
+			{ spell = 3358 }, -- Leech Poison
 		}
 	},
 	{
@@ -235,7 +235,7 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 1301635, heading = true }, -- Anti-Magic Shield
+			{ spell = 1301635 }, -- Anti-Magic Shield
 		}
 	},
 })

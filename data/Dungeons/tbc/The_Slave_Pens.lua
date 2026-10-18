@@ -68,10 +68,10 @@ select(2, ...).SetupGlobalFacade()
 			}
 		},
 		abilities = {
-			{ spell = 31991, heading = true }, -- Corrupted Nova
-			{ spell = 31985, heading = true }, -- Healing Ward
-			{ spell = 31981, heading = true }, -- Tainted Earthgrab Totem
-			{ spell = 33132, heading = true }  -- Corrupted Nova (Heroic)
+			{ spell = 31991 }, -- Corrupted Nova
+			{ spell = 31985 }, -- Healing Ward
+			{ spell = 31981 }, -- Tainted Earthgrab Totem
+			{ spell = 33132 }  -- Corrupted Nova (Heroic)
 		}
 	},
 	{
@@ -127,10 +127,10 @@ select(2, ...).SetupGlobalFacade()
 			}
 		},
 		abilities = {
-			{ spell = 31956, heading = true }, -- Grievous Wound
-			{ spell = 31481, heading = true }, -- Summon Bog Creatures
-			{ spell = 31946, heading = true }, -- Water Spit
-			{ spell = 35760, heading = true }  -- Frenzy (Heroic)
+			{ spell = 31956 }, -- Grievous Wound
+			{ spell = 31481 }, -- Summon Bog Creatures
+			{ spell = 31946 }, -- Water Spit
+			{ spell = 35760 }  -- Frenzy (Heroic)
 		}
 	},
 	{
@@ -199,10 +199,10 @@ select(2, ...).SetupGlobalFacade()
 			}
 		},
 		abilities = {
-			{ spell = 34780, heading = true }, -- Poison Bolt Volley
-			{ spell = 32055, heading = true }, -- Quagmirran's Eye (Acid Geyser)
-			{ spell = 40504, heading = true }, -- Cleave
-			{ spell = 38153, heading = true }  -- Acid Spray (Heroic)
+			{ spell = 34780 }, -- Poison Bolt Volley
+			{ spell = 32055 }, -- Quagmirran's Eye (Acid Geyser)
+			{ spell = 40504 }, -- Cleave
+			{ spell = 38153 }  -- Acid Spray (Heroic)
 		}
 	}
 })

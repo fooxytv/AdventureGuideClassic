@@ -46,8 +46,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 15230, heading = true }, -- Arcane Bolt
-			{ spell = 1241501, heading = true }, -- Focal Blast
+			{ spell = 15230 }, -- Arcane Bolt
+			{ spell = 1241501 }, -- Focal Blast
 		}
 	},
 	{
@@ -83,9 +83,9 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 22994, heading = true }, -- Entangle
-			{ spell = 1240706, heading = true }, -- Fel Timbers
-			{ spell = 1044, heading = true }, -- Blessing of Freedom
+			{ spell = 22994 }, -- Entangle
+			{ spell = 1240706 }, -- Fel Timbers
+			{ spell = 1044 }, -- Blessing of Freedom
 		}
 	},
 	{
@@ -121,8 +121,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 1240738, heading = true }, -- Drain Vitality
-			{ spell = 1240750, heading = true }, -- Debilitate
+			{ spell = 1240738 }, -- Drain Vitality
+			{ spell = 1240750 }, -- Debilitate
 		}
 	},
 	{
@@ -180,8 +180,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 8374, heading = true }, -- Arcing Smash
-			{ spell = 1241329, heading = true }, -- Malfunction
+			{ spell = 8374 }, -- Arcing Smash
+			{ spell = 1241329 }, -- Malfunction
 		}
 	},
 	{
@@ -218,11 +218,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 15230, heading = true }, -- Arcane Bolt
-			{ spell = 1241515, heading = true }, -- Bounding Mana
-			{ spell = 28450, heading = true }, -- Arcane Explosion
-			{ spell = 1303598, heading = true }, -- Mass Polymorph
-			{ spell = 1303599, heading = true }, -- Evocation
+			{ spell = 15230 }, -- Arcane Bolt
+			{ spell = 1241515 }, -- Bounding Mana
+			{ spell = 28450 }, -- Arcane Explosion
+			{ spell = 1303598 }, -- Mass Polymorph
+			{ spell = 1303599 }, -- Evocation
 		}
 	},
 	{
@@ -258,9 +258,9 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 1303266, heading = true }, -- Raise Dead
-			{ spell = 17228, heading = true }, -- Shadow Bolt Volley
-			{ spell = 1304473, heading = true }, -- Curse of Thorns
+			{ spell = 1303266 }, -- Raise Dead
+			{ spell = 17228 }, -- Shadow Bolt Volley
+			{ spell = 1304473 }, -- Curse of Thorns
 		}
 	},
 	{
@@ -296,11 +296,11 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 6713, heading = true }, -- Disarm
-			{ spell = 1303266, heading = true }, -- Raise Dead
-			{ spell = 3391, heading = true }, -- Thrash
-			{ spell = 12057, heading = true }, -- Strike
-			{ spell = 1303264, heading = true }, -- Unholy Frenzy
+			{ spell = 6713 }, -- Disarm
+			{ spell = 1303266 }, -- Raise Dead
+			{ spell = 3391 }, -- Thrash
+			{ spell = 12057 }, -- Strike
+			{ spell = 1303264 }, -- Unholy Frenzy
 		}
 	},
 	{

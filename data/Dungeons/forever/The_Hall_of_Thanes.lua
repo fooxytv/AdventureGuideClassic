@@ -47,8 +47,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 26048, heading = true }, -- Mind Blast
-			{ spell = 1292602, heading = true }, -- Anvilmar's Curse
+			{ spell = 26048 }, -- Mind Blast
+			{ spell = 1292602 }, -- Anvilmar's Curse
 		}
 	},
 	{
@@ -84,8 +84,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 11970, heading = true }, -- Fire Nova
-			{ spell = 1293228, heading = true }, -- Combust
+			{ spell = 11970 }, -- Fire Nova
+			{ spell = 1293228 }, -- Combust
 		}
 	},
 	{
@@ -121,7 +121,7 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 10101, heading = true }, -- Knock Away
+			{ spell = 10101 }, -- Knock Away
 		}
 	},
 	{
@@ -158,8 +158,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 26070, heading = true }, -- Fear
-			{ spell = 12054, heading = true }, -- Rend
+			{ spell = 26070 }, -- Fear
+			{ spell = 12054 }, -- Rend
 		}
 	},
 })
