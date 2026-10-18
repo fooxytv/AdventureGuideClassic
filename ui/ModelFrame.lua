@@ -31,6 +31,7 @@ end
 
 local ENFORCE_SECONDS = 2.0
 local enforceUntil = 0
+local lastSetDisplayAt
 
 local function EnforcePreset()
 	enforceUntil = GetTime() + ENFORCE_SECONDS
@@ -43,6 +44,7 @@ end
 function component.SetDisplay(displayId, title)
 	if not creatureModel or not displayId then return end
 	currentDisplayId = displayId
+	lastSetDisplayAt = GetTime()
 	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
 	--[[
@@ -71,15 +73,26 @@ function component.SetDisplay(displayId, title)
 		it by hand needs the command run in the half-second it goes wrong, which is
 		how three captures in a row came from the wrong moment.
 	]]
-	if AdventureGuideClassic_DebugEvents and _G.AGC_ModelDump then
-		print("|cffff9900[AGC]|r --- display changed, immediately after ApplyPreset ---")
-		_G.AGC_ModelDump()
-		C_Timer.After(ENFORCE_SECONDS + 0.5, function()
-			if currentDisplayId == displayId then
-				print("|cffff9900[AGC]|r --- same display, after enforcement ended ---")
-				_G.AGC_ModelDump()
-			end
-		end)
+	if AdventureGuideClassic_DebugEvents then
+		--[[
+			Sample the position repeatedly rather than once. A single snapshot cannot
+			show a reset that lands after it, which is the one thing none of the
+			readings so far could have caught.
+		]]
+		local want = currentPreset
+		for _, delay in ipairs({ 0, 0.1, 0.3, 0.6, 1.0, 2.5, 4.0 }) do
+			C_Timer.After(delay, function()
+				if currentDisplayId ~= displayId or not creatureModel then return end
+				local ok, x, y, z = pcall(creatureModel.GetPosition, creatureModel)
+				local okf, facing = pcall(creatureModel.GetFacing, creatureModel)
+				print(("|cffff9900[AGC]|r t+%.1fs  model %s  facing %s  want %.2f/%.2f/%.2f  enforcing %s")
+					:format(delay,
+						ok and ("%.3f/%.3f/%.3f"):format(x or 0, y or 0, z or 0) or "unreadable",
+						okf and ("%.3f"):format(facing or 0) or "?",
+						want.x or 0, want.y or 0, want.z or 0,
+						tostring(enforceUntil > GetTime())))
+			end)
+		end
 	end
 end
 
@@ -174,7 +187,13 @@ local function SetupModelControls(model)
 		self.isRotating = false
 		self.isTilting = false
 	end)
-	model:SetScript("OnModelLoaded", function()
+	model:SetScript("OnModelLoaded", function(self)
+		if AdventureGuideClassic_DebugEvents then
+			local ok, x, y, z = pcall(self.GetPosition, self)
+			print(("|cffff9900[AGC]|r OnModelLoaded fired %.2fs after SetDisplay, position %s")
+				:format(GetTime() - (lastSetDisplayAt or GetTime()),
+					ok and ("%.3f/%.3f/%.3f"):format(x or 0, y or 0, z or 0) or "unreadable"))
+		end
 		if currentPreset then component.ApplyPreset(currentPreset) end
 	end)
 	model:SetScript("OnUpdate", function(self)
