@@ -63,11 +63,17 @@ function component.ApplyPreset(preset)
 	if preset.title and preset.title ~= "" then
 		modelContainer.imageTitle:SetText(preset.title)
 	end
-	local sized = (preset.modelScale or 1) ~= 1
 	if creatureModel.SetModelScale then
 		creatureModel:SetModelScale(preset.modelScale or 1)
 	end
-	if not sized then
+	--[[
+		Portrait zoom is camera state on a frame reused for every creature, and
+		SetDisplayInfo resets it. Setting it only for unscaled models left a scaled
+		one showing with whatever the previous creature happened to leave behind, so
+		the same preset framed differently depending on what you looked at before --
+		and with a height offset that put the model outside the frame entirely.
+	]]
+	if type(creatureModel.SetPortraitZoom) == "function" then
 		creatureModel:SetPortraitZoom(0)
 	end
 	baseZoom = preset.scale or 1
