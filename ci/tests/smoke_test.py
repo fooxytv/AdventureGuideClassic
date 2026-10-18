@@ -388,6 +388,46 @@ PROBE = """
         ProgressService.ClearAll()
         out.discoveryDefaultsOff = DiscoveryService.IsEnabled() and 0 or 1
     end
+    -- Both Compat.GetSpellDescription branches, one per client shape, and the empty
+    -- string the client gives before spell data loads must read back as nil.
+    out.spellDescription = Compat.GetSpellDescription(12054) or "nil"
+    out.spellDescriptionUnknown = Compat.GetSpellDescription(0) == nil and 1 or 0
+    out.spellDescriptionNoId = Compat.GetSpellDescription(nil) == nil and 1 or 0
+
+    -- Only the mainline family can be asked to load spell data; the Classic clients
+    -- have the description already, so there is nothing to request.
+    out.requestsSpellData = Compat.RequestSpellData(1292602) and 1 or 0
+    out.requestSpellDataNoId = Compat.RequestSpellData(nil) and 1 or 0
+
+    --[[
+        No ability entry should draw without an icon or a body. A bare { spell = N }
+        has neither in the data and the client supplies both, so a miss here means an
+        entry shape the icon or description path does not reach -- the two shapes,
+        { spell = N } and { id, name, description }, are read differently.
+    ]]
+    local missingIcon, missingBody = 0, 0
+    local prev = SavedVariables.ExpansionFilter
+    for _, expansionFilter in ipairs({ "classic", "tbc" }) do
+        SavedVariables.ExpansionFilter = expansionFilter
+        for _, list in ipairs({ InstanceService.GetDungeons(), InstanceService.GetRaids() }) do
+            for _, instance in ipairs(list) do
+                for _, encounter in ipairs(instance) do
+                    for _, entry in ipairs(encounter.abilities or {}) do
+                        local id = entry.spell or entry.id
+                        local _, icon = Compat.GetSpellInfo(id)
+                        if not icon then missingIcon = missingIcon + 1 end
+                        if not (#entry > 0 or entry.description
+                            or Compat.GetSpellDescription(id)) then
+                            missingBody = missingBody + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+    SavedVariables.ExpansionFilter = prev
+    out.abilitiesMissingIcon = missingIcon
+    out.abilitiesMissingBody = missingBody
     return out
 
 """
@@ -416,6 +456,13 @@ EXPECTED = {
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
         "discoveryDefaultsOff": 1,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -438,6 +485,13 @@ EXPECTED = {
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
         "discoveryDefaultsOff": 1,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -460,6 +514,13 @@ EXPECTED = {
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
         "discoveryDefaultsOff": 1,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -496,6 +557,13 @@ EXPECTED = {
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
         "discoveryDefaultsOff": 1,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 1,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -519,6 +587,13 @@ EXPECTED = {
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
         "discoveryDefaultsOff": 1,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 1,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
     },
 }
 
