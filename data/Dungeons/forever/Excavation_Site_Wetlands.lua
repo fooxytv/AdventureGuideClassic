@@ -3,20 +3,6 @@ Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
 Programming by: FooxyTV
-
-Boss names only. Abilities, loot and tactics are deliberately absent rather than
-guessed at, as they were before -- there is still nothing to draw them from.
-
-The names are as the 1.60.1 beta records them, by way of the Aegis Forever Instance
-Journal, and cross-checked against the community guides. They are facts about the
-client rather than anyone's writing, which is the only part taken.
-
-Treat the count as provisional. Forever's beta caps at level 30, so an instance
-reaching past it is only partly walkable: sources agree on Hall of Thanes and
-Excavation Site, and disagree on Ruins of Lordaeron (six or seven) and City of
-Dalaran (seven or nine), both of which run to 33. No encounterID either -- the
-client's own journal is the place to get those, and it reads cold so far. Defeat
-tracking does not need them: BuildNpcLookup keys every encounter by name as well.
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -25,39 +11,143 @@ InstanceService.AddDungeon({
 	thumbnail = I.UIEJDungeonButtonExcavationSiteWetlands,
 	icon = 527422,
 	splash = 527422,
+	mapID = 2998,
 	seasonFilter = "forever",
-	overview = "The bosses known from Forever's beta are listed here. Their abilities, loot and tactics are not yet recorded, and will be added as the content is documented.",
+	overview = "A Titan dig site opened up in the Wetlands marshes, and everything living in that country has moved into it -- crocolisks off the lake, raptors along the ridges, spiders in the tall grass, and a Dragonmaw camp working the edges. What the diggers were trying to reach is still sealed, and still guarded.",
 	{
 		name = "Saltspine",
 		defeated = 0,
+		encounterID = 3480,
+		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = {},
-		abilities = {},
+		overview = {
+			"A crocolisk grown old and enormous on the lake shore, walking the waterline as though the dig had never happened.",
+			{ heading = "Overview" },
+			"Saltspine patrols the edge of the crocolisk lake, and pulling him with anything else alive nearby is how this fight goes wrong. {spell:1316382} is the mechanic that matters: it cuts the tank's threat generation hard, so the whole group has to hold back rather than open at full speed.",
+			{
+				role = DAMAGE,
+				"Open carefully. {spell:1316382} leaves the tank struggling for threat, so a fast start pulls the boss straight onto the damage dealers.",
+			},
+			{
+				role = HEALER,
+				"Nothing targeted to dispel, but a threat swing off {spell:1316382} can put the boss on someone who cannot take {spell:16495}.",
+			},
+			{
+				role = TANK,
+				"{spell:1316382} greatly reduces your threat generation -- watch it the whole fight. Pull him clear of the lake shore so none of the surrounding crocolisks come with him.",
+			}
+		},
+		abilities = {
+			{ spell = 1316382, heading = true }, -- Dust Storm
+			{ spell = 16495, heading = true }, -- Fatal Bite
+			{ spell = 3604, heading = true }, -- Tendon Rip
+		}
 	},
 	{
 		name = "Shadetooth",
 		defeated = 0,
+		encounterID = 3481,
+		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = {},
-		abilities = {},
+		overview = {
+			"The raptor that owns the pathway, hunting it with a pair of Thicket Hunters at its flanks.",
+			{ heading = "Overview" },
+			"The danger here is the terrain. {spell:14100} throws people out of the fight and the tall grass around the path hides trash, so a fear with no protection up turns one pull into several. {spell:13445} ticks hard on the tank throughout, and he enrages at twenty per cent.",
+			{
+				role = DAMAGE,
+				"If nobody can cover the fear, clear the trash hidden in the tall grass before pulling. Two Thicket Hunters come with him. Save burst for after {spell:1284435}, or avoid it by killing him before it lands.",
+			},
+			{
+				role = HEALER,
+				"{spell:13445} ticks for around 77 physical every three seconds on the tank, and {spell:1284435} at twenty per cent adds thirty per cent attack speed on top of it.",
+			},
+			{
+				role = TANK,
+				"{spell:14100} can fear you into the packs hidden in the grass, so bring {spell:8143} or {spell:6346} if you have access to either.",
+			}
+		},
+		abilities = {
+			{ spell = 14100, heading = true }, -- Terrifying Roar
+			{ spell = 13445, heading = true }, -- Rend
+			{ spell = 1284435, heading = true }, -- Enrage
+		}
+	},
+	{
+		name = "Highland Horror",
+		defeated = 0,
+		encounterID = 3644,
+		portrait = 521744,
+		loot = {},
+		sharedLoot = {},
+		rareLoot = {},
+		veryRareLoot = {},
+		extremelyRareLoot = {},
+		npcs = {},
+		overview = {
+			"An overgrown thing squatting in the marsh with a ring of slimes around it, wanted by the Alliance for a dig-site errand and of no interest to anyone else.",
+			{ heading = "Overview" },
+			"An Alliance quest boss that drops nothing, so it is an optional stop unless somebody needs the objective. {spell:1316480} pins people in place and {spell:9616} undoes slow damage, which together make a drawn-out fight worse than a short one.",
+			{
+				role = DAMAGE,
+				"Kill it quickly and take the quest item. Do not clip the slimes standing around it on the way in.",
+			},
+			{
+				role = HEALER,
+				"{spell:1316480} roots whoever it lands on and keeps damaging them -- they will need healing where they stand.",
+			},
+			{
+				role = TANK,
+				"Straightforward to hold. Pull it off the slimes before the group commits.",
+			}
+		},
+		abilities = {
+			{ spell = 1316480, heading = true }, -- Entangling Roots
+			{ spell = 9616, heading = true }, -- Wild Regeneration
+		}
 	},
 	{
 		name = "Relic Guardian",
 		defeated = 0,
+		encounterID = 3482,
+		portrait = 521744,
 		loot = {},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
 		npcs = {},
-		abilities = {},
+		overview = {
+			"What the excavation was always going to wake: a Titan construct that does not stir until somebody works the control panel beside it.",
+			{ heading = "Overview" },
+			"The last fight, and a level above the rest of the dungeon, which makes threat genuinely unreliable -- expect misses and dodges. {spell:8374} is a frontal cleave, {spell:11876} knocks back and stuns at range, and {spell:10101} strips threat off whoever it hits. It has to be started from the Titan Control Panel next to it.",
+			{
+				role = DAMAGE,
+				"Ranged should stay well out for {spell:11876}'s knockback and stun. If it gets away from you it can be stunned and slowed -- {spell:5116} or {spell:2484} will kite it.",
+			},
+			{
+				role = HEALER,
+				"{spell:8078} slows the attack speed of everyone standing near it, which stretches the fight out. Expect the tank's threat to be shaky at a level disadvantage.",
+			},
+			{
+				role = TANK,
+				"Face it away from the group for {spell:8374}. {spell:10101} reduces threat on whoever it lands on, and the level gap means more of your swings miss than usual.",
+			}
+		},
+		abilities = {
+			{ spell = 8078, heading = true }, -- Thunderclap
+			{ spell = 8374, heading = true }, -- Arcing Smash
+			{ spell = 10101, heading = true }, -- Knock Away
+			{ spell = 11876, heading = true }, -- War Stomp
+		}
 	},
 })
