@@ -55,6 +55,22 @@ function component.SetDisplay(displayId, title)
 	if components and components.ModelTuner then
 		components.ModelTuner.OnDisplayChanged(displayId)
 	end
+	--[[
+		With debug on, report the model twice per display change: once now, and once
+		after the enforcement window has closed and any late load has landed. Reading
+		it by hand needs the command run in the half-second it goes wrong, which is
+		how three captures in a row came from the wrong moment.
+	]]
+	if AdventureGuideClassic_DebugEvents and _G.AGC_ModelDump then
+		print("|cffff9900[AGC]|r --- display changed, immediately after ApplyPreset ---")
+		_G.AGC_ModelDump()
+		C_Timer.After(ENFORCE_SECONDS + 0.5, function()
+			if currentDisplayId == displayId then
+				print("|cffff9900[AGC]|r --- same display, after enforcement ended ---")
+				_G.AGC_ModelDump()
+			end
+		end)
+	end
 end
 
 function component.ApplyPreset(preset)
