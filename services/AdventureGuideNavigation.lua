@@ -22,6 +22,17 @@ function AdventureGuideNavigationService.GetEncounter()
 	return encounter
 end
 
+--[[
+	Whether a boss may be shown in full, for the discovery mode. Lives here because
+	every gated accessor needs the instance the boss belongs to, and this file is
+	what knows which instance is selected.
+]]
+function AdventureGuideNavigationService.IsEncounterDiscovered(forEncounter)
+	local target = forEncounter or encounter
+	if not target then return true end
+	return DiscoveryService.IsDiscovered(instance and instance.name, target)
+end
+
 function AdventureGuideNavigationService.GetEncounterName()
     return encounter and encounter.name or "Unknown Encounter"
 end
@@ -36,10 +47,16 @@ end
 ]]
 function AdventureGuideNavigationService.GetEncounterAbilities(forEncounter)
 	local target = forEncounter or encounter
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(target) then
+		return { }
+	end
 	return target and target.abilities or { }
 end
 
 function AdventureGuideNavigationService.GetEncounterContent()
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(encounter) then
+		return { "You have not faced this foe yet. Defeat it to record what it does here." }
+	end
 	return encounter.overview or { }
 end
 
@@ -51,6 +68,10 @@ end
 ]]
 function AdventureGuideNavigationService.GetEncounterLoot(forEncounter)
 	local target = forEncounter or encounter
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(target) then
+		return { loot = { }, sharedLoot = { }, rareLoot = { },
+			veryRareLoot = { }, extremelyRareLoot = { } }
+	end
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or nil
 	local isTBC = Compat.isTBC
 	local isClassicClient = Compat.isVanillaLoot

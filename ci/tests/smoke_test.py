@@ -342,6 +342,52 @@ PROBE = """
         end
     end
     out.progressKeyCollisions = keyCollisions
+
+    --[[
+        Discovery mode must hide a boss that has not been beaten and reveal it when
+        it has, without revealing the rest of the instance. Off, it must change
+        nothing at all -- that is the default and the common case.
+    ]]
+    local discInstance
+    for _, candidate in ipairs(InstanceService.GetDungeons()) do
+        if #candidate >= 2 then discInstance = candidate break end
+    end
+    if discInstance then
+        local first, second = discInstance[1], discInstance[2]
+        local function visible(target)
+            AdventureGuideNavigationService.SetInstance(discInstance)
+            AdventureGuideNavigationService.SetEncounter(target)
+            local l = AdventureGuideNavigationService.GetEncounterLoot()
+            return #l.loot + #l.sharedLoot + #l.rareLoot + #l.veryRareLoot
+                + #l.extremelyRareLoot,
+                #AdventureGuideNavigationService.GetEncounterAbilities()
+        end
+
+        ProgressService.ClearAll()
+        DiscoveryService.SetEnabled(false)
+        local lootOff, abilitiesOff = visible(first)
+
+        DiscoveryService.SetEnabled(true)
+        local lootHidden, abilitiesHidden = visible(first)
+
+        ProgressService.MarkDefeated(discInstance.name, first)
+        local lootShown, abilitiesShown = visible(first)
+
+        out.discoveryOffChangesNothing =
+            (lootOff == lootShown and abilitiesOff == abilitiesShown) and 1 or 0
+        out.discoveryHidesUnmet = (lootHidden == 0 and abilitiesHidden == 0) and 1 or 0
+        out.discoveryRevealsOnDefeat =
+            (lootShown == lootOff and abilitiesShown == abilitiesOff) and 1 or 0
+        out.discoveryIsPerBoss =
+            AdventureGuideNavigationService.IsEncounterDiscovered(second) and 0 or 1
+
+        local found, total = DiscoveryService.GetProgress(discInstance)
+        out.discoveryProgress = ("%d/%d"):format(found, total)
+
+        DiscoveryService.SetEnabled(false)
+        ProgressService.ClearAll()
+        out.discoveryDefaultsOff = DiscoveryService.IsEnabled() and 0 or 1
+    end
     return out
 
 """
@@ -365,6 +411,11 @@ EXPECTED = {
         "progressCleared": 1,
         "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
+        "discoveryOffChangesNothing": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryDefaultsOff": 1,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -382,6 +433,11 @@ EXPECTED = {
         "progressCleared": 1,
         "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
+        "discoveryOffChangesNothing": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryDefaultsOff": 1,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -399,6 +455,11 @@ EXPECTED = {
         "progressCleared": 1,
         "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
+        "discoveryOffChangesNothing": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryDefaultsOff": 1,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -430,6 +491,11 @@ EXPECTED = {
         "progressCleared": 1,
         "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
+        "discoveryOffChangesNothing": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryDefaultsOff": 1,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -448,6 +514,11 @@ EXPECTED = {
         "progressCleared": 1,
         "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
+        "discoveryOffChangesNothing": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryDefaultsOff": 1,
     },
 }
 

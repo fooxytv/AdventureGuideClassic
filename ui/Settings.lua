@@ -263,8 +263,32 @@ function component.Init(components_)
 		function(val) SettingsService.SetToastEnabled("WishlistItem", val) end
 	)
 
+	local discoveryHeader = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	discoveryHeader:SetPoint("TOPLEFT", toastContainer, "BOTTOMLEFT", 0, -8)
+	discoveryHeader:SetText("Discovery")
+	discoveryHeader:SetTextColor(1, 0.82, 0)
+
+	local discoveryDesc = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	discoveryDesc:SetPoint("TOPLEFT", discoveryHeader, "BOTTOMLEFT", 0, -4)
+	discoveryDesc:SetText("Let the journal fill in as you play instead of reading ahead.")
+	discoveryDesc:SetTextColor(0.6, 0.6, 0.6)
+
+	local discoveryContainer = CreateFrame("Frame", "AGCSettingsDiscoveryContainer", settingsPanel)
+	discoveryContainer:SetPoint("TOPLEFT", discoveryDesc, "BOTTOMLEFT", 0, -8)
+	discoveryContainer:SetSize(400, 52)
+
+	settingsPanel.discoveryRow = CreateOptionsCheckbox(
+		discoveryContainer,
+		"DiscoveryMode",
+		"Discovery Mode",
+		"Bosses you have not defeated stay unnamed, with their abilities and loot hidden. Set per character.",
+		0,
+		function() return DiscoveryService.IsEnabled() end,
+		function(val) DiscoveryService.SetEnabled(val) end
+	)
+
 	local appearanceHeader = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	appearanceHeader:SetPoint("TOPLEFT", toastContainer, "BOTTOMLEFT", 0, -8)
+	appearanceHeader:SetPoint("TOPLEFT", discoveryContainer, "BOTTOMLEFT", 0, -8)
 	appearanceHeader:SetText("Appearance")
 	appearanceHeader:SetTextColor(1, 0.82, 0)
 
