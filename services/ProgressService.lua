@@ -44,6 +44,10 @@ end
 	Flamewreath 9816, and the three instances that exist as both a dungeon and an SoD
 	raid reuse their ids across the pair. Keying on an id would mark the wrong boss
 	beaten. The name pair is the only scheme that is collision-free on every client.
+
+	The same three pairs do share a name key, so Hydrate marks the hidden twin too.
+	No filter shows both at once, so it never surfaces -- and they are the same boss
+	in the same place in any case.
 ]]
 local function EncounterKey(instanceName, encounter)
 	if not (instanceName and encounter.name) then return nil end
