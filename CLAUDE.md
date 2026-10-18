@@ -413,6 +413,8 @@ it to be read.
 | `AGC_PreviewQuests("active")` | draw every quest row in that state (`available`, `active`, `completed`; no argument to clear) |
 | `AGC_DebugLootFilter()` | why the selected encounter's loot was filtered |
 | `AGC_ToggleDebug()` | encounter-detection debug printing |
+| `AGC_MarkDefeated("Deadmines", "Mr. Smite")` | mark one boss beaten without beating it |
+| `AGC_MarkInstanceDefeated("Deadmines")` | mark every boss in an instance |
 | `AGC_ResetInstance("Deadmines")` | clear defeated marks for one instance |
 | `AGC_ResetAllEncounters()` | clear them everywhere |
 | `AGC_Wishlist()` | print the wishlist |

@@ -449,6 +449,41 @@ _G.AGC_ResetAllEncounters = function()
     ResetAllEncounters()
 end
 
+--[[
+    Mark a boss beaten without beating it. Goes through the same function the three
+    detection paths do, so it records and persists exactly as a real kill would --
+    which is the point, for checking that progress survives a reload.
+]]
+_G.AGC_MarkDefeated = function(instanceName, bossName)
+    if not instanceName or not bossName then
+        print("|cffff9900[AGC]|r Usage: AGC_MarkDefeated(\"Instance\", \"Boss\")")
+        return
+    end
+    if MarkEncounterDefeatedInInstanceData(instanceName, bossName) then
+        _G.AdventureGuideClassic_UI_Encounters_Refresh = true
+        print(("|cff00ff00[AGC]|r Marked %s in %s as defeated"):format(bossName, instanceName))
+    else
+        print(("|cffff5555[AGC]|r No boss named %s in %s"):format(bossName, instanceName))
+    end
+end
+
+_G.AGC_MarkInstanceDefeated = function(instanceName)
+    local instance = instanceName and InstanceService.GetInstanceByName(instanceName)
+    if not instance then
+        print("|cffff9900[AGC]|r Usage: AGC_MarkInstanceDefeated(\"Instance\")")
+        return
+    end
+    local marked = 0
+    for _, encounter in ipairs(instance) do
+        if encounter.name and MarkEncounterDefeatedInInstanceData(instance.name, encounter.name) then
+            marked = marked + 1
+        end
+    end
+    _G.AdventureGuideClassic_UI_Encounters_Refresh = true
+    print(("|cff00ff00[AGC]|r Marked %d of %d in %s as defeated")
+        :format(marked, #instance, instance.name))
+end
+
 _G.AGC_ResetInstance = function(instanceName)
     if instanceName then
         ResetEncountersForInstance(instanceName)
