@@ -299,6 +299,29 @@ PROBE = """
         ProgressService.ClearInstance(probeInstance.name)
         out.progressCleared = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
         probeEncounter.defeated = 0
+
+        --[[
+            Clearing one instance must leave every other instance alone. ClearInstance
+            writes the whole in-memory table back, so a fault there wipes the lot
+            rather than the one instance asked for.
+        ]]
+        local otherInstance, otherEncounter
+        for _, candidate in ipairs(InstanceService.GetDungeons()) do
+            if candidate[1] and candidate.name ~= probeInstance.name then
+                otherInstance, otherEncounter = candidate, candidate[1]
+                break
+            end
+        end
+        if otherEncounter then
+            ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+            ProgressService.MarkDefeated(otherInstance.name, otherEncounter)
+            ProgressService.ClearInstance(probeInstance.name)
+            out.progressClearIsScoped =
+                (ProgressService.IsDefeated(otherInstance.name, otherEncounter)
+                    and not ProgressService.IsDefeated(probeInstance.name, probeEncounter))
+                and 1 or 0
+            ProgressService.ClearAll()
+        end
     end
 
     --[[
@@ -340,6 +363,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
     },
     "sod": {
@@ -356,6 +380,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
     },
     "tbc": {
@@ -372,6 +397,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
@@ -402,6 +428,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
@@ -419,6 +446,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressClearIsScoped": 1,
         "progressKeyCollisions": 0,
     },
 }

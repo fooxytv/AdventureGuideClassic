@@ -98,6 +98,7 @@ function ProgressService.MarkDefeated(instanceName, encounter)
 end
 
 function ProgressService.ClearInstance(instanceName)
+	Load()
 	local instance = InstanceService.GetInstanceByName(instanceName)
 	if not instance then return false end
 	for _, encounter in ipairs(instance) do
