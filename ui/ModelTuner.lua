@@ -175,6 +175,11 @@ local function CreatePanel()
 		local displayId = CurrentDisplayId()
 		if displayId and ModelPresetService.Save(displayId, panel.preset) then
 			print(("|cff00ff00[AGC]|r Saved preset for display %d"):format(displayId))
+			-- Saving writes panel.preset while the model is driven by currentPreset.
+			-- If those have drifted apart, this is where the wrong value is written.
+			print(("|cffff9900[AGC]|r   saving %.2f/%.2f/%.2f  %s"):format(
+				panel.preset.x or 0, panel.preset.y or 0, panel.preset.z or 0,
+				components.ModelFrame.DescribeLive(panel.preset)))
 			component.Refresh()
 		end
 	end)

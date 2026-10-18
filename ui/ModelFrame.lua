@@ -250,6 +250,16 @@ function component.GetPreset()
 	return currentPreset
 end
 
+-- What the model reports right now, for comparing against what a save is about to
+-- write. Also whether the caller's table is the one driving the model.
+function component.DescribeLive(theirPreset)
+	if not creatureModel then return "no model" end
+	local ok, x, y, z = pcall(creatureModel.GetPosition, creatureModel)
+	return ("model %s, same table as preset: %s"):format(
+		ok and ("%.2f/%.2f/%.2f"):format(x or 0, y or 0, z or 0) or "unreadable",
+		tostring(theirPreset == currentPreset))
+end
+
 --[[
 	What the preset asks for next to what the model reports back, so a setting that
 	is saved correctly but does not take can be told apart from one that never
