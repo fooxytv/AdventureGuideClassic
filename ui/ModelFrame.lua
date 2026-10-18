@@ -115,7 +115,16 @@ function component.ApplyPreset(preset)
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
 	creatureModel:SetCamDistanceScale(zoom)
+	--[[
+		Write a different value first. The frame skips a position update when what
+		it is given matches what it already holds, so re-applying a preset after the
+		model has loaded was a no-op: the property read back correctly while the
+		model was never actually moved. Dragging always worked because the value
+		changes every frame and so is never skipped.
+	]]
+	creatureModel:SetPosition(0, 0, 0)
 	creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
+	creatureModel:SetFacing((preset.facing or 0) + 0.0001)
 	creatureModel:SetFacing(preset.facing or 0)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
