@@ -45,6 +45,16 @@ function component.SetDisplay(displayId, title)
 	currentDisplayId = displayId
 	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
+	--[[
+		Once per display, before anything is positioned, and never from ApplyPreset.
+		SetPortraitZoom reframes the camera and drops the model back to the origin,
+		and it does so a frame later -- so calling it on every apply undid the
+		SetPosition that followed it. Dragging looked right because it sets the
+		position directly without going through here.
+	]]
+	if type(creatureModel.SetPortraitZoom) == "function" then
+		creatureModel:SetPortraitZoom(currentPreset.portraitZoom or 0)
+	end
 	component.ApplyPreset(currentPreset)
 	EnforcePreset()
 	local displayTitle = ModelPresetService.GetTitle(displayId, currentEncounterId) or title
@@ -89,9 +99,6 @@ function component.ApplyPreset(preset)
 		the same preset framed differently depending on what you looked at before --
 		and with a height offset that put the model outside the frame entirely.
 	]]
-	if type(creatureModel.SetPortraitZoom) == "function" then
-		creatureModel:SetPortraitZoom(preset.portraitZoom or 0)
-	end
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
 	creatureModel:SetCamDistanceScale(zoom)
@@ -100,6 +107,21 @@ function component.ApplyPreset(preset)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
 	end
+end
+
+--[[
+	Changing the framing from the tuner. Reframing drops the model to the origin a
+	frame later, so the preset goes back on after that has happened rather than
+	before it, which is the whole reason this is not part of ApplyPreset.
+]]
+function component.ApplyFraming(value)
+	if not creatureModel or type(creatureModel.SetPortraitZoom) ~= "function" then
+		return
+	end
+	creatureModel:SetPortraitZoom(value or 0)
+	C_Timer.After(0, function()
+		if currentPreset then component.ApplyPreset(currentPreset) end
+	end)
 end
 
 function component.GetAppliedModelScale()
