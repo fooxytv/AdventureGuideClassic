@@ -57,8 +57,10 @@ function WidgetTypeMixin:SetAnchors(widget)
 	local parent = widget:GetParent()
 	if (widget.idx == 1) then
 		if (parent.type.name == "Root") then
-			widget:SetPoint("TOPLEFT")
-			widget:SetPoint("TOPRIGHT")
+			-- Matches the gap between siblings, so the first row is not flush
+			-- against the top of the page.
+			widget:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -8)
+			widget:SetPoint("TOPRIGHT", parent, "TOPRIGHT", 0, -8)
 		else
 			widget:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -24)
 			widget:SetPoint("RIGHT", parent, "RIGHT", 0, 0)

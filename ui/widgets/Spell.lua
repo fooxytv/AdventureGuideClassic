@@ -31,7 +31,12 @@ function widgetType:SetContents(widget, contents)
 	local body = contents
 	if (#contents == 0) then
 		local description = Compat.GetSpellDescription(contents.spell)
-		if (description) then body = { description } end
+		if (description) then
+			body = { description }
+		else
+			-- Not cached yet. The scroller redraws on SPELL_DATA_LOAD_RESULT.
+			Compat.RequestSpellData(contents.spell)
+		end
 	end
 	CollapsibleSectionWidgetTypeMixin.SetContents(self, widget, body)
 end

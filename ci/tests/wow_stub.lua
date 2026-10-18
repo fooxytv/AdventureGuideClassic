@@ -126,6 +126,7 @@ function _G.__SetClient(name)
 				if not spellID or spellID == 0 then return "" end
 				return "Description of spell " .. tostring(spellID)
 			end,
+			RequestLoadSpellData = function() end,
 		}
 		_G.PanelTabButtonTemplate = {}
 		_G.CharacterFrameTabButtonTemplate = nil

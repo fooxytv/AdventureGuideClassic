@@ -259,6 +259,11 @@ PROBE = """
     out.spellDescriptionUnknown = Compat.GetSpellDescription(0) == nil and 1 or 0
     out.spellDescriptionNoId = Compat.GetSpellDescription(nil) == nil and 1 or 0
 
+    -- Only the mainline family can be asked to load spell data; the Classic clients
+    -- have the description already, so there is nothing to request.
+    out.requestsSpellData = Compat.RequestSpellData(1292602) and 1 or 0
+    out.requestSpellDataNoId = Compat.RequestSpellData(nil) and 1 or 0
+
     --[[
         No ability entry should draw without an icon or a body. A bare { spell = N }
         has neither in the data and the client supplies both, so a miss here means an
@@ -306,6 +311,8 @@ EXPECTED = {
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
     },
@@ -320,6 +327,8 @@ EXPECTED = {
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
     },
@@ -334,6 +343,8 @@ EXPECTED = {
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
     },
@@ -362,6 +373,8 @@ EXPECTED = {
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 1,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
     },
@@ -377,6 +390,8 @@ EXPECTED = {
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 1,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
     },
