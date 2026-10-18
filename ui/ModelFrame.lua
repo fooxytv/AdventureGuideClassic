@@ -74,7 +74,7 @@ function component.ApplyPreset(preset)
 		and with a height offset that put the model outside the frame entirely.
 	]]
 	if type(creatureModel.SetPortraitZoom) == "function" then
-		creatureModel:SetPortraitZoom(0)
+		creatureModel:SetPortraitZoom(preset.portraitZoom or 0)
 	end
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
