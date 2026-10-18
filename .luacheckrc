@@ -61,7 +61,7 @@ globals = {
     "AdventureGuideClassic_DebugEvents",
     "AGC_CheckEquipped", "AGC_DebugLootFilter", "AGC_ResetAllEncounters",
     "AGC_ResetInstance", "AGC_ToggleDebug", "AGC_Wishlist",
-    "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
+    "AGC_ModelDump", "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "AGC_Ids", "SLASH_AGCIDS1",
     "SLASH_AGCPROBE1", "SLASH_AGCPROBEEVENTS1",
     "TestBossDefeatedToast", "TestBossDefeatedToastCustom",

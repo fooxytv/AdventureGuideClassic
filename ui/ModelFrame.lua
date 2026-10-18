@@ -193,6 +193,39 @@ function component.GetPreset()
 	return currentPreset
 end
 
+--[[
+	What the preset asks for next to what the model reports back, so a setting that
+	is saved correctly but does not take can be told apart from one that never
+	arrived. See CLAUDE.md.
+]]
+_G.AGC_ModelDump = function()
+	if not creatureModel then
+		print("|cffff5555[AGC]|r no model frame; open a boss on the Model tab")
+		return
+	end
+	local function ask(name, ...)
+		local fn = creatureModel[name]
+		if type(fn) ~= "function" then return "unsupported" end
+		local ok, a, b, c = pcall(fn, creatureModel, ...)
+		if not ok then return "error" end
+		if b ~= nil then
+			return ("%.3f, %.3f, %.3f"):format(a or 0, b or 0, c or 0)
+		end
+		return a ~= nil and tostring(a) or "nil"
+	end
+	local p = currentPreset or {}
+	print(("|cff00ff00[AGC]|r display %s, saved override: %s, enforcing: %s")
+		:format(tostring(currentDisplayId),
+			tostring(currentDisplayId and ModelPresetService.HasOverride(currentDisplayId)),
+			tostring(enforceUntil > GetTime())))
+	print(("  preset   scale %.2f  pos %.2f/%.2f/%.2f  facing %.2f  pitch %.2f  size %.2f  framing %.2f")
+		:format(p.scale or 0, p.x or 0, p.y or 0, p.z or 0, p.facing or 0,
+			p.pitch or 0, p.modelScale or 1, p.portraitZoom or 0))
+	print(("  model    facing %s  size %s  position %s")
+		:format(ask("GetFacing"), ask("GetModelScale"), ask("GetPosition")))
+	print(("  zoom     baseZoom %.2f  zoom %.2f"):format(baseZoom or 0, zoom or 0))
+end
+
 function component.Init(components_)
 	components = components_
 	local model = CreateFrame("Frame", nil, EncounterJournal.encounter.info)
