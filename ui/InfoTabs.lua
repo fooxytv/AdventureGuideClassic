@@ -291,7 +291,10 @@ function component.Refresh()
 		unselectTab(overviewTab)
 	end
 	if (selectedTab ~= lootTab) then
-		if (AdventureGuideNavigationService.GetEncounter()) then
+		-- Enabled on the instance page too, where it lists every boss's loot at once.
+		local lootInstance = AdventureGuideNavigationService.GetInstance()
+		if (AdventureGuideNavigationService.GetEncounter()
+			or (lootInstance and #lootInstance > 0)) then
 			unselectTab(lootTab)
 		else
 			disableTab(lootTab)

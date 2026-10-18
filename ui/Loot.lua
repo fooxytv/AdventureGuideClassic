@@ -600,7 +600,7 @@ end)
 	An item is attributed to the first boss that drops it and not repeated. Shared loot
 	would otherwise appear under every boss in the instance.
 ]]
-local function ShowPinnedAcrossInstance(dataProvider, Collect)
+local function ShowAcrossInstance(dataProvider, Collect)
 	local instance = AdventureGuideNavigationService.GetInstance()
 	local encounters = instance
 	if not (encounters and #encounters > 0) then
@@ -667,8 +667,15 @@ function component.Show()
 		return items
 	end
 
-	if LootFilterService.GetPinnedFilter() then
-		shownCount = ShowPinnedAcrossInstance(dataProvider, Collect)
+	-- No boss selected means the instance page, where the useful view is everything
+	-- the place drops, attributed to whichever boss drops it. Same walk the pinned
+	-- filter already used; only the predicate inside Collect differs.
+	local instance = AdventureGuideNavigationService.GetInstance()
+	local acrossInstance = LootFilterService.GetPinnedFilter()
+		or (not encounter and instance and #instance > 0)
+
+	if acrossInstance then
+		shownCount = ShowAcrossInstance(dataProvider, Collect)
 	else
 		for _, lootItem in ipairs(Collect(encounterLoot.loot)) do
 			dataProvider:Insert(lootItem)
@@ -698,6 +705,8 @@ function component.Show()
 			emptyText = "Nothing pinned in this instance"
 		elseif LootFilterService.IsFiltered() then
 			emptyText = "No loot matches this filter"
+		elseif acrossInstance then
+			emptyText = "No loot recorded for this instance yet"
 		end
 		if emptyText then
 			dataProvider:Insert({ isHeader = true, text = emptyText })
