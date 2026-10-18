@@ -288,6 +288,25 @@ PROBE = """
         out.progressCleared = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
         probeEncounter.defeated = 0
     end
+
+    --[[
+        Two encounters sharing a progress key would mark each other beaten. This is
+        why the key is the instance and encounter name rather than encounterID, which
+        is not unique: Blackrock Spire gives Pyroguard Emberseer and Solakar
+        Flamewreath the same id, and a dungeon and its SoD raid reuse ids across the
+        pair.
+    ]]
+    local seenKey, keyCollisions = {}, 0
+    for _, list in ipairs({ InstanceService.GetDungeons(), InstanceService.GetRaids() }) do
+        for _, instance in ipairs(list) do
+            for _, encounter in ipairs(instance) do
+                local key = instance.name .. "|" .. tostring(encounter.name)
+                if seenKey[key] then keyCollisions = keyCollisions + 1 end
+                seenKey[key] = true
+            end
+        end
+    end
+    out.progressKeyCollisions = keyCollisions
     return out
 
 """
@@ -308,6 +327,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressKeyCollisions": 0,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -322,6 +342,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressKeyCollisions": 0,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -336,6 +357,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressKeyCollisions": 0,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -364,6 +386,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressKeyCollisions": 0,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -379,6 +402,7 @@ EXPECTED = {
         "progressPersisted": 1,
         "progressHydrated": 1,
         "progressCleared": 1,
+        "progressKeyCollisions": 0,
     },
 }
 

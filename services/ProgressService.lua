@@ -34,12 +34,17 @@ local function GetCharacterKey()
 end
 
 --[[
-	encounterID where the data has one, which survives a boss being renamed -- the
-	Forever roster had four names corrected against the client's own tables. The
-	name pair is the fallback for the encounters that carry no id.
+	Instance and encounter name, which is what MarkEncounterDefeatedInInstanceData
+	already matches an encounter on, so progress agrees with detection by
+	construction.
+
+	Deliberately not encounterID, tempting as it is for surviving a rename: the ids
+	are not unique. Blackrock Spire gives both Pyroguard Emberseer and Solakar
+	Flamewreath 9816, and the three instances that exist as both a dungeon and an SoD
+	raid reuse their ids across the pair. Keying on an id would mark the wrong boss
+	beaten. The name pair is the only scheme that is collision-free on every client.
 ]]
 local function EncounterKey(instanceName, encounter)
-	if encounter.encounterID then return encounter.encounterID end
 	if not (instanceName and encounter.name) then return nil end
 	return instanceName .. "|" .. encounter.name
 end
