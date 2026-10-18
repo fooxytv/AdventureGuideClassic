@@ -224,6 +224,18 @@ _G.AGC_ModelDump = function()
 	print(("  model    facing %s  size %s  position %s")
 		:format(ask("GetFacing"), ask("GetModelScale"), ask("GetPosition")))
 	print(("  zoom     baseZoom %.2f  zoom %.2f"):format(baseZoom or 0, zoom or 0))
+	--[[
+		What is stored for this display, read fresh. If this disagrees with the
+		preset line then the saved values are not reaching the model; if it agrees
+		and the model line does not, the client is refusing the calls.
+	]]
+	local stored = currentDisplayId and ModelPresetService.Get(currentDisplayId)
+	if stored then
+		print(("  stored   scale %.2f  pos %.2f/%.2f/%.2f  facing %.2f  pitch %.2f  size %.2f  framing %.2f")
+			:format(stored.scale or 0, stored.x or 0, stored.y or 0, stored.z or 0,
+				stored.facing or 0, stored.pitch or 0, stored.modelScale or 1,
+				stored.portraitZoom or 0))
+	end
 end
 
 function component.Init(components_)
