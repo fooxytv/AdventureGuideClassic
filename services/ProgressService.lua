@@ -19,6 +19,7 @@ ProgressService = { }
 	services load before Main.lua binds it.
 ]]
 local defeated = { }
+local loaded = false
 local hydrated = false
 
 --[[
@@ -58,25 +59,37 @@ local function Store()
 	SavedVariables.Progress[charKey].defeated = defeated
 end
 
+--[[
+	Read once, then stay authoritative in memory. The guard matters because Store
+	writes the in-memory table over whatever is saved: a write that happened before
+	the first read would replace this character's whole history with the single kill
+	that triggered it. Returns false while SavedVariables or the character name are
+	still unavailable, so the next caller retries.
+]]
 local function Load()
-	if not SavedVariables then return end
+	if loaded then return true end
+	if not SavedVariables then return false end
 	local charKey = GetCharacterKey()
-	if not charKey then return end
+	if not charKey then return false end
 	local stored = SavedVariables.Progress
 		and SavedVariables.Progress[charKey]
 		and SavedVariables.Progress[charKey].defeated
 	if type(stored) == "table" then
 		defeated = stored
 	end
+	loaded = true
 	Store()
+	return true
 end
 
 function ProgressService.IsDefeated(instanceName, encounter)
+	Load()
 	local key = EncounterKey(instanceName, encounter)
 	return key ~= nil and defeated[key] == true
 end
 
 function ProgressService.MarkDefeated(instanceName, encounter)
+	Load()
 	local key = EncounterKey(instanceName, encounter)
 	if not key then return false end
 	defeated[key] = true
@@ -97,6 +110,7 @@ end
 
 function ProgressService.ClearAll()
 	defeated = { }
+	loaded = true
 	Store()
 end
 
@@ -106,8 +120,7 @@ end
 	login, so there is nothing stale to clear first.
 ]]
 function ProgressService.Hydrate()
-	if not GetCharacterKey() then return false end
-	Load()
+	if not Load() then return false end
 	local count = 0
 	for _, instance in ipairs(InstanceService.GetAllInstances()) do
 		for _, encounter in ipairs(instance) do

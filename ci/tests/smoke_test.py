@@ -269,6 +269,19 @@ PROBE = """
         end
     end
     if probeEncounter then
+        local charKey = UnitName("player") .. "-" .. GetRealmName()
+
+        --[[
+            A write before the first read must not replace this character's history.
+            Store writes the in-memory table wholesale, so without the load guard in
+            ProgressService the first MarkDefeated of a session would leave only the
+            boss that triggered it and drop everything earned before.
+        ]]
+        SavedVariables.Progress = { [charKey] = { defeated = { ["Seeded|Boss"] = true } } }
+        ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+        out.progressKeptPriorHistory =
+            SavedVariables.Progress[charKey].defeated["Seeded|Boss"] and 1 or 0
+
         ProgressService.ClearAll()
         out.progressStartsClear = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
 
@@ -276,7 +289,6 @@ PROBE = """
         out.progressRecorded = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 1 or 0
 
         -- Written through to SavedVariables under this character, not the account.
-        local charKey = UnitName("player") .. "-" .. GetRealmName()
         local stored = SavedVariables.Progress and SavedVariables.Progress[charKey]
         out.progressPersisted = (stored and stored.defeated and next(stored.defeated)) and 1 or 0
 
@@ -322,6 +334,7 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
         "progressPersisted": 1,
@@ -337,6 +350,7 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
         "progressPersisted": 1,
@@ -352,6 +366,7 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
         "progressPersisted": 1,
@@ -381,6 +396,7 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
         "progressPersisted": 1,
@@ -397,6 +413,7 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
         "progressPersisted": 1,
