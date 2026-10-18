@@ -32,10 +32,14 @@ local function CurrentDisplayId()
 	return components.ModelFrame.GetDisplay()
 end
 
-local function Apply()
+local function Apply(field)
 	local displayId = CurrentDisplayId()
 	if not displayId then return end
-	components.ModelFrame.ApplyPreset(panel.preset)
+	if field == "portraitZoom" then
+		components.ModelFrame.ApplyFraming(panel.preset.portraitZoom)
+	else
+		components.ModelFrame.ApplyPreset(panel.preset)
+	end
 	component.Refresh()
 end
 
@@ -80,7 +84,7 @@ local function AddRow(parent, index, field, label)
 			panel.preset.portraitZoom =
 				math.max(0, math.min(1, panel.preset.portraitZoom))
 		end
-		Apply()
+		Apply(field)
 	end
 	minus:SetScript("OnClick", function() Nudge(-1) end)
 	plus:SetScript("OnClick", function() Nudge(1) end)
