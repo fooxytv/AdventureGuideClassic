@@ -19,7 +19,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3493,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 270227, filter = "forever" }, -- Ephemeral Choker
+			{ id = 271096, filter = "forever" }, -- Aetherwisp Bracers
+			{ id = 271097, filter = "forever" }, -- Spiritwraith Drape
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -52,7 +56,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3495,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 270230, filter = "forever" }, -- Kindlegem Girdle
+			{ id = 270231, filter = "forever" }, -- Flamefist Grips
+			{ id = 271095, filter = "forever" }, -- Fang of Magmatus
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -85,7 +93,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3494,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 270228, filter = "forever" }, -- Golemheart Stave
+			{ id = 270229, filter = "forever" }, -- Treads of the Protector Golem
+			{ id = 271098, filter = "forever" }, -- Golemguard Chest
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -117,7 +129,12 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3496,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 270256, filter = "forever" }, -- Durgen's Crescent Axe
+			{ id = 270260, filter = "forever" }, -- Direhammer Leggings
+			{ id = 270261, filter = "forever" }, -- Robes of the Disgraced Thane
+			{ id = 274286, filter = "forever" }, -- Durgen Dirgehammer's Head
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
