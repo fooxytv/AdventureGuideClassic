@@ -25,6 +25,7 @@ local STEPS = {
 	facing = 0.1,
 	pitch  = 0.05,
 	modelScale = 0.1,
+	portraitZoom = 0.05,
 }
 
 local function CurrentDisplayId()
@@ -74,6 +75,11 @@ local function AddRow(parent, index, field, label)
 		if field == "modelScale" and panel.preset.modelScale < 0.1 then
 			panel.preset.modelScale = 0.1
 		end
+		-- SetPortraitZoom takes 0 to 1; outside that the client ignores it.
+		if field == "portraitZoom" then
+			panel.preset.portraitZoom =
+				math.max(0, math.min(1, panel.preset.portraitZoom))
+		end
 		Apply()
 	end
 	minus:SetScript("OnClick", function() Nudge(-1) end)
@@ -104,7 +110,8 @@ local function CreatePanel()
 	})
 	panel:SetBackdropColor(0, 0, 0, 0.9)
 	panel.rows = {}
-	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0, modelScale = 1 }
+	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0,
+		modelScale = 1, portraitZoom = 0 }
 
 	panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	panel.title:SetPoint("TOPLEFT", 12, -10)
@@ -147,6 +154,8 @@ local function CreatePanel()
 		AddRow(panel, rowCount, "modelScale", "Size")
 		rowCount = rowCount + 1
 	end
+	AddRow(panel, rowCount, "portraitZoom", "Framing")
+	rowCount = rowCount + 1
 	panel:SetHeight(ROWS_TOP + (rowCount * ROW_HEIGHT) + 70)
 
 	local function AddButton(text, index, onClick)

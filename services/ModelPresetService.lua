@@ -78,11 +78,12 @@ function ModelPresetService.Get(displayId)
 			facing = saved.facing or 0,
 			pitch = saved.pitch or 0,
 			modelScale = saved.modelScale or 1,
+			portraitZoom = saved.portraitZoom or 0,
 		}
 	end
 	return {
 		scale = CreatureModelService.GetCameraScale(displayId),
-		x = 0, y = 0, z = 0, facing = 0, pitch = 0, modelScale = 1,
+		x = 0, y = 0, z = 0, facing = 0, pitch = 0, modelScale = 1, portraitZoom = 0,
 	}
 end
 
@@ -123,6 +124,7 @@ function ModelPresetService.Save(displayId, preset)
 		facing = preset.facing ~= 0 and preset.facing or nil,
 		pitch = (preset.pitch or 0) ~= 0 and preset.pitch or nil,
 		modelScale = (preset.modelScale or 1) ~= 1 and preset.modelScale or nil,
+		portraitZoom = (preset.portraitZoom or 0) ~= 0 and preset.portraitZoom or nil,
 	}
 	return true
 end
@@ -165,6 +167,7 @@ function ModelPresetService.Export()
 			if p.facing then table.insert(parts, ("facing = %.2f"):format(p.facing)) end
 			if p.pitch then table.insert(parts, ("pitch = %.2f"):format(p.pitch)) end
 			if p.modelScale then table.insert(parts, ("modelScale = %.2f"):format(p.modelScale)) end
+			if p.portraitZoom then table.insert(parts, ("portraitZoom = %.2f"):format(p.portraitZoom)) end
 			table.insert(lines, ("\t[%d] = { %s },"):format(displayId, table.concat(parts, ", ")))
 		end
 		table.insert(lines, "})")
