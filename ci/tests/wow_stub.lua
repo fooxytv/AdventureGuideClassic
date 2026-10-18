@@ -100,7 +100,9 @@ function _G.__SetClient(name)
 		- GetSpellInfo. The global is gone on the mainline family, Forever included,
 		  where calling it is a nil-value error; C_Spell.GetSpellInfo replaces it and
 		  returns a table rather than a list. Both Compat.GetSpellInfo branches are
-		  therefore reachable, one per client.
+		  therefore reachable, one per client. GetSpellDescription splits the same
+		  way, and returns "" for an unknown spell as the client does before spell
+		  data has loaded.
 		- C_Seasons, above.
 		- The tab template. CharacterFrameTabButtonTemplate's defining file is gated
 		  to the cata and mists game types, so on Forever it does not exist and the
@@ -113,12 +115,17 @@ function _G.__SetClient(name)
 	]]
 	if client.retailShaped then
 		_G.GetSpellInfo = nil
+		_G.GetSpellDescription = nil
 		_G.C_Spell = {
 			GetSpellInfo = function(spellID)
 				if not spellID then return nil end
 				return { name = "Spell " .. tostring(spellID), iconID = 1 }
 			end,
 			GetSpellTexture = function() return 1 end,
+			GetSpellDescription = function(spellID)
+				if not spellID or spellID == 0 then return "" end
+				return "Description of spell " .. tostring(spellID)
+			end,
 		}
 		_G.PanelTabButtonTemplate = {}
 		_G.CharacterFrameTabButtonTemplate = nil
@@ -127,6 +134,10 @@ function _G.__SetClient(name)
 		_G.GetSpellInfo = function(spellID)
 			if not spellID then return nil end
 			return "Spell " .. tostring(spellID), nil, 1
+		end
+		_G.GetSpellDescription = function(spellID)
+			if not spellID or spellID == 0 then return "" end
+			return "Description of spell " .. tostring(spellID)
 		end
 		_G.C_Spell = nil
 		_G.PanelTabButtonTemplate = nil

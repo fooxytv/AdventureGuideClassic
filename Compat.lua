@@ -178,6 +178,28 @@ function Compat.GetSpellInfo(spellID)
 end
 
 --[[
+	The spell's own description text, which is what the Abilities tab falls back to
+	when an ability carries no written body.
+
+	C_Spell on the mainline family, the global elsewhere. Returns nil rather than the
+	empty string the client gives before spell data has loaded, so callers have one
+	case to handle.
+]]
+function Compat.GetSpellDescription(spellID)
+	if not spellID then return nil end
+
+	local text
+	if C_Spell and C_Spell.GetSpellDescription then
+		text = C_Spell.GetSpellDescription(spellID)
+	elseif _G.GetSpellDescription then
+		text = _G.GetSpellDescription(spellID)
+	end
+
+	if text and text ~= "" then return text end
+	return nil
+end
+
+--[[
 	The tab button template differs by client.
 
 	Era and TBC have CharacterFrameTabButtonTemplate. On Forever the file defining it
