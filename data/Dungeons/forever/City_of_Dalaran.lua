@@ -18,7 +18,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3298,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273031, filter = "forever" }, -- Runemender's Seal
+			{ id = 273034, filter = "forever" }, -- Ephemeral Grips
+			{ id = 273035, filter = "forever" }, -- Mana-Warped Chain Shirt
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -51,7 +55,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3299,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273037, filter = "forever" }, -- Felbough Arm
+			{ id = 273038, filter = "forever" }, -- Garb of Fallen Felbark
+			{ id = 273039, filter = "forever" }, -- Blightleaf Rope
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -85,7 +93,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3300,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273040, filter = "forever" }, -- Spine of the Devourer
+			{ id = 273041, filter = "forever" }, -- Slitherwrap Girdle
+			{ id = 273042, filter = "forever" }, -- Manascale Treads
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -118,7 +130,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3301,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273043, filter = "forever" }, -- Wand of Mana Concentration
+			{ id = 273044, filter = "forever" }, -- Violet Sorcerer's Robes
+			{ id = 273045, filter = "forever" }, -- Drape of Shifting Energy
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -135,7 +151,12 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3302,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273046, filter = "forever" }, -- Guardian's Dualblade
+			{ id = 273047, filter = "forever" }, -- Unstable Crystalline Shoulderpads
+			{ id = 273048, filter = "forever" }, -- Refractory Scaleguards
+			{ id = 273099, filter = "forever" }, -- Blueprint: Spinning Wheel
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -168,7 +189,12 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3303,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273049, filter = "forever" }, -- Archmagister's Faceted Pendant
+			{ id = 273051, filter = "forever" }, -- Violet Sorcerer's Mantle
+			{ id = 273052, filter = "forever" }, -- Ponderous Orb
+			{ id = 273103, filter = "forever" }, -- Blueprint: Arcane Salvager
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -204,7 +230,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3310,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273053, filter = "forever" }, -- Tendonscraper Dagger
+			{ id = 273054, filter = "forever" }, -- Cartilage Shapers
+			{ id = 273055, filter = "forever" }, -- Bonepile Gaze
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -238,7 +268,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3311,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273032, filter = "forever" }, -- Bonebinder's Signet
+			{ id = 273033, filter = "forever" }, -- Gravespike Repeater
+			{ id = 273036, filter = "forever" }, -- Graveweave Bindings
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},

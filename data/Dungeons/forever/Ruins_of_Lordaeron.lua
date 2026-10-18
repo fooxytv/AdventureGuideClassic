@@ -19,7 +19,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3353,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 271201, filter = "forever" }, -- Atrophic Girdle
+			{ id = 271202, filter = "forever" }, -- Witherbite Bracers
+			{ id = 271203, filter = "forever" }, -- Segmented Spider Leg
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -51,7 +55,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3357,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 271207, filter = "forever" }, -- Rotmender's Leggings
+			{ id = 271208, filter = "forever" }, -- Grip of Fear
+			{ id = 271216, filter = "forever" }, -- Scepter of the Abandoned
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -84,7 +92,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3355,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 271204, filter = "forever" }, -- Meathook Slicer
+			{ id = 271205, filter = "forever" }, -- Abomination Bones
+			{ id = 271206, filter = "forever" }, -- Leftover Abomination Skin
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -101,7 +113,13 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3354,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 271213, filter = "forever" }, -- Mirror of Rath'mael
+			{ id = 271214, filter = "forever" }, -- Rotmender's Treads
+			{ id = 271215, filter = "forever" }, -- Coldspire Staff
+			{ id = 273085, filter = "forever" }, -- Blueprint: Fermenter
+			{ id = 273103, filter = "forever" }, -- Blueprint: Arcane Salvager
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -133,7 +151,10 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3408,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 6641, filter = "forever" }, -- Haunting Blade
+			{ id = 6642, filter = "forever" }, -- Phantom Armor
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -150,7 +171,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3411,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 271211, filter = "forever" }, -- Vilewalkers
+			{ id = 271212, filter = "forever" }, -- Bloodied Chestwraps
+			{ id = 271218, filter = "forever" }, -- Vileblood Scimitar
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -182,7 +207,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3412,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 271209, filter = "forever" }, -- Bonerust Leggings
+			{ id = 271210, filter = "forever" }, -- Tuskwrap Belt
+			{ id = 271217, filter = "forever" }, -- Corpse Chopper
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},

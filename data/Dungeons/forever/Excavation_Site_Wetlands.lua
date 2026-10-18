@@ -19,7 +19,11 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3480,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273022, filter = "forever" }, -- Supple Bellyskin Leggings
+			{ id = 273023, filter = "forever" }, -- Saltscale Girdle
+			{ id = 273024, filter = "forever" }, -- Glinteye Slippers
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -53,7 +57,12 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3481,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273025, filter = "forever" }, -- Raptorclaw Greaves
+			{ id = 273026, filter = "forever" }, -- Garb of Florid Feathers
+			{ id = 273027, filter = "forever" }, -- Raptor's Gaze
+			{ id = 273106, filter = "forever" }, -- Blueprint: Greenhouse
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -87,7 +96,9 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3644,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 270180, filter = "forever" }, -- Horrible Rootcore
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
@@ -120,7 +131,13 @@ InstanceService.AddDungeon({
 		defeated = 0,
 		encounterID = 3482,
 		portrait = 521744,
-		loot = {},
+		loot = {
+			{ id = 273028, filter = "forever" }, -- Reliquary Mantle
+			{ id = 273029, filter = "forever" }, -- Golemsight Long Gun
+			{ id = 273030, filter = "forever" }, -- Ring of Power Regulation
+			{ id = 270865, filter = "forever" }, -- Titan Relic
+			{ id = 273097, filter = "forever" }, -- Blueprint: Rock Garden
+		},
 		sharedLoot = {},
 		rareLoot = {},
 		veryRareLoot = {},
