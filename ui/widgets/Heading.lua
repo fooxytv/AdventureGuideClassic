@@ -30,7 +30,10 @@ function widgetType:Construct(parent)
 end
 
 function widgetType:IsTypeFor(content)
-	return content.heading and true or false
+	-- A heading is its text. Ability entries written { spell = N, heading = true }
+	-- are spells, and Heading registers before Spell, so a truthiness test claimed
+	-- them and fed SetText a boolean.
+	return type(content.heading) == "string"
 end
 
 function widgetType:SetContents(widget, contents)

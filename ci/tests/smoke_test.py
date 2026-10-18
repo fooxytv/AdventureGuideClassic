@@ -219,7 +219,7 @@ PROBE = """
         under "classic" and the Era ones under "tbc", so one pass sees half the
         data.
     ]]
-    local claimed, unclaimed = 0, 0
+    local claimed, unclaimed, miscast = 0, 0, 0
     local previousFilter = SavedVariables.ExpansionFilter
     for _, expansionFilter in ipairs({ "classic", "tbc" }) do
         SavedVariables.ExpansionFilter = expansionFilter
@@ -227,8 +227,19 @@ PROBE = """
             for _, instance in ipairs(list) do
                 for _, encounter in ipairs(instance) do
                     for _, entry in ipairs(encounter.abilities or {}) do
-                        if Widgets.GetTypeForContent(entry) then
+                        local widgetType = Widgets.GetTypeForContent(entry)
+                        if widgetType then
                             claimed = claimed + 1
+                            --[[
+                                Claimed is not enough: the first type whose IsTypeFor
+                                passes wins, and Heading registers before Spell, so
+                                { spell = N, heading = true } was claimed by Heading
+                                and fed SetText a boolean. Only the two collapsible
+                                types render a boss ability.
+                            ]]
+                            if widgetType.name ~= "Spell" and widgetType.name ~= "Ability" then
+                                miscast = miscast + 1
+                            end
                         else
                             unclaimed = unclaimed + 1
                         end
@@ -239,6 +250,7 @@ PROBE = """
     end
     SavedVariables.ExpansionFilter = previousFilter
     out.unclaimedAbilities = unclaimed
+    out.miscastAbilities = miscast
     out.claimedAbilities = claimed
     return out
 
@@ -254,6 +266,7 @@ EXPECTED = {
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
+        "miscastAbilities": 0,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -262,6 +275,7 @@ EXPECTED = {
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
+        "miscastAbilities": 0,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -270,6 +284,7 @@ EXPECTED = {
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
+        "miscastAbilities": 0,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -292,6 +307,7 @@ EXPECTED = {
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
+        "miscastAbilities": 0,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -301,6 +317,7 @@ EXPECTED = {
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
+        "miscastAbilities": 0,
     },
 }
 

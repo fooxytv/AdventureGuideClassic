@@ -47,9 +47,9 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 1316382, heading = true }, -- Dust Storm
-			{ spell = 16495, heading = true }, -- Fatal Bite
-			{ spell = 3604, heading = true }, -- Tendon Rip
+			{ spell = 1316382 }, -- Dust Storm
+			{ spell = 16495 }, -- Fatal Bite
+			{ spell = 3604 }, -- Tendon Rip
 		}
 	},
 	{
@@ -86,9 +86,9 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 14100, heading = true }, -- Terrifying Roar
-			{ spell = 13445, heading = true }, -- Rend
-			{ spell = 1284435, heading = true }, -- Enrage
+			{ spell = 14100 }, -- Terrifying Roar
+			{ spell = 13445 }, -- Rend
+			{ spell = 1284435 }, -- Enrage
 		}
 	},
 	{
@@ -122,8 +122,8 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 1316480, heading = true }, -- Entangling Roots
-			{ spell = 9616, heading = true }, -- Wild Regeneration
+			{ spell = 1316480 }, -- Entangling Roots
+			{ spell = 9616 }, -- Wild Regeneration
 		}
 	},
 	{
@@ -161,10 +161,10 @@ InstanceService.AddDungeon({
 			}
 		},
 		abilities = {
-			{ spell = 8078, heading = true }, -- Thunderclap
-			{ spell = 8374, heading = true }, -- Arcing Smash
-			{ spell = 10101, heading = true }, -- Knock Away
-			{ spell = 11876, heading = true }, -- War Stomp
+			{ spell = 8078 }, -- Thunderclap
+			{ spell = 8374 }, -- Arcing Smash
+			{ spell = 10101 }, -- Knock Away
+			{ spell = 11876 }, -- War Stomp
 		}
 	},
 })
