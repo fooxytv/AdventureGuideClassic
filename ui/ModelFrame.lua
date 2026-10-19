@@ -328,6 +328,80 @@ _G.AGC_ModelDump = function()
 	end
 end
 
+--[[
+	Step the model through one camera call at a time and watch which one moves it.
+
+	Position is not the problem and the log says so: with debug on, the samples hold
+	the preset's values steady for four seconds while the model is not on screen at
+	all. That leaves the camera, and its getters cannot be trusted here --
+	GetCameraDistance reads -1.8e-32 while the camera is plainly 2.5 units from its
+	target. So rather than read state, this drives each control in turn and prints
+	what it just did. The answer is which number the model appears on.
+]]
+_G.AGC_ModelPoke = function()
+	if not creatureModel then
+		print("|cffff5555[AGC]|r no model frame; open a boss on the Model tab")
+		return
+	end
+	-- Otherwise the enforcement window reapplies the preset over every step.
+	ReleasePreset()
+	local m = creatureModel
+	local function has(name) return type(m[name]) == "function" end
+	local steps = {
+		{ "cam distance scale 1", function() m:SetCamDistanceScale(1) end },
+		{ "cam distance scale 2", function() m:SetCamDistanceScale(2) end },
+		{ "cam distance scale 4", function() m:SetCamDistanceScale(4) end },
+		{ "portrait zoom 0", function()
+			if not has("SetPortraitZoom") then return "unsupported" end
+			m:SetPortraitZoom(0)
+		end },
+		{ "portrait zoom 0.5", function()
+			if not has("SetPortraitZoom") then return "unsupported" end
+			m:SetPortraitZoom(0.5)
+		end },
+		{ "portrait zoom 1", function()
+			if not has("SetPortraitZoom") then return "unsupported" end
+			m:SetPortraitZoom(1)
+		end },
+		{ "position 0/0/0", function() m:SetPosition(0, 0, 0) end },
+		{ "RefreshCamera", function()
+			if not has("RefreshCamera") then return "unsupported" end
+			m:RefreshCamera()
+		end },
+		{ "SetCamera(0)", function()
+			if not has("SetCamera") then return "unsupported" end
+			m:SetCamera(0)
+		end },
+		{ "custom camera 4/0/0 -> 0/0/0", function()
+			if not (has("MakeCurrentCameraCustom") and has("SetCameraPosition")) then
+				return "unsupported"
+			end
+			m:MakeCurrentCameraCustom()
+			m:SetCameraPosition(4, 0, 0)
+			m:SetCameraTarget(0, 0, 0)
+		end },
+		{ "custom camera 8/0/1 -> 0/0/1", function()
+			if not has("SetCameraPosition") then return "unsupported" end
+			m:SetCameraPosition(8, 0, 1)
+			m:SetCameraTarget(0, 0, 1)
+		end },
+	}
+	print(("|cff00ff00[AGC]|r poking display %s -- say which number he appears on")
+		:format(tostring(currentDisplayId)))
+	for index, step in ipairs(steps) do
+		C_Timer.After(index * 2, function()
+			if not creatureModel then return end
+			local note = step[2]()
+			print(("|cffff9900[AGC]|r %2d  %s%s")
+				:format(index, step[1], note and (" -- " .. note) or ""))
+		end)
+	end
+	C_Timer.After((#steps + 1) * 2, function()
+		if currentPreset then component.Reframe(currentPreset) end
+		print("|cff00ff00[AGC]|r poke done, preset restored")
+	end)
+end
+
 function component.Init(components_)
 	components = components_
 	local model = CreateFrame("Frame", nil, EncounterJournal.encounter.info)
