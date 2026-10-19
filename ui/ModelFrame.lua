@@ -103,14 +103,60 @@ end
 	GarrisonFollowerTabModelClusterModel, which is ResetModel, ZeroCachedCenterXY,
 	then apply.
 ]]
+--[[
+	Aim the camera ourselves rather than asking the client to frame the model.
+
+	AGC_ModelPoke proved this in game. RefreshCamera and SetCamera(0) both mean "go
+	back to the automatic camera", and both put the camera inside Skul's head.
+	SetCamDistanceScale and SetPortraitZoom are multipliers on that base, so the
+	preset's 1.41 showed an empty frame and no amount of repositioning helped -- the
+	model was never misplaced, the camera was inside it. A custom camera framed him
+	correctly and, alone among everything tried, stayed framed across a reload.
+	Blizzard's own Model_ApplyUICamera takes the same route for the same reason.
+
+	Distance is multiplied by the model's height so one preset value means the same
+	framing for a gnome and a giant. That is what SetCamDistanceScale used to do for
+	us through the automatic camera, so the 80 shipped presets keep roughly what
+	they meant.
+]]
+local CAMERA_DISTANCE_FACTOR = 1.2
+local CAMERA_EYE_FACTOR = 0.35
+local DEFAULT_HEIGHT = 2
+
+local function CanAimCamera()
+	return creatureModel ~= nil
+		and type(creatureModel.MakeCurrentCameraCustom) == "function"
+		and type(creatureModel.SetCameraPosition) == "function"
+		and type(creatureModel.SetCameraTarget) == "function"
+end
+
+local function AimCamera(preset)
+	if not CanAimCamera() then return false end
+	local height = currentDisplayId
+		and CreatureModelService.GetHeight(currentDisplayId)
+	if not height or height <= 0 then height = DEFAULT_HEIGHT end
+	-- z raises the framing, y shifts it sideways, x adds distance. Moving the
+	-- camera and its target together pans rather than swings.
+	local eye = height * CAMERA_EYE_FACTOR + (preset.z or 0)
+	local side = preset.y or 0
+	local distance = (preset.scale or 1) * height * CAMERA_DISTANCE_FACTOR
+		+ (preset.x or 0)
+	creatureModel:MakeCurrentCameraCustom()
+	creatureModel:SetCameraPosition(distance, side, eye)
+	creatureModel:SetCameraTarget(0, side, eye)
+	return true
+end
+
 function component.Reframe(preset)
 	if not creatureModel or not preset then return end
 	currentPreset = preset
-	if type(creatureModel.ZeroCachedCenterXY) == "function" then
-		creatureModel:ZeroCachedCenterXY()
-	end
-	if type(creatureModel.SetPortraitZoom) == "function" then
-		creatureModel:SetPortraitZoom(preset.portraitZoom or 0)
+	if not CanAimCamera() then
+		if type(creatureModel.ZeroCachedCenterXY) == "function" then
+			creatureModel:ZeroCachedCenterXY()
+		end
+		if type(creatureModel.SetPortraitZoom) == "function" then
+			creatureModel:SetPortraitZoom(preset.portraitZoom or 0)
+		end
 	end
 	component.ApplyPreset(preset)
 	-- Reframing lands a frame later and drops the model to the origin, so the preset
@@ -129,19 +175,13 @@ function component.ApplyPreset(preset)
 	if creatureModel.SetModelScale then
 		creatureModel:SetModelScale(preset.modelScale or 1)
 	end
-	--[[
-		Portrait zoom is camera state on a frame reused for every creature, and
-		SetDisplayInfo resets it. Setting it only for unscaled models left a scaled
-		one showing with whatever the previous creature happened to leave behind, so
-		the same preset framed differently depending on what you looked at before --
-		and with a height offset that put the model outside the frame entirely.
-	]]
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
-	creatureModel:SetCamDistanceScale(zoom)
-	-- Position and facing only. Whatever the camera is measured from is Reframe's
-	-- job, and doing it here is what made the two fight each other.
-	creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
+	if not AimCamera(preset) then
+		-- No custom camera on this client, so the automatic one is all there is.
+		creatureModel:SetCamDistanceScale(zoom)
+		creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
+	end
 	creatureModel:SetFacing(preset.facing or 0)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
@@ -175,8 +215,8 @@ local function SetupModelControls(model)
 	model:EnableMouseWheel(true)
 	model:SetScript("OnMouseWheel", function(self, delta)
 		zoom = math.max(MIN_ZOOM, math.min(MAX_ZOOM, zoom * (1 - delta * ZOOM_RATE)))
-		self:SetCamDistanceScale(zoom)
 		if currentPreset then currentPreset.scale = zoom end
+		if not AimCamera(currentPreset) then self:SetCamDistanceScale(zoom) end
 		ReleasePreset()
 		NotifyTuner()
 	end)
@@ -227,7 +267,9 @@ local function SetupModelControls(model)
 			local speed = PAN_SPEED * PositionScale(currentDisplayId)
 			currentPreset.y = self.panSide - (cursorX - self.panStartX) * speed
 			currentPreset.z = self.panHeight + (cursorY - self.panStartY) * speed
-			self:SetPosition(currentPreset.x or 0, currentPreset.y, currentPreset.z)
+			if not AimCamera(currentPreset) then
+				self:SetPosition(currentPreset.x or 0, currentPreset.y, currentPreset.z)
+			end
 		elseif self.isRotating then
 			local x = GetCursorPosition()
 			local facing = self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED
@@ -308,7 +350,8 @@ _G.AGC_ModelDump = function()
 			p.pitch or 0, p.modelScale or 1, p.portraitZoom or 0))
 	print(("  model    facing %s  size %s  position %s")
 		:format(ask("GetFacing"), ask("GetModelScale"), ask("GetPosition")))
-	print(("  zoom     baseZoom %.2f  zoom %.2f"):format(baseZoom or 0, zoom or 0))
+	print(("  zoom     baseZoom %.2f  zoom %.2f  aiming the camera ourselves: %s")
+		:format(baseZoom or 0, zoom or 0, tostring(CanAimCamera())))
 	print(("  camera   pos %s  target %s  distance %s")
 		:format(ask("GetCameraPosition"), ask("GetCameraTarget"),
 			ask("GetCameraDistance")))
