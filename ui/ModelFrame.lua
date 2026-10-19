@@ -61,9 +61,9 @@ end
 	Everything that frames the model, run both when a display is chosen and again
 	once it has loaded, because SetDisplayInfo zeroes the transform.
 
-	The portrait zoom and cached centre below are only touched on a client with no
-	custom camera. Where we can aim the camera ourselves, AimCamera owns the framing
-	entirely and those two would fight it.
+	The portrait zoom below is only touched on a client with no custom camera, and
+	there it is deliberately what it has always been. Where we can aim the camera
+	ourselves, AimCamera owns the framing and a portrait zoom would fight it.
 ]]
 --[[
 	Aim the camera ourselves rather than asking the client to frame the model.
@@ -112,11 +112,17 @@ end
 function component.Reframe(preset)
 	if not creatureModel or not preset then return end
 	currentPreset = preset
+	--[[
+		Era and BCC reach this, and nothing here may change what they already do.
+
+		So the portrait zoom stays conditional on the preset being unscaled, exactly
+		as it was: SetPortraitZoom and SetModelScale frame the model in two different
+		ways, and the one scaled preset we ship -- Ragnaros, display 11121, at 3.20 --
+		is framed by the scale. Zooming him as well moved him.
+	]]
 	if not CanAimCamera() then
-		if type(creatureModel.ZeroCachedCenterXY) == "function" then
-			creatureModel:ZeroCachedCenterXY()
-		end
-		if type(creatureModel.SetPortraitZoom) == "function" then
+		if (preset.modelScale or 1) == 1
+			and type(creatureModel.SetPortraitZoom) == "function" then
 			creatureModel:SetPortraitZoom(preset.portraitZoom or 0)
 		end
 	end
