@@ -65,6 +65,7 @@ globals = {
     "AGC_ModelDump", "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "AGC_Ids", "SLASH_AGCIDS1",
     "AGC_MarkDefeated", "AGC_MarkInstanceDefeated", "AGC_ProgressDump",
+    "AGC_ResetAllDungeons",
     "SLASH_AGCPROBE1", "SLASH_AGCPROBEEVENTS1",
     "TestBossDefeatedToast", "TestBossDefeatedToastCustom",
     "TestLevelUpToast", "TestLevelUpToastAt",
