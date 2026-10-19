@@ -417,6 +417,8 @@ it to be read.
 | `AGC_ResetAllEncounters()` | clear them everywhere |
 | `AGC_Wishlist()` | print the wishlist |
 | `AGC_CheckEquipped()` | re-run the equipped-item wishlist sweep |
+| `AGC_ModelDump()` | what the model preset asks for next to what the model reports back |
+| `AGC_ModelPoke()` | drive each model camera control in turn, two seconds apart, to find which one the client honours |
 | `AGC_NpcPreview(id)` | show an NPC model |
 | `TestLevelUpToast()`, `TestLevelUpToastAt(level)` | level-up toast |
 | `TestBossDefeatedToast()`, `TestBossDefeatedToastCustom(name)` | defeat toast |

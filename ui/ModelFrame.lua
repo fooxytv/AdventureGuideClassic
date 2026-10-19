@@ -31,6 +31,7 @@ end
 
 local ENFORCE_SECONDS = 2.0
 local enforceUntil = 0
+local lastSetDisplayAt
 
 local function EnforcePreset()
 	enforceUntil = GetTime() + ENFORCE_SECONDS
@@ -43,9 +44,10 @@ end
 function component.SetDisplay(displayId, title)
 	if not creatureModel or not displayId then return end
 	currentDisplayId = displayId
+	lastSetDisplayAt = GetTime()
 	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
-	component.ApplyPreset(currentPreset)
+	component.Reframe(currentPreset)
 	EnforcePreset()
 	local displayTitle = ModelPresetService.GetTitle(displayId, currentEncounterId) or title
 	if displayTitle then
@@ -55,6 +57,113 @@ function component.SetDisplay(displayId, title)
 	if components and components.ModelTuner then
 		components.ModelTuner.OnDisplayChanged(displayId)
 	end
+	--[[
+		With debug on, report the model twice per display change: once now, and once
+		after the enforcement window has closed and any late load has landed. Reading
+		it by hand needs the command run in the half-second it goes wrong, which is
+		how three captures in a row came from the wrong moment.
+	]]
+	if AdventureGuideClassic_DebugEvents then
+		--[[
+			Sample the position repeatedly rather than once. A single snapshot cannot
+			show a reset that lands after it, which is the one thing none of the
+			readings so far could have caught.
+		]]
+		local want = currentPreset
+		for _, delay in ipairs({ 0, 0.1, 0.3, 0.6, 1.0, 2.5, 4.0 }) do
+			C_Timer.After(delay, function()
+				if currentDisplayId ~= displayId or not creatureModel then return end
+				local ok, x, y, z = pcall(creatureModel.GetPosition, creatureModel)
+				local okf, facing = pcall(creatureModel.GetFacing, creatureModel)
+				print(("|cffff9900[AGC]|r t+%.1fs  model %s  facing %s  want %.2f/%.2f/%.2f  enforcing %s")
+					:format(delay,
+						ok and ("%.3f/%.3f/%.3f"):format(x or 0, y or 0, z or 0) or "unreadable",
+						okf and ("%.3f"):format(facing or 0) or "?",
+						want.x or 0, want.y or 0, want.z or 0,
+						tostring(enforceUntil > GetTime())))
+			end)
+		end
+	end
+end
+
+--[[
+	Everything that frames the model, in the order the engine needs it.
+
+	SetPortraitZoom derives the camera from the model's bounding box, and those bounds
+	are not known until the geometry has streamed in -- so a framing computed before
+	the load is computed against whatever creature was in the frame before. And
+	Model:SetPosition is a camera offset measured from the model's cached centre, not a
+	world position: Blizzard's own panning code in ModelFrameMixin calls the three
+	values cameraX, cameraY and cameraZ. A centre that moves under it therefore moves
+	the model while GetPosition keeps reporting exactly what was written.
+
+	That is the contradiction this chased for a week. The saved numbers were never
+	wrong; what they are measured from changed. Blizzard redoes the framing once the
+	model has loaded and zeroes the cached centre first -- see the OnModelLoaded of
+	GarrisonFollowerTabModelClusterModel, which is ResetModel, ZeroCachedCenterXY,
+	then apply.
+]]
+--[[
+	Aim the camera ourselves rather than asking the client to frame the model.
+
+	AGC_ModelPoke proved this in game. RefreshCamera and SetCamera(0) both mean "go
+	back to the automatic camera", and both put the camera inside Skul's head.
+	SetCamDistanceScale and SetPortraitZoom are multipliers on that base, so the
+	preset's 1.41 showed an empty frame and no amount of repositioning helped -- the
+	model was never misplaced, the camera was inside it. A custom camera framed him
+	correctly and, alone among everything tried, stayed framed across a reload.
+	Blizzard's own Model_ApplyUICamera takes the same route for the same reason.
+
+	Distance is multiplied by the model's height so one preset value means the same
+	framing for a gnome and a giant. That is what SetCamDistanceScale used to do for
+	us through the automatic camera, so the 80 shipped presets keep roughly what
+	they meant.
+]]
+local CAMERA_DISTANCE_FACTOR = 1.2
+local CAMERA_EYE_FACTOR = 0.35
+local DEFAULT_HEIGHT = 2
+
+local function CanAimCamera()
+	return creatureModel ~= nil
+		and type(creatureModel.MakeCurrentCameraCustom) == "function"
+		and type(creatureModel.SetCameraPosition) == "function"
+		and type(creatureModel.SetCameraTarget) == "function"
+end
+
+local function AimCamera(preset)
+	if not CanAimCamera() then return false end
+	local height = currentDisplayId
+		and CreatureModelService.GetHeight(currentDisplayId)
+	if not height or height <= 0 then height = DEFAULT_HEIGHT end
+	-- z raises the framing, y shifts it sideways, x adds distance. Moving the
+	-- camera and its target together pans rather than swings.
+	local eye = height * CAMERA_EYE_FACTOR + (preset.z or 0)
+	local side = preset.y or 0
+	local distance = (preset.scale or 1) * height * CAMERA_DISTANCE_FACTOR
+		+ (preset.x or 0)
+	creatureModel:MakeCurrentCameraCustom()
+	creatureModel:SetCameraPosition(distance, side, eye)
+	creatureModel:SetCameraTarget(0, side, eye)
+	return true
+end
+
+function component.Reframe(preset)
+	if not creatureModel or not preset then return end
+	currentPreset = preset
+	if not CanAimCamera() then
+		if type(creatureModel.ZeroCachedCenterXY) == "function" then
+			creatureModel:ZeroCachedCenterXY()
+		end
+		if type(creatureModel.SetPortraitZoom) == "function" then
+			creatureModel:SetPortraitZoom(preset.portraitZoom or 0)
+		end
+	end
+	component.ApplyPreset(preset)
+	-- Reframing lands a frame later and drops the model to the origin, so the preset
+	-- goes on again after that has happened as well as before it.
+	C_Timer.After(0, function()
+		if currentPreset == preset then component.ApplyPreset(preset) end
+	end)
 end
 
 function component.ApplyPreset(preset)
@@ -63,21 +172,27 @@ function component.ApplyPreset(preset)
 	if preset.title and preset.title ~= "" then
 		modelContainer.imageTitle:SetText(preset.title)
 	end
-	local sized = (preset.modelScale or 1) ~= 1
 	if creatureModel.SetModelScale then
 		creatureModel:SetModelScale(preset.modelScale or 1)
 	end
-	if not sized then
-		creatureModel:SetPortraitZoom(0)
-	end
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
-	creatureModel:SetCamDistanceScale(zoom)
-	creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
+	if not AimCamera(preset) then
+		-- No custom camera on this client, so the automatic one is all there is.
+		creatureModel:SetCamDistanceScale(zoom)
+		creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
+	end
 	creatureModel:SetFacing(preset.facing or 0)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
 	end
+end
+
+-- Changing the framing from the tuner.
+function component.ApplyFraming(value)
+	if not currentPreset then return end
+	currentPreset.portraitZoom = value or 0
+	component.Reframe(currentPreset)
 end
 
 function component.GetAppliedModelScale()
@@ -100,8 +215,8 @@ local function SetupModelControls(model)
 	model:EnableMouseWheel(true)
 	model:SetScript("OnMouseWheel", function(self, delta)
 		zoom = math.max(MIN_ZOOM, math.min(MAX_ZOOM, zoom * (1 - delta * ZOOM_RATE)))
-		self:SetCamDistanceScale(zoom)
 		if currentPreset then currentPreset.scale = zoom end
+		if not AimCamera(currentPreset) then self:SetCamDistanceScale(zoom) end
 		ReleasePreset()
 		NotifyTuner()
 	end)
@@ -130,8 +245,14 @@ local function SetupModelControls(model)
 		self.isRotating = false
 		self.isTilting = false
 	end)
-	model:SetScript("OnModelLoaded", function()
-		if currentPreset then component.ApplyPreset(currentPreset) end
+	model:SetScript("OnModelLoaded", function(self)
+		if AdventureGuideClassic_DebugEvents then
+			local ok, x, y, z = pcall(self.GetPosition, self)
+			print(("|cffff9900[AGC]|r OnModelLoaded fired %.2fs after SetDisplay, position %s")
+				:format(GetTime() - (lastSetDisplayAt or GetTime()),
+					ok and ("%.3f/%.3f/%.3f"):format(x or 0, y or 0, z or 0) or "unreadable"))
+		end
+		if currentPreset then component.Reframe(currentPreset) end
 	end)
 	model:SetScript("OnUpdate", function(self)
 		if enforceUntil > 0 and currentPreset then
@@ -146,7 +267,9 @@ local function SetupModelControls(model)
 			local speed = PAN_SPEED * PositionScale(currentDisplayId)
 			currentPreset.y = self.panSide - (cursorX - self.panStartX) * speed
 			currentPreset.z = self.panHeight + (cursorY - self.panStartY) * speed
-			self:SetPosition(currentPreset.x or 0, currentPreset.y, currentPreset.z)
+			if not AimCamera(currentPreset) then
+				self:SetPosition(currentPreset.x or 0, currentPreset.y, currentPreset.z)
+			end
 		elseif self.isRotating then
 			local x = GetCursorPosition()
 			local facing = self.rotateStartFacing + (x - self.rotateStartX) * ROTATION_SPEED
@@ -185,6 +308,184 @@ end
 
 function component.GetPreset()
 	return currentPreset
+end
+
+-- What the model reports right now, for comparing against what a save is about to
+-- write. Also whether the caller's table is the one driving the model.
+function component.DescribeLive(theirPreset)
+	if not creatureModel then return "no model" end
+	local ok, x, y, z = pcall(creatureModel.GetPosition, creatureModel)
+	return ("model %s, same table as preset: %s"):format(
+		ok and ("%.2f/%.2f/%.2f"):format(x or 0, y or 0, z or 0) or "unreadable",
+		tostring(theirPreset == currentPreset))
+end
+
+--[[
+	What the preset asks for next to what the model reports back, so a setting that
+	is saved correctly but does not take can be told apart from one that never
+	arrived. See CLAUDE.md.
+]]
+_G.AGC_ModelDump = function()
+	if not creatureModel then
+		print("|cffff5555[AGC]|r no model frame; open a boss on the Model tab")
+		return
+	end
+	local function ask(name, ...)
+		local fn = creatureModel[name]
+		if type(fn) ~= "function" then return "unsupported" end
+		local ok, a, b, c = pcall(fn, creatureModel, ...)
+		if not ok then return "error" end
+		if b ~= nil then
+			return ("%.3f, %.3f, %.3f"):format(a or 0, b or 0, c or 0)
+		end
+		return a ~= nil and tostring(a) or "nil"
+	end
+	local p = currentPreset or {}
+	print(("|cff00ff00[AGC]|r display %s, saved override: %s, enforcing: %s")
+		:format(tostring(currentDisplayId),
+			tostring(currentDisplayId and ModelPresetService.HasOverride(currentDisplayId)),
+			tostring(enforceUntil > GetTime())))
+	print(("  preset   scale %.2f  pos %.2f/%.2f/%.2f  facing %.2f  pitch %.2f  size %.2f  framing %.2f")
+		:format(p.scale or 0, p.x or 0, p.y or 0, p.z or 0, p.facing or 0,
+			p.pitch or 0, p.modelScale or 1, p.portraitZoom or 0))
+	print(("  model    facing %s  size %s  position %s")
+		:format(ask("GetFacing"), ask("GetModelScale"), ask("GetPosition")))
+	print(("  zoom     baseZoom %.2f  zoom %.2f  aiming the camera ourselves: %s")
+		:format(baseZoom or 0, zoom or 0, tostring(CanAimCamera())))
+	print(("  camera   pos %s  target %s  distance %s")
+		:format(ask("GetCameraPosition"), ask("GetCameraTarget"),
+			ask("GetCameraDistance")))
+	print(("  camera   custom %s  transforms about model centre %s")
+		:format(ask("HasCustomCamera"), ask("IsUsingModelCenterToTransform")))
+	--[[
+		What is stored for this display, read fresh. If this disagrees with the
+		preset line then the saved values are not reaching the model; if it agrees
+		and the model line does not, the client is refusing the calls.
+	]]
+	local stored = currentDisplayId and ModelPresetService.Get(currentDisplayId)
+	if stored then
+		print(("  stored   scale %.2f  pos %.2f/%.2f/%.2f  facing %.2f  pitch %.2f  size %.2f  framing %.2f")
+			:format(stored.scale or 0, stored.x or 0, stored.y or 0, stored.z or 0,
+				stored.facing or 0, stored.pitch or 0, stored.modelScale or 1,
+				stored.portraitZoom or 0))
+	end
+end
+
+--[[
+	Step the model through one camera call at a time and watch which one moves it.
+
+	Position is not the problem and the log says so: with debug on, the samples hold
+	the preset's values steady for four seconds while the model is not on screen at
+	all. That leaves the camera, and its getters cannot be trusted here --
+	GetCameraDistance reads -1.8e-32 while the camera is plainly 2.5 units from its
+	target. So rather than read state, this drives each control in turn and prints
+	what it just did. The answer is which number the model appears on.
+]]
+_G.AGC_ModelPoke = function()
+	if not creatureModel then
+		print("|cffff5555[AGC]|r no model frame; open a boss on the Model tab")
+		return
+	end
+	-- Otherwise the enforcement window reapplies the preset over every step.
+	ReleasePreset()
+	-- Long enough to look at the model and read the label under it.
+	local STEP_SECONDS = 2.5
+	--[[
+		Each step photographs itself. The label under the model names the step, so
+		the files identify themselves and arrive in order, which beats trying to
+		catch the right moment by hand across a dozen of them.
+	]]
+	local SHOT_DELAY = 0.6
+	local function Capture()
+		if type(Screenshot) == "function" then Screenshot() end
+	end
+	local m = creatureModel
+	local function has(name) return type(m[name]) == "function" end
+	local steps = {
+		{ "cam distance scale 1", function() m:SetCamDistanceScale(1) end },
+		{ "cam distance scale 2", function() m:SetCamDistanceScale(2) end },
+		{ "cam distance scale 4", function() m:SetCamDistanceScale(4) end },
+		{ "portrait zoom 0", function()
+			if not has("SetPortraitZoom") then return "unsupported" end
+			m:SetPortraitZoom(0)
+		end },
+		{ "portrait zoom 0.5", function()
+			if not has("SetPortraitZoom") then return "unsupported" end
+			m:SetPortraitZoom(0.5)
+		end },
+		{ "portrait zoom 1", function()
+			if not has("SetPortraitZoom") then return "unsupported" end
+			m:SetPortraitZoom(1)
+		end },
+		{ "position 0/0/0", function() m:SetPosition(0, 0, 0) end },
+		{ "RefreshCamera", function()
+			if not has("RefreshCamera") then return "unsupported" end
+			m:RefreshCamera()
+		end },
+		{ "SetCamera(0)", function()
+			if not has("SetCamera") then return "unsupported" end
+			m:SetCamera(0)
+		end },
+		{ "custom camera 4/0/0 -> 0/0/0", function()
+			if not (has("MakeCurrentCameraCustom") and has("SetCameraPosition")) then
+				return "unsupported"
+			end
+			m:MakeCurrentCameraCustom()
+			m:SetCameraPosition(4, 0, 0)
+			m:SetCameraTarget(0, 0, 0)
+		end },
+		{ "custom camera 8/0/1 -> 0/0/1", function()
+			if not has("SetCameraPosition") then return "unsupported" end
+			m:SetCameraPosition(8, 0, 1)
+			m:SetCameraTarget(0, 0, 1)
+		end },
+		--[[
+			The candidate fix. Blizzard's own Model_ApplyUICamera makes the camera
+			custom before aiming it, because an automatic camera is the engine's to
+			recompute whenever the model changes. Aimed from the preset's scale and
+			the model's recorded height so it means the same thing for every
+			creature, rather than from bounds that are not known until the geometry
+			has streamed in.
+		]]
+		{ "candidate: custom camera from preset scale and model height", function()
+			if not (has("MakeCurrentCameraCustom") and has("SetCameraPosition")) then
+				return "unsupported"
+			end
+			local preset = currentPreset or { }
+			local height = (currentDisplayId
+				and CreatureModelService.GetHeight(currentDisplayId)) or 2
+			local eye = height / 2
+			local distance = 2.5 * (preset.scale or 1)
+			m:SetPosition(0, 0, 0)
+			m:MakeCurrentCameraCustom()
+			m:SetCameraPosition(distance, 0, eye)
+			m:SetCameraTarget(0, 0, eye)
+			return ("height %.2f, eye %.2f, distance %.2f"):format(height, eye, distance)
+		end },
+	}
+	local restoreTitle = modelContainer.imageTitle:GetText()
+	print(("|cff00ff00[AGC]|r poking display %s -- the step shows under the model")
+		:format(tostring(currentDisplayId)))
+	for index, step in ipairs(steps) do
+		C_Timer.After(index * STEP_SECONDS, function()
+			if not creatureModel then return end
+			local note = step[2]()
+			modelContainer.imageTitle:SetText(("%d  %s"):format(index, step[1]))
+			print(("|cffff9900[AGC]|r %2d  %s%s")
+				:format(index, step[1], note and (" -- " .. note) or ""))
+			-- A beat for the change to reach the screen before capturing it.
+			C_Timer.After(SHOT_DELAY, Capture)
+		end)
+	end
+	C_Timer.After((#steps + 1) * STEP_SECONDS, function()
+		if currentPreset then component.Reframe(currentPreset) end
+		modelContainer.imageTitle:SetText(("%d  preset restored"):format(#steps + 1))
+		print("|cff00ff00[AGC]|r poke done, preset restored")
+		C_Timer.After(SHOT_DELAY, function()
+			Capture()
+			modelContainer.imageTitle:SetText(restoreTitle or "")
+		end)
+	end)
 end
 
 function component.Init(components_)

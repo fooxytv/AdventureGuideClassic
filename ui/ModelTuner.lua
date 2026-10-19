@@ -25,16 +25,21 @@ local STEPS = {
 	facing = 0.1,
 	pitch  = 0.05,
 	modelScale = 0.1,
+	portraitZoom = 0.05,
 }
 
 local function CurrentDisplayId()
 	return components.ModelFrame.GetDisplay()
 end
 
-local function Apply()
+local function Apply(field)
 	local displayId = CurrentDisplayId()
 	if not displayId then return end
-	components.ModelFrame.ApplyPreset(panel.preset)
+	if field == "portraitZoom" then
+		components.ModelFrame.ApplyFraming(panel.preset.portraitZoom)
+	else
+		components.ModelFrame.ApplyPreset(panel.preset)
+	end
 	component.Refresh()
 end
 
@@ -74,7 +79,12 @@ local function AddRow(parent, index, field, label)
 		if field == "modelScale" and panel.preset.modelScale < 0.1 then
 			panel.preset.modelScale = 0.1
 		end
-		Apply()
+		-- SetPortraitZoom takes 0 to 1; outside that the client ignores it.
+		if field == "portraitZoom" then
+			panel.preset.portraitZoom =
+				math.max(0, math.min(1, panel.preset.portraitZoom))
+		end
+		Apply(field)
 	end
 	minus:SetScript("OnClick", function() Nudge(-1) end)
 	plus:SetScript("OnClick", function() Nudge(1) end)
@@ -104,7 +114,8 @@ local function CreatePanel()
 	})
 	panel:SetBackdropColor(0, 0, 0, 0.9)
 	panel.rows = {}
-	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0, modelScale = 1 }
+	panel.preset = { scale = 1, x = 0, y = 0, z = 0, facing = 0, pitch = 0,
+		modelScale = 1, portraitZoom = 0 }
 
 	panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	panel.title:SetPoint("TOPLEFT", 12, -10)
@@ -147,6 +158,8 @@ local function CreatePanel()
 		AddRow(panel, rowCount, "modelScale", "Size")
 		rowCount = rowCount + 1
 	end
+	AddRow(panel, rowCount, "portraitZoom", "Framing")
+	rowCount = rowCount + 1
 	panel:SetHeight(ROWS_TOP + (rowCount * ROW_HEIGHT) + 70)
 
 	local function AddButton(text, index, onClick)
@@ -162,6 +175,14 @@ local function CreatePanel()
 		local displayId = CurrentDisplayId()
 		if displayId and ModelPresetService.Save(displayId, panel.preset) then
 			print(("|cff00ff00[AGC]|r Saved preset for display %d"):format(displayId))
+			-- What was written next to what the model is showing, for when a preset
+			-- reads right and renders wrong. Behind the debug flag so an ordinary
+			-- save stays one line.
+			if AdventureGuideClassic_DebugEvents then
+				print(("|cffff9900[AGC]|r   saving %.2f/%.2f/%.2f  %s"):format(
+					panel.preset.x or 0, panel.preset.y or 0, panel.preset.z or 0,
+					components.ModelFrame.DescribeLive(panel.preset)))
+			end
 			component.Refresh()
 		end
 	end)
