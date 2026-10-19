@@ -31,7 +31,6 @@ end
 
 local ENFORCE_SECONDS = 2.0
 local enforceUntil = 0
-local lastSetDisplayAt
 
 local function EnforcePreset()
 	enforceUntil = GetTime() + ENFORCE_SECONDS
@@ -44,7 +43,6 @@ end
 function component.SetDisplay(displayId, title)
 	if not creatureModel or not displayId then return end
 	currentDisplayId = displayId
-	lastSetDisplayAt = GetTime()
 	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
 	component.Reframe(currentPreset)
@@ -57,51 +55,15 @@ function component.SetDisplay(displayId, title)
 	if components and components.ModelTuner then
 		components.ModelTuner.OnDisplayChanged(displayId)
 	end
-	--[[
-		With debug on, report the model twice per display change: once now, and once
-		after the enforcement window has closed and any late load has landed. Reading
-		it by hand needs the command run in the half-second it goes wrong, which is
-		how three captures in a row came from the wrong moment.
-	]]
-	if AdventureGuideClassic_DebugEvents then
-		--[[
-			Sample the position repeatedly rather than once. A single snapshot cannot
-			show a reset that lands after it, which is the one thing none of the
-			readings so far could have caught.
-		]]
-		local want = currentPreset
-		for _, delay in ipairs({ 0, 0.1, 0.3, 0.6, 1.0, 2.5, 4.0 }) do
-			C_Timer.After(delay, function()
-				if currentDisplayId ~= displayId or not creatureModel then return end
-				local ok, x, y, z = pcall(creatureModel.GetPosition, creatureModel)
-				local okf, facing = pcall(creatureModel.GetFacing, creatureModel)
-				print(("|cffff9900[AGC]|r t+%.1fs  model %s  facing %s  want %.2f/%.2f/%.2f  enforcing %s")
-					:format(delay,
-						ok and ("%.3f/%.3f/%.3f"):format(x or 0, y or 0, z or 0) or "unreadable",
-						okf and ("%.3f"):format(facing or 0) or "?",
-						want.x or 0, want.y or 0, want.z or 0,
-						tostring(enforceUntil > GetTime())))
-			end)
-		end
-	end
 end
 
 --[[
-	Everything that frames the model, in the order the engine needs it.
+	Everything that frames the model, run both when a display is chosen and again
+	once it has loaded, because SetDisplayInfo zeroes the transform.
 
-	SetPortraitZoom derives the camera from the model's bounding box, and those bounds
-	are not known until the geometry has streamed in -- so a framing computed before
-	the load is computed against whatever creature was in the frame before. And
-	Model:SetPosition is a camera offset measured from the model's cached centre, not a
-	world position: Blizzard's own panning code in ModelFrameMixin calls the three
-	values cameraX, cameraY and cameraZ. A centre that moves under it therefore moves
-	the model while GetPosition keeps reporting exactly what was written.
-
-	That is the contradiction this chased for a week. The saved numbers were never
-	wrong; what they are measured from changed. Blizzard redoes the framing once the
-	model has loaded and zeroes the cached centre first -- see the OnModelLoaded of
-	GarrisonFollowerTabModelClusterModel, which is ResetModel, ZeroCachedCenterXY,
-	then apply.
+	The portrait zoom and cached centre below are only touched on a client with no
+	custom camera. Where we can aim the camera ourselves, AimCamera owns the framing
+	entirely and those two would fight it.
 ]]
 --[[
 	Aim the camera ourselves rather than asking the client to frame the model.
@@ -245,13 +207,9 @@ local function SetupModelControls(model)
 		self.isRotating = false
 		self.isTilting = false
 	end)
-	model:SetScript("OnModelLoaded", function(self)
-		if AdventureGuideClassic_DebugEvents then
-			local ok, x, y, z = pcall(self.GetPosition, self)
-			print(("|cffff9900[AGC]|r OnModelLoaded fired %.2fs after SetDisplay, position %s")
-				:format(GetTime() - (lastSetDisplayAt or GetTime()),
-					ok and ("%.3f/%.3f/%.3f"):format(x or 0, y or 0, z or 0) or "unreadable"))
-		end
+	model:SetScript("OnModelLoaded", function()
+		-- SetDisplayInfo zeroes the transform and this fires after it, so the preset
+		-- has to go on again here, not only when the display is chosen.
 		if currentPreset then component.Reframe(currentPreset) end
 	end)
 	model:SetScript("OnUpdate", function(self)
@@ -308,16 +266,6 @@ end
 
 function component.GetPreset()
 	return currentPreset
-end
-
--- What the model reports right now, for comparing against what a save is about to
--- write. Also whether the caller's table is the one driving the model.
-function component.DescribeLive(theirPreset)
-	if not creatureModel then return "no model" end
-	local ok, x, y, z = pcall(creatureModel.GetPosition, creatureModel)
-	return ("model %s, same table as preset: %s"):format(
-		ok and ("%.2f/%.2f/%.2f"):format(x or 0, y or 0, z or 0) or "unreadable",
-		tostring(theirPreset == currentPreset))
 end
 
 --[[
