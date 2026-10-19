@@ -361,42 +361,89 @@ PROBE = """
         Discovery mode must hide a boss that has not been beaten and reveal it when
         it has, without revealing the rest of the instance. Off, it must change
         nothing at all -- that is the default and the common case.
+
+        What everything below rests on is the boss having something to hide. A boss
+        with no loot and no abilities measures zero before and zero after, so every
+        comparison here would read 0 == 0 and the whole block would go green against
+        a mode that did nothing. So the boss is searched for rather than taken as the
+        first one going, and the baseline is asserted non-empty rather than assumed.
+
+        Both dimensions are preferred and neither is required, because the data will
+        not support requiring them. Dungeon abilities are barely authored yet: 22
+        bosses have any on Forever, 2 on Era and TBC, and none at all on SoD, whose
+        one dungeon holding them is filtered out. Demanding both would have left SoD
+        with no boss to test rather than a weaker test.
     ]]
-    local discInstance
-    for _, candidate in ipairs(InstanceService.GetDungeons()) do
-        if #candidate >= 2 then discInstance = candidate break end
+    local function measure(whichInstance, target)
+        AdventureGuideNavigationService.SetInstance(whichInstance)
+        AdventureGuideNavigationService.SetEncounter(target)
+        local l = AdventureGuideNavigationService.GetEncounterLoot()
+        return #l.loot + #l.sharedLoot + #l.rareLoot + #l.veryRareLoot
+            + #l.extremelyRareLoot,
+            #AdventureGuideNavigationService.GetEncounterAbilities(),
+            AdventureGuideNavigationService.GetEncounterName()
+    end
+
+    DiscoveryService.SetEnabled(false)
+    ProgressService.ClearAll()
+    local discInstance, discFirst, discSecond
+    -- Pass 1 wants both, pass 2 settles for either.
+    for _, wantBoth in ipairs({ true, false }) do
+        for _, candidate in ipairs(InstanceService.GetDungeons()) do
+            -- Two bosses at least, so "revealing one does not reveal its
+            -- neighbour" has a neighbour to check.
+            if #candidate >= 2 then
+                for index, target in ipairs(candidate) do
+                    local loot, abilities = measure(candidate, target)
+                    local enough = wantBoth and (loot > 0 and abilities > 0)
+                        or (not wantBoth and loot + abilities > 0)
+                    if enough then
+                        discInstance, discFirst = candidate, target
+                        discSecond = candidate[index == 1 and 2 or 1]
+                        break
+                    end
+                end
+            end
+            if discInstance then break end
+        end
+        if discInstance then break end
     end
     if discInstance then
-        local first, second = discInstance[1], discInstance[2]
-        local function visible(target)
-            AdventureGuideNavigationService.SetInstance(discInstance)
-            AdventureGuideNavigationService.SetEncounter(target)
-            local l = AdventureGuideNavigationService.GetEncounterLoot()
-            return #l.loot + #l.sharedLoot + #l.rareLoot + #l.veryRareLoot
-                + #l.extremelyRareLoot,
-                #AdventureGuideNavigationService.GetEncounterAbilities()
-        end
+        local first, second = discFirst, discSecond
 
         ProgressService.ClearAll()
         DiscoveryService.SetEnabled(false)
-        local lootOff, abilitiesOff = visible(first)
+        local lootOff, abilitiesOff, nameOff = measure(discInstance, first)
+        --[[
+            The baseline, and the one thing here that may not be empty or wrong:
+            every check below is measured against it.
+        ]]
+        out.discoveryBaselineNonEmpty = (lootOff + abilitiesOff > 0) and 1 or 0
+        out.discoveryOffRevealsUnmet =
+            AdventureGuideNavigationService.IsEncounterDiscovered(first) and 1 or 0
+        out.discoveryOffKeepsName =
+            (nameOff ~= DiscoveryService.UNKNOWN_NAME and nameOff == first.name)
+                and 1 or 0
 
         DiscoveryService.SetEnabled(true)
-        local lootHidden, abilitiesHidden = visible(first)
+        local lootHidden, abilitiesHidden, nameHidden = measure(discInstance, first)
+        out.discoveryHidesUnmet = (lootHidden == 0 and abilitiesHidden == 0) and 1 or 0
+        out.discoveryHidesName =
+            (nameHidden == DiscoveryService.UNKNOWN_NAME) and 1 or 0
 
         ProgressService.MarkDefeated(discInstance.name, first)
-        local lootShown, abilitiesShown = visible(first)
-
-        out.discoveryOffChangesNothing =
-            (lootOff == lootShown and abilitiesOff == abilitiesShown) and 1 or 0
-        out.discoveryHidesUnmet = (lootHidden == 0 and abilitiesHidden == 0) and 1 or 0
+        local lootShown, abilitiesShown, nameShown = measure(discInstance, first)
         out.discoveryRevealsOnDefeat =
             (lootShown == lootOff and abilitiesShown == abilitiesOff) and 1 or 0
+        out.discoveryRevealsName = (nameShown == nameOff) and 1 or 0
         out.discoveryIsPerBoss =
             AdventureGuideNavigationService.IsEncounterDiscovered(second) and 0 or 1
 
+        -- The "2/4 discovered" note. One beaten, out of however many bosses the
+        -- instance the search landed on happens to have.
         local found, total = DiscoveryService.GetProgress(discInstance)
-        out.discoveryProgress = ("%d/%d"):format(found, total)
+        out.discoveryProgressCountsOne =
+            (found == 1 and total == #discInstance) and 1 or 0
 
         --[[
             Resetting the instance makes its bosses alive again; it does not make the
@@ -478,10 +525,15 @@ EXPECTED = {
         "progressClearIsScoped": 1,
         "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
-        "discoveryOffChangesNothing": 1,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
         "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
         "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
         "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
         "discoverySurvivesReset": 1,
         "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
@@ -510,10 +562,15 @@ EXPECTED = {
         "progressClearIsScoped": 1,
         "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
-        "discoveryOffChangesNothing": 1,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
         "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
         "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
         "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
         "discoverySurvivesReset": 1,
         "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
@@ -542,10 +599,15 @@ EXPECTED = {
         "progressClearIsScoped": 1,
         "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
-        "discoveryOffChangesNothing": 1,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
         "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
         "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
         "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
         "discoverySurvivesReset": 1,
         "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
@@ -588,10 +650,15 @@ EXPECTED = {
         "progressClearIsScoped": 1,
         "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
-        "discoveryOffChangesNothing": 1,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
         "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
         "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
         "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
         "discoverySurvivesReset": 1,
         "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
@@ -621,10 +688,15 @@ EXPECTED = {
         "progressClearIsScoped": 1,
         "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
-        "discoveryOffChangesNothing": 1,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
         "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
         "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
         "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
         "discoverySurvivesReset": 1,
         "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
