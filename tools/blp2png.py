@@ -8,7 +8,8 @@ its sheet, and that cannot be done without seeing the pixels.
     python tools/blp2png.py <file.blp|directory> [-o OUTDIR] [-r] [--info]
 
 --info prints format and dimensions without writing anything, which is usually all
-that is wanted when deciding whether a texture is worth shipping at all.
+that is wanted when deciding whether a texture is worth shipping at all. It reads
+only the 148-byte header, so a sweep over a whole art directory decodes nothing.
 
 Handles BLP2, which is what the interface art is: palettised, DXT1/3/5, or raw BGRA.
 BLP1 is reported rather than guessed at; nothing in the UI art set uses it.
@@ -118,43 +119,81 @@ def _decode_palette(data, palette, width, height, alpha_depth):
     return bytes(out)
 
 
-def read_blp(path):
-    """Returns (PIL image or None, description). The image is None for --info only."""
-    raw = Path(path).read_bytes()
-    magic = raw[:4]
+HEADER_BYTES = 148
+
+
+def _header(head):
+    """Returns (fields or None, description). None means nothing here can be decoded.
+
+    Everything --info reports lives in these first 148 bytes, so this does no pixel
+    work and needs no more of the file than that.
+    """
+    magic = head[:4]
     if magic == b"BLP1":
         return None, "BLP1 (not supported; nothing in the UI art set uses it)"
     if magic != b"BLP2":
         return None, "not a BLP file"
 
     _type, encoding, alpha_depth, alpha_encoding, _has_mips = struct.unpack_from(
-        "<IBBBB", raw, 4)
-    width, height = struct.unpack_from("<II", raw, 12)
-    offsets = struct.unpack_from("<16I", raw, 20)
-    sizes = struct.unpack_from("<16I", raw, 84)
+        "<IBBBB", head, 4)
+    width, height = struct.unpack_from("<II", head, 12)
 
-    body = raw[offsets[0]:offsets[0] + sizes[0]]
     if encoding == ENCODING_PALETTE:
-        palette = raw[148:148 + 1024]
-        pixels = _decode_palette(body, palette, width, height, alpha_depth)
         kind = "palettised, alpha %d" % alpha_depth
     elif encoding == ENCODING_DXT:
         if alpha_encoding not in (DXT1, DXT3, DXT5):
             return None, "unknown DXT flavour %d" % alpha_encoding
-        pixels = _decode_dxt(body, width, height, alpha_encoding)
         kind = {DXT1: "DXT1", DXT3: "DXT3", DXT5: "DXT5"}[alpha_encoding]
     elif encoding == ENCODING_ARGB:
+        kind = "raw BGRA"
+    else:
+        return None, "unknown encoding %d" % encoding
+
+    fields = (encoding, alpha_depth, alpha_encoding, width, height)
+    return fields, "%dx%d %s" % (width, height, kind)
+
+
+def describe_blp(path):
+    """Returns (readable, description) from the header alone -- what --info needs.
+
+    Reading the pixels to report a size would be wasted work on a directory sweep,
+    and it would turn a file with a sound header and truncated data into an error
+    when its format and size are perfectly reportable.
+    """
+    with open(path, "rb") as handle:
+        head = handle.read(HEADER_BYTES)
+    fields, description = _header(head)
+    return fields is not None, description
+
+
+def read_blp(path):
+    """Returns (PIL image or None, description). The image is None if unsupported."""
+    raw = Path(path).read_bytes()
+    fields, description = _header(raw[:HEADER_BYTES])
+    if fields is None:
+        return None, description
+    encoding, alpha_depth, alpha_encoding, width, height = fields
+
+    offsets = struct.unpack_from("<16I", raw, 20)
+    sizes = struct.unpack_from("<16I", raw, 84)
+    body = raw[offsets[0]:offsets[0] + sizes[0]]
+    if len(body) < sizes[0]:
+        return None, "%s, truncated: %d of %d pixel bytes" % (
+            description, len(body), sizes[0])
+
+    if encoding == ENCODING_PALETTE:
+        palette = raw[HEADER_BYTES:HEADER_BYTES + 1024]
+        pixels = _decode_palette(body, palette, width, height, alpha_depth)
+    elif encoding == ENCODING_DXT:
+        pixels = _decode_dxt(body, width, height, alpha_encoding)
+    else:
         pixels = bytearray(len(body))
         for i in range(0, len(body) - 3, 4):
             b, g, r, a = body[i:i + 4]
             pixels[i:i + 4] = bytes((r, g, b, a))
         pixels = bytes(pixels)
-        kind = "raw BGRA"
-    else:
-        return None, "unknown encoding %d" % encoding
 
-    image = Image.frombytes("RGBA", (width, height), pixels)
-    return image, "%dx%d %s" % (width, height, kind)
+    return Image.frombytes("RGBA", (width, height), pixels), description
 
 
 def main():
@@ -178,12 +217,16 @@ def main():
     failed = 0
     for path in files:
         try:
-            image, description = read_blp(path)
+            if args.info:
+                readable, description = describe_blp(path)
+            else:
+                image, description = read_blp(path)
+                readable = image is not None
         except Exception as error:                       # noqa: BLE001
             print("%-50s ERROR %s" % (path.name, error))
             failed += 1
             continue
-        if image is None:
+        if not readable:
             print("%-50s %s" % (path.name, description))
             failed += 1
             continue

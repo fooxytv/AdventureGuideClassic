@@ -148,7 +148,11 @@ python tools/blp2png.py <art-dir> -r --info               # report size and form
 
 `--info` writes nothing and is usually all that is wanted when deciding whether a
 texture is worth shipping at all -- a path reference to art the client already has
-costs nothing, and only retail-only pieces need to land in `images/`.
+costs nothing, and only retail-only pieces need to land in `images/`. It reads only
+the 148-byte header, so a sweep over a directory decodes nothing: the pure-Python
+DXT decode is about half a second for a 512x512, which adds up over an art folder.
+A file whose header is sound but whose pixel data is truncated still reports what it
+is, rather than failing.
 
 Handles BLP2 in its three encodings: palettised, DXT1/3/5, and raw BGRA. DXT1 and DXT5
 are verified against real files; palettised and BGRA are implemented from the format
