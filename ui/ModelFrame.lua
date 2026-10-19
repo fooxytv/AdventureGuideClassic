@@ -345,6 +345,8 @@ _G.AGC_ModelPoke = function()
 	end
 	-- Otherwise the enforcement window reapplies the preset over every step.
 	ReleasePreset()
+	-- Long enough to look at the model and read the label under it.
+	local STEP_SECONDS = 2.5
 	local m = creatureModel
 	local function has(name) return type(m[name]) == "function" end
 	local steps = {
@@ -385,19 +387,45 @@ _G.AGC_ModelPoke = function()
 			m:SetCameraPosition(8, 0, 1)
 			m:SetCameraTarget(0, 0, 1)
 		end },
+		--[[
+			The candidate fix. Blizzard's own Model_ApplyUICamera makes the camera
+			custom before aiming it, because an automatic camera is the engine's to
+			recompute whenever the model changes. Aimed from the preset's scale and
+			the model's recorded height so it means the same thing for every
+			creature, rather than from bounds that are not known until the geometry
+			has streamed in.
+		]]
+		{ "candidate: custom camera from preset scale and model height", function()
+			if not (has("MakeCurrentCameraCustom") and has("SetCameraPosition")) then
+				return "unsupported"
+			end
+			local preset = currentPreset or { }
+			local height = (currentDisplayId
+				and CreatureModelService.GetHeight(currentDisplayId)) or 2
+			local eye = height / 2
+			local distance = 2.5 * (preset.scale or 1)
+			m:SetPosition(0, 0, 0)
+			m:MakeCurrentCameraCustom()
+			m:SetCameraPosition(distance, 0, eye)
+			m:SetCameraTarget(0, 0, eye)
+			return ("height %.2f, eye %.2f, distance %.2f"):format(height, eye, distance)
+		end },
 	}
-	print(("|cff00ff00[AGC]|r poking display %s -- say which number he appears on")
+	local restoreTitle = modelContainer.imageTitle:GetText()
+	print(("|cff00ff00[AGC]|r poking display %s -- the step shows under the model")
 		:format(tostring(currentDisplayId)))
 	for index, step in ipairs(steps) do
-		C_Timer.After(index * 2, function()
+		C_Timer.After(index * STEP_SECONDS, function()
 			if not creatureModel then return end
 			local note = step[2]()
+			modelContainer.imageTitle:SetText(("%d  %s"):format(index, step[1]))
 			print(("|cffff9900[AGC]|r %2d  %s%s")
 				:format(index, step[1], note and (" -- " .. note) or ""))
 		end)
 	end
-	C_Timer.After((#steps + 1) * 2, function()
+	C_Timer.After((#steps + 1) * STEP_SECONDS, function()
 		if currentPreset then component.Reframe(currentPreset) end
+		modelContainer.imageTitle:SetText(restoreTitle or "")
 		print("|cff00ff00[AGC]|r poke done, preset restored")
 	end)
 end
