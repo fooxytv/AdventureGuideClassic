@@ -19,6 +19,16 @@ ProgressService = { }
 	services load before Main.lua binds it.
 ]]
 local defeated = { }
+--[[
+	Every boss this character has ever beaten, which is a different question from
+	which are dead right now.
+
+	`defeated` is lockout state: an instance reset clears it, because the bosses are
+	alive again. Discovery asks whether a boss has ever been met, and that cannot be
+	undone by walking out and resetting the dungeon -- sharing one set meant a reset
+	put `???` back over bosses the player had already seen.
+]]
+local seen = { }
 local loaded = false
 local hydrated = false
 
@@ -61,6 +71,7 @@ local function Store()
 	SavedVariables.Progress = SavedVariables.Progress or { }
 	SavedVariables.Progress[charKey] = SavedVariables.Progress[charKey] or { }
 	SavedVariables.Progress[charKey].defeated = defeated
+	SavedVariables.Progress[charKey].seen = seen
 end
 
 --[[
@@ -75,11 +86,21 @@ local function Load()
 	if not SavedVariables then return false end
 	local charKey = GetCharacterKey()
 	if not charKey then return false end
-	local stored = SavedVariables.Progress
-		and SavedVariables.Progress[charKey]
-		and SavedVariables.Progress[charKey].defeated
-	if type(stored) == "table" then
-		defeated = stored
+	local record = SavedVariables.Progress and SavedVariables.Progress[charKey]
+	if type(record) == "table" then
+		if type(record.defeated) == "table" then
+			defeated = record.defeated
+		end
+		if type(record.seen) == "table" then
+			seen = record.seen
+		--[[
+			Upgrading a character saved before the split: everything already beaten
+			has self-evidently been met, so seed `seen` from it rather than hiding
+			bosses the player has killed.
+		]]
+		elseif type(record.defeated) == "table" then
+			for key in pairs(record.defeated) do seen[key] = true end
+		end
 	end
 	loaded = true
 	Store()
@@ -97,8 +118,16 @@ function ProgressService.MarkDefeated(instanceName, encounter)
 	local key = EncounterKey(instanceName, encounter)
 	if not key then return false end
 	defeated[key] = true
+	seen[key] = true
 	Store()
 	return true
+end
+
+-- Whether this character has ever beaten the boss, whatever has happened since.
+function ProgressService.HasSeen(instanceName, encounter)
+	Load()
+	local key = EncounterKey(instanceName, encounter)
+	return key ~= nil and seen[key] == true
 end
 
 --[[
@@ -125,12 +154,19 @@ function ProgressService.ClearInstance(instanceName)
 			cleared = true
 		end
 	end
+	-- `seen` is deliberately untouched: the bosses are alive again, but they have
+	-- still been met, and discovery must not be undone by a reset.
 	Store()
 	return cleared
 end
 
+--[[
+	The whole record, discovery included. This is the explicit "forget everything"
+	that AGC_ResetAllEncounters offers, not something a dungeon reset reaches.
+]]
 function ProgressService.ClearAll()
 	defeated = { }
+	seen = { }
 	loaded = true
 	Store()
 end
@@ -166,10 +202,12 @@ _G.AGC_ProgressDump = function()
 	local keys = { }
 	for key in pairs(defeated) do table.insert(keys, key) end
 	table.sort(keys)
-	print(("|cff00ff00[AGC]|r %d defeat(s) stored for %s, hydrated: %s")
-		:format(#keys, tostring(GetCharacterKey()), tostring(hydrated)))
+	local seenCount = 0
+	for _ in pairs(seen) do seenCount = seenCount + 1 end
+	print(("|cff00ff00[AGC]|r %d defeated, %d ever seen, for %s, hydrated: %s")
+		:format(#keys, seenCount, tostring(GetCharacterKey()), tostring(hydrated)))
 	for _, key in ipairs(keys) do
-		print("   " .. key)
+		print("   " .. key .. (seen[key] and "" or "   (not in seen)"))
 	end
 end
 
