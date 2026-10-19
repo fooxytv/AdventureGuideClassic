@@ -33,8 +33,19 @@ function AdventureGuideNavigationService.IsEncounterDiscovered(forEncounter)
 	return DiscoveryService.IsDiscovered(instance and instance.name, target)
 end
 
-function AdventureGuideNavigationService.GetEncounterName()
-    return encounter and encounter.name or "Unknown Encounter"
+--[[
+	Gated like every other accessor here, and for a reason Copilot spotted: the list
+	draws ??? over an undiscovered boss, but this feeds the detail title, the nav-bar
+	breadcrumb, the model's caption and the creature tooltips. Ungated, clicking a ???
+	printed the real name in four places at once.
+]]
+function AdventureGuideNavigationService.GetEncounterName(forEncounter)
+	local target = forEncounter or encounter
+	if not target then return "Unknown Encounter" end
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(target) then
+		return DiscoveryService.UNKNOWN_NAME
+	end
+	return target.name or "Unknown Encounter"
 end
 
 --[[
