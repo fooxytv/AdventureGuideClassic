@@ -399,7 +399,15 @@ local function OnSystemMessage(message)
             return
         end
         DebugPrint("Detected instance reset:", instanceName)
-        ResetEncountersForInstance(instanceName)
+        --[[
+            The game's name for an instance is not always the one the data uses, and
+            a reset that matches nothing clears nothing while looking like it worked.
+            Say so rather than failing quietly; the name printed here is what the data
+            would have to match.
+        ]]
+        if not ResetEncountersForInstance(instanceName) then
+            DebugPrint("Reset matched no tracked instance:", instanceName)
+        end
     end
 end
 
@@ -487,6 +495,30 @@ _G.AGC_MarkInstanceDefeated = function(instanceName)
     _G.AdventureGuideClassic_UI_Encounters_Refresh = true
     print(("|cff00ff00[AGC]|r Marked %d of %d in %s as defeated")
         :format(marked, #instance, instance.name))
+end
+
+--[[
+    Clear every dungeon's defeats and leave the raids alone.
+
+    A saved raid is a real lockout: those bosses stay dead until the server says
+    otherwise, so clearing our record of them would only make the journal disagree
+    with the game. Asked through GetSavedInstanceInfo rather than assuming "raids are
+    saved and dungeons are not", which is right for a raid nobody is saved to as well
+    as for a dungeon that somehow is.
+]]
+_G.AGC_ResetAllDungeons = function()
+    local cleared, skipped = 0, 0
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        if dungeon.name then
+            if IsInstanceSaved(dungeon.name) then
+                skipped = skipped + 1
+            elseif ResetEncountersForInstance(dungeon.name) then
+                cleared = cleared + 1
+            end
+        end
+    end
+    print(("|cff00ff00[AGC]|r Cleared %d dungeon(s); left %d saved instance(s) alone")
+        :format(cleared, skipped))
 end
 
 _G.AGC_ResetInstance = function(instanceName)
