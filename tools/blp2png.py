@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Convert Blizzard BLP textures to PNG, so a sheet can be measured before it is used.
 
 The client reads PNG, so conversion is not needed to ship art -- it is needed to look
