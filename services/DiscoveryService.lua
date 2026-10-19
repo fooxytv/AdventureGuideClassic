@@ -66,7 +66,9 @@ end
 function DiscoveryService.IsDiscovered(instanceName, encounter)
 	if not DiscoveryService.IsEnabled() then return true end
 	if not (instanceName and encounter) then return true end
-	return ProgressService.IsDefeated(instanceName, encounter)
+	-- Ever met, not currently dead. Resetting a dungeon makes its bosses alive
+	-- again; it does not make the player forget them.
+	return ProgressService.HasSeen(instanceName, encounter)
 end
 
 --[[
@@ -79,7 +81,7 @@ function DiscoveryService.GetProgress(instance)
 	if not DiscoveryService.IsEnabled() then return total, total end
 	local found = 0
 	for _, encounter in ipairs(instance) do
-		if ProgressService.IsDefeated(instance.name, encounter) then
+		if ProgressService.HasSeen(instance.name, encounter) then
 			found = found + 1
 		end
 	end

@@ -398,6 +398,18 @@ PROBE = """
         local found, total = DiscoveryService.GetProgress(discInstance)
         out.discoveryProgress = ("%d/%d"):format(found, total)
 
+        --[[
+            Resetting the instance makes its bosses alive again; it does not make the
+            player forget meeting them. Discovery read the defeat set directly, so a
+            routine dungeon reset put ??? back over bosses already seen.
+        ]]
+        ProgressService.ClearInstance(discInstance.name)
+        out.discoverySurvivesReset =
+            AdventureGuideNavigationService.IsEncounterDiscovered(first)
+                and 1 or 0
+        out.discoveryResetClearsDefeat =
+            ProgressService.IsDefeated(discInstance.name, first) and 0 or 1
+
         DiscoveryService.SetEnabled(false)
         ProgressService.ClearAll()
         out.discoveryDefaultsOff = DiscoveryService.IsEnabled() and 0 or 1
@@ -430,6 +442,8 @@ EXPECTED = {
         "discoveryHidesUnmet": 1,
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
     },
     "sod": {
@@ -453,6 +467,8 @@ EXPECTED = {
         "discoveryHidesUnmet": 1,
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
     },
     "tbc": {
@@ -476,6 +492,8 @@ EXPECTED = {
         "discoveryHidesUnmet": 1,
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
@@ -513,6 +531,8 @@ EXPECTED = {
         "discoveryHidesUnmet": 1,
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
@@ -537,6 +557,8 @@ EXPECTED = {
         "discoveryHidesUnmet": 1,
         "discoveryRevealsOnDefeat": 1,
         "discoveryIsPerBoss": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
         "discoveryDefaultsOff": 1,
     },
 }
