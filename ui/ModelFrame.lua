@@ -347,6 +347,15 @@ _G.AGC_ModelPoke = function()
 	ReleasePreset()
 	-- Long enough to look at the model and read the label under it.
 	local STEP_SECONDS = 2.5
+	--[[
+		Each step photographs itself. The label under the model names the step, so
+		the files identify themselves and arrive in order, which beats trying to
+		catch the right moment by hand across a dozen of them.
+	]]
+	local SHOT_DELAY = 0.6
+	local function Capture()
+		if type(Screenshot) == "function" then Screenshot() end
+	end
 	local m = creatureModel
 	local function has(name) return type(m[name]) == "function" end
 	local steps = {
@@ -421,12 +430,18 @@ _G.AGC_ModelPoke = function()
 			modelContainer.imageTitle:SetText(("%d  %s"):format(index, step[1]))
 			print(("|cffff9900[AGC]|r %2d  %s%s")
 				:format(index, step[1], note and (" -- " .. note) or ""))
+			-- A beat for the change to reach the screen before capturing it.
+			C_Timer.After(SHOT_DELAY, Capture)
 		end)
 	end
 	C_Timer.After((#steps + 1) * STEP_SECONDS, function()
 		if currentPreset then component.Reframe(currentPreset) end
-		modelContainer.imageTitle:SetText(restoreTitle or "")
+		modelContainer.imageTitle:SetText(("%d  preset restored"):format(#steps + 1))
 		print("|cff00ff00[AGC]|r poke done, preset restored")
+		C_Timer.After(SHOT_DELAY, function()
+			Capture()
+			modelContainer.imageTitle:SetText(restoreTitle or "")
+		end)
 	end)
 end
 

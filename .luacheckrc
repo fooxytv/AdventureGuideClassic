@@ -123,7 +123,7 @@ read_globals = {
     -- Input, sound, chat
     "GetBindingKey", "SetBinding", "GetCursorPosition",
     "IsControlKeyDown", "IsShiftKeyDown",
-    "PlaySound", "PlaySoundFile", "SOUNDKIT",
+    "PlaySound", "PlaySoundFile", "SOUNDKIT", "Screenshot",
     "ChatEdit_InsertLink", "DressUpItemLink",
 
     -- Lua/WoW shims
