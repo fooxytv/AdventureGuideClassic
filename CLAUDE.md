@@ -417,6 +417,7 @@ it to be read.
 | `AGC_MarkInstanceDefeated("Deadmines")` | mark every boss in an instance |
 | `AGC_ResetInstance("Deadmines")` | clear defeated marks for one instance |
 | `AGC_ResetAllEncounters()` | clear them everywhere |
+| `AGC_ProgressDump()` | every defeat stored for this character, as `Instance\|Boss` |
 | `AGC_Wishlist()` | print the wishlist |
 | `AGC_CheckEquipped()` | re-run the equipped-item wishlist sweep |
 | `AGC_NpcPreview(id)` | show an NPC model |

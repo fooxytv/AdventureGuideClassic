@@ -322,6 +322,20 @@ PROBE = """
                 and 1 or 0
             ProgressService.ClearAll()
         end
+
+        --[[
+            A stored defeat must be clearable even when the instance it belongs to
+            cannot be looked up -- filtered out for this client or season, or simply
+            gone from the data. ClearInstance used to rebuild its keys by walking
+            GetInstanceByName, which returns nil in that case and cleared nothing,
+            while Hydrate walks every instance and put the defeat straight back.
+        ]]
+        ProgressService.MarkDefeated("No Such Instance", { name = "Ghost Boss" })
+        ProgressService.ClearInstance("No Such Instance")
+        out.progressClearsUnresolvable =
+            ProgressService.IsDefeated("No Such Instance", { name = "Ghost Boss" })
+                and 0 or 1
+        ProgressService.ClearAll()
     end
 
     --[[
@@ -410,6 +424,7 @@ EXPECTED = {
         "progressHydrated": 1,
         "progressCleared": 1,
         "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
         "discoveryOffChangesNothing": 1,
         "discoveryHidesUnmet": 1,
@@ -432,6 +447,7 @@ EXPECTED = {
         "progressHydrated": 1,
         "progressCleared": 1,
         "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
         "discoveryOffChangesNothing": 1,
         "discoveryHidesUnmet": 1,
@@ -454,6 +470,7 @@ EXPECTED = {
         "progressHydrated": 1,
         "progressCleared": 1,
         "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
         "discoveryOffChangesNothing": 1,
         "discoveryHidesUnmet": 1,
@@ -490,6 +507,7 @@ EXPECTED = {
         "progressHydrated": 1,
         "progressCleared": 1,
         "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
         "discoveryOffChangesNothing": 1,
         "discoveryHidesUnmet": 1,
@@ -513,6 +531,7 @@ EXPECTED = {
         "progressHydrated": 1,
         "progressCleared": 1,
         "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
         "progressKeyCollisions": 0,
         "discoveryOffChangesNothing": 1,
         "discoveryHidesUnmet": 1,

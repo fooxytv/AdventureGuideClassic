@@ -311,14 +311,19 @@ local function ResetEncountersForInstance(instanceName)
         end
     end
 
-    if found then
-        -- Clear the stored set as well, or the defeats return on the next login.
-        ProgressService.ClearInstance(instanceName)
+    --[[
+        Unconditionally, not inside `if found`. A stored defeat with no live
+        counterpart -- the instance filtered out for this client, or the table
+        rebuilt without it -- would otherwise be unreachable, and Hydrate would put
+        it back on the next login.
+    ]]
+    local cleared = ProgressService.ClearInstance(instanceName)
+    if found or cleared then
         _G.AdventureGuideClassic_UI_Encounters_Refresh = true
         DebugPrint("Reset encounters for:", instanceName)
     end
 
-    return found
+    return found or cleared
 end
 
 local function ResetAllEncounters()
