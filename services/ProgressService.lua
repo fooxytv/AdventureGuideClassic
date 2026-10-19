@@ -101,16 +101,32 @@ function ProgressService.MarkDefeated(instanceName, encounter)
 	return true
 end
 
+--[[
+	Clear by key rather than by walking the instance, so what is stored can always
+	be removed.
+
+	Rebuilding the keys from InstanceService.GetInstanceByName could only clear what
+	that lookup could still see: it returns the first match and nil for an instance
+	the active client or season filters out, and then nothing was cleared at all.
+	Hydrate, meanwhile, walks GetAllInstances, so it could restore a defeat that this
+	could not remove -- the boss came back on the next login however often it was
+	reset.
+
+	Removing a key during traversal is fine in Lua; adding one is not.
+]]
 function ProgressService.ClearInstance(instanceName)
 	Load()
-	local instance = InstanceService.GetInstanceByName(instanceName)
-	if not instance then return false end
-	for _, encounter in ipairs(instance) do
-		local key = EncounterKey(instanceName, encounter)
-		if key then defeated[key] = nil end
+	if not instanceName then return false end
+	local prefix = instanceName .. "|"
+	local cleared = false
+	for key in pairs(defeated) do
+		if key:sub(1, #prefix) == prefix then
+			defeated[key] = nil
+			cleared = true
+		end
 	end
 	Store()
-	return true
+	return cleared
 end
 
 function ProgressService.ClearAll()
@@ -138,6 +154,23 @@ function ProgressService.Hydrate()
 	hydrated = true
 	_G.AdventureGuideClassic_UI_Encounters_Refresh = true
 	return true, count
+end
+
+--[[
+	Every defeat stored for this character, which is the only way to tell a boss that
+	is still stored apart from one that is merely still drawn. A reset that looks like
+	it did nothing is one or the other, and they have different causes.
+]]
+_G.AGC_ProgressDump = function()
+	Load()
+	local keys = { }
+	for key in pairs(defeated) do table.insert(keys, key) end
+	table.sort(keys)
+	print(("|cff00ff00[AGC]|r %d defeat(s) stored for %s, hydrated: %s")
+		:format(#keys, tostring(GetCharacterKey()), tostring(hydrated)))
+	for _, key in ipairs(keys) do
+		print("   " .. key)
+	end
 end
 
 function ProgressService.IsHydrated()
