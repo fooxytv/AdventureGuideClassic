@@ -416,7 +416,8 @@ it to be read.
 | `AGC_MarkDefeated("Deadmines", "Mr. Smite")` | mark one boss beaten without beating it |
 | `AGC_MarkInstanceDefeated("Deadmines")` | mark every boss in an instance |
 | `AGC_ResetInstance("Deadmines")` | clear defeated marks for one instance |
-| `AGC_ResetAllEncounters()` | clear them everywhere |
+| `AGC_ResetAllEncounters()` | clear them everywhere, raids included |
+| `AGC_ResetAllDungeons()` | clear every dungeon, leaving instances you are saved to alone |
 | `AGC_ProgressDump()` | every defeat stored for this character, as `Instance\|Boss` |
 | `AGC_Wishlist()` | print the wishlist |
 | `AGC_CheckEquipped()` | re-run the equipped-item wishlist sweep |
