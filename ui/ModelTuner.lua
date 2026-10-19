@@ -175,11 +175,14 @@ local function CreatePanel()
 		local displayId = CurrentDisplayId()
 		if displayId and ModelPresetService.Save(displayId, panel.preset) then
 			print(("|cff00ff00[AGC]|r Saved preset for display %d"):format(displayId))
-			-- Saving writes panel.preset while the model is driven by currentPreset.
-			-- If those have drifted apart, this is where the wrong value is written.
-			print(("|cffff9900[AGC]|r   saving %.2f/%.2f/%.2f  %s"):format(
-				panel.preset.x or 0, panel.preset.y or 0, panel.preset.z or 0,
-				components.ModelFrame.DescribeLive(panel.preset)))
+			-- What was written next to what the model is showing, for when a preset
+			-- reads right and renders wrong. Behind the debug flag so an ordinary
+			-- save stays one line.
+			if AdventureGuideClassic_DebugEvents then
+				print(("|cffff9900[AGC]|r   saving %.2f/%.2f/%.2f  %s"):format(
+					panel.preset.x or 0, panel.preset.y or 0, panel.preset.z or 0,
+					components.ModelFrame.DescribeLive(panel.preset)))
+			end
 			component.Refresh()
 		end
 	end)
