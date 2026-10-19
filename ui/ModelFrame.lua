@@ -47,17 +47,7 @@ function component.SetDisplay(displayId, title)
 	lastSetDisplayAt = GetTime()
 	currentPreset = ModelPresetService.Get(displayId)
 	creatureModel:SetDisplayInfo(displayId)
-	--[[
-		Once per display, before anything is positioned, and never from ApplyPreset.
-		SetPortraitZoom reframes the camera and drops the model back to the origin,
-		and it does so a frame later -- so calling it on every apply undid the
-		SetPosition that followed it. Dragging looked right because it sets the
-		position directly without going through here.
-	]]
-	if type(creatureModel.SetPortraitZoom) == "function" then
-		creatureModel:SetPortraitZoom(currentPreset.portraitZoom or 0)
-	end
-	component.ApplyPreset(currentPreset)
+	component.Reframe(currentPreset)
 	EnforcePreset()
 	local displayTitle = ModelPresetService.GetTitle(displayId, currentEncounterId) or title
 	if displayTitle then
@@ -96,6 +86,40 @@ function component.SetDisplay(displayId, title)
 	end
 end
 
+--[[
+	Everything that frames the model, in the order the engine needs it.
+
+	SetPortraitZoom derives the camera from the model's bounding box, and those bounds
+	are not known until the geometry has streamed in -- so a framing computed before
+	the load is computed against whatever creature was in the frame before. And
+	Model:SetPosition is a camera offset measured from the model's cached centre, not a
+	world position: Blizzard's own panning code in ModelFrameMixin calls the three
+	values cameraX, cameraY and cameraZ. A centre that moves under it therefore moves
+	the model while GetPosition keeps reporting exactly what was written.
+
+	That is the contradiction this chased for a week. The saved numbers were never
+	wrong; what they are measured from changed. Blizzard redoes the framing once the
+	model has loaded and zeroes the cached centre first -- see the OnModelLoaded of
+	GarrisonFollowerTabModelClusterModel, which is ResetModel, ZeroCachedCenterXY,
+	then apply.
+]]
+function component.Reframe(preset)
+	if not creatureModel or not preset then return end
+	currentPreset = preset
+	if type(creatureModel.ZeroCachedCenterXY) == "function" then
+		creatureModel:ZeroCachedCenterXY()
+	end
+	if type(creatureModel.SetPortraitZoom) == "function" then
+		creatureModel:SetPortraitZoom(preset.portraitZoom or 0)
+	end
+	component.ApplyPreset(preset)
+	-- Reframing lands a frame later and drops the model to the origin, so the preset
+	-- goes on again after that has happened as well as before it.
+	C_Timer.After(0, function()
+		if currentPreset == preset then component.ApplyPreset(preset) end
+	end)
+end
+
 function component.ApplyPreset(preset)
 	if not creatureModel or not preset then return end
 	currentPreset = preset
@@ -115,35 +139,20 @@ function component.ApplyPreset(preset)
 	baseZoom = preset.scale or 1
 	zoom = baseZoom
 	creatureModel:SetCamDistanceScale(zoom)
-	--[[
-		Write a different value first. The frame skips a position update when what
-		it is given matches what it already holds, so re-applying a preset after the
-		model has loaded was a no-op: the property read back correctly while the
-		model was never actually moved. Dragging always worked because the value
-		changes every frame and so is never skipped.
-	]]
-	creatureModel:SetPosition(0, 0, 0)
+	-- Position and facing only. Whatever the camera is measured from is Reframe's
+	-- job, and doing it here is what made the two fight each other.
 	creatureModel:SetPosition(preset.x or 0, preset.y or 0, preset.z or 0)
-	creatureModel:SetFacing((preset.facing or 0) + 0.0001)
 	creatureModel:SetFacing(preset.facing or 0)
 	if creatureModel.SetPitch then
 		creatureModel:SetPitch(preset.pitch or 0)
 	end
 end
 
---[[
-	Changing the framing from the tuner. Reframing drops the model to the origin a
-	frame later, so the preset goes back on after that has happened rather than
-	before it, which is the whole reason this is not part of ApplyPreset.
-]]
+-- Changing the framing from the tuner.
 function component.ApplyFraming(value)
-	if not creatureModel or type(creatureModel.SetPortraitZoom) ~= "function" then
-		return
-	end
-	creatureModel:SetPortraitZoom(value or 0)
-	C_Timer.After(0, function()
-		if currentPreset then component.ApplyPreset(currentPreset) end
-	end)
+	if not currentPreset then return end
+	currentPreset.portraitZoom = value or 0
+	component.Reframe(currentPreset)
 end
 
 function component.GetAppliedModelScale()
@@ -203,7 +212,7 @@ local function SetupModelControls(model)
 				:format(GetTime() - (lastSetDisplayAt or GetTime()),
 					ok and ("%.3f/%.3f/%.3f"):format(x or 0, y or 0, z or 0) or "unreadable"))
 		end
-		if currentPreset then component.ApplyPreset(currentPreset) end
+		if currentPreset then component.Reframe(currentPreset) end
 	end)
 	model:SetScript("OnUpdate", function(self)
 		if enforceUntil > 0 and currentPreset then
@@ -300,6 +309,11 @@ _G.AGC_ModelDump = function()
 	print(("  model    facing %s  size %s  position %s")
 		:format(ask("GetFacing"), ask("GetModelScale"), ask("GetPosition")))
 	print(("  zoom     baseZoom %.2f  zoom %.2f"):format(baseZoom or 0, zoom or 0))
+	print(("  camera   pos %s  target %s  distance %s")
+		:format(ask("GetCameraPosition"), ask("GetCameraTarget"),
+			ask("GetCameraDistance")))
+	print(("  camera   custom %s  transforms about model centre %s")
+		:format(ask("HasCustomCamera"), ask("IsUsingModelCenterToTransform")))
 	--[[
 		What is stored for this display, read fresh. If this disagrees with the
 		preset line then the saved values are not reaching the model; if it agrees
