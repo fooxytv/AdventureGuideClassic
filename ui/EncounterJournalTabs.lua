@@ -115,6 +115,15 @@ function component.Init(components_)
         components.InstanceSelect.SetTitle(RAIDS)
         components.InstanceSelect.Show()
     end)
+    --[[
+        A top-level tab rather than one of the five beside Overview and Loot: the
+        wishlist is per character and spans every instance, so it would show the same
+        content whichever boss was lit.
+    ]]
+    EncounterJournal.wishlistTab = AddTab("Wishlist", "Wishlist", function()
+        AdventureGuideNavigationService.Reset()
+        components.Wishlist.Show()
+    end)
     EncounterJournal.Tabs[1]:GetScript("OnClick")()
 end
 
