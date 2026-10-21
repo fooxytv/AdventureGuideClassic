@@ -36,19 +36,22 @@ local failedItemIds = {}
 --[[
 	The two secondary lines on a loot row, the slot and the subtype.
 
-	Retail draws both light grey, because its row bar is dark the whole way under
-	both of them. Ours is the same bar but it fades: measured off the sheet it is
-	solid to about x=225 of its 321 width and gone by 321. The subtype was anchored
-	25 in from the right, which put it at x=296 -- on nothing. Light text vanished
-	there and dark text was the only thing that survived, which is why this colour
-	has been argued with twice.
+	Black, with a pale shadow. Retail draws these light grey, and that was tried
+	here, but it was judged in game on Era and read worse -- the row bar is lighter
+	on that client than the shot of retail suggests, and light text on it loses
+	against a background it is supposed to stand out from.
 
-	So the subtype moves back onto the bar and both lines can then be what retail
-	has them be. The shadow is dark now, since the text is light.
+	The shadow is pale rather than dark for the same reason it is there at all: the
+	bar is darker at the icon end than at the subtype end, so black needs lifting
+	on the left and nothing on the right, and a light shadow does exactly that.
+
+	The red keeps its deeper shade. It is the one that reads on the lighter end,
+	where the subtype sits.
 ]]
-local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.72, 0.69, 0.63
-local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 1.00, 0.33, 0.33
-local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 0, 0, 0, 0.65
+local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0, 0, 0
+local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.72, 0.06, 0.06
+local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 1, 0.96, 0.88, 0.5
+local SUBTEXT_FONT, SUBTEXT_SIZE = "Fonts\\FRIZQT__.TTF", 10
 
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
@@ -555,8 +558,21 @@ function component.Init(components_)
 			]]
 			button.armorType:SetText(lootItem.armorType or "Unknown")
 			if LootFilterService.IsUsableByPlayer(lootItem) then
+				button.armorType:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE)
+				button.armorType:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
 				button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			else
+				--[[
+					Outlined, not merely coloured. This line lands on the pale end
+					of the row where the bar has faded out, and red on parchment is
+					two mid tones against each other; a thin dark edge round the
+					glyphs is what makes it carry.
+
+					The shadow comes off with it -- an outline and a pale shadow
+					fight, and the outline is doing that job already.
+				]]
+				button.armorType:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE, "OUTLINE")
+				button.armorType:SetShadowColor(0, 0, 0, 0)
 				button.armorType:SetTextColor(UNUSABLE_R, UNUSABLE_G, UNUSABLE_B)
 			end
 			button.armorType:Show()
