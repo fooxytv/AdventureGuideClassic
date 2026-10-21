@@ -178,6 +178,27 @@ function WishlistService.GetGrouped(includeObtained)
     for _, group in ipairs(groups) do
         group.seenBoss = nil
     end
+
+    --[[
+        Ordered the way a player works through the game: lowest instance first.
+
+        An instance with no minLevel sorts last rather than first, so the ones
+        that cannot be placed collect at the bottom instead of heading the list,
+        and ties fall back to the name so the order is stable rather than
+        dependent on which way pairs() happened to walk.
+
+        Nothing in data/ carries minLevel yet -- AtlasLoot has it as LevelRange,
+        joinable on our mapID -- so today this sorts by name. It becomes a level
+        sort the moment the field exists, with no change here.
+    ]]
+    table.sort(groups, function(a, b)
+        local ia = InstanceService and InstanceService.GetInstanceByName(a.name)
+        local ib = InstanceService and InstanceService.GetInstanceByName(b.name)
+        local la = ia and ia.minLevel or math.huge
+        local lb = ib and ib.minLevel or math.huge
+        if la ~= lb then return la < lb end
+        return a.name < b.name
+    end)
     return groups
 end
 
