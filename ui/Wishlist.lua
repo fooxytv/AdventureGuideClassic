@@ -22,12 +22,22 @@ local DUNGEONS_TAB, RAIDS_TAB = 1, 2
 -- top and the band above it carries the title and the first filter.
 local HEADER_HEIGHT = 50
 
+--[[
+	Blizzard's own numbers for this row, from LootJournalItemSetButtonTemplate:
+	744x41, the name at (39, -6) in GameFontNormal, the line under it in
+	GameFontNormalSmall tinted (0.718, 0.561, 0.416), and the icons starting at
+	x=360 as 32x32 buttons five apart holding a 28x28 icon.
+
+	ROW_WIDTH is only a fallback; the list sizes its rows from the scroll box.
+]]
 local ROW_WIDTH = 700
--- How far the dark reaches before the icons start.
-local ROW_FADE_WIDTH = 330
-local ROW_HEIGHT = 48
-local ICON_SIZE = 34
-local ICON_GAP = 3
+local ROW_HEIGHT = 41
+local NAME_X, NAME_Y = 39, -6
+local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.718, 0.561, 0.416
+local ICON_SIZE = 32
+local ICON_INNER = 28
+local ICON_BORDER = 38
+local ICON_GAP = 5
 local ICON_START = 360
 local MAX_ICONS = 9
 
@@ -186,11 +196,13 @@ local function IconAt(row, index)
 		icon:SetSize(ICON_SIZE, ICON_SIZE)
 		icon:SetPoint("LEFT", ICON_START + (index - 1) * (ICON_SIZE + ICON_GAP), 0)
 		icon.tex = icon:CreateTexture(nil, "ARTWORK")
-		icon.tex:SetSize(ICON_SIZE - 6, ICON_SIZE - 6)
+		icon.tex:SetSize(ICON_INNER, ICON_INNER)
 		icon.tex:SetPoint("CENTER")
+		-- The border cell is larger than the button it frames, as Blizzard's is.
 		icon.border = icon:CreateTexture(nil, "OVERLAY")
 		icon.border:SetTexture(I.LootTabBorders)
-		icon.border:SetAllPoints()
+		icon.border:SetSize(ICON_BORDER, ICON_BORDER)
+		icon.border:SetPoint("CENTER")
 		icon:SetScript("OnEnter", IconOnEnter)
 		icon:SetScript("OnLeave", IconOnLeave)
 		icon:SetScript("OnClick", IconOnClick)
@@ -203,50 +215,30 @@ local function RowInitializer(row, group)
 	if not row.initialized then
 		row:SetSize(ROW_WIDTH, ROW_HEIGHT)
 		--[[
-			The EJ sheet's inset row, which is the carved-into-the-page look rather
-			than a bar laid on top of it. Measured off the sheet: a bright highlight
-			line at y 602-603, a flat dark body to 619, a second highlight at 623 and
-			the shadow it casts fading out by 629. Both ends fade horizontally too,
-			so it needs no masking to sit on parchment.
-
-			The previous try used the loot row's plate instead. That one carries an
-			icon well on its left and is dark the whole way down with no highlight,
-			which is why it read as a stripe laid over the page.
-		]]
-		--[[
-			Two pieces, because one cannot do both jobs. The dark is only wanted at
-			the left, under the names, and has to be gone by the time the icons
-			start -- so it is the loot bar's gradient, which runs dark-to-nothing
-			left to right, stopped at just under half the row.
-
-			The separator is the inset row's own highlight line, two pixels of it,
-			run the full width. That is the part that reads as a page rule.
+			loottab-item-background, which is the texture this row is actually drawn
+			with in retail -- not something approximated off the EJ sheet. Measured:
+			the dark runs solid from x=78, holds to about x=230 and is gone by 358,
+			over y 14 to 79 of a 512x128 file. Stretched across the row that gives
+			dark under the names, fading out before the icons start, which is the
+			shape the earlier guesses were reaching for.
 		]]
 		row.bg = row:CreateTexture(nil, "BACKGROUND")
-		row.bg:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
-		row.bg:SetTexCoord(0.08398438, 0.62890625, 0.61816406, 0.66210938)
-		row.bg:SetPoint("TOPLEFT", 2, -1)
-		row.bg:SetPoint("BOTTOMLEFT", 2, 1)
-		row.bg:SetWidth(ROW_FADE_WIDTH)
-		row.line = row:CreateTexture(nil, "BORDER")
-		row.line:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
-		row.line:SetTexCoord(0.0390625, 0.625, 0.58789063, 0.58984375)
-		row.line:SetHeight(2)
-		row.line:SetPoint("BOTTOMLEFT", 2, 0)
-		row.line:SetPoint("BOTTOMRIGHT", -2, 0)
+		row.bg:SetTexture(I.LootTabRow)
+		row.bg:SetTexCoord(0.15234375, 0.69921875, 0.109375, 0.6171875)
+		row.bg:SetAllPoints()
 		row.hover = row:CreateTexture(nil, "HIGHLIGHT")
 		row.hover:SetPoint("TOPLEFT", 2, -2)
 		row.hover:SetPoint("BOTTOMRIGHT", -2, 2)
 		row.hover:SetColorTexture(1, 0.88, 0.60, 0.07)
-		row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		row.name:SetJustifyH("LEFT")
-		row.name:SetSize(330, 18)
-		row.name:SetPoint("TOPLEFT", 14, -7)
-		-- Highlight rather than Disable: the sub-line is on the dark plate now.
-		row.bosses = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+		row.name:SetSize(318, 0)
+		row.name:SetPoint("TOPLEFT", NAME_X, NAME_Y)
+		row.bosses = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 		row.bosses:SetJustifyH("LEFT")
-		row.bosses:SetSize(330, 12)
-		row.bosses:SetPoint("TOPLEFT", 14, -28)
+		row.bosses:SetSize(318, 0)
+		row.bosses:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
+		row.bosses:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 		row.more = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 		row.more:SetPoint("RIGHT", -10, 0)
 		row.icons = { }
