@@ -268,7 +268,9 @@ PROBE = """
     out.seasonOnStart = season(10, 18)
     out.seasonMidway = season(10, 25)
     out.seasonOnEnd = season(11, 1)
-    out.seasonAfterEnd = season(11, 2)
+    -- The last day it shows, and the first day it does not.
+    out.seasonLastDay = season(11, 2)
+    out.seasonAfterEnd = season(11, 3)
     out.seasonFarOff = season(3, 14)
     out.seasonNoDate = season(nil, nil)
 
@@ -456,6 +458,7 @@ EXPECTED = {
         "seasonOnStart": "hallowsend",
         "seasonMidway": "hallowsend",
         "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
         "seasonAfterEnd": "none",
         "seasonFarOff": "none",
         "seasonNoDate": "none",
@@ -510,6 +513,7 @@ EXPECTED = {
         "seasonOnStart": "hallowsend",
         "seasonMidway": "hallowsend",
         "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
         "seasonAfterEnd": "none",
         "seasonFarOff": "none",
         "seasonNoDate": "none",
@@ -564,6 +568,7 @@ EXPECTED = {
         "seasonOnStart": "hallowsend",
         "seasonMidway": "hallowsend",
         "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
         "seasonAfterEnd": "none",
         "seasonFarOff": "none",
         "seasonNoDate": "none",
@@ -632,6 +637,7 @@ EXPECTED = {
         "seasonOnStart": "hallowsend",
         "seasonMidway": "hallowsend",
         "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
         "seasonAfterEnd": "none",
         "seasonFarOff": "none",
         "seasonNoDate": "none",
@@ -687,6 +693,7 @@ EXPECTED = {
         "seasonOnStart": "hallowsend",
         "seasonMidway": "hallowsend",
         "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
         "seasonAfterEnd": "none",
         "seasonFarOff": "none",
         "seasonNoDate": "none",
