@@ -168,6 +168,52 @@ local function GoTo(instanceName, bossName)
 	end
 end
 
+--[[
+	The same equip preview the loot rows have, driven the same way: hold Ctrl while
+	hovering. ui/Loot.lua owns the frame and exports PreviewItem and HidePreview, so
+	this drives that one rather than building a second.
+
+	A tier token has no appearance of its own, so what gets previewed is the piece
+	it trades for -- the same resolution the loot view does, since the wishlist can
+	hold a token just as easily.
+]]
+local function PreviewTarget(item)
+	if not item then return nil end
+	if item.itemID and TierTokenService and TierTokenService.IsToken(item.itemID) then
+		local pieceId = TierTokenService.GetPreviewItemId(item.itemID)
+		if pieceId then
+			RequestLoadItemDataCompat(pieceId)
+			return "item:" .. pieceId
+		end
+	end
+	return item.link
+end
+
+local function StopPreview(self)
+	self.checkCtrl = false
+	self.wasCtrlDown = false
+	self:SetScript("OnUpdate", nil)
+	if components and components.Loot and components.Loot.HidePreview then
+		components.Loot.HidePreview()
+	end
+end
+
+local function IconOnUpdate(self)
+	if not self.checkCtrl then return end
+	local down = IsControlKeyDown()
+	if down and not self.wasCtrlDown then
+		if components and components.Loot and components.Loot.PreviewItem then
+			components.Loot.PreviewItem(self.previewTarget)
+		end
+		self.wasCtrlDown = true
+	elseif not down and self.wasCtrlDown then
+		if components and components.Loot and components.Loot.HidePreview then
+			components.Loot.HidePreview()
+		end
+		self.wasCtrlDown = false
+	end
+end
+
 local function IconOnEnter(self)
 	local item = self.item
 	if not item then return end
@@ -186,10 +232,17 @@ local function IconOnEnter(self)
 	end
 	GameTooltip:AddLine("|cffaaaaaa(Click to open its loot)|r")
 	GameTooltip:AddLine("|cffaaaaaa(Shift+Right-click to remove it)|r")
+	GameTooltip:AddLine("|cffaaaaaa(Hold Ctrl to preview it)|r")
 	GameTooltip:Show()
+
+	self.previewTarget = PreviewTarget(item)
+	self.checkCtrl = true
+	self.wasCtrlDown = false
+	self:SetScript("OnUpdate", IconOnUpdate)
 end
 
-local function IconOnLeave()
+local function IconOnLeave(self)
+	StopPreview(self)
 	GameTooltip_Hide()
 end
 
@@ -202,6 +255,7 @@ end
 local function IconOnClick(self, button)
 	local item = self.item
 	if not item then return end
+	StopPreview(self)
 	if button == "RightButton" and IsShiftKeyDown() then
 		WishlistService.RemoveItem(item.itemID)
 		print("|cffff9900[AGC]|r Removed from Wishlist:", item.link or item.name)
