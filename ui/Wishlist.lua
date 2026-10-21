@@ -219,7 +219,7 @@ local function MoreOnEnter(self)
 	local hidden = self.hidden
 	if not hidden or #hidden == 0 then return end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetText(("%d more on this wishlist"):format(#hidden))
+	GameTooltip:SetText(("%d more from here"):format(#hidden))
 	for _, item in ipairs(hidden) do
 		local color = Colors[item.quality] or Colors[1]
 		GameTooltip:AddLine(item.name or "Unknown", color.r, color.g, color.b)
@@ -332,13 +332,24 @@ local function RowInitializer(row, group)
 		row.bosses:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
 		row.bosses:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 		row.more = CreateFrame("Frame", nil, row)
-		row.more:SetSize(46, 24)
+		row.more:SetSize(24, 24)
 		-- Measured off the icons rather than the row's right edge, so the gap after
 		-- the last one is the same whoever is looking at it.
 		row.more:SetPoint("LEFT", ICON_START + MAX_ICONS * (ICON_SIZE + ICON_GAP) + 12, 0)
 		row.more:EnableMouse(true)
-		row.more.text = row.more:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		row.more.text:SetPoint("CENTER")
+		--[[
+			A chevron rather than "+7". The count was a number with nowhere to go --
+			it could not be clicked and did not say what it stood for -- whereas an
+			arrow reads as "there is more this way" and invites the hover that
+			actually answers it. The tooltip still leads with the count.
+
+			ChatFrameExpandArrow is the chat frame's own expand chevron, so it is on
+			every client and needs nothing shipped.
+		]]
+		row.more.arrow = row.more:CreateTexture(nil, "OVERLAY")
+		row.more.arrow:SetTexture("Interface/ChatFrame/ChatFrameExpandArrow")
+		row.more.arrow:SetSize(16, 16)
+		row.more.arrow:SetPoint("CENTER")
 		row.more:SetScript("OnEnter", MoreOnEnter)
 		row.more:SetScript("OnLeave", MoreOnLeave)
 		row.icons = { }
@@ -371,7 +382,6 @@ local function RowInitializer(row, group)
 		table.insert(overflow, ItemDisplay(group.items[index]))
 	end
 	row.more.hidden = overflow
-	row.more.text:SetText(#overflow > 0 and ("+" .. #overflow) or "")
 	row.more:SetShown(#overflow > 0)
 end
 
