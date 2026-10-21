@@ -21,9 +21,10 @@ local canvas
 	top, bottom, left and right -- each at its native size. So the art is not a
 	swag for the top of the frame; it is a border for the whole of it.
 
-	Three of the thirteen go up: their top and bottom pieces, and a cobweb for the
-	corner the portrait leaves bare. The side pieces are left for now -- the frame
-	is narrower than theirs and the sides are where that shows first.
+	Two of the thirteen go up, and their anchors are ours rather than Blizzard's,
+	because this frame is not laid out like the one those numbers were written
+	for. Their bottom piece was tried and dropped: below this window there is the
+	tab row and then the world, and nothing for a swag to sit against.
 ]]
 local HALLOWS_END = {
 	{
@@ -31,40 +32,34 @@ local HALLOWS_END = {
 		left = 0.138672, right = 0.708984, top = 0.035156, bottom = 0.159180,
 		width = 584, height = 127,
 		--[[
-			Blizzard anchor the top piece 133 below the frame's top, which works
-			because the top of their window is decoration. Ours is not: the nav bar
-			holds the breadcrumb on the left and the search box on the right, and
-			the search drops a result list down from there. At -133 the pumpkin
-			lands squarely on all three.
+			Resting on the frame rather than hanging into it or floating over it,
+			which are the two it has already been.
 
-			So it is anchored by its bottom edge just above the frame instead. It
-			overlaps by sixteen, enough to read as resting on the window rather
-			than floating over it, and clears everything that can be clicked or
-			typed into.
+			Blizzard hang theirs 133 into the window, which is fine when the top of
+			the window is decoration. Ours is not -- breadcrumb on the left, search
+			on the right, and a result list that drops down from the search -- so
+			that put the pumpkin on all three.
 
-			Centred, too. With the piece off the title bar there is nothing for it
-			to cover, and centring keeps it in line with the swag along the bottom.
+			Anchoring the bottom edge just above the frame cleared them but left it
+			looking stuck on rather than draped. Forty five is the middle: the
+			vines lie along the title bar, which is the only part of the top strip
+			nothing is drawn into, while the pumpkin sits above the window where it
+			covers nothing at all.
 		]]
-		point = "BOTTOM", relativePoint = "TOP", x = 0, y = -16,
-	},
-	{
-		-- The matching lower swag, 519x99, anchored as their bottom piece is.
-		left = 0.222656, right = 0.729492, top = 0.331055, bottom = 0.427734,
-		width = 519, height = 99,
-		point = "TOP", relativePoint = "BOTTOM", x = 0, y = 7,
+		point = "BOTTOM", relativePoint = "TOP", x = 0, y = -45,
 	},
 	{
 		--[[
-			A cobweb, moved to the bottom right corner. Not one of Blizzard's four
-			pieces; the sheet carries it and a bare corner suits it.
+			A cobweb in the top right, which is where it looked best. Not one of
+			Blizzard's pieces; the sheet carries it and the corner is bare.
 
-			It was top right, which put it over the search results. Nothing is
-			drawn or clicked in the bottom corner, so it can sit there without
-			being in anyone's way.
+			It reaches the search results when they are open, but a web is mostly
+			holes -- it reads as something behind them rather than something in the
+			way, which the pumpkin did not.
 		]]
 		left = 0.105469, right = 0.216797, top = 0.520508, bottom = 0.613281,
 		width = 132, height = 110,
-		point = "BOTTOMRIGHT", relativePoint = "BOTTOMRIGHT", x = 10, y = -8,
+		point = "TOPRIGHT", relativePoint = "TOPRIGHT", x = -2, y = -26,
 	},
 }
 
