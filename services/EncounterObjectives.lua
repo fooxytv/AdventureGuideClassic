@@ -164,6 +164,7 @@ local function MarkEncounterDefeatedInInstanceData(dungeonName, encounterName)
                 local enc = dungeon[i]
                 if type(enc) == "table" and enc.name == encounterName then
                     enc.defeated = 1
+                    ProgressService.MarkDefeated(dungeon.name, enc)
                     DebugPrint("Marked defeated in dungeon data:", encounterName)
                     return true
                 end
@@ -178,6 +179,7 @@ local function MarkEncounterDefeatedInInstanceData(dungeonName, encounterName)
                 local enc = raid[i]
                 if type(enc) == "table" and enc.name == encounterName then
                     enc.defeated = 1
+                    ProgressService.MarkDefeated(raid.name, enc)
                     DebugPrint("Marked defeated in raid data:", encounterName)
                     return true
                 end
@@ -309,12 +311,19 @@ local function ResetEncountersForInstance(instanceName)
         end
     end
 
-    if found then
+    --[[
+        Unconditionally, not inside `if found`. A stored defeat with no live
+        counterpart -- the instance filtered out for this client, or the table
+        rebuilt without it -- would otherwise be unreachable, and Hydrate would put
+        it back on the next login.
+    ]]
+    local cleared = ProgressService.ClearInstance(instanceName)
+    if found or cleared then
         _G.AdventureGuideClassic_UI_Encounters_Refresh = true
         DebugPrint("Reset encounters for:", instanceName)
     end
 
-    return found
+    return found or cleared
 end
 
 local function ResetAllEncounters()
@@ -338,6 +347,7 @@ local function ResetAllEncounters()
         end
     end
 
+    ProgressService.ClearAll()
     _G.AdventureGuideClassic_UI_Encounters_Refresh = true
     DebugPrint("All instance encounters have been reset")
 end
@@ -389,7 +399,15 @@ local function OnSystemMessage(message)
             return
         end
         DebugPrint("Detected instance reset:", instanceName)
-        ResetEncountersForInstance(instanceName)
+        --[[
+            The game's name for an instance is not always the one the data uses, and
+            a reset that matches nothing clears nothing while looking like it worked.
+            Say so rather than failing quietly; the name printed here is what the data
+            would have to match.
+        ]]
+        if not ResetEncountersForInstance(instanceName) then
+            DebugPrint("Reset matched no tracked instance:", instanceName)
+        end
     end
 end
 
@@ -442,6 +460,65 @@ end
 
 _G.AGC_ResetAllEncounters = function()
     ResetAllEncounters()
+end
+
+--[[
+    Mark a boss beaten without beating it. Goes through the same function the three
+    detection paths do, so it records and persists exactly as a real kill would --
+    which is the point, for checking that progress survives a reload.
+]]
+_G.AGC_MarkDefeated = function(instanceName, bossName)
+    if not instanceName or not bossName then
+        print("|cffff9900[AGC]|r Usage: AGC_MarkDefeated(\"Instance\", \"Boss\")")
+        return
+    end
+    if MarkEncounterDefeatedInInstanceData(instanceName, bossName) then
+        _G.AdventureGuideClassic_UI_Encounters_Refresh = true
+        print(("|cff00ff00[AGC]|r Marked %s in %s as defeated"):format(bossName, instanceName))
+    else
+        print(("|cffff5555[AGC]|r No boss named %s in %s"):format(bossName, instanceName))
+    end
+end
+
+_G.AGC_MarkInstanceDefeated = function(instanceName)
+    local instance = instanceName and InstanceService.GetInstanceByName(instanceName)
+    if not instance then
+        print("|cffff9900[AGC]|r Usage: AGC_MarkInstanceDefeated(\"Instance\")")
+        return
+    end
+    local marked = 0
+    for _, encounter in ipairs(instance) do
+        if encounter.name and MarkEncounterDefeatedInInstanceData(instance.name, encounter.name) then
+            marked = marked + 1
+        end
+    end
+    _G.AdventureGuideClassic_UI_Encounters_Refresh = true
+    print(("|cff00ff00[AGC]|r Marked %d of %d in %s as defeated")
+        :format(marked, #instance, instance.name))
+end
+
+--[[
+    Clear every dungeon's defeats and leave the raids alone.
+
+    A saved raid is a real lockout: those bosses stay dead until the server says
+    otherwise, so clearing our record of them would only make the journal disagree
+    with the game. Asked through GetSavedInstanceInfo rather than assuming "raids are
+    saved and dungeons are not", which is right for a raid nobody is saved to as well
+    as for a dungeon that somehow is.
+]]
+_G.AGC_ResetAllDungeons = function()
+    local cleared, skipped = 0, 0
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        if dungeon.name then
+            if IsInstanceSaved(dungeon.name) then
+                skipped = skipped + 1
+            elseif ResetEncountersForInstance(dungeon.name) then
+                cleared = cleared + 1
+            end
+        end
+    end
+    print(("|cff00ff00[AGC]|r Cleared %d dungeon(s); left %d saved instance(s) alone")
+        :format(cleared, skipped))
 end
 
 _G.AGC_ResetInstance = function(instanceName)

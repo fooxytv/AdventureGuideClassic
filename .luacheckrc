@@ -28,6 +28,7 @@ globals = {
     "SavedVariablesName", "addonName",
     "AdventureGuideNavigationService", "AdventureObjectives",
     "CreatureModelService", "DungeonMapService", "HyperlinkService",
+    "ProgressService", "DiscoveryService",
     "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
     "TierTokenService", "TokenizedTextService", "WishlistService",
@@ -61,8 +62,11 @@ globals = {
     "AdventureGuideClassic_DebugEvents",
     "AGC_CheckEquipped", "AGC_DebugLootFilter", "AGC_ResetAllEncounters",
     "AGC_ResetInstance", "AGC_ToggleDebug", "AGC_Wishlist",
+    "AGC_ModelDump", "AGC_ModelPoke",
     "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "AGC_Ids", "SLASH_AGCIDS1",
+    "AGC_MarkDefeated", "AGC_MarkInstanceDefeated", "AGC_ProgressDump",
+    "AGC_ResetAllDungeons",
     "SLASH_AGCPROBE1", "SLASH_AGCPROBEEVENTS1",
     "TestBossDefeatedToast", "TestBossDefeatedToastCustom",
     "TestLevelUpToast", "TestLevelUpToastAt",
@@ -121,7 +125,7 @@ read_globals = {
     -- Input, sound, chat
     "GetBindingKey", "SetBinding", "GetCursorPosition",
     "IsControlKeyDown", "IsShiftKeyDown",
-    "PlaySound", "PlaySoundFile", "SOUNDKIT",
+    "PlaySound", "PlaySoundFile", "SOUNDKIT", "Screenshot",
     "ChatEdit_InsertLink", "DressUpItemLink",
 
     -- Lua/WoW shims

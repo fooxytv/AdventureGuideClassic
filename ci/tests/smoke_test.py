@@ -293,6 +293,214 @@ PROBE = """
     SavedVariables.ExpansionFilter = prev
     out.abilitiesMissingIcon = missingIcon
     out.abilitiesMissingBody = missingBody
+    --[[
+        Defeat progress has to survive a reload. It used to live only on the instance
+        table, which is rebuilt from the data files on every login, so every tick was
+        lost. Round-trip it the way a session would: record, wipe the in-memory field
+        the way a fresh login does, hydrate, and check it came back.
+    ]]
+    -- The first dungeon is not necessarily populated: Forever ships instances the
+    -- client lists but we have no encounters for yet. Take the first that has one.
+    local probeInstance, probeEncounter
+    for _, candidate in ipairs(InstanceService.GetDungeons()) do
+        if candidate[1] then
+            probeInstance, probeEncounter = candidate, candidate[1]
+            break
+        end
+    end
+    if probeEncounter then
+        local charKey = UnitName("player") .. "-" .. GetRealmName()
+
+        --[[
+            A write before the first read must not replace this character's history.
+            Store writes the in-memory table wholesale, so without the load guard in
+            ProgressService the first MarkDefeated of a session would leave only the
+            boss that triggered it and drop everything earned before.
+        ]]
+        SavedVariables.Progress = { [charKey] = { defeated = { ["Seeded|Boss"] = true } } }
+        ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+        out.progressKeptPriorHistory =
+            SavedVariables.Progress[charKey].defeated["Seeded|Boss"] and 1 or 0
+
+        ProgressService.ClearAll()
+        out.progressStartsClear = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
+
+        ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+        out.progressRecorded = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 1 or 0
+
+        -- Written through to SavedVariables under this character, not the account.
+        local stored = SavedVariables.Progress and SavedVariables.Progress[charKey]
+        out.progressPersisted = (stored and stored.defeated and next(stored.defeated)) and 1 or 0
+
+        probeEncounter.defeated = 0
+        ProgressService.Hydrate()
+        out.progressHydrated = probeEncounter.defeated == 1 and 1 or 0
+
+        ProgressService.ClearInstance(probeInstance.name)
+        out.progressCleared = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
+        probeEncounter.defeated = 0
+
+        --[[
+            Clearing one instance must leave every other instance alone. ClearInstance
+            writes the whole in-memory table back, so a fault there wipes the lot
+            rather than the one instance asked for.
+        ]]
+        local otherInstance, otherEncounter
+        for _, candidate in ipairs(InstanceService.GetDungeons()) do
+            if candidate[1] and candidate.name ~= probeInstance.name then
+                otherInstance, otherEncounter = candidate, candidate[1]
+                break
+            end
+        end
+        if otherEncounter then
+            ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+            ProgressService.MarkDefeated(otherInstance.name, otherEncounter)
+            ProgressService.ClearInstance(probeInstance.name)
+            out.progressClearIsScoped =
+                (ProgressService.IsDefeated(otherInstance.name, otherEncounter)
+                    and not ProgressService.IsDefeated(probeInstance.name, probeEncounter))
+                and 1 or 0
+            ProgressService.ClearAll()
+        end
+
+        --[[
+            A stored defeat must be clearable even when the instance it belongs to
+            cannot be looked up -- filtered out for this client or season, or simply
+            gone from the data. ClearInstance used to rebuild its keys by walking
+            GetInstanceByName, which returns nil in that case and cleared nothing,
+            while Hydrate walks every instance and put the defeat straight back.
+        ]]
+        ProgressService.MarkDefeated("No Such Instance", { name = "Ghost Boss" })
+        ProgressService.ClearInstance("No Such Instance")
+        out.progressClearsUnresolvable =
+            ProgressService.IsDefeated("No Such Instance", { name = "Ghost Boss" })
+                and 0 or 1
+        ProgressService.ClearAll()
+    end
+
+    --[[
+        Two encounters sharing a progress key would mark each other beaten. This is
+        why the key is the instance and encounter name rather than encounterID, which
+        is not unique: Blackrock Spire gives Pyroguard Emberseer and Solakar
+        Flamewreath the same id, and a dungeon and its SoD raid reuse ids across the
+        pair.
+    ]]
+    local seenKey, keyCollisions = {}, 0
+    for _, list in ipairs({ InstanceService.GetDungeons(), InstanceService.GetRaids() }) do
+        for _, instance in ipairs(list) do
+            for _, encounter in ipairs(instance) do
+                local key = instance.name .. "|" .. tostring(encounter.name)
+                if seenKey[key] then keyCollisions = keyCollisions + 1 end
+                seenKey[key] = true
+            end
+        end
+    end
+    out.progressKeyCollisions = keyCollisions
+
+    --[[
+        Discovery mode must hide a boss that has not been beaten and reveal it when
+        it has, without revealing the rest of the instance. Off, it must change
+        nothing at all -- that is the default and the common case.
+
+        What everything below rests on is the boss having something to hide. A boss
+        with no loot and no abilities measures zero before and zero after, so every
+        comparison here would read 0 == 0 and the whole block would go green against
+        a mode that did nothing. So the boss is searched for rather than taken as the
+        first one going, and the baseline is asserted non-empty rather than assumed.
+
+        Both dimensions are preferred and neither is required, because the data will
+        not support requiring them. Dungeon abilities are barely authored yet: 22
+        bosses have any on Forever, 2 on Era and TBC, and none at all on SoD, whose
+        one dungeon holding them is filtered out. Demanding both would have left SoD
+        with no boss to test rather than a weaker test.
+    ]]
+    local function measure(whichInstance, target)
+        AdventureGuideNavigationService.SetInstance(whichInstance)
+        AdventureGuideNavigationService.SetEncounter(target)
+        local l = AdventureGuideNavigationService.GetEncounterLoot()
+        return #l.loot + #l.sharedLoot + #l.rareLoot + #l.veryRareLoot
+            + #l.extremelyRareLoot,
+            #AdventureGuideNavigationService.GetEncounterAbilities(),
+            AdventureGuideNavigationService.GetEncounterName()
+    end
+
+    DiscoveryService.SetEnabled(false)
+    ProgressService.ClearAll()
+    local discInstance, discFirst, discSecond
+    -- Pass 1 wants both, pass 2 settles for either.
+    for _, wantBoth in ipairs({ true, false }) do
+        for _, candidate in ipairs(InstanceService.GetDungeons()) do
+            -- Two bosses at least, so "revealing one does not reveal its
+            -- neighbour" has a neighbour to check.
+            if #candidate >= 2 then
+                for index, target in ipairs(candidate) do
+                    local loot, abilities = measure(candidate, target)
+                    local enough = wantBoth and (loot > 0 and abilities > 0)
+                        or (not wantBoth and loot + abilities > 0)
+                    if enough then
+                        discInstance, discFirst = candidate, target
+                        discSecond = candidate[index == 1 and 2 or 1]
+                        break
+                    end
+                end
+            end
+            if discInstance then break end
+        end
+        if discInstance then break end
+    end
+    if discInstance then
+        local first, second = discFirst, discSecond
+
+        ProgressService.ClearAll()
+        DiscoveryService.SetEnabled(false)
+        local lootOff, abilitiesOff, nameOff = measure(discInstance, first)
+        --[[
+            The baseline, and the one thing here that may not be empty or wrong:
+            every check below is measured against it.
+        ]]
+        out.discoveryBaselineNonEmpty = (lootOff + abilitiesOff > 0) and 1 or 0
+        out.discoveryOffRevealsUnmet =
+            AdventureGuideNavigationService.IsEncounterDiscovered(first) and 1 or 0
+        out.discoveryOffKeepsName =
+            (nameOff ~= DiscoveryService.UNKNOWN_NAME and nameOff == first.name)
+                and 1 or 0
+
+        DiscoveryService.SetEnabled(true)
+        local lootHidden, abilitiesHidden, nameHidden = measure(discInstance, first)
+        out.discoveryHidesUnmet = (lootHidden == 0 and abilitiesHidden == 0) and 1 or 0
+        out.discoveryHidesName =
+            (nameHidden == DiscoveryService.UNKNOWN_NAME) and 1 or 0
+
+        ProgressService.MarkDefeated(discInstance.name, first)
+        local lootShown, abilitiesShown, nameShown = measure(discInstance, first)
+        out.discoveryRevealsOnDefeat =
+            (lootShown == lootOff and abilitiesShown == abilitiesOff) and 1 or 0
+        out.discoveryRevealsName = (nameShown == nameOff) and 1 or 0
+        out.discoveryIsPerBoss =
+            AdventureGuideNavigationService.IsEncounterDiscovered(second) and 0 or 1
+
+        -- The "2/4 discovered" note. One beaten, out of however many bosses the
+        -- instance the search landed on happens to have.
+        local found, total = DiscoveryService.GetProgress(discInstance)
+        out.discoveryProgressCountsOne =
+            (found == 1 and total == #discInstance) and 1 or 0
+
+        --[[
+            Resetting the instance makes its bosses alive again; it does not make the
+            player forget meeting them. Discovery read the defeat set directly, so a
+            routine dungeon reset put ??? back over bosses already seen.
+        ]]
+        ProgressService.ClearInstance(discInstance.name)
+        out.discoverySurvivesReset =
+            AdventureGuideNavigationService.IsEncounterDiscovered(first)
+                and 1 or 0
+        out.discoveryResetClearsDefeat =
+            ProgressService.IsDefeated(discInstance.name, first) and 0 or 1
+
+        DiscoveryService.SetEnabled(false)
+        ProgressService.ClearAll()
+        out.discoveryDefaultsOff = DiscoveryService.IsEnabled() and 0 or 1
+    end
     return out
 
 """
@@ -315,6 +523,27 @@ EXPECTED = {
         "requestsSpellData": 0,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
+        "discoveryDefaultsOff": 1,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -331,6 +560,27 @@ EXPECTED = {
         "requestsSpellData": 0,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
+        "discoveryDefaultsOff": 1,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -347,6 +597,27 @@ EXPECTED = {
         "requestsSpellData": 0,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
+        "discoveryDefaultsOff": 1,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -377,6 +648,27 @@ EXPECTED = {
         "requestsSpellData": 1,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
+        "discoveryDefaultsOff": 1,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -394,6 +686,27 @@ EXPECTED = {
         "requestsSpellData": 1,
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
+        "discoveryBaselineNonEmpty": 1,
+        "discoveryOffRevealsUnmet": 1,
+        "discoveryOffKeepsName": 1,
+        "discoveryHidesUnmet": 1,
+        "discoveryHidesName": 1,
+        "discoveryRevealsOnDefeat": 1,
+        "discoveryRevealsName": 1,
+        "discoveryIsPerBoss": 1,
+        "discoveryProgressCountsOne": 1,
+        "discoverySurvivesReset": 1,
+        "discoveryResetClearsDefeat": 1,
+        "discoveryDefaultsOff": 1,
     },
 }
 
