@@ -28,7 +28,12 @@ local canvas
 	chosen and placed for this frame instead.
 ]]
 --[[
-	Cobwebs in the corners, and a hat on the portrait.
+	Cobwebs in the corners, and nothing else.
+
+	The witch's hat was tried on the portrait and taken off again: mocked onto a
+	screenshot it looked worn, and in the game it looked daft. The swag went the
+	same way. What is left is the part of this sheet that asks nothing of the
+	frame it hangs on.
 
 	The swag went through four positions and never settled, because the piece is
 	the problem rather than the placement: a pumpkin the size of the title bar
@@ -62,25 +67,6 @@ local HALLOWS_END = {
 		width = 84, height = 70,
 		point = "BOTTOMRIGHT", relativePoint = "BOTTOMRIGHT", x = -2, y = 2,
 	},
-	{
-		--[[
-			The witch's hat, on the journal's own portrait.
-
-			Cut from the right half of its piece on the sheet, x 770 to 891, which
-			leaves behind the vines it trails off into -- those want a frame edge
-			to lie along and there is none here.
-
-			Mirrored, so the point falls away from the window rather than across
-			it, and anchored by its bottom edge to the top of the portrait ring so
-			it perches rather than covers. The ring is where it belongs: it is the
-			one round thing on the frame, and a hat on a portrait is what Blizzard
-			themselves do to characters for this fortnight.
-		]]
-		left = 0.870117, right = 0.751953, top = 0.191406, bottom = 0.263672,
-		width = 96, height = 59,
-		anchor = "portrait",
-		point = "BOTTOM", relativePoint = "TOP", x = -6, y = -34,
-	},
 }
 
 local SHEETS = { hallowsend = { texture = "SeasonalHallowsEnd", pieces = HALLOWS_END } }
@@ -96,6 +82,7 @@ local function Build(sheet)
 		texture:SetTexCoord(piece.left, piece.right, piece.top, piece.bottom)
 		texture:SetSize(piece.width, piece.height)
 		texture:ClearAllPoints()
+		-- A piece can hang off something other than the frame, by its key.
 		local anchor = piece.anchor and EncounterJournal[piece.anchor] or canvas
 		texture:SetPoint(piece.point, anchor, piece.relativePoint, piece.x, piece.y)
 		texture:Show()
