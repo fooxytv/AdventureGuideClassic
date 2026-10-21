@@ -225,6 +225,14 @@ local function PassesPinned(item)
 	if not (WishlistService and item.itemId) then
 		return false
 	end
+	--[[
+		Equipping a wishlisted item marks it rather than deleting it, so an obtained
+		item is still on the list and has to be excluded here. Before that change the
+		entry was gone by this point and the wishlist test alone read the same way.
+	]]
+	if WishlistService.IsObtained(item.itemId) then
+		return false
+	end
 	return WishlistService.IsOnWishlist(item.itemId) ~= nil
 end
 

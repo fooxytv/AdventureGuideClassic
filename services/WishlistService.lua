@@ -16,6 +16,26 @@ local function GetCharacterKey()
     return name .. "-" .. realm
 end
 
+--[[
+    `OnWishlistChanged` is a single slot and ui/Loot.lua already owns it. A second
+    view assigning over it would silently unhook the first, so anything else that
+    needs telling registers here instead and both are called.
+]]
+local changeListeners = {}
+
+function WishlistService.RegisterChangeListener(listener)
+    table.insert(changeListeners, listener)
+end
+
+local function NotifyChanged()
+    if WishlistService.OnWishlistChanged then
+        WishlistService.OnWishlistChanged()
+    end
+    for _, listener in ipairs(changeListeners) do
+        listener()
+    end
+end
+
 local function InitWishlist()
     if not SavedVariables then return end
     SavedVariables.Wishlists = SavedVariables.Wishlists or {}
@@ -57,9 +77,7 @@ function WishlistService.AddItem(itemID, itemLink, itemName, sourceBoss, sourceI
         sourceInstance = sourceInstance,
         addedDate = time(),
     }
-    if WishlistService.OnWishlistChanged then
-        WishlistService.OnWishlistChanged()
-    end
+    NotifyChanged()
 
     return true
 end
@@ -72,9 +90,7 @@ function WishlistService.RemoveItem(itemID)
     if SavedVariables.Wishlists[charKey][itemID] then
         SavedVariables.Wishlists[charKey][itemID] = nil
 
-        if WishlistService.OnWishlistChanged then
-            WishlistService.OnWishlistChanged()
-        end
+        NotifyChanged()
 
         return true
     end
@@ -111,6 +127,45 @@ function WishlistService.GetAllItems()
     return items
 end
 
+function WishlistService.IsObtained(itemID)
+    local data = WishlistService.IsOnWishlist(itemID)
+    return data and data.obtainedDate ~= nil or false
+end
+
+--[[
+    The wishlist grouped by the instance each item was added from, newest group
+    first, for the wishlist tab's one-row-per-instance list.
+
+    Grouping lives here rather than in the view because `sourceInstance` is only
+    ever a name -- the instance table itself is not stored -- so this is the one
+    place that has to know the entries are joined on a string. It is also the only
+    part of the tab the smoke test can reach, since ui/ needs frames.
+]]
+function WishlistService.GetGrouped(includeObtained)
+    local groups, byName = {}, {}
+    for _, data in ipairs(WishlistService.GetAllItems()) do
+        if includeObtained or not data.obtainedDate then
+            local name = data.sourceInstance or "Unknown"
+            local group = byName[name]
+            if not group then
+                group = { name = name, items = {}, bosses = {}, seenBoss = {} }
+                byName[name] = group
+                table.insert(groups, group)
+            end
+            table.insert(group.items, data)
+            local boss = data.sourceBoss
+            if boss and not group.seenBoss[boss] then
+                group.seenBoss[boss] = true
+                table.insert(group.bosses, boss)
+            end
+        end
+    end
+    for _, group in ipairs(groups) do
+        group.seenBoss = nil
+    end
+    return groups
+end
+
 function WishlistService.CheckLootTable(lootItems)
     local matches = {}
     for _, itemID in ipairs(lootItems) do
@@ -125,9 +180,7 @@ function WishlistService.ClearAll()
     InitWishlist()
     local charKey = GetCharacterKey()
     SavedVariables.Wishlists[charKey] = {}
-    if WishlistService.OnWishlistChanged then
-        WishlistService.OnWishlistChanged()
-    end
+    NotifyChanged()
 end
 
 function WishlistService.DebugPrint()
@@ -151,21 +204,27 @@ local function GetEquippedItemIDs()
     return equippedIDs
 end
 
+--[[
+    Equipping a wishlisted item used to delete it outright. The wishlist view wants
+    to show what you have finished hunting, so it is marked instead. The view hides
+    obtained items by default, which is what the deletion looked like from outside.
+]]
 local function CheckEquippedItems()
     local wishlist = WishlistService.GetWishlist()
     local equippedIDs = GetEquippedItemIDs()
-    local removedItems = {}
+    local changed = false
 
     for itemID, data in pairs(wishlist) do
-        if equippedIDs[itemID] then
-            table.insert(removedItems, data)
+        if equippedIDs[itemID] and not data.obtainedDate then
+            data.obtainedDate = time()
+            changed = true
+            local itemLink = data.itemLink or data.itemName or "Unknown Item"
+            print("|cff00ff00[AGC Wishlist]|r Obtained:", itemLink)
         end
     end
 
-    for _, data in ipairs(removedItems) do
-        WishlistService.RemoveItem(data.itemID)
-        local itemLink = data.itemLink or data.itemName or "Unknown Item"
-        print("|cff00ff00[AGC Wishlist]|r Equipped and removed from wishlist:", itemLink)
+    if changed then
+        NotifyChanged()
     end
 end
 
