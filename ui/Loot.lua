@@ -200,13 +200,20 @@ local function ButtonOnEnter(self)
 	if lootItem and lootItem.link then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetHyperlink(lootItem.link)
-		if lootItem.itemId then
-			if WishlistService and WishlistService.IsOnWishlist(lootItem.itemId) then
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("|cff00ff00On your Wishlist|r |cffaaaaaa(Shift+Right-click to remove)|r")
-			else
-				GameTooltip:AddLine(" ")
+		--[[
+			Three states, not two. An obtained item is still on the list, so saying
+			"Shift+Right-click to add" over one would be a lie about what the click
+			does -- it would drop the entry.
+		]]
+		if lootItem.itemId and WishlistService then
+			local entry = WishlistService.IsOnWishlist(lootItem.itemId)
+			GameTooltip:AddLine(" ")
+			if not entry then
 				GameTooltip:AddLine("|cffaaaaaa(Shift+Right-click to add to Wishlist)|r")
+			elseif entry.obtainedDate then
+				GameTooltip:AddLine("|cff00ff00Obtained|r |cffaaaaaa(Shift+Right-click to drop it)|r")
+			else
+				GameTooltip:AddLine("|cff00ff00On your Wishlist|r |cffaaaaaa(Shift+Right-click to remove)|r")
 			end
 		end
 		GameTooltip:Show()
@@ -524,7 +531,8 @@ function component.Init(components_)
 			button.name:SetTextColor(color.r, color.g, color.b)
 			button.iconBorder:SetVertexColor(color.r, color.g, color.b)
 			button.iconOverlay:SetVertexColor(color.r, color.g, color.b)
-			if lootItem.itemId and WishlistService and WishlistService.IsOnWishlist(lootItem.itemId) then
+			-- The star means "still hunting", so an obtained item does not carry one.
+			if lootItem.itemId and WishlistService and WishlistService.IsWanted(lootItem.itemId) then
 				button.wishlistStar:Show()
 			else
 				button.wishlistStar:Hide()

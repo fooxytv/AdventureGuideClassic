@@ -226,14 +226,11 @@ local function PassesPinned(item)
 		return false
 	end
 	--[[
-		Equipping a wishlisted item marks it rather than deleting it, so an obtained
-		item is still on the list and has to be excluded here. Before that change the
-		entry was gone by this point and the wishlist test alone read the same way.
+		Still hunting it, not merely on the list. Equipping marks rather than deletes,
+		so an obtained item is still there; before that change the entry was gone by
+		this point and IsOnWishlist read the same way.
 	]]
-	if WishlistService.IsObtained(item.itemId) then
-		return false
-	end
-	return WishlistService.IsOnWishlist(item.itemId) ~= nil
+	return WishlistService.IsWanted(item.itemId) ~= nil
 end
 
 function LootFilterService.PassesFilter(lootItem)
