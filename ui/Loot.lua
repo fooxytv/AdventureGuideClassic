@@ -33,6 +33,15 @@ local pendingItemIds = {}
 	the item is obtained somewhere, so switching boss clears this and asks again.
 ]]
 local failedItemIds = {}
+--[[
+	The two secondary lines on a loot row, the slot and the subtype. Retail draws
+	these light grey against a dark row; ours sit on a light one, so the equivalent
+	is a soft dark rather than the flat black they were. Black carried as much
+	weight as the item name above it, which is the line meant to lead the row.
+]]
+local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.25, 0.21, 0.16
+local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.72, 0.06, 0.06
+
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
 local currentEncounterId = nil
@@ -479,13 +488,13 @@ function component.Init(components_)
 			button.armorType:SetJustifyH("LEFT")
 			button.armorType:SetSize(0, 12)
 			button.armorType:SetPoint("BOTTOMRIGHT", -25, 5)
-			button.armorType:SetTextColor(0, 0, 0)
+			button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			button.armorType:SetFont("Fonts\\FRIZQT__.TTF", 10)
 			button.slot = button:CreateFontString()
 			button.slot:SetJustifyH("LEFT")
 			button.slot:SetSize(0, 12)
 			button.slot:SetPoint("BOTTOMLEFT", 55, 3)
-			button.slot:SetTextColor(0, 0, 0)
+			button.slot:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			button.slot:SetFont("Fonts\\FRIZQT__.TTF", 10)
 			button.headerText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 			button.headerText:SetPoint("LEFT", 5, -7)
@@ -531,9 +540,9 @@ function component.Init(components_)
 			]]
 			button.armorType:SetText(lootItem.armorType or "Unknown")
 			if LootFilterService.IsUsableByPlayer(lootItem) then
-				button.armorType:SetTextColor(0, 0, 0)
+				button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			else
-				button.armorType:SetTextColor(0.72, 0.06, 0.06)
+				button.armorType:SetTextColor(UNUSABLE_R, UNUSABLE_G, UNUSABLE_B)
 			end
 			button.armorType:Show()
 			button.slot:SetText(lootItem.slot or "Unknown")
