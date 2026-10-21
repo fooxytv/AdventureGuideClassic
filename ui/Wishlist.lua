@@ -32,6 +32,8 @@ local HEADER_HEIGHT = 50
 ]]
 local ROW_WIDTH = 700
 local ROW_HEIGHT = 41
+-- How far the dark eases in at the left before it is at full strength.
+local ROW_FADE_IN = 44
 local NAME_X, NAME_Y = 39, -6
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.718, 0.561, 0.416
 local ICON_SIZE = 32
@@ -222,10 +224,28 @@ local function RowInitializer(row, group)
 			dark under the names, fading out before the icons start, which is the
 			shape the earlier guesses were reaching for.
 		]]
+		--[[
+			Two pieces because the texture has no left fade of its own: its dark
+			begins at x=75 with alpha going 13 to 255 in a single pixel. Retail's
+			row eases in from the left, so the piece that does it here is the
+			texture's own right-hand fade, mirrored by swapping the two horizontal
+			coordinates and laid over the first ROW_FADE_IN pixels.
+
+			The two abut rather than overlap -- overlapping would darken twice at
+			the join -- and they meet at alpha 215 against 242, which is close
+			enough not to show as a step.
+		]]
+		row.fade = row:CreateTexture(nil, "BACKGROUND")
+		row.fade:SetTexture(I.LootTabRow)
+		row.fade:SetTexCoord(0.69921875, 0.43945313, 0.109375, 0.6171875)
+		row.fade:SetPoint("TOPLEFT")
+		row.fade:SetPoint("BOTTOMLEFT")
+		row.fade:SetWidth(ROW_FADE_IN)
 		row.bg = row:CreateTexture(nil, "BACKGROUND")
 		row.bg:SetTexture(I.LootTabRow)
 		row.bg:SetTexCoord(0.15234375, 0.69921875, 0.109375, 0.6171875)
-		row.bg:SetAllPoints()
+		row.bg:SetPoint("TOPLEFT", ROW_FADE_IN, 0)
+		row.bg:SetPoint("BOTTOMRIGHT")
 		row.hover = row:CreateTexture(nil, "HIGHLIGHT")
 		row.hover:SetPoint("TOPLEFT", 2, -2)
 		row.hover:SetPoint("BOTTOMRIGHT", -2, 2)
@@ -399,9 +419,9 @@ function component.Init(components_)
 		scroll bar stranded on parchment instead of sitting in the page's dark edge.
 	]]
 	scrollbox:SetPoint("BOTTOMLEFT", 28, 12)
-	scrollbox:SetPoint("TOPRIGHT", wishlist, "TOPRIGHT", -40, -(HEADER_HEIGHT + 42))
+	scrollbox:SetPoint("TOPRIGHT", wishlist, "TOPRIGHT", -40, -(HEADER_HEIGHT + 64))
 	local scrollbar = CreateFrame("EventFrame", nil, wishlist, "MinimalScrollBar")
-	scrollbar:SetPoint("TOPRIGHT", wishlist, "TOPRIGHT", -14, -(HEADER_HEIGHT + 48))
+	scrollbar:SetPoint("TOPRIGHT", wishlist, "TOPRIGHT", -14, -(HEADER_HEIGHT + 70))
 	scrollbar:SetPoint("BOTTOMRIGHT", wishlist, "BOTTOMRIGHT", -14, 18)
 
 	local view = CreateScrollBoxListLinearView()
