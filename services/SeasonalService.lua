@@ -21,7 +21,8 @@ SeasonalService = {}
 	a window comparable without caring about the year.
 ]]
 local EVENTS = {
-	{ id = "hallowsend", from = { 10, 18 }, to = { 11, 1 } },
+	-- Ends after the 2nd, so the 3rd of November is the first day without it.
+	{ id = "hallowsend", from = { 10, 18 }, to = { 11, 2 } },
 }
 
 local function InRange(month, day, from, to)

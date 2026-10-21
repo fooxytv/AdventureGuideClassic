@@ -135,12 +135,21 @@ function component.Init()
 	canvas:SetFrameLevel(50)
 
 	--[[
-		Worked out once on load. The window is a date range rather than anything
-		that changes while a session is running, so there is nothing to watch for;
-		a player online across midnight on the last day sees it until they reload,
-		which is not worth an event handler.
+		Checked on load and then every ten minutes.
+
+		A date range rather than a countdown, deliberately. Counting down from now
+		only works for a session that is running when the clock is started -- it
+		says nothing to someone who logs in next week, or who installs the addon in
+		November. Asking "what is today" answers for all of them.
+
+		The ticker is what makes it come down on its own. Without it a player
+		online across the last midnight keeps the webs until they reload, and ten
+		minutes of lag on a fortnight-long event costs nothing.
 	]]
 	component.Refresh()
+	if C_Timer and C_Timer.NewTicker then
+		C_Timer.NewTicker(600, component.Refresh)
+	end
 end
 
 UI.Add(component)
