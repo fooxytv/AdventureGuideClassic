@@ -42,6 +42,8 @@ local SUBLINE_HEIGHT = 12
 local ROW_PADDING = 9
 -- One line of the name's font, which the boss list is anchored under.
 local NAME_LINE_HEIGHT = 14
+-- Past this the list is trimmed rather than allowed to own the panel.
+local MAX_BOSS_LINES = 2
 local NAME_WIDTH = 318
 local NAME_X, NAME_Y = 39, -6
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.718, 0.561, 0.416
@@ -325,11 +327,37 @@ end
 	characters would have to assume an average width per glyph, and the names it
 	would be wrong about -- the long ones -- are exactly the ones that wrap.
 ]]
+--[[
+	The boss list as it will be drawn, trimmed to MAX_BOSS_LINES.
+
+	Wrapping without a limit would let a fifteen-boss raid own the whole panel, so
+	names are dropped off the end until the rest fits and an ellipsis says so. Both
+	the row's height and the row's text come through here, so the two cannot
+	disagree about what is being shown.
+]]
+local function BossLine(group)
+	local full = table.concat(group.bosses, ", ")
+	if not measure then return full, SUBLINE_HEIGHT end
+	local limit = MAX_BOSS_LINES * SUBLINE_HEIGHT + 2
+	measure:SetText(full)
+	local height = measure:GetStringHeight() or SUBLINE_HEIGHT
+	if height <= limit then
+		return full, math.max(height, SUBLINE_HEIGHT)
+	end
+	for count = #group.bosses - 1, 1, -1 do
+		local text = table.concat(group.bosses, ", ", 1, count) .. ", ..."
+		measure:SetText(text)
+		height = measure:GetStringHeight() or SUBLINE_HEIGHT
+		if height <= limit then
+			return text, math.max(height, SUBLINE_HEIGHT)
+		end
+	end
+	return full, math.max(height, SUBLINE_HEIGHT)
+end
+
 local function RowExtent(_, group)
 	if not measure then return ROW_HEIGHT end
-	measure:SetText(table.concat(group.bosses, ", "))
-	local height = measure:GetStringHeight() or SUBLINE_HEIGHT
-	if height < SUBLINE_HEIGHT then height = SUBLINE_HEIGHT end
+	local _, height = BossLine(group)
 	--[[
 		Built from what the row actually holds rather than adjusted off Blizzard's
 		41: the name sits NAME_Y down and is one line tall, the boss list follows
@@ -432,7 +460,7 @@ local function RowInitializer(row, group)
 	end
 	row.group = group
 	row.name:SetText(group.name)
-	row.bosses:SetText(table.concat(group.bosses, ", "))
+	row.bosses:SetText((BossLine(group)))
 
 	local shown = math.min(#group.items, MAX_ICONS)
 	for index = 1, shown do
@@ -576,16 +604,18 @@ function component.Init(components_)
 	BuildFilters(wishlist)
 
 	--[[
-		Invisible, but anchored and shown, because that is what makes its height
-		mean anything. A font string with no anchor has no layout to speak of, and
-		a hidden one is not laid out at all, so GetStringHeight was answering for a
-		single line however much text it was given -- which is why a wrapped boss
-		list overflowed the row that was sized from it.
+		Invisible, but anchored, shown, and on UIParent -- all three are needed
+		before its height means anything. A font string with no anchor has no
+		layout, a hidden one is not laid out at all, and one parented to this panel
+		is not laid out either while the panel is hidden. That last was the real
+		catch: Show refreshes the list before it makes the panel current, so every
+		row was measured against a hidden parent and came back one line tall
+		however much text it held.
 
 		Alpha zero rather than Hide, for the same reason.
 	]]
-	measure = wishlist:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-	measure:SetPoint("TOPLEFT", wishlist, "TOPLEFT", 0, 0)
+	measure = UIParent:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+	measure:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0)
 	measure:SetWidth(NAME_WIDTH)
 	measure:SetWordWrap(true)
 	measure:SetAlpha(0)
