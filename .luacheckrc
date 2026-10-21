@@ -30,6 +30,7 @@ globals = {
     "CreatureModelService", "DungeonMapService", "HyperlinkService",
     "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
+    "SeasonalService",
     "TierTokenService", "TokenizedTextService", "WishlistService",
 
     -- Frames and widget mixins the addon creates. EncounterJournal is in here
@@ -75,6 +76,9 @@ read_globals = {
     "C_AddOns", "C_Item", "C_KeyBindings", "C_Seasons", "C_Spell", "C_Timer",
 
     -- Widgets and frames
+    -- os.date, which the client exposes bare. SeasonalService reads today's
+    -- month and day from it to decide whether an event is running.
+    "date",
     "CreateFrame", "UIParent", "GameTooltip", "GameTooltip_Hide",
     -- Puts a tooltip wherever the player keeps theirs. Old FrameXML, but
     -- the boss tooltip guards for it rather than assuming every client has it.
