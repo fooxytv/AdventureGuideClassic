@@ -26,6 +26,16 @@ local pendingItemIds = { }
 local failedItemIds = { }
 
 --[[
+	An empty wishlist and one filtered down to nothing look identical and mean
+	opposite things, so they do not share a message: the first needs telling how to
+	add an item, the second needs telling the items are still there.
+]]
+local EMPTY_TEXT = "Nothing on your wishlist yet.\n"
+		.. "|cffaaaaaaShift+Right-click an item in a boss's loot to add it.|r"
+local FILTERED_TEXT = "Nothing matches this filter.\n"
+		.. "|cffaaaaaaYour wishlist is not empty -- try Show Obtained, or All.|r"
+
+--[[
 	The six frames on LootTabBorders, which is Blizzard's own LootTab sheet: six 38x38
 	cells on a 43px grid, measured off the pixels rather than guessed.
 
@@ -297,8 +307,6 @@ function component.Init(components_)
 	wishlist.empty = wishlist:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	wishlist.empty:SetPoint("CENTER", 0, 20)
 	wishlist.empty:SetSize(460, 40)
-	wishlist.empty:SetText("Nothing on your wishlist yet.\n"
-			.. "|cffaaaaaaShift+Right-click an item in a boss's loot to add it.|r")
 	wishlist.empty:Hide()
 
 	scrollbox = CreateFrame("Frame", nil, wishlist, "WowScrollBoxList")
@@ -358,8 +366,14 @@ function component.Refresh()
 		dataProvider:Insert(group)
 	end
 	scrollbox:SetDataProvider(dataProvider)
-	wishlist.empty:SetShown(#groups == 0)
-	wishlist.title:SetText(("Wishlist (%d)"):format(WishlistService.GetCount()))
+	local total = WishlistService.GetCount()
+	if #groups == 0 then
+		wishlist.empty:SetText(total == 0 and EMPTY_TEXT or FILTERED_TEXT)
+		wishlist.empty:Show()
+	else
+		wishlist.empty:Hide()
+	end
+	wishlist.title:SetText(("Wishlist (%d)"):format(total))
 end
 
 function component.Show()

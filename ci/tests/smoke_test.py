@@ -552,7 +552,15 @@ PROBE = """
     LootFilterService.SetPinnedFilter(true)
     local pinnedItem = { itemId = 301 }
     out.pinnedShowsWanted = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
+    --[[
+        The loot star, its tooltip and the loot-window glow all ask IsWanted rather
+        than IsOnWishlist, because marking leaves an obtained item on the list and
+        the broader question would have kept all three lit for gear already worn.
+    ]]
+    out.wantedWhileHunting = WishlistService.IsWanted(301) and 1 or 0
     WishlistService.GetWishlist()[301].obtainedDate = 1
+    out.wantedDropsObtained = WishlistService.IsWanted(301) and 0 or 1
+    out.listedKeepsObtained = WishlistService.IsOnWishlist(301) and 1 or 0
     out.pinnedHidesObtained = LootFilterService.PassesFilter(pinnedItem) and 0 or 1
     LootFilterService.SetPinnedFilter(false)
     out.pinnedOffShowsObtained = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
@@ -611,6 +619,9 @@ EXPECTED = {
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
         "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
     },
@@ -659,6 +670,9 @@ EXPECTED = {
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
         "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
     },
@@ -707,6 +721,9 @@ EXPECTED = {
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
         "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
     },
@@ -769,6 +786,9 @@ EXPECTED = {
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
         "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
     },
@@ -818,6 +838,9 @@ EXPECTED = {
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
         "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
     },

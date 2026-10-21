@@ -133,6 +133,21 @@ function WishlistService.IsObtained(itemID)
 end
 
 --[[
+    Still hunting this one: on the list and not yet obtained.
+
+    Most callers want this rather than IsOnWishlist. Equipping marks rather than
+    deletes, so IsOnWishlist stays true for gear already on your back -- and the
+    loot star, its tooltip and the loot-window glow each read as "still wanted"
+    if they ask the broader question. Only the wishlist view itself, which can
+    show obtained items on request, wants IsOnWishlist.
+]]
+function WishlistService.IsWanted(itemID)
+    local data = WishlistService.IsOnWishlist(itemID)
+    if not data or data.obtainedDate then return nil end
+    return data
+end
+
+--[[
     The wishlist grouped by the instance each item was added from, newest group
     first, for the wishlist tab's one-row-per-instance list.
 

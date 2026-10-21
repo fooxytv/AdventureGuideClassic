@@ -114,7 +114,8 @@ local function CheckLootWindow()
 
     for slot = 1, numLootItems do
         local itemID = GetLootSlotItemID(slot)
-        local isOnWishlist = itemID and WishlistService and WishlistService.IsOnWishlist(itemID)
+        -- Wanted, not merely listed: gear already equipped should not glow again.
+        local isOnWishlist = itemID and WishlistService and WishlistService.IsWanted(itemID)
         if DEBUG_LOG then
             print("|cffff00ff[AGC Debug]|r Slot", slot, "- itemID:", tostring(itemID), "isOnWishlist:", tostring(isOnWishlist))
         end
