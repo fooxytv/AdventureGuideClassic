@@ -73,6 +73,73 @@ local CLASS_ORDER = {
 	"SHAMAN", "MAGE", "WARLOCK", "DRUID",
 }
 
+--[[
+	Can the player physically put it on, which is a different question from the one
+	CLASS_ARMOR answers above. That table is the tier a class *wants* -- a Paladin
+	is shown plate and not the cloth it could also equip. This is "could wear it at
+	all", which is what the loot row colours red.
+
+	The heaviest a class wants is also the heaviest it can wear, so CLASS_ARMOR
+	doubles as the ceiling and anything lighter passes.
+
+	Plate and mail are trained at 40 by the classes that get them, so below that a
+	Warrior really cannot wear plate and a Hunter really cannot wear mail. Death
+	Knights start past it and are left alone.
+]]
+local ARMOR_RANK = {
+	[ARMOR_CLOTH] = 1, [ARMOR_LEATHER] = 2, [ARMOR_MAIL] = 3, [ARMOR_PLATE] = 4,
+}
+local HEAVY_ARMOR_LEVEL = 40
+
+local function MaxArmorFor(class, level)
+	local best = CLASS_ARMOR[class]
+	if not best then return nil end
+	if level and level < HEAVY_ARMOR_LEVEL and class ~= "DEATHKNIGHT" then
+		if best == ARMOR_PLATE then return ARMOR_MAIL end
+		if best == ARMOR_MAIL then return ARMOR_LEATHER end
+	end
+	return best
+end
+
+--[[
+	Unknown is not the same as unusable. An item whose class or subclass we cannot
+	read, or one of a kind no rule here covers, passes -- colouring a row red on a
+	guess is worse than leaving it plain.
+]]
+function LootFilterService.IsUsableByPlayer(item, classToken, playerLevel)
+	if not item then return true end
+	local class = classToken or select(2, UnitClass("player"))
+	local level = playerLevel or UnitLevel("player")
+
+	if item.classID == ITEM_CLASS_ARMOR then
+		local subclass = item.subclassID
+		-- Cloaks carry the cloth subclass, and rings and necks the miscellaneous one.
+		if ALL_CLASS_SLOTS[item.equipLoc] or subclass == ARMOR_MISC then
+			return true
+		end
+		if subclass == ARMOR_SHIELD then
+			return SHIELD_CLASSES[class] == true
+		end
+		if RELIC_SUBCLASSES[subclass] then
+			return CLASS_RELIC[class] == subclass
+		end
+		local rank = ARMOR_RANK[subclass]
+		local ceiling = ARMOR_RANK[MaxArmorFor(class, level)]
+		if not rank or not ceiling then
+			return true
+		end
+		return rank <= ceiling
+	end
+
+	if item.classID == ITEM_CLASS_WEAPON then
+		local usable = CLASS_WEAPONS[class]
+		if not usable then return true end
+		return usable[item.subclassID] == true
+	end
+
+	return true
+end
+
 local ARMOR_ORDER = { ARMOR_CLOTH, ARMOR_LEATHER, ARMOR_MAIL, ARMOR_PLATE }
 local ARMOR_FALLBACK_NAMES = {
 	[ARMOR_CLOTH] = "Cloth", [ARMOR_LEATHER] = "Leather",
