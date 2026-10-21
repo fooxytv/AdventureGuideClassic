@@ -86,6 +86,16 @@ function component.GetTab(idx)
     return tabs[idx]
 end
 
+--[[
+    Light a tab without running its OnClick. Clicking a wishlist row navigates
+    straight to one instance, so the tab has to follow the content without the
+    instance list being thrown over the top of it.
+]]
+function component.SelectTab(idx)
+    if not tabs[idx] then return end
+    PanelTemplates_SetTab(EncounterJournal, idx)
+end
+
 function component.Init(components_)
     components = components_
     EncounterJournal.Tabs = tabs

@@ -15,6 +15,9 @@ local scopeFilter = "all"
 
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 
+-- The order ui/EncounterJournalTabs.lua adds them in.
+local DUNGEONS_TAB, RAIDS_TAB = 1, 2
+
 local ROW_WIDTH = 740
 local ROW_HEIGHT = 48
 local ICON_SIZE = 34
@@ -104,6 +107,23 @@ local function GoTo(instanceName, bossName)
 	if not instance then return end
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
 	AdventureGuideNavigationService.Reset()
+	--[[
+		Clicking through leaves the journal showing a dungeon or a raid, so the lit
+		tab has to agree with that rather than still claiming the wishlist, and the
+		instance list behind it has to be the one Home will draw. The nav bar works
+		dungeon-or-raid out from the selection itself, so this only has to match it.
+	]]
+	local isRaid = false
+	for _, raid in ipairs(InstanceService.GetRaids() or { }) do
+		if raid.name == instance.name then
+			isRaid = true
+			break
+		end
+	end
+	AdventureGuideNavigationService.SetInstances(
+			isRaid and InstanceService.GetRaids() or InstanceService.GetDungeons())
+	components.InstanceSelect.SetTitle(isRaid and RAIDS or DUNGEONS)
+	components.EncounterJournalTabs.SelectTab(isRaid and RAIDS_TAB or DUNGEONS_TAB)
 	AdventureGuideNavigationService.SetInstance(instance)
 	local encounter = bossName and FindEncounter(instance, bossName)
 	if encounter then
@@ -176,10 +196,17 @@ end
 local function RowInitializer(row, group)
 	if not row.initialized then
 		row:SetSize(ROW_WIDTH, ROW_HEIGHT)
+		--[[
+			The loot row's own plate off the EJ sheet, started past the icon well on
+			its left: a dark gradient that fades out towards the right, so the name
+			and the boss line sit on something dark while the icons stay on bare
+			parchment. Gold on parchment alone was too low-contrast to read.
+		]]
 		row.bg = row:CreateTexture(nil, "BACKGROUND")
+		row.bg:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
+		row.bg:SetTexCoord(0.08398438, 0.62890625, 0.61816406, 0.66210938)
 		row.bg:SetPoint("TOPLEFT", 2, -2)
 		row.bg:SetPoint("BOTTOMRIGHT", -2, 2)
-		row.bg:SetColorTexture(0, 0, 0, 0.22)
 		row.hover = row:CreateTexture(nil, "HIGHLIGHT")
 		row.hover:SetPoint("TOPLEFT", 2, -2)
 		row.hover:SetPoint("BOTTOMRIGHT", -2, 2)
@@ -188,7 +215,8 @@ local function RowInitializer(row, group)
 		row.name:SetJustifyH("LEFT")
 		row.name:SetSize(330, 18)
 		row.name:SetPoint("TOPLEFT", 14, -7)
-		row.bosses = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+		-- Highlight rather than Disable: the sub-line is on the dark plate now.
+		row.bosses = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 		row.bosses:SetJustifyH("LEFT")
 		row.bosses:SetSize(330, 12)
 		row.bosses:SetPoint("TOPLEFT", 14, -28)
@@ -293,12 +321,18 @@ function component.Init(components_)
 	EncounterJournal.wishlist = wishlist
 	wishlist:SetPoint("TOPLEFT", EncounterJournal.inset, 0, -2)
 	wishlist:SetPoint("BOTTOMRIGHT", EncounterJournal.inset, -3, 0)
+	--[[
+		The parchment is solid to x=787 but only to y=400 of the 1024x512 sheet; the
+		40-odd rows below that are the drop shadow it was drawn with. Including them
+		put a soft fade along the bottom of the panel, so the cut stops at the solid
+		edge and the texture is anchored a few pixels past the frame on each side
+		rather than inside it.
+	]]
 	wishlist.bg = wishlist:CreateTexture(nil, "BACKGROUND")
 	wishlist.bg:SetTexture(I.LootTabBackground)
-	-- Only the top-left 788x426 of the 1024x512 sheet carries the parchment.
-	wishlist.bg:SetTexCoord(0, 0.769531, 0, 0.832031)
-	wishlist.bg:SetAllPoints()
-	wishlist.bg:SetPoint("TOPLEFT", 3, -1)
+	wishlist.bg:SetTexCoord(0.00390625, 0.765625, 0.00390625, 0.78125)
+	wishlist.bg:SetPoint("TOPLEFT", 2, 0)
+	wishlist.bg:SetPoint("BOTTOMRIGHT", 3, -1)
 	wishlist.title = wishlist:CreateFontString(nil, "BACKGROUND", "GameFontNormalLarge2")
 	wishlist.title:SetJustifyH("LEFT")
 	wishlist.title:SetPoint("TOPLEFT", 20, -15)
