@@ -3,6 +3,7 @@
 
     <Script file="services/ForeverContentService.lua" />
     <Script file="services/Instance.lua" />
+    <Script file="services/ProgressService.lua" />
     <Script file="services/AdventureGuideNavigation.lua" />
     <Script file="services/HyperlinkService.lua" />
     <Script file="services/NPC.lua" />

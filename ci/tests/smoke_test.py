@@ -252,6 +252,110 @@ PROBE = """
     out.unclaimedAbilities = unclaimed
     out.miscastAbilities = miscast
     out.claimedAbilities = claimed
+
+    --[[
+        Defeat progress has to survive a reload. It used to live only on the instance
+        table, which is rebuilt from the data files on every login, so every tick was
+        lost. Round-trip it the way a session would: record, wipe the in-memory field
+        the way a fresh login does, hydrate, and check it came back.
+    ]]
+    -- The first dungeon is not necessarily populated: Forever ships instances the
+    -- client lists but we have no encounters for yet. Take the first that has one.
+    local probeInstance, probeEncounter
+    for _, candidate in ipairs(InstanceService.GetDungeons()) do
+        if candidate[1] then
+            probeInstance, probeEncounter = candidate, candidate[1]
+            break
+        end
+    end
+    if probeEncounter then
+        local charKey = UnitName("player") .. "-" .. GetRealmName()
+
+        --[[
+            A write before the first read must not replace this character's history.
+            Store writes the in-memory table wholesale, so without the load guard in
+            ProgressService the first MarkDefeated of a session would leave only the
+            boss that triggered it and drop everything earned before.
+        ]]
+        SavedVariables.Progress = { [charKey] = { defeated = { ["Seeded|Boss"] = true } } }
+        ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+        out.progressKeptPriorHistory =
+            SavedVariables.Progress[charKey].defeated["Seeded|Boss"] and 1 or 0
+
+        ProgressService.ClearAll()
+        out.progressStartsClear = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
+
+        ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+        out.progressRecorded = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 1 or 0
+
+        -- Written through to SavedVariables under this character, not the account.
+        local stored = SavedVariables.Progress and SavedVariables.Progress[charKey]
+        out.progressPersisted = (stored and stored.defeated and next(stored.defeated)) and 1 or 0
+
+        probeEncounter.defeated = 0
+        ProgressService.Hydrate()
+        out.progressHydrated = probeEncounter.defeated == 1 and 1 or 0
+
+        ProgressService.ClearInstance(probeInstance.name)
+        out.progressCleared = ProgressService.IsDefeated(probeInstance.name, probeEncounter) and 0 or 1
+        probeEncounter.defeated = 0
+
+        --[[
+            Clearing one instance must leave every other instance alone. ClearInstance
+            writes the whole in-memory table back, so a fault there wipes the lot
+            rather than the one instance asked for.
+        ]]
+        local otherInstance, otherEncounter
+        for _, candidate in ipairs(InstanceService.GetDungeons()) do
+            if candidate[1] and candidate.name ~= probeInstance.name then
+                otherInstance, otherEncounter = candidate, candidate[1]
+                break
+            end
+        end
+        if otherEncounter then
+            ProgressService.MarkDefeated(probeInstance.name, probeEncounter)
+            ProgressService.MarkDefeated(otherInstance.name, otherEncounter)
+            ProgressService.ClearInstance(probeInstance.name)
+            out.progressClearIsScoped =
+                (ProgressService.IsDefeated(otherInstance.name, otherEncounter)
+                    and not ProgressService.IsDefeated(probeInstance.name, probeEncounter))
+                and 1 or 0
+            ProgressService.ClearAll()
+        end
+
+        --[[
+            A stored defeat must be clearable even when the instance it belongs to
+            cannot be looked up -- filtered out for this client or season, or simply
+            gone from the data. ClearInstance used to rebuild its keys by walking
+            GetInstanceByName, which returns nil in that case and cleared nothing,
+            while Hydrate walks every instance and put the defeat straight back.
+        ]]
+        ProgressService.MarkDefeated("No Such Instance", { name = "Ghost Boss" })
+        ProgressService.ClearInstance("No Such Instance")
+        out.progressClearsUnresolvable =
+            ProgressService.IsDefeated("No Such Instance", { name = "Ghost Boss" })
+                and 0 or 1
+        ProgressService.ClearAll()
+    end
+
+    --[[
+        Two encounters sharing a progress key would mark each other beaten. This is
+        why the key is the instance and encounter name rather than encounterID, which
+        is not unique: Blackrock Spire gives Pyroguard Emberseer and Solakar
+        Flamewreath the same id, and a dungeon and its SoD raid reuse ids across the
+        pair.
+    ]]
+    local seenKey, keyCollisions = {}, 0
+    for _, list in ipairs({ InstanceService.GetDungeons(), InstanceService.GetRaids() }) do
+        for _, instance in ipairs(list) do
+            for _, encounter in ipairs(instance) do
+                local key = instance.name .. "|" .. tostring(encounter.name)
+                if seenKey[key] then keyCollisions = keyCollisions + 1 end
+                seenKey[key] = true
+            end
+        end
+    end
+    out.progressKeyCollisions = keyCollisions
     return out
 
 """
@@ -267,6 +371,15 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -276,6 +389,15 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -285,6 +407,15 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -308,6 +439,15 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -318,6 +458,15 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "progressKeptPriorHistory": 1,
+        "progressStartsClear": 1,
+        "progressRecorded": 1,
+        "progressPersisted": 1,
+        "progressHydrated": 1,
+        "progressCleared": 1,
+        "progressClearIsScoped": 1,
+        "progressClearsUnresolvable": 1,
+        "progressKeyCollisions": 0,
     },
 }
 
