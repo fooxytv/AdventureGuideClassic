@@ -15,29 +15,43 @@ local canvas
 	from one 1024x1024 file that holds them on transparency, so the coordinates
 	are the whole of the layout work.
 
-	Only two go up. The sheet carries thirteen pieces and hanging them all would
-	bury the journal rather than dress it: a swag over the top edge reads as
-	decoration, a second one somewhere else reads as clutter.
+	Laid out the way Blizzard lays out a seasonal surround for this very frame.
+	The Traveler's Log dresses the Encounter Journal with these themes, and its
+	MonthlyActivitiesThemeContainerMixin anchors four pieces around the window --
+	top, bottom, left and right -- each at its native size. So the art is not a
+	swag for the top of the frame; it is a border for the whole of it.
+
+	Three of the thirteen go up: their top and bottom pieces, and a cobweb for the
+	corner the portrait leaves bare. The side pieces are left for now -- the frame
+	is narrower than theirs and the sides are where that shows first.
 ]]
 local HALLOWS_END = {
 	{
-		-- Pumpkin and vines, the widest piece on the sheet at 584x127.
+		-- Pumpkin and vines, 584x127 on the sheet and drawn at that size.
 		left = 0.138672, right = 0.708984, top = 0.035156, bottom = 0.159180,
-		-- 584x127 on the sheet, kept to that ratio so the vines do not stretch.
-		width = 560, height = 122,
+		width = 584, height = 127,
 		--[[
-			Nudged right of centre. The pumpkin does not sit in the middle of its
-			own swag -- it is about two thirds along -- so a centred swag puts it
-			over the word "Guide". Forty five clears the title without pushing the
-			hat into the search box, which is the other thing it can reach.
+			Blizzard's own anchor for the top piece of a seasonal surround, from
+			MonthlyActivitiesThemeContainerMixin: the piece's bottom edge against
+			the frame's top, 133 below it. That hangs it down over the title bar
+			rather than balancing it above the frame, which is what it is drawn to
+			do -- the vines are meant to be read as lying on the window.
+
+			The 45 to the right is ours. Blizzard centres it, but their title sits
+			elsewhere and centred here the pumpkin covers the word "Guide".
 		]]
-		point = "TOP", relativePoint = "TOP", x = 45, y = 34,
+		point = "BOTTOM", relativePoint = "TOP", x = 45, y = -133,
 	},
 	{
-		-- A cobweb, for the corner the portrait does not already fill.
+		-- The matching lower swag, 519x99, anchored as their bottom piece is.
+		left = 0.222656, right = 0.729492, top = 0.331055, bottom = 0.427734,
+		width = 519, height = 99,
+		point = "TOP", relativePoint = "BOTTOM", x = 0, y = 7,
+	},
+	{
+		-- A cobweb for the corner the portrait leaves free. Not one of Blizzard's
+		-- four; the sheet carries it and the corner was bare.
 		left = 0.105469, right = 0.216797, top = 0.520508, bottom = 0.613281,
-		-- 114x95 on the sheet. Tucked just inside the corner rather than over it,
-		-- so it does not sit on the close button.
 		width = 132, height = 110,
 		point = "TOPRIGHT", relativePoint = "TOPRIGHT", x = -2, y = -26,
 	},
