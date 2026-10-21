@@ -34,13 +34,20 @@ local pendingItemIds = {}
 ]]
 local failedItemIds = {}
 --[[
-	The two secondary lines on a loot row, the slot and the subtype. Retail draws
-	these light grey against a dark row; ours sit on a light one, so the equivalent
-	is a soft dark rather than the flat black they were. Black carried as much
-	weight as the item name above it, which is the line meant to lead the row.
+	The two secondary lines on a loot row, the slot and the subtype.
+
+	These sit on two different grounds, which is what made the colour awkward. The
+	row's plate is a gradient: dark at the icon end, faded to bare parchment by the
+	right. The slot is drawn on the dark part and the subtype on the light part, so
+	no one colour reads well on both -- dark text loses the slot, light text loses
+	the subtype.
+
+	So they keep the dark they always had and gain a pale shadow, which lifts them
+	off the dark end without changing how they read on parchment.
 ]]
-local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.25, 0.21, 0.16
+local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0, 0, 0
 local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.72, 0.06, 0.06
+local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 1, 0.96, 0.88, 0.5
 
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
@@ -490,12 +497,16 @@ function component.Init(components_)
 			button.armorType:SetPoint("BOTTOMRIGHT", -25, 5)
 			button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			button.armorType:SetFont("Fonts\\FRIZQT__.TTF", 10)
+			button.armorType:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
+			button.armorType:SetShadowOffset(1, -1)
 			button.slot = button:CreateFontString()
 			button.slot:SetJustifyH("LEFT")
 			button.slot:SetSize(0, 12)
 			button.slot:SetPoint("BOTTOMLEFT", 55, 3)
 			button.slot:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			button.slot:SetFont("Fonts\\FRIZQT__.TTF", 10)
+			button.slot:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
+			button.slot:SetShadowOffset(1, -1)
 			button.headerText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 			button.headerText:SetPoint("LEFT", 5, -7)
 			button.wishlistStar = button:CreateTexture(nil, "OVERLAY")
