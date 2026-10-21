@@ -79,6 +79,9 @@ read_globals = {
 
     -- Widgets and frames
     "CreateFrame", "UIParent", "GameTooltip", "GameTooltip_Hide",
+    -- Puts a tooltip wherever the player keeps theirs. Old FrameXML, but
+    -- the boss tooltip guards for it rather than assuming every client has it.
+    "GameTooltip_SetDefaultAnchor",
     "UISpecialFrames", "Settings",
 
     -- Mixins and helpers
