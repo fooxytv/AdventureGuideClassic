@@ -8,6 +8,7 @@ select(2, ...).SetupGlobalFacade()
 
 local component = UI.CreateComponent("SeasonalDecor")
 local decor = { }
+local canvas
 
 --[[
 	Blizzard's own Hallow's End trim, measured off the sheet. Every piece is cut
@@ -39,20 +40,14 @@ local function Build(sheet)
 	for index, piece in ipairs(sheet.pieces) do
 		local texture = decor[index]
 		if not texture then
-			--[[
-				On the journal itself rather than a child frame, at OVERLAY, so it
-				draws over the frame's own art and is shown and hidden with it
-				without anything having to listen for that.
-			]]
-			texture = EncounterJournal:CreateTexture(nil, "OVERLAY")
+			texture = canvas:CreateTexture(nil, "OVERLAY")
 			decor[index] = texture
 		end
 		texture:SetTexture(I[sheet.texture])
 		texture:SetTexCoord(piece.left, piece.right, piece.top, piece.bottom)
 		texture:SetSize(piece.width, piece.height)
 		texture:ClearAllPoints()
-		texture:SetPoint(piece.point, EncounterJournal, piece.relativePoint,
-				piece.x, piece.y)
+		texture:SetPoint(piece.point, canvas, piece.relativePoint, piece.x, piece.y)
 		texture:Show()
 	end
 end
@@ -68,6 +63,21 @@ function component.Refresh()
 end
 
 function component.Init()
+	--[[
+		A frame of its own, well above the journal's children.
+
+		Textures put straight on EncounterJournal sit in its own layers, which is
+		under every child frame it has -- the inset, the title bar, the portrait --
+		so the swag was almost entirely behind the top of the window. Two hundred
+		levels clears those, including the defeat overlay, which sets 150 itself.
+
+		It is not clipped to the frame, so a piece can hang over the edge, which is
+		what makes a swag look draped rather than pasted on.
+	]]
+	canvas = CreateFrame("Frame", nil, EncounterJournal)
+	canvas:SetAllPoints(EncounterJournal)
+	canvas:SetFrameLevel(EncounterJournal:GetFrameLevel() + 200)
+
 	--[[
 		Worked out once on load. The window is a date range rather than anything
 		that changes while a session is running, so there is nothing to watch for;
