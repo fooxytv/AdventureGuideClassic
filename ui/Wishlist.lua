@@ -10,9 +10,11 @@ local component = UI.CreateComponent("Wishlist")
 local components
 local wishlist
 local scrollbox
+local measure
 local showObtained = false
 local scopeFilter = "all"
 
+local Colors = GetColorMapping()
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 
 -- The order ui/EncounterJournalTabs.lua adds them in.
@@ -33,7 +35,10 @@ local HEADER_HEIGHT = 50
 local ROW_WIDTH = 700
 local ROW_HEIGHT = 41
 -- How far the dark eases in at the left before it is at full strength.
-local ROW_FADE_IN = 44
+local ROW_FADE_IN = 70
+-- One line of the sub-line's font; anything taller is a wrap.
+local SUBLINE_HEIGHT = 12
+local NAME_WIDTH = 318
 local NAME_X, NAME_Y = 39, -6
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.718, 0.561, 0.416
 local ICON_SIZE = 32
@@ -187,6 +192,30 @@ local function IconOnClick(self)
 	if item then GoTo(item.sourceInstance, item.sourceBoss) end
 end
 
+--[[
+	The overflow count. A row draws at most MAX_ICONS, so a well-worked instance
+	runs out of room; rather than leave "+3" to be guessed at, it lists what is
+	not being shown. They come back into the row as the ones ahead of them are
+	obtained or removed, which the tooltip says so the count does not look stuck.
+]]
+local function MoreOnEnter(self)
+	local hidden = self.hidden
+	if not hidden or #hidden == 0 then return end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	GameTooltip:SetText(("%d more on this wishlist"):format(#hidden))
+	for _, item in ipairs(hidden) do
+		local color = Colors[item.quality] or Colors[1]
+		GameTooltip:AddLine(item.name or "Unknown", color.r, color.g, color.b)
+	end
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddLine("|cffaaaaaaShown here as the items above are obtained or removed.|r")
+	GameTooltip:Show()
+end
+
+local function MoreOnLeave()
+	GameTooltip_Hide()
+end
+
 local function RowOnClick(self)
 	if self.group then GoTo(self.group.name, nil) end
 end
@@ -213,6 +242,23 @@ local function IconAt(row, index)
 	return icon
 end
 
+--[[
+	How tall this row needs to be. A well-worked instance names more bosses than
+	fit on one line, so the list is wrapped and the row grows to suit rather than
+	the names being cut off.
+
+	The height is measured rather than counted. Working it out from the number of
+	characters would have to assume an average width per glyph, and the names it
+	would be wrong about -- the long ones -- are exactly the ones that wrap.
+]]
+local function RowExtent(_, group)
+	if not measure then return ROW_HEIGHT end
+	measure:SetText(table.concat(group.bosses, ", "))
+	local height = measure:GetStringHeight() or SUBLINE_HEIGHT
+	if height < SUBLINE_HEIGHT then height = SUBLINE_HEIGHT end
+	return ROW_HEIGHT + math.ceil(height) - SUBLINE_HEIGHT
+end
+
 local function RowInitializer(row, group)
 	if not row.initialized then
 		row:SetSize(ROW_WIDTH, ROW_HEIGHT)
@@ -231,13 +277,16 @@ local function RowInitializer(row, group)
 			texture's own right-hand fade, mirrored by swapping the two horizontal
 			coordinates and laid over the first ROW_FADE_IN pixels.
 
-			The two abut rather than overlap -- overlapping would darken twice at
-			the join -- and they meet at alpha 215 against 242, which is close
-			enough not to show as a step.
+			It mirrors the whole bar rather than just its tail, so the join lands on
+			the very pixel the main piece begins at and both sides are alpha 242
+			there. Mirroring only the tail left them meeting at 215 against 242,
+			and that 27-step was visible as a seam beside the instance name.
+
+			The two abut rather than overlap; overlapping would darken twice.
 		]]
 		row.fade = row:CreateTexture(nil, "BACKGROUND")
 		row.fade:SetTexture(I.LootTabRow)
-		row.fade:SetTexCoord(0.69921875, 0.43945313, 0.109375, 0.6171875)
+		row.fade:SetTexCoord(0.69921875, 0.15234375, 0.109375, 0.6171875)
 		row.fade:SetPoint("TOPLEFT")
 		row.fade:SetPoint("BOTTOMLEFT")
 		row.fade:SetWidth(ROW_FADE_IN)
@@ -252,15 +301,23 @@ local function RowInitializer(row, group)
 		row.hover:SetColorTexture(1, 0.88, 0.60, 0.07)
 		row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		row.name:SetJustifyH("LEFT")
-		row.name:SetSize(318, 0)
+		row.name:SetWidth(NAME_WIDTH)
+		row.name:SetWordWrap(false)
 		row.name:SetPoint("TOPLEFT", NAME_X, NAME_Y)
 		row.bosses = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 		row.bosses:SetJustifyH("LEFT")
-		row.bosses:SetSize(318, 0)
+		row.bosses:SetWidth(NAME_WIDTH)
+		row.bosses:SetWordWrap(true)
 		row.bosses:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
 		row.bosses:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
-		row.more = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		row.more = CreateFrame("Frame", nil, row)
+		row.more:SetSize(34, 20)
 		row.more:SetPoint("RIGHT", -10, 0)
+		row.more:EnableMouse(true)
+		row.more.text = row.more:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		row.more.text:SetPoint("CENTER")
+		row.more:SetScript("OnEnter", MoreOnEnter)
+		row.more:SetScript("OnLeave", MoreOnLeave)
 		row.icons = { }
 		row:RegisterForClicks("LeftButtonUp")
 		row:SetScript("OnClick", RowOnClick)
@@ -286,8 +343,13 @@ local function RowInitializer(row, group)
 		row.icons[index]:Hide()
 	end
 
-	local hidden = #group.items - shown
-	row.more:SetText(hidden > 0 and ("+" .. hidden) or "")
+	local overflow = { }
+	for index = shown + 1, #group.items do
+		table.insert(overflow, ItemDisplay(group.items[index]))
+	end
+	row.more.hidden = overflow
+	row.more.text:SetText(#overflow > 0 and ("+" .. #overflow) or "")
+	row.more:SetShown(#overflow > 0)
 end
 
 local function BuildFilters(parent)
@@ -407,6 +469,12 @@ function component.Init(components_)
 	wishlist.title:SetPoint("TOPLEFT", 20, -14)
 	BuildFilters(wishlist)
 
+	-- Never shown; it exists so RowExtent can ask how tall a wrapped list is.
+	measure = wishlist:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+	measure:SetWidth(NAME_WIDTH)
+	measure:SetWordWrap(true)
+	measure:Hide()
+
 	wishlist.empty = wishlist:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	wishlist.empty:SetPoint("CENTER", 0, 20)
 	wishlist.empty:SetSize(460, 40)
@@ -425,7 +493,7 @@ function component.Init(components_)
 	scrollbar:SetPoint("BOTTOMRIGHT", wishlist, "BOTTOMRIGHT", -14, 18)
 
 	local view = CreateScrollBoxListLinearView()
-	view:SetElementExtent(ROW_HEIGHT)
+	view:SetElementExtentCalculator(RowExtent)
 	view:SetElementInitializer("Button", RowInitializer)
 	ScrollUtil.InitScrollBoxListWithScrollBar(scrollbox, scrollbar, view)
 
