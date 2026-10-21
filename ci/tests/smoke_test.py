@@ -252,6 +252,65 @@ PROBE = """
     out.unclaimedAbilities = unclaimed
     out.miscastAbilities = miscast
     out.claimedAbilities = claimed
+
+    --[[
+        The wishlist grouped by instance, which is what the wishlist tab draws a row
+        from. Only the service side is reachable here, since ui/ needs frames, so the
+        grouping, the boss de-duplication and the obtained filter are asserted here
+        rather than left to an in-game look.
+
+        Nothing asserts the order of the groups. Four items added in a loop all take
+        the same timestamp, and the sort that orders them is not stable, so an order
+        assertion would pass or fail on which way pairs() happened to walk.
+    ]]
+    local function DeadminesGroup(includeObtained)
+        for _, group in ipairs(WishlistService.GetGrouped(includeObtained)) do
+            if group.name == "Deadmines" then return group end
+        end
+        return nil
+    end
+
+    WishlistService.ClearAll()
+    WishlistService.AddItem(101, "link101", "Item 101", "Mr. Smite", "Deadmines")
+    WishlistService.AddItem(102, "link102", "Item 102", "Mr. Smite", "Deadmines")
+    WishlistService.AddItem(103, "link103", "Item 103", "Cookie", "Deadmines")
+    WishlistService.AddItem(201, "link201", "Item 201", "Ragnaros", "Molten Core")
+
+    out.wishlistGroups = #WishlistService.GetGrouped(false)
+    local deadmines = DeadminesGroup(false)
+    out.wishlistGroupItems = deadmines and #deadmines.items or -1
+    -- Two entries name Mr. Smite; the sub-line lists a boss once.
+    out.wishlistGroupBosses = deadmines and #deadmines.bosses or -1
+    -- The scratch field the de-duplication uses must not reach the view.
+    out.wishlistNoScratchField = (deadmines and deadmines.seenBoss == nil) and 1 or 0
+
+    --[[
+        Equipping marks rather than deletes, so the entry has to leave the default
+        view and still be there when the view asks for it.
+    ]]
+    WishlistService.GetWishlist()[101].obtainedDate = 1
+    out.wishlistObtainedFlag = WishlistService.IsObtained(101) and 1 or 0
+    local visible, all = DeadminesGroup(false), DeadminesGroup(true)
+    out.wishlistHidesObtained = visible and #visible.items or -1
+    out.wishlistShowsObtained = all and #all.items or -1
+
+    --[[
+        "Pinned only" shows what you are still hunting. Equipping used to delete the
+        entry, which took the row with it; now that it is only marked, the filter has
+        to exclude it or the list keeps offering gear already on your back.
+    ]]
+    WishlistService.ClearAll()
+    WishlistService.AddItem(301, "link301", "Item 301", "Mr. Smite", "Deadmines")
+    LootFilterService.SetPinnedFilter(true)
+    local pinnedItem = { itemId = 301 }
+    out.pinnedShowsWanted = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
+    WishlistService.GetWishlist()[301].obtainedDate = 1
+    out.pinnedHidesObtained = LootFilterService.PassesFilter(pinnedItem) and 0 or 1
+    LootFilterService.SetPinnedFilter(false)
+    out.pinnedOffShowsObtained = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
+
+    WishlistService.ClearAll()
+    out.wishlistClearedGroups = #WishlistService.GetGrouped(true)
     return out
 
 """
@@ -267,6 +326,17 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "pinnedShowsWanted": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
     },
     "sod": {
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
@@ -276,6 +346,17 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "pinnedShowsWanted": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
     },
     "tbc": {
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
@@ -285,6 +366,17 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "pinnedShowsWanted": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
     },
     # The build that broke 1.8.0: WOW_PROJECT_ID 18, neither mainline nor classic.
     #
@@ -308,6 +400,17 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "pinnedShowsWanted": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
@@ -318,6 +421,17 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "pinnedShowsWanted": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
     },
 }
 

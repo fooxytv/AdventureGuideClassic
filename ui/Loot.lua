@@ -541,9 +541,12 @@ function component.Init(components_)
 	ScrollUtil.InitScrollBoxListWithScrollBar(lootScrollBox, lootScrollBar, lootView)
 
 	--[[
-		WishlistService drops an item as soon as it is equipped. With the pinned filter on
-		that row has to go, and nothing clicked to cause it, so the view needs telling.
-		Nothing else claims this hook.
+		WishlistService marks an item obtained as soon as it is equipped, and the pinned
+		filter excludes an obtained item, so that row has to go with nothing clicked to
+		cause it -- the view needs telling.
+
+		This slot is one deep. ui/Wishlist.lua registers through RegisterChangeListener
+		rather than assigning here, which would have unhooked this silently.
 	]]
 	if WishlistService then
 		WishlistService.OnWishlistChanged = function()
