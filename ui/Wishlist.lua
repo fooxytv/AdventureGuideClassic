@@ -197,16 +197,21 @@ local function RowInitializer(row, group)
 	if not row.initialized then
 		row:SetSize(ROW_WIDTH, ROW_HEIGHT)
 		--[[
-			The loot row's own plate off the EJ sheet, started past the icon well on
-			its left: a dark gradient that fades out towards the right, so the name
-			and the boss line sit on something dark while the icons stay on bare
-			parchment. Gold on parchment alone was too low-contrast to read.
+			The EJ sheet's inset row, which is the carved-into-the-page look rather
+			than a bar laid on top of it. Measured off the sheet: a bright highlight
+			line at y 602-603, a flat dark body to 619, a second highlight at 623 and
+			the shadow it casts fading out by 629. Both ends fade horizontally too,
+			so it needs no masking to sit on parchment.
+
+			The previous try used the loot row's plate instead. That one carries an
+			icon well on its left and is dark the whole way down with no highlight,
+			which is why it read as a stripe laid over the page.
 		]]
 		row.bg = row:CreateTexture(nil, "BACKGROUND")
 		row.bg:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
-		row.bg:SetTexCoord(0.08398438, 0.62890625, 0.61816406, 0.66210938)
-		row.bg:SetPoint("TOPLEFT", 2, -2)
-		row.bg:SetPoint("BOTTOMRIGHT", -2, 2)
+		row.bg:SetTexCoord(0.0390625, 0.625, 0.58691406, 0.61425781)
+		row.bg:SetPoint("TOPLEFT", 2, -1)
+		row.bg:SetPoint("BOTTOMRIGHT", -2, 1)
 		row.hover = row:CreateTexture(nil, "HIGHLIGHT")
 		row.hover:SetPoint("TOPLEFT", 2, -2)
 		row.hover:SetPoint("BOTTOMRIGHT", -2, 2)
@@ -254,7 +259,7 @@ end
 local function BuildFilters(parent)
 	parent.filterDropdown = CreateFrame("Frame", parent:GetName() .. "FilterDropdown",
 			parent, "UIDropDownMenuTemplate")
-	parent.filterDropdown:SetPoint("TOPLEFT", 4, -36)
+	parent.filterDropdown:SetPoint("TOPLEFT", 8, -34)
 	UIDropDownMenu_SetWidth(parent.filterDropdown, 140)
 
 	local SCOPES = {
@@ -295,7 +300,13 @@ local function BuildFilters(parent)
 	]]
 	parent.obtainedButton = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
 	parent.obtainedButton:SetSize(140, 22)
-	parent.obtainedButton:SetPoint("TOPRIGHT", -18, -40)
+	--[[
+		Seven pixels below the dropdown's anchor, not level with it. A
+		UIDropDownMenuTemplate's visible box sits about six pixels inside its frame
+		and stands taller than a 22pt button, so matching the two anchors leaves them
+		looking out of line; this matches their middles instead.
+	]]
+	parent.obtainedButton:SetPoint("TOPRIGHT", -18, -41)
 	parent.obtainedButton:SetText("Show Obtained")
 	parent.obtainedButton:SetScript("OnClick", function(self)
 		showObtained = not showObtained
@@ -322,17 +333,20 @@ function component.Init(components_)
 	wishlist:SetPoint("TOPLEFT", EncounterJournal.inset, 0, -2)
 	wishlist:SetPoint("BOTTOMRIGHT", EncounterJournal.inset, -3, 0)
 	--[[
-		The parchment is solid to x=787 but only to y=400 of the 1024x512 sheet; the
-		40-odd rows below that are the drop shadow it was drawn with. Including them
-		put a soft fade along the bottom of the panel, so the cut stops at the solid
-		edge and the texture is anchored a few pixels past the frame on each side
-		rather than inside it.
+		The whole sheet, bottom edge included. Cutting the shadow off the bottom also
+		cut off the page edge, which is the border the panel looked to be missing:
+		Blizzard's page ends in that shadow rather than at a hard line, which is what
+		makes it read as a sheet of parchment lying in the frame.
+
+		No overscan either. At 788x426 against a roughly 760x430 inset the sheet is
+		within a few percent of its own proportions, so stretching it to the frame
+		costs nothing and its edges land where the frame's edges are.
 	]]
 	wishlist.bg = wishlist:CreateTexture(nil, "BACKGROUND")
 	wishlist.bg:SetTexture(I.LootTabBackground)
-	wishlist.bg:SetTexCoord(0.00390625, 0.765625, 0.00390625, 0.78125)
-	wishlist.bg:SetPoint("TOPLEFT", 2, 0)
-	wishlist.bg:SetPoint("BOTTOMRIGHT", 3, -1)
+	wishlist.bg:SetTexCoord(0, 0.769531, 0, 0.832031)
+	wishlist.bg:SetPoint("TOPLEFT", 3, -1)
+	wishlist.bg:SetPoint("BOTTOMRIGHT", -2, 1)
 	wishlist.title = wishlist:CreateFontString(nil, "BACKGROUND", "GameFontNormalLarge2")
 	wishlist.title:SetJustifyH("LEFT")
 	wishlist.title:SetPoint("TOPLEFT", 20, -15)
