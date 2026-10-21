@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "The Steamvault",
 	instanceID = 545,
+	minLevel = 65,
+	levelRange = { 69, 70 },
 	thumbnail = 608199,
 	icon = 136350,
 	splash = 608238,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Hydromancer Thespia",
 		defeated = 0,
 		encounterID = 17797,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607651,
 		loot = {
 			{ id = 27789, seasonFilter = "tbc" },
@@ -69,6 +74,9 @@ InstanceService.AddDungeon({
 		name = "Mekgineer Steamrigger",
 		defeated = 0,
 		encounterID = 17796,
+		level = 72,
+		creatureType = "Mechanical",
+		classification = "Elite",
 		portrait = 607713,
 		loot = {
 			{ id = 27793, seasonFilter = "tbc" },
@@ -123,6 +131,9 @@ InstanceService.AddDungeon({
 		name = "Warlord Kalithresh",
 		defeated = 0,
 		encounterID = 17798,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607815,
 		loot = {
 			{ id = 24313, seasonFilter = "tbc" },

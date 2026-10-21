@@ -254,6 +254,37 @@ PROBE = """
     out.claimedAbilities = claimed
 
     --[[
+        The boss tooltip's second line -- "Level 19 Humanoid Elite" -- is built from
+        three fields written by tools/gen_npc_meta.py.
+
+        One known boss is asserted outright. Rhahk'Zor is reached through
+        GetInstanceByName, which searches the unfiltered set, so this reads the same
+        on all five clients rather than depending on which instances each ships.
+
+        The invariant is the one worth having: the tooltip drops the whole line
+        without a level, so a creature type with no level beside it is data nothing
+        will ever show. Counting them catches a generator that half-filled a file.
+    ]]
+    local deadmines = InstanceService.GetInstanceByName("The Deadmines")
+    local rhahkzor
+    for _, encounter in ipairs(deadmines or { }) do
+        if encounter.name == "Rhahk'Zor" then rhahkzor = encounter end
+    end
+    out.bossLevel = rhahkzor and tostring(rhahkzor.level) or "none"
+    out.bossCreatureType = rhahkzor and rhahkzor.creatureType or "none"
+    out.bossClassification = rhahkzor and rhahkzor.classification or "none"
+
+    local typeWithoutLevel = 0
+    for _, instance in ipairs(InstanceService.GetAllInstances()) do
+        for _, encounter in ipairs(instance) do
+            if encounter.creatureType and not encounter.level then
+                typeWithoutLevel = typeWithoutLevel + 1
+            end
+        end
+    end
+    out.typeWithoutLevel = typeWithoutLevel
+
+    --[[
         The seasonal window, asked about dates rather than about today -- which is
         the only way its edges can be checked at all, since a test that asked what
         is running now would answer differently every day of the year.
@@ -286,26 +317,35 @@ PROBE = """
     ]]
     local function DeadminesGroup(includeObtained)
         for _, group in ipairs(WishlistService.GetGrouped(includeObtained)) do
-            if group.name == "Deadmines" then return group end
+            if group.name == "The Deadmines" then return group end
         end
         return nil
     end
 
     WishlistService.ClearAll()
-    WishlistService.AddItem(101, "link101", "Item 101", "Mr. Smite", "Deadmines")
-    WishlistService.AddItem(102, "link102", "Item 102", "Mr. Smite", "Deadmines")
-    WishlistService.AddItem(103, "link103", "Item 103", "Cookie", "Deadmines")
+    WishlistService.AddItem(101, "link101", "Item 101", "Mr. Smite", "The Deadmines")
+    WishlistService.AddItem(102, "link102", "Item 102", "Mr. Smite", "The Deadmines")
+    WishlistService.AddItem(103, "link103", "Item 103", "Cookie", "The Deadmines")
     WishlistService.AddItem(201, "link201", "Item 201", "Ragnaros", "Molten Core")
 
     out.wishlistGroups = #WishlistService.GetGrouped(false)
     --[[
-        Ordered lowest instance first. Nothing in data/ carries minLevel yet, so
-        the fallback is the name -- asserted here so that the day the field lands
-        it is a level sort and not a surprise.
+        Ordered lowest instance first, by the instance's own minLevel: The Deadmines
+        at 10 ahead of Molten Core at 60. That is the opposite of the alphabetical
+        order the sort falls back to on a tie, so an assertion that passes here
+        cannot be passing on the fallback.
+
+        The names have to be the instances' real ones. This said "Deadmines" until
+        the levels landed, which no instance is called, so both groups resolved to
+        nothing, both sorted at math.huge, and the test asserted the name tie-break
+        while claiming to assert the level.
+
+        GetInstanceByName searches the unfiltered set, so Molten Core resolves on
+        Forever too even though the journal there does not offer it.
     ]]
     local order = WishlistService.GetGrouped(false)
-    out.wishlistSortedByName =
-        (order[1] and order[2] and order[1].name < order[2].name) and 1 or 0
+    out.wishlistSortedByLevel =
+        (order[1] and order[1].name == "The Deadmines") and 1 or 0
 
     local deadmines = DeadminesGroup(false)
     out.wishlistGroupItems = deadmines and #deadmines.items or -1
@@ -361,10 +401,13 @@ PROBE = """
     -- do not ship the same ones, and "Deadmines" is not "The Deadmines".
     local low, high = first, second
     if second.name < first.name then low, high = second, first end
+    -- Put back what was there, not nil. These instances carry a real minLevel now,
+    -- and clearing it would leave every later assertion reading a doctored table.
+    local lowWas, highWas = low.minLevel, high.minLevel
     low.minLevel, high.minLevel = 60, 10
     local byLevel = WishlistService.GetGrouped(false)
     out.wishlistLevelBeatsName = (byLevel[1].name == high.name) and 1 or 0
-    low.minLevel, high.minLevel = nil, nil
+    low.minLevel, high.minLevel = lowWas, highWas
 
     --[[
         An entry saved from the instance page, before the loot rows carried their
@@ -712,8 +755,12 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -795,8 +842,12 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -878,8 +929,12 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -975,8 +1030,12 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -1059,8 +1118,12 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,

@@ -8,6 +8,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Auchenai Crypts",
 	instanceID = 558,
+	minLevel = 62,
+	levelRange = { 64, 70 },
 	thumbnail = 608193,
 	icon = 136350,
 	splash = 608232,
@@ -17,7 +19,10 @@ InstanceService.AddDungeon({
 	{
 		name = "Shirrak the Dead Watcher",
 		defeated = 0,
-		encounterID = 17371,
+		encounterID = 18371,
+		level = 66,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607771,
 		loot = {
 			{ id = 27410, seasonFilter = "tbc" },
@@ -72,6 +77,9 @@ InstanceService.AddDungeon({
 		name = "Exarch Maladaar",
 		defeated = 0,
 		encounterID = 18373,
+		level = 67,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607600,
 		loot = {
 			{ id = 27411, seasonFilter = "tbc" },

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddRaid({
 	name = "Sunwell Plateau",
 	instanceID = 580,
+	minLevel = 70,
+	levelRange = { 70, 70 },
 	thumbnail = 1396592,
 	icon = 136361,
 	splash = 1396511,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Kalecgos",
 		defeated = 0,
 		encounterID = 24850,
+		level = 73,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1385744,
 		loot = {
 			{ id = 34170, seasonFilter = "tbc" },
@@ -85,6 +90,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Brutallus",
 		defeated = 0,
 		encounterID = 24882,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1385722,
 		loot = {
 			{ id = 34181, seasonFilter = "tbc" },
@@ -146,6 +154,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Felmyst",
 		defeated = 0,
 		encounterID = 25038,
+		level = 73,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 607673,
 		loot = {
 			{ id = 34352, seasonFilter = "tbc" },
@@ -210,6 +221,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "The Eredar Twins",
 		defeated = 0,
 		encounterID = 25165,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1390438,
 		loot = {
 			{ id = 34205, seasonFilter = "tbc" },
@@ -293,6 +307,8 @@ select(2, ...).SetupGlobalFacade()
 		name = "M'uru",
 		defeated = 0,
 		encounterID = 25741,
+		level = 73,
+		classification = "Boss",
 		portrait = 1385757,
 		loot = {
 			{ id = 34232, seasonFilter = "tbc" },
@@ -377,6 +393,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Kil'jaeden",
 		defeated = 0,
 		encounterID = 25315,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1385746,
 		loot = {
 			{ id = 34241, seasonFilter = "tbc" },

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "The Battle for Mount Hyjal",
 	instanceID = 534,
+	minLevel = 70,
+	levelRange = { 70, 70 },
 	thumbnail = 608198,
 	icon = 136330,
 	splash = 608237,
@@ -19,6 +21,9 @@ InstanceService.AddRaid({
 		name = "Rage Winterchill",
 		defeated = 0,
 		encounterID = 17767,
+		level = 73,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1385762,
 		loot = {
 			{ id = 30871, seasonFilter = "tbc" },
@@ -76,6 +81,9 @@ InstanceService.AddRaid({
 		name = "Anetheron",
 		defeated = 0,
 		encounterID = 17808,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1385714,
 		loot = {
 			{ id = 30884, seasonFilter = "tbc" },
@@ -133,6 +141,9 @@ InstanceService.AddRaid({
 		name = "Kaz'rogal",
 		defeated = 0,
 		encounterID = 17888,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1385745,
 		loot = {
 			{ id = 30895, seasonFilter = "tbc" },
@@ -192,6 +203,9 @@ InstanceService.AddRaid({
 		name = "Azgalor",
 		defeated = 0,
 		encounterID = 17842,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1385719,
 		loot = {
 			{ id = 30899, seasonFilter = "tbc" },
@@ -250,6 +264,9 @@ InstanceService.AddRaid({
 		name = "Archimonde",
 		defeated = 0,
 		encounterID = 17968,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1385716,
 		loot = {
 			{ id = 30913, seasonFilter = "tbc" },

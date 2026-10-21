@@ -19,15 +19,26 @@ local sharedHighlightFrame
 	button, since for most people that is the bottom right corner and a tooltip
 	appearing over the boss list would cover the thing being pointed at.
 
-	The level reads ?? because the data has not been gathered yet -- seven of the
-	encounters carry a level and none carry a creature type. Drawing the line
-	anyway means the shape is right now and only the value changes later.
+	The second line reads the way the game writes a unit's: "Level 19 Humanoid
+	Elite". Each part is dropped when the data has none rather than written as a
+	placeholder, so a boss with a level but no type reads "Level 19" instead of
+	"Level 19 ?? ??". Forever's own bosses have neither and get no line at all --
+	tools/gen_npc_meta.py has the sources and what they do not cover.
 
 	The name is taken from the button rather than from the encounter, so whatever
-	the list is willing to show is what the tooltip shows. That matters once the
-	discovery mode lands, where an unmet boss reads ??? -- the tooltip follows it
-	without needing to know the rule.
+	the list is willing to show is what the tooltip shows. That matters for the
+	discovery mode, where an unmet boss reads ??? -- and there the line is left
+	off entirely, since a level and a creature type would give away the thing the
+	mode exists to withhold.
 ]]
+local function BossDetailLine(encounter)
+	if not encounter.level then return nil end
+	local parts = { ("Level %s"):format(encounter.level) }
+	if encounter.creatureType then parts[#parts + 1] = encounter.creatureType end
+	if encounter.classification then parts[#parts + 1] = encounter.classification end
+	return table.concat(parts, " ")
+end
+
 local function BossOnEnter(self)
 	if not self.encounter then return end
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
@@ -36,8 +47,12 @@ local function BossOnEnter(self)
 	else
 		GameTooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -30, 80)
 	end
-	GameTooltip:SetText(self.name:GetText() or "")
-	GameTooltip:AddLine(("Level %s"):format(self.encounter.level or "??"), 1, 1, 1)
+	local name = self.name:GetText() or ""
+	GameTooltip:SetText(name)
+	if name ~= DiscoveryService.UNKNOWN_NAME then
+		local detail = BossDetailLine(self.encounter)
+		if detail then GameTooltip:AddLine(detail, 1, 1, 1) end
+	end
 	GameTooltip:Show()
 end
 

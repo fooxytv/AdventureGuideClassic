@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Onyxia's Lair",
 	instanceID = 249,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = 1378999,
 	icon = 134153,
 	splash = 1379000,
@@ -18,6 +20,9 @@ InstanceService.AddRaid({
 	{
 		name = "Onyxia",
 		encounterID = 10184,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1378999,
 		loot = {
 			{ id = 18423, seasonFilter = "all" }, -- Head of Onyxia

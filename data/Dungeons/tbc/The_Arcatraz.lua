@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "The Arcatraz",
 	instanceID = 552,
+	minLevel = 65,
+	levelRange = { 69, 70 },
 	thumbnail = 608218,
 	icon = 136350,
 	splash = 608257,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Zereketh the Unbound",
 		defeated = 0,
 		encounterID = 20870,
+		level = 72,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607823,
 		loot = {
 			{ id = 28373, seasonFilter = "tbc" },
@@ -69,6 +74,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Dalliah the Doomsayer",
 		defeated = 0,
 		encounterID = 20885,
+		level = 72,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607574,
 		loot = {
 			{ id = 24308, seasonFilter = "tbc" },
@@ -126,6 +134,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Wrath-Scryer Soccothrates",
 		defeated = 0,
 		encounterID = 20886,
+		level = 72,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607820,
 		loot = {
 			{ id = 28396, seasonFilter = "tbc" },
@@ -182,6 +193,8 @@ select(2, ...).SetupGlobalFacade()
 		name = "Harbinger Skyriss",
 		defeated = 0,
 		encounterID = 20912,
+		level = 72,
+		classification = "Elite",
 		portrait = 607635,
 		loot = {
 			{ id = 28406, seasonFilter = "tbc" },

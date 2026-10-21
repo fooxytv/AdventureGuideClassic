@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "The Slave Pens",
 	instanceID = 547,
+	minLevel = 59,
+	levelRange = { 61, 69 },
 	thumbnail = 608199,
 	icon = 136350,
 	splash = 608238,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Mennu the Betrayer",
 		defeated = 0,
 		encounterID = 17941,
+		level = 64,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607715,
 		loot = {
 			{ id = 24359, seasonFilter = "tbc" },
@@ -78,6 +83,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Rokmar the Crackler",
 		defeated = 0,
 		encounterID = 17991,
+		level = 64,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607759,
 		loot = {
 			{ id = 24379, seasonFilter = "tbc" },
@@ -137,6 +145,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Quagmirran",
 		defeated = 0,
 		encounterID = 17942,
+		level = 64,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607750,
 		loot = {
 			{ id = 24362, seasonFilter = "tbc" },

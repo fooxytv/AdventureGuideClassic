@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Uldaman",
 	instanceID = 239,
+	minLevel = 30,
+	levelRange = { 41, 51 },
 	thumbnail = 608225,
 	icon = 136363,
 	splash = 608264,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "The Lost Dwarves",
 		defeated = 0,
 		encounterID = 6906,
+		level = 41,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607550,
 		loot = {
 			{ id = 9394, seasonFilter = "all" },
@@ -55,6 +60,9 @@ InstanceService.AddDungeon({
 		name = "Revelosh",
 		defeated = 0,
 		encounterID = 6910,
+		level = 40,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607757,
 		loot = {
 			{ id = 9388, seasonFilter = "all" },
@@ -92,6 +100,9 @@ InstanceService.AddDungeon({
 		name = "Ironaya",
 		defeated = 0,
 		encounterID = 7228,
+		level = 40,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607664,
 		loot = {
 			{ id = 9409, seasonFilter = "all" },
@@ -129,6 +140,9 @@ InstanceService.AddDungeon({
 		name = "Obsidian Sentinel",
 		defeated = 0,
 		encounterID = 7023,
+		level = 42,
+		creatureType = "Mechanical",
+		classification = "Elite",
 		portrait = 607729,
 		loot = {
 			{ id = 8053, seasonFilter = "all" },
@@ -162,6 +176,9 @@ InstanceService.AddDungeon({
 		name = "Ancient Stone Keeper",
 		defeated = 0,
 		encounterID = 7206,
+		level = 44,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607538,
 		loot = {
 			{ id = 9410, seasonFilter = "all" },
@@ -197,6 +214,9 @@ InstanceService.AddDungeon({
 		name = "Galgann Firehammer",
 		defeated = 0,
 		encounterID = 7291,
+		level = 45,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607606,
 		loot = {
 			{ id = 11311, seasonFilter = "all" },
@@ -236,6 +256,9 @@ InstanceService.AddDungeon({
 		name = "Grimlok",
 		defeated = 0,
 		encounterID = 4854,
+		level = 45,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607626,
 		loot = {
 			{ id = 9416, seasonFilter = "all" },
@@ -272,6 +295,9 @@ InstanceService.AddDungeon({
 		name = "Archaedas",
 		defeated = 0,
 		encounterID = 2748,
+		level = 47,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607546,
 		loot = {
 			{ id = 11118, seasonFilter = "all" },

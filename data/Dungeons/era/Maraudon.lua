@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Maraudon",
 	instanceID = 232,
+	minLevel = 25,
+	levelRange = { 46, 55 },
 	thumbnail = 608209,
 	icon = 136345,
 	splash = 608248,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Noxxion",
 		defeated = 0,
 		encounterID = 13282,
+		level = 48,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607728,
 		loot = {
 			{ id = 17744, seasonFilter = "all" },
@@ -53,6 +58,8 @@ InstanceService.AddDungeon({
 		name = "Razorlash",
 		defeated = 0,
 		encounterID = 12258,
+		level = 48,
+		classification = "Elite",
 		portrait = 607756,
 		loot = {
 			{ id = 17749, seasonFilter = "all" },
@@ -88,6 +95,9 @@ InstanceService.AddDungeon({
 		name = "Lord Vyletongue",
 		defeated = 0,
 		encounterID = 12236,
+		level = 47,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607699,
 		loot = {
 			{ id = 17754, seasonFilter = "all" },
@@ -123,6 +133,9 @@ InstanceService.AddDungeon({
 		name = "Celebras the Cursed",
 		defeated = 0,
 		encounterID = 12225,
+		level = 49,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607562,
 		loot = {
 			{ id = 17738, seasonFilter = "all" },
@@ -158,6 +171,9 @@ InstanceService.AddDungeon({
 		name = "Landslide",
 		defeated = 0,
 		encounterID = 12203,
+		level = 50,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607684,
 		loot = {
 			{ id = 17737, seasonFilter = "all" },
@@ -193,6 +209,9 @@ InstanceService.AddDungeon({
 		name = "Tinkerer Gizlock",
 		defeated = 0,
 		encounterID = 13601,
+		level = 50,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607796,
 		loot = {
 			{ id = 17718, seasonFilter = "all" },
@@ -227,6 +246,9 @@ InstanceService.AddDungeon({
 		name = "Rotgrip",
 		defeated = 0,
 		encounterID = 13596,
+		level = 50,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607761,
 		loot = {
 			{ id = 17728, seasonFilter = "all" },
@@ -261,6 +283,9 @@ InstanceService.AddDungeon({
 		name = "Princess Theradras",
 		defeated = 0,
 		encounterID = 12201,
+		level = 51,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607747,
 		loot = {
 			{ id = 17713, seasonFilter = "all" },

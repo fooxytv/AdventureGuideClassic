@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "The Underbog",
 	instanceID = 546,
+	minLevel = 60,
+	levelRange = { 62, 70 },
 	thumbnail = 608199,
 	icon = 136350,
 	splash = 608238,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Hungarfen",
 		defeated = 0,
 		encounterID = 17770,
+		level = 65,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607649,
 		loot = {
 			{ id = 24450, seasonFilter = "tbc" },
@@ -97,6 +102,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Ghaz'an",
 		defeated = 0,
 		encounterID = 18105,
+		level = 65,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607614,
 		loot = {
 			{ id = 24459, seasonFilter = "tbc" },
@@ -175,6 +183,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Swamplord Musel'ek",
 		defeated = 0,
 		encounterID = 17826,
+		level = 65,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607779,
 		loot = {
 			{ id = 24454, seasonFilter = "tbc" },
@@ -264,6 +275,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "The Black Stalker",
 		defeated = 0,
 		encounterID = 17882,
+		level = 65,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607788,
 		loot = {
 			{ id = 24481, seasonFilter = "tbc" },

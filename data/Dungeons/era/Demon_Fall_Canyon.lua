@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Demon Fall Canyon",
 	instanceID = 227,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = I.UIEJDungeonButtonDemonFallCanyon,
 	icon = 527422,
 	splash = 527422,

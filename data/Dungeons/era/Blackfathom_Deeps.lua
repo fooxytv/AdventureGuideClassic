@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Blackfathom Deeps",
 	instanceID = 227,
+	minLevel = 15,
+	levelRange = { 24, 32 },
 	thumbnail = 608195,
 	icon = 136325,
 	splash = 608234,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Ghamoo-Ra",
 		defeated = 0,
 		encounterID = 4887,
+		level = 25,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607613,
 		loot = {
 			{ id = 6908, seasonFilter = "all" },
@@ -95,6 +100,9 @@ InstanceService.AddDungeon({
 		name = "Lady Sarevess",
 		defeated = 0,
 		encounterID = 4831,
+		level = 25,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607682,
 		loot = {
 			{ id = 888, seasonFilter = "all" },
@@ -174,6 +182,9 @@ InstanceService.AddDungeon({
 		name = "Gelihast",
 		defeated = 0,
 		encounterID = 6243,
+		level = 26,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607609,
 		loot = {
 			{ id = 6906, seasonFilter = "all" },
@@ -211,6 +222,9 @@ InstanceService.AddDungeon({
 		name = "Baron Aquanis",
 		defeated = 0,
 		encounterID = 12876,
+		level = 28,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607552,
 		loot = {
 			{ id = 1155, seasonFilter = "all" },
@@ -247,6 +261,9 @@ InstanceService.AddDungeon({
 		name = "Twilight Lord Kelris",
 		defeated = 0,
 		encounterID = 4832,
+		level = 27,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607800,
 		loot = {
 			{ id = 1155, seasonFilter = "all" },
@@ -284,6 +301,9 @@ InstanceService.AddDungeon({
 		name = "Old Serra'kis",
 		defeated = 0,
 		encounterID = 4830,
+		level = 26,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607733,
 		loot = {
 			{ id = 6901, seasonFilter = "all" },
@@ -319,6 +339,8 @@ InstanceService.AddDungeon({
 		name = "Aku'mai",
 		defeated = 0,
 		encounterID = 4829,
+		level = 28,
+		classification = "Elite",
 		portrait = 607614,
 		loot = {
 			{ id = 6910, seasonFilter = "all" },

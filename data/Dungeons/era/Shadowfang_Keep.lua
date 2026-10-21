@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Shadowfang Keep",
 	instanceID = 64,
+	minLevel = 11,
+	levelRange = { 22, 30 },
 	thumbnail = 522358,
 	icon = 136357,
 	splash = 526410,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Rethilgore",
 		defeated = 0,
 		encounterID = 3914,
+		level = 20,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossRethilgore,
 		loot = {
 			{ id = 5254, seasonFilter = "all" },
@@ -52,6 +57,9 @@ InstanceService.AddDungeon({
 		name = "Razorclaw the Butcher",
 		defeated = 0,
 		encounterID = 3886,
+		level = 22,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossRethilgore,
 		loot = {
 			{ id = 6226, seasonFilter = "all" },
@@ -87,6 +95,9 @@ InstanceService.AddDungeon({
 		name = "Baron Silverlaine",
 		defeated = 0,
 		encounterID = 3887,
+		level = 24,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 522206,
 		loot = {
 			{ id = 6323, seasonFilter = "all" },
@@ -121,6 +132,9 @@ InstanceService.AddDungeon({
 		name = "Commander Springvale",
 		defeated = 0,
 		encounterID = 4278,
+		level = 24,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 522213,
 		loot = {
 			{ id = 3191, seasonFilter = "all" },
@@ -155,6 +169,9 @@ InstanceService.AddDungeon({
 		name = "Odo the Blindwatcher",
 		defeated = 0,
 		encounterID = 4279,
+		level = 24,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossOdoTheBindwatcher,
 		loot = {
 			{ id = 6319, seasonFilter = "all" },
@@ -189,6 +206,9 @@ InstanceService.AddDungeon({
 		name = "Fenrus the Devourer",
 		defeated = 0,
 		encounterID = 4274,
+		level = 25,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607634,
 		loot = {
 			{ id = 6340, seasonFilter = "all" },
@@ -223,6 +243,9 @@ InstanceService.AddDungeon({
 		name = "Wolf Master Nandos",
 		defeated = 0,
 		encounterID = 3927,
+		level = 25,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossOdoTheBindwatcher,
 		loot = {
 			{ id = 3748, seasonFilter = "all" },
@@ -257,6 +280,9 @@ InstanceService.AddDungeon({
 		name = "Archmage Arugal",
 		defeated = 0,
 		encounterID = 4275,
+		level = 26,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossArchmageArugal,
 		loot = {
 			{ id = 6324, seasonFilter = "all" },

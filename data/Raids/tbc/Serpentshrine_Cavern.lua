@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddRaid({
 	name = "Serpentshrine Cavern",
 	instanceID = 548,
+	minLevel = 70,
+	levelRange = { 70, 70 },
 	thumbnail = 608199,
 	icon = 136356,
 	splash = 608238,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Hydross the Unstable",
 		defeated = 0,
 		encounterID = 21216,
+		level = 73,
+		creatureType = "Elemental",
+		classification = "Boss",
 		portrait = 1385741,
 		loot = {
 			{ id = 30056, seasonFilter = "tbc" },
@@ -76,6 +81,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "The Lurker Below",
 		defeated = 0,
 		encounterID = 21217,
+		level = 73,
+		creatureType = "Beast",
+		classification = "Boss",
 		portrait = 1385768,
 		loot = {
 			{ id = 30064, seasonFilter = "tbc" },
@@ -132,6 +140,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Leotheras the Blind",
 		defeated = 0,
 		encounterID = 21215,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1385751,
 		loot = {
 			{ id = 30092, seasonFilter = "tbc" },
@@ -184,6 +195,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Fathom-Lord Karathress",
 		defeated = 0,
 		encounterID = 21214,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1385729,
 		loot = {
 			{ id = 30100, seasonFilter = "tbc" },
@@ -236,6 +250,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Morogrim Tidewalker",
 		defeated = 0,
 		encounterID = 21213,
+		level = 73,
+		creatureType = "Giant",
+		classification = "Boss",
 		portrait = 1385756,
 		loot = {
 			{ id = 30098, seasonFilter = "tbc" },
@@ -292,6 +309,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Lady Vashj",
 		defeated = 0,
 		encounterID = 21212,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1385750,
 		loot = {
 			{ id = 30107, seasonFilter = "tbc" },

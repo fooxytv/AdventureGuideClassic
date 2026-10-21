@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "The Botanica",
 	instanceID = 553,
+	minLevel = 65,
+	levelRange = { 69, 70 },
 	thumbnail = 608218,
 	icon = 136350,
 	splash = 608257,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Commander Sarannis",
 		defeated = 0,
 		encounterID = 17976,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607570,
 		loot = {
 			{ id = 28301, seasonFilter = "tbc" },
@@ -71,6 +76,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "High Botanist Freywinn",
 		defeated = 0,
 		encounterID = 17975,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607641,
 		loot = {
 			{ id = 28317, seasonFilter = "tbc" },
@@ -129,6 +137,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Thorngrin the Tender",
 		defeated = 0,
 		encounterID = 17978,
+		level = 72,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607794,
 		loot = {
 			{ id = 24310, seasonFilter = "tbc" },
@@ -182,6 +193,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Laj",
 		defeated = 0,
 		encounterID = 17980,
+		level = 72,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607714,
 		loot = {
 			{ id = 28328, seasonFilter = "tbc" },
@@ -236,6 +250,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Warp Splinter",
 		defeated = 0,
 		encounterID = 17977,
+		level = 72,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607816,
 		loot = {
 			{ id = 24311, seasonFilter = "tbc" },
