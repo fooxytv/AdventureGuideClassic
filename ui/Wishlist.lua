@@ -39,7 +39,9 @@ local ROW_FADE_IN = 70
 -- One line of the sub-line's font; anything taller is a wrap.
 local SUBLINE_HEIGHT = 12
 -- Breathing room under the boss list, so a wrapped one is not against the edge.
-local ROW_PADDING = 8
+local ROW_PADDING = 9
+-- One line of the name's font, which the boss list is anchored under.
+local NAME_LINE_HEIGHT = 14
 local NAME_WIDTH = 318
 local NAME_X, NAME_Y = 39, -6
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.718, 0.561, 0.416
@@ -274,7 +276,13 @@ local function RowExtent(_, group)
 	measure:SetText(table.concat(group.bosses, ", "))
 	local height = measure:GetStringHeight() or SUBLINE_HEIGHT
 	if height < SUBLINE_HEIGHT then height = SUBLINE_HEIGHT end
-	return ROW_HEIGHT + ROW_PADDING + math.ceil(height) - SUBLINE_HEIGHT
+	--[[
+		Built from what the row actually holds rather than adjusted off Blizzard's
+		41: the name sits NAME_Y down and is one line tall, the boss list follows
+		two below it, and ROW_PADDING finishes it. For a single line that comes to
+		41 anyway, so a plain row still matches theirs.
+	]]
+	return -NAME_Y + NAME_LINE_HEIGHT + 2 + math.ceil(height) + ROW_PADDING
 end
 
 local function RowInitializer(row, group)
@@ -346,6 +354,17 @@ local function RowInitializer(row, group)
 			ChatFrameExpandArrow is the chat frame's own expand chevron, so it is on
 			every client and needs nothing shipped.
 		]]
+		--[[
+			The chevron sits past the end of the bar, so it is gold on bare
+			parchment and reads weakly. A second copy of it behind, tinted black
+			and offset a pixel, gives it an edge to stand on -- cheaper than
+			finding a bordered arrow, and it suits whatever is behind the row.
+		]]
+		row.more.shadow = row.more:CreateTexture(nil, "ARTWORK")
+		row.more.shadow:SetTexture("Interface/ChatFrame/ChatFrameExpandArrow")
+		row.more.shadow:SetSize(18, 18)
+		row.more.shadow:SetPoint("CENTER", 1, -1)
+		row.more.shadow:SetVertexColor(0, 0, 0, 0.75)
 		row.more.arrow = row.more:CreateTexture(nil, "OVERLAY")
 		row.more.arrow:SetTexture("Interface/ChatFrame/ChatFrameExpandArrow")
 		row.more.arrow:SetSize(16, 16)
@@ -502,11 +521,20 @@ function component.Init(components_)
 	wishlist.title:SetPoint("TOPLEFT", 20, -14)
 	BuildFilters(wishlist)
 
-	-- Never shown; it exists so RowExtent can ask how tall a wrapped list is.
+	--[[
+		Invisible, but anchored and shown, because that is what makes its height
+		mean anything. A font string with no anchor has no layout to speak of, and
+		a hidden one is not laid out at all, so GetStringHeight was answering for a
+		single line however much text it was given -- which is why a wrapped boss
+		list overflowed the row that was sized from it.
+
+		Alpha zero rather than Hide, for the same reason.
+	]]
 	measure = wishlist:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+	measure:SetPoint("TOPLEFT", wishlist, "TOPLEFT", 0, 0)
 	measure:SetWidth(NAME_WIDTH)
 	measure:SetWordWrap(true)
-	measure:Hide()
+	measure:SetAlpha(0)
 
 	wishlist.empty = wishlist:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	wishlist.empty:SetPoint("CENTER", 0, 20)
