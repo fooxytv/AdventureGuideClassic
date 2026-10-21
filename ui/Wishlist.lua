@@ -46,7 +46,8 @@ local ICON_INNER = 28
 local ICON_BORDER = 38
 local ICON_GAP = 5
 local ICON_START = 360
-local MAX_ICONS = 9
+-- Eight, not nine: the ninth left no room for the overflow count beside it.
+local MAX_ICONS = 8
 
 local pendingItemIds = { }
 local failedItemIds = { }
@@ -292,22 +293,25 @@ local function RowInitializer(row, group)
 			texture's own right-hand fade, mirrored by swapping the two horizontal
 			coordinates and laid over the first ROW_FADE_IN pixels.
 
-			It mirrors the whole bar rather than just its tail, so the join lands on
-			the very pixel the main piece begins at and both sides are alpha 242
-			there. Mirroring only the tail left them meeting at 215 against 242,
-			and that 27-step was visible as a seam beside the instance name.
+			Both pieces start at x=90, where the texture reaches its flat plateau,
+			and that is what makes the join invisible. Earlier tries started at 78
+			and at 84, which are inside the dark border the texture carries on its
+			left edge -- luminance 9 there against 29 on the plateau. Mirroring put
+			that border in the middle of the row, so the darkest pixel in the bar
+			was a vertical stripe at the join. Rendering the composite outside the
+			game is what finally showed it; it is not visible in the source art.
 
 			The two abut rather than overlap; overlapping would darken twice.
 		]]
 		row.fade = row:CreateTexture(nil, "BACKGROUND")
 		row.fade:SetTexture(I.LootTabRow)
-		row.fade:SetTexCoord(0.69921875, 0.15234375, 0.109375, 0.6171875)
+		row.fade:SetTexCoord(0.69921875, 0.17578125, 0.109375, 0.6171875)
 		row.fade:SetPoint("TOPLEFT")
 		row.fade:SetPoint("BOTTOMLEFT")
 		row.fade:SetWidth(ROW_FADE_IN)
 		row.bg = row:CreateTexture(nil, "BACKGROUND")
 		row.bg:SetTexture(I.LootTabRow)
-		row.bg:SetTexCoord(0.15234375, 0.69921875, 0.109375, 0.6171875)
+		row.bg:SetTexCoord(0.17578125, 0.69921875, 0.109375, 0.6171875)
 		row.bg:SetPoint("TOPLEFT", ROW_FADE_IN, 0)
 		row.bg:SetPoint("BOTTOMRIGHT")
 		row.hover = row:CreateTexture(nil, "HIGHLIGHT")
@@ -326,10 +330,12 @@ local function RowInitializer(row, group)
 		row.bosses:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
 		row.bosses:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 		row.more = CreateFrame("Frame", nil, row)
-		row.more:SetSize(34, 20)
-		row.more:SetPoint("RIGHT", -10, 0)
+		row.more:SetSize(46, 24)
+		-- Measured off the icons rather than the row's right edge, so the gap after
+		-- the last one is the same whoever is looking at it.
+		row.more:SetPoint("LEFT", ICON_START + MAX_ICONS * (ICON_SIZE + ICON_GAP) + 12, 0)
 		row.more:EnableMouse(true)
-		row.more.text = row.more:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		row.more.text = row.more:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		row.more.text:SetPoint("CENTER")
 		row.more:SetScript("OnEnter", MoreOnEnter)
 		row.more:SetScript("OnLeave", MoreOnLeave)
