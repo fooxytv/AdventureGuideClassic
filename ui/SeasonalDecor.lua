@@ -31,16 +31,21 @@ local HALLOWS_END = {
 		left = 0.138672, right = 0.708984, top = 0.035156, bottom = 0.159180,
 		width = 584, height = 127,
 		--[[
-			Blizzard's own anchor for the top piece of a seasonal surround, from
-			MonthlyActivitiesThemeContainerMixin: the piece's bottom edge against
-			the frame's top, 133 below it. That hangs it down over the title bar
-			rather than balancing it above the frame, which is what it is drawn to
-			do -- the vines are meant to be read as lying on the window.
+			Blizzard anchor the top piece 133 below the frame's top, which works
+			because the top of their window is decoration. Ours is not: the nav bar
+			holds the breadcrumb on the left and the search box on the right, and
+			the search drops a result list down from there. At -133 the pumpkin
+			lands squarely on all three.
 
-			The 45 to the right is ours. Blizzard centres it, but their title sits
-			elsewhere and centred here the pumpkin covers the word "Guide".
+			So it is anchored by its bottom edge just above the frame instead. It
+			overlaps by sixteen, enough to read as resting on the window rather
+			than floating over it, and clears everything that can be clicked or
+			typed into.
+
+			Centred, too. With the piece off the title bar there is nothing for it
+			to cover, and centring keeps it in line with the swag along the bottom.
 		]]
-		point = "BOTTOM", relativePoint = "TOP", x = 45, y = -133,
+		point = "BOTTOM", relativePoint = "TOP", x = 0, y = -16,
 	},
 	{
 		-- The matching lower swag, 519x99, anchored as their bottom piece is.
@@ -49,11 +54,17 @@ local HALLOWS_END = {
 		point = "TOP", relativePoint = "BOTTOM", x = 0, y = 7,
 	},
 	{
-		-- A cobweb for the corner the portrait leaves free. Not one of Blizzard's
-		-- four; the sheet carries it and the corner was bare.
+		--[[
+			A cobweb, moved to the bottom right corner. Not one of Blizzard's four
+			pieces; the sheet carries it and a bare corner suits it.
+
+			It was top right, which put it over the search results. Nothing is
+			drawn or clicked in the bottom corner, so it can sit there without
+			being in anyone's way.
+		]]
 		left = 0.105469, right = 0.216797, top = 0.520508, bottom = 0.613281,
 		width = 132, height = 110,
-		point = "TOPRIGHT", relativePoint = "TOPRIGHT", x = -2, y = -26,
+		point = "BOTTOMRIGHT", relativePoint = "BOTTOMRIGHT", x = 10, y = -8,
 	},
 }
 
