@@ -38,6 +38,8 @@ local ROW_HEIGHT = 41
 local ROW_FADE_IN = 70
 -- One line of the sub-line's font; anything taller is a wrap.
 local SUBLINE_HEIGHT = 12
+-- Breathing room under the boss list, so a wrapped one is not against the edge.
+local ROW_PADDING = 8
 local NAME_WIDTH = 318
 local NAME_X, NAME_Y = 39, -6
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.718, 0.561, 0.416
@@ -272,7 +274,7 @@ local function RowExtent(_, group)
 	measure:SetText(table.concat(group.bosses, ", "))
 	local height = measure:GetStringHeight() or SUBLINE_HEIGHT
 	if height < SUBLINE_HEIGHT then height = SUBLINE_HEIGHT end
-	return ROW_HEIGHT + math.ceil(height) - SUBLINE_HEIGHT
+	return ROW_HEIGHT + ROW_PADDING + math.ceil(height) - SUBLINE_HEIGHT
 end
 
 local function RowInitializer(row, group)
