@@ -38,13 +38,13 @@ local failedItemIds = {}
 
 	Retail draws both light grey, because its row bar is dark the whole way under
 	both of them. Ours is the same bar but it fades: measured off the sheet it is
-	solid only to about x=225 of its 321 width and gone by 321, so the subtype at
-	the far right sat on bare parchment. Light text vanished there and dark text
-	only looked better because it was the one that survived, which is why this
-	colour was argued with twice before the real cause turned up.
+	solid to about x=225 of its 321 width and gone by 321. The subtype was anchored
+	25 in from the right, which put it at x=296 -- on nothing. Light text vanished
+	there and dark text was the only thing that survived, which is why this colour
+	has been argued with twice.
 
-	The bar is drawn solid across the full row now, so both lines sit on dark and
-	can be what retail has them be. The shadow is dark to suit light text.
+	So the subtype moves back onto the bar and both lines can then be what retail
+	has them be. The shadow is dark now, since the text is light.
 ]]
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.72, 0.69, 0.63
 local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 1.00, 0.33, 0.33
@@ -484,19 +484,8 @@ function component.Init(components_)
 			button.iconOverlay:SetPoint("TOPLEFT", button.icon, "TOPLEFT")
 			button.bosslessTexture = button:CreateTexture()
 			button.bosslessTexture:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
-			--[[
-				Only the solid middle of the bar, stretched across the whole row.
-
-				The full strip carries an icon well on its left and fades to nothing
-				over its right third, which is why the subtype at the far end sat on
-				bare parchment and no choice of colour read well there. Retail's bar
-				is dark the whole way under both labels and ends at the panel edge;
-				taking x 51-221 of the sheet, where alpha is flat, and stretching it
-				gives the same thing. The icon keeps its own WhiteIconFrame border,
-				so nothing is lost with the well.
-			]]
-			button.bosslessTexture:SetTexCoord(0.09960938, 0.43164063, 0.61816406, 0.66210938)
-			button.bosslessTexture:SetSize(340, 45)
+			button.bosslessTexture:SetTexCoord(0.00195313, 0.62890625, 0.61816406, 0.66210938)
+			button.bosslessTexture:SetSize(321, 45)
 			button.bosslessTexture:SetPoint("LEFT", 0, -5)
 			button.bosslessTexture:SetDrawLayer("BORDER")
 			button.name = button:CreateFontString(nil, "OVERLAY", "GameFontNormalMed3")
@@ -506,7 +495,8 @@ function component.Init(components_)
 			button.armorType = button:CreateFontString()
 			button.armorType:SetJustifyH("LEFT")
 			button.armorType:SetSize(0, 12)
-			button.armorType:SetPoint("BOTTOMRIGHT", -25, 5)
+			-- 60, not 25: the row bar has faded to nothing by 25 in.
+			button.armorType:SetPoint("BOTTOMRIGHT", -60, 5)
 			button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			button.armorType:SetFont("Fonts\\FRIZQT__.TTF", 10)
 			button.armorType:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
