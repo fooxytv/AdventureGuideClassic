@@ -69,17 +69,25 @@ function component.Init()
 	--[[
 		A frame of its own, well above the journal's children.
 
-		Textures put straight on EncounterJournal sit in its own layers, which is
-		under every child frame it has -- the inset, the title bar, the portrait --
-		so the swag was almost entirely behind the top of the window. Two hundred
-		levels clears those, including the defeat overlay, which sets 150 itself.
+		Textures put straight on EncounterJournal sit in its own layers, under every
+		child frame it has, so the swag was behind the top of the window.
 
-		It is not clipped to the frame, so a piece can hang over the edge, which is
-		what makes a swag look draped rather than pasted on.
+		Raising the level was not enough either, because strata is decided before
+		level: the journal has pieces at HIGH (the lore text, the map button) and
+		at DIALOG (the difficulty dropdown), and no level in the journal's own
+		strata can get above those. So this goes to DIALOG and takes a level well
+		clear of the dropdown's 100.
+
+		Not TOOLTIP, deliberately -- the loot preview lives there, and a preview
+		should cover the decoration rather than the other way round.
+
+		The frame does not clip, so a piece can hang over the edge, which is what
+		makes a swag look draped rather than pasted on.
 	]]
 	canvas = CreateFrame("Frame", nil, EncounterJournal)
 	canvas:SetAllPoints(EncounterJournal)
-	canvas:SetFrameLevel(EncounterJournal:GetFrameLevel() + 200)
+	canvas:SetFrameStrata("DIALOG")
+	canvas:SetFrameLevel(600)
 
 	--[[
 		Worked out once on load. The window is a date range rather than anything
