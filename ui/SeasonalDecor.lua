@@ -77,9 +77,9 @@ local HALLOWS_END = {
 			themselves do to characters for this fortnight.
 		]]
 		left = 0.870117, right = 0.751953, top = 0.191406, bottom = 0.263672,
-		width = 78, height = 48,
+		width = 96, height = 59,
 		anchor = "portrait",
-		point = "BOTTOM", relativePoint = "TOP", x = -4, y = -20,
+		point = "BOTTOM", relativePoint = "TOP", x = -6, y = -34,
 	},
 }
 
