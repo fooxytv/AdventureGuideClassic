@@ -10,7 +10,6 @@ local component = UI.CreateComponent("Wishlist")
 local components
 local wishlist
 local scrollbox
-local measure
 local showObtained = false
 local scopeFilter = "all"
 
@@ -33,7 +32,6 @@ local HEADER_HEIGHT = 50
 	ROW_WIDTH is only a fallback; the list sizes its rows from the scroll box.
 ]]
 local ROW_WIDTH = 700
-local ROW_HEIGHT = 41
 -- How far the dark eases in at the left before it is at full strength.
 local ROW_FADE_IN = 70
 -- One line of the sub-line's font; anything taller is a wrap.
@@ -44,8 +42,19 @@ local ROW_PADDING = 9
 local NAME_LINE_HEIGHT = 14
 -- Past this the list is trimmed rather than allowed to own the panel.
 local MAX_BOSS_LINES = 2
+-- Roughly what two lines of the sub-line font hold at NAME_WIDTH.
+local MAX_BOSS_CHARS = 92
+
 local NAME_WIDTH = 318
 local NAME_X, NAME_Y = 39, -6
+
+--[[
+	One height for every row, as retail has, and tall enough for the two lines the
+	boss list is capped at: the name sits NAME_Y down and is one line tall, the
+	list follows two below it, then the padding.
+]]
+local ROW_HEIGHT = -NAME_Y + NAME_LINE_HEIGHT + 2
+		+ MAX_BOSS_LINES * SUBLINE_HEIGHT + ROW_PADDING
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0.718, 0.561, 0.416
 local ICON_SIZE = 32
 local ICON_INNER = 28
@@ -319,52 +328,23 @@ local function IconAt(row, index)
 end
 
 --[[
-	How tall this row needs to be. A well-worked instance names more bosses than
-	fit on one line, so the list is wrapped and the row grows to suit rather than
-	the names being cut off.
+	The boss list as it will be drawn, trimmed to what fits MAX_BOSS_LINES.
 
-	The height is measured rather than counted. Working it out from the number of
-	characters would have to assume an average width per glyph, and the names it
-	would be wrong about -- the long ones -- are exactly the ones that wrap.
-]]
---[[
-	The boss list as it will be drawn, trimmed to MAX_BOSS_LINES.
-
-	Wrapping without a limit would let a fifteen-boss raid own the whole panel, so
-	names are dropped off the end until the rest fits and an ellipsis says so. Both
-	the row's height and the row's text come through here, so the two cannot
-	disagree about what is being shown.
+	Trimmed on a character budget rather than by measuring. A font string's
+	metrics are not settled until it has been drawn at least once, so the first
+	build after a login or a /reload measured every list as one line and squashed
+	the rows -- and any later refresh measured correctly, which made it look
+	fixed each time. A budget is approximate about where the ellipsis falls and
+	exact about never depending on when it is asked.
 ]]
 local function BossLine(group)
 	local full = table.concat(group.bosses, ", ")
-	if not measure then return full, SUBLINE_HEIGHT end
-	local limit = MAX_BOSS_LINES * SUBLINE_HEIGHT + 2
-	measure:SetText(full)
-	local height = measure:GetStringHeight() or SUBLINE_HEIGHT
-	if height <= limit then
-		return full, math.max(height, SUBLINE_HEIGHT)
-	end
+	if #full <= MAX_BOSS_CHARS then return full end
 	for count = #group.bosses - 1, 1, -1 do
 		local text = table.concat(group.bosses, ", ", 1, count) .. ", ..."
-		measure:SetText(text)
-		height = measure:GetStringHeight() or SUBLINE_HEIGHT
-		if height <= limit then
-			return text, math.max(height, SUBLINE_HEIGHT)
-		end
+		if #text <= MAX_BOSS_CHARS then return text end
 	end
-	return full, math.max(height, SUBLINE_HEIGHT)
-end
-
-local function RowExtent(_, group)
-	if not measure then return ROW_HEIGHT end
-	local _, height = BossLine(group)
-	--[[
-		Built from what the row actually holds rather than adjusted off Blizzard's
-		41: the name sits NAME_Y down and is one line tall, the boss list follows
-		two below it, and ROW_PADDING finishes it. For a single line that comes to
-		41 anyway, so a plain row still matches theirs.
-	]]
-	return -NAME_Y + NAME_LINE_HEIGHT + 2 + math.ceil(height) + ROW_PADDING
+	return full:sub(1, MAX_BOSS_CHARS - 3) .. "..."
 end
 
 local function RowInitializer(row, group)
@@ -603,23 +583,6 @@ function component.Init(components_)
 	wishlist.title:SetPoint("TOPLEFT", 20, -14)
 	BuildFilters(wishlist)
 
-	--[[
-		Invisible, but anchored, shown, and on UIParent -- all three are needed
-		before its height means anything. A font string with no anchor has no
-		layout, a hidden one is not laid out at all, and one parented to this panel
-		is not laid out either while the panel is hidden. That last was the real
-		catch: Show refreshes the list before it makes the panel current, so every
-		row was measured against a hidden parent and came back one line tall
-		however much text it held.
-
-		Alpha zero rather than Hide, for the same reason.
-	]]
-	measure = UIParent:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-	measure:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0)
-	measure:SetWidth(NAME_WIDTH)
-	measure:SetWordWrap(true)
-	measure:SetAlpha(0)
-
 	wishlist.empty = wishlist:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	wishlist.empty:SetPoint("CENTER", 0, 20)
 	wishlist.empty:SetSize(460, 40)
@@ -638,7 +601,7 @@ function component.Init(components_)
 	scrollbar:SetPoint("BOTTOMRIGHT", wishlist, "BOTTOMRIGHT", -14, 18)
 
 	local view = CreateScrollBoxListLinearView()
-	view:SetElementExtentCalculator(RowExtent)
+	view:SetElementExtent(ROW_HEIGHT)
 	view:SetElementInitializer("Button", RowInitializer)
 	ScrollUtil.InitScrollBoxListWithScrollBar(scrollbox, scrollbar, view)
 
