@@ -23,14 +23,17 @@ local HALLOWS_END = {
 	{
 		-- Pumpkin and vines, the widest piece on the sheet at 584x127.
 		left = 0.138672, right = 0.708984, top = 0.035156, bottom = 0.159180,
-		width = 300, height = 65,
-		point = "TOP", relativePoint = "TOP", x = 0, y = 22,
+		-- 584x127 on the sheet, kept to that ratio so the vines do not stretch.
+		width = 560, height = 122,
+		point = "TOP", relativePoint = "TOP", x = 0, y = 34,
 	},
 	{
 		-- A cobweb, for the corner the portrait does not already fill.
 		left = 0.105469, right = 0.216797, top = 0.520508, bottom = 0.613281,
-		width = 74, height = 62,
-		point = "TOPRIGHT", relativePoint = "TOPRIGHT", x = 4, y = 6,
+		-- 114x95 on the sheet. Tucked just inside the corner rather than over it,
+		-- so it does not sit on the close button.
+		width = 132, height = 110,
+		point = "TOPRIGHT", relativePoint = "TOPRIGHT", x = -2, y = -26,
 	},
 }
 
