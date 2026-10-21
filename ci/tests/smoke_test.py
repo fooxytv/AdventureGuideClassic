@@ -253,6 +253,46 @@ PROBE = """
     out.miscastAbilities = miscast
     out.claimedAbilities = claimed
 
+    -- Both Compat.GetSpellDescription branches, one per client shape, and the empty
+    -- string the client gives before spell data loads must read back as nil.
+    out.spellDescription = Compat.GetSpellDescription(12054) or "nil"
+    out.spellDescriptionUnknown = Compat.GetSpellDescription(0) == nil and 1 or 0
+    out.spellDescriptionNoId = Compat.GetSpellDescription(nil) == nil and 1 or 0
+
+    -- Only the mainline family can be asked to load spell data; the Classic clients
+    -- have the description already, so there is nothing to request.
+    out.requestsSpellData = Compat.RequestSpellData(1292602) and 1 or 0
+    out.requestSpellDataNoId = Compat.RequestSpellData(nil) and 1 or 0
+
+    --[[
+        No ability entry should draw without an icon or a body. A bare { spell = N }
+        has neither in the data and the client supplies both, so a miss here means an
+        entry shape the icon or description path does not reach -- the two shapes,
+        { spell = N } and { id, name, description }, are read differently.
+    ]]
+    local missingIcon, missingBody = 0, 0
+    local prev = SavedVariables.ExpansionFilter
+    for _, expansionFilter in ipairs({ "classic", "tbc" }) do
+        SavedVariables.ExpansionFilter = expansionFilter
+        for _, list in ipairs({ InstanceService.GetDungeons(), InstanceService.GetRaids() }) do
+            for _, instance in ipairs(list) do
+                for _, encounter in ipairs(instance) do
+                    for _, entry in ipairs(encounter.abilities or {}) do
+                        local id = entry.spell or entry.id
+                        local _, icon = Compat.GetSpellInfo(id)
+                        if not icon then missingIcon = missingIcon + 1 end
+                        if not (#entry > 0 or entry.description
+                            or Compat.GetSpellDescription(id)) then
+                            missingBody = missingBody + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+    SavedVariables.ExpansionFilter = prev
+    out.abilitiesMissingIcon = missingIcon
+    out.abilitiesMissingBody = missingBody
     --[[
         Defeat progress has to survive a reload. It used to live only on the instance
         table, which is rebuilt from the data files on every login, so every tick was
@@ -476,6 +516,13 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
         "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
@@ -506,6 +553,13 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
         "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
@@ -536,6 +590,13 @@ EXPECTED = {
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 0,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
         "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
@@ -580,6 +641,13 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 1,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
         "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,
@@ -611,6 +679,13 @@ EXPECTED = {
         "tabTemplate": "PanelTabButtonTemplate",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "spellDescription": "Description of spell 12054",
+        "spellDescriptionUnknown": 1,
+        "spellDescriptionNoId": 1,
+        "requestSpellDataNoId": 0,
+        "requestsSpellData": 1,
+        "abilitiesMissingIcon": 0,
+        "abilitiesMissingBody": 0,
         "progressKeptPriorHistory": 1,
         "progressStartsClear": 1,
         "progressRecorded": 1,

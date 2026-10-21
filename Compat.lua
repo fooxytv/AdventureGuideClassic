@@ -178,6 +178,44 @@ function Compat.GetSpellInfo(spellID)
 end
 
 --[[
+	The spell's own description text, which is what the Abilities tab falls back to
+	when an ability carries no written body.
+
+	C_Spell on the mainline family, the global elsewhere. Returns nil rather than the
+	empty string the client gives before spell data has loaded, so callers have one
+	case to handle.
+]]
+function Compat.GetSpellDescription(spellID)
+	if not spellID then return nil end
+
+	local text
+	if C_Spell and C_Spell.GetSpellDescription then
+		text = C_Spell.GetSpellDescription(spellID)
+	elseif _G.GetSpellDescription then
+		text = _G.GetSpellDescription(spellID)
+	end
+
+	if text and text ~= "" then return text end
+	return nil
+end
+
+--[[
+	Ask the client to load a spell it has not cached yet.
+
+	Core spells are there from the start, but a Forever-only id comes back with an
+	empty description until this has been called and SPELL_DATA_LOAD_RESULT has
+	fired. Absent on the Classic clients, where the description is already there.
+]]
+function Compat.RequestSpellData(spellID)
+	if not spellID then return false end
+	if C_Spell and C_Spell.RequestLoadSpellData then
+		C_Spell.RequestLoadSpellData(spellID)
+		return true
+	end
+	return false
+end
+
+--[[
 	The tab button template differs by client.
 
 	Era and TBC have CharacterFrameTabButtonTemplate. On Forever the file defining it
