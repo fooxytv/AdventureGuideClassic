@@ -525,6 +525,15 @@ PROBE = """
     WishlistService.AddItem(201, "link201", "Item 201", "Ragnaros", "Molten Core")
 
     out.wishlistGroups = #WishlistService.GetGrouped(false)
+    --[[
+        Ordered lowest instance first. Nothing in data/ carries minLevel yet, so
+        the fallback is the name -- asserted here so that the day the field lands
+        it is a level sort and not a surprise.
+    ]]
+    local order = WishlistService.GetGrouped(false)
+    out.wishlistSortedByName =
+        (order[1] and order[2] and order[1].name < order[2].name) and 1 or 0
+
     local deadmines = DeadminesGroup(false)
     out.wishlistGroupItems = deadmines and #deadmines.items or -1
     -- Two entries name Mr. Smite; the sub-line lists a boss once.
@@ -564,6 +573,25 @@ PROBE = """
     out.pinnedHidesObtained = LootFilterService.PassesFilter(pinnedItem) and 0 or 1
     LootFilterService.SetPinnedFilter(false)
     out.pinnedOffShowsObtained = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
+
+    --[[
+        With a level, that wins over the name. Set on the instance table itself,
+        which is what GetGrouped reads through InstanceService.
+    ]]
+    local dungeons = InstanceService.GetDungeons()
+    local first, second = dungeons[1], dungeons[2]
+    WishlistService.ClearAll()
+    WishlistService.AddItem(401, "l", "I", "Boss", first.name)
+    WishlistService.AddItem(402, "l", "I", "Boss", second.name)
+    -- The one that sorts later by name is given the lower level, so only a level
+    -- sort can put it first. Named instances were no good here: the five clients
+    -- do not ship the same ones, and "Deadmines" is not "The Deadmines".
+    local low, high = first, second
+    if second.name < first.name then low, high = second, first end
+    low.minLevel, high.minLevel = 60, 10
+    local byLevel = WishlistService.GetGrouped(false)
+    out.wishlistLevelBeatsName = (byLevel[1].name == high.name) and 1 or 0
+    low.minLevel, high.minLevel = nil, nil
 
     --[[
         An entry saved from the instance page, before the loot rows carried their
@@ -684,6 +712,8 @@ EXPECTED = {
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
         "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
         "wishlistNoScratchField": 1,
@@ -757,6 +787,8 @@ EXPECTED = {
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
         "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
         "wishlistNoScratchField": 1,
@@ -830,6 +862,8 @@ EXPECTED = {
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
         "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
         "wishlistNoScratchField": 1,
@@ -917,6 +951,8 @@ EXPECTED = {
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
         "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
         "wishlistNoScratchField": 1,
@@ -991,6 +1027,8 @@ EXPECTED = {
         "abilitiesMissingIcon": 0,
         "abilitiesMissingBody": 0,
         "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
         "wishlistNoScratchField": 1,
