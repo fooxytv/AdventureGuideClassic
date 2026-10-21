@@ -153,12 +153,16 @@ function component.Init(components_)
 			sharedHighlightFrame:Hide()
 		end
 		button.encounter = encounter
-		button.name:SetText(encounter.name);
+		-- A boss this character has not met shows as an unnamed silhouette while the
+		-- discovery mode is on. IsDiscovered is always true while it is off.
+		local instance = AdventureGuideNavigationService.GetInstance()
+		local discovered = DiscoveryService.IsDiscovered(instance and instance.name, encounter)
+		button.name:SetText(discovered and encounter.name or DiscoveryService.UNKNOWN_NAME);
 		-- These buttons are recycled by the scroll box, so a boss with no portrait
 		-- must be given the default explicitly: the one set when the button was
 		-- created has long since been overwritten by whichever boss used it last.
 		-- Same fallback as ModelFrame does for a missing instance splash.
-		button.bgImage:SetTexture(encounter.portrait
+		button.bgImage:SetTexture((discovered and encounter.portrait)
 			or "Interface/EncounterJournal/UI-EJ-BOSS-Default");
 		if (encounter.defeated == 1) then
 			button.DefeatedOverlay:Show()

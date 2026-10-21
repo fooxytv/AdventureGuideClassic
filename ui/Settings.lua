@@ -190,27 +190,47 @@ function component.Init(components_)
 	settingsPanel = CreateFrame("Frame", "AdventureGuideClassicSettings", UIParent)
 	settingsPanel.name = "Adventure Guide Classic"
 
-	local title = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	--[[
+		The rows outgrew the height Blizzard gives a canvas category, so they live in
+		a scroll frame and everything below is parented to `content`. Its height is
+		measured in OnShow, once the frames have real coordinates -- a fixed number
+		would need editing every time a section is added.
+	]]
+	local scroll = CreateFrame("ScrollFrame", "AGCSettingsScroll", settingsPanel)
+	scroll:SetPoint("TOPLEFT")
+	scroll:SetPoint("BOTTOMRIGHT", -8, 4)
+	scroll.scrollBarX = -8
+	scroll.scrollBarTopY = -6
+	scroll.scrollBarBottomY = 6
+	scroll.scrollBarTemplate = "MinimalScrollBar"
+	local content = CreateFrame("Frame", nil, scroll)
+	content:SetPoint("TOPLEFT")
+	content:SetSize(560, 600)
+	scroll:SetScrollChild(content)
+	ScrollFrame_OnLoad(scroll)
+	settingsPanel.scrollContent = content
+
+	local title = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	title:SetPoint("TOPLEFT", 16, -16)
 	title:SetText("Adventure Guide Classic")
 
 	local version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "Unknown"
-	local subtitle = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	local subtitle = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
 	subtitle:SetText("Version: " .. version)
 	subtitle:SetTextColor(0.6, 0.6, 0.6)
 
-	local toastHeader = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local toastHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	toastHeader:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -24)
 	toastHeader:SetText("Toast Notifications")
 	toastHeader:SetTextColor(1, 0.82, 0)
 
-	local toastDesc = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	local toastDesc = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	toastDesc:SetPoint("TOPLEFT", toastHeader, "BOTTOMLEFT", 0, -4)
 	toastDesc:SetText("Configure which on-screen notifications are displayed.")
 	toastDesc:SetTextColor(0.6, 0.6, 0.6)
 
-	local toastContainer = CreateFrame("Frame", "AGCSettingsToastContainer", settingsPanel)
+	local toastContainer = CreateFrame("Frame", "AGCSettingsToastContainer", content)
 	toastContainer:SetPoint("TOPLEFT", toastDesc, "BOTTOMLEFT", 0, -8)
 	toastContainer:SetSize(400, 156)
 
@@ -263,17 +283,41 @@ function component.Init(components_)
 		function(val) SettingsService.SetToastEnabled("WishlistItem", val) end
 	)
 
-	local appearanceHeader = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	appearanceHeader:SetPoint("TOPLEFT", toastContainer, "BOTTOMLEFT", 0, -8)
+	local discoveryHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	discoveryHeader:SetPoint("TOPLEFT", toastContainer, "BOTTOMLEFT", 0, -8)
+	discoveryHeader:SetText("Discovery")
+	discoveryHeader:SetTextColor(1, 0.82, 0)
+
+	local discoveryDesc = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	discoveryDesc:SetPoint("TOPLEFT", discoveryHeader, "BOTTOMLEFT", 0, -4)
+	discoveryDesc:SetText("Let the journal fill in as you play instead of reading ahead.")
+	discoveryDesc:SetTextColor(0.6, 0.6, 0.6)
+
+	local discoveryContainer = CreateFrame("Frame", "AGCSettingsDiscoveryContainer", content)
+	discoveryContainer:SetPoint("TOPLEFT", discoveryDesc, "BOTTOMLEFT", 0, -8)
+	discoveryContainer:SetSize(400, 52)
+
+	settingsPanel.discoveryRow = CreateOptionsCheckbox(
+		discoveryContainer,
+		"DiscoveryMode",
+		"Discovery Mode",
+		"Bosses you have not defeated stay unnamed, with their abilities and loot hidden. Set per character.",
+		0,
+		function() return DiscoveryService.IsEnabled() end,
+		function(val) DiscoveryService.SetEnabled(val) end
+	)
+
+	local appearanceHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	appearanceHeader:SetPoint("TOPLEFT", discoveryContainer, "BOTTOMLEFT", 0, -8)
 	appearanceHeader:SetText("Appearance")
 	appearanceHeader:SetTextColor(1, 0.82, 0)
 
-	local appearanceDesc = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	local appearanceDesc = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	appearanceDesc:SetPoint("TOPLEFT", appearanceHeader, "BOTTOMLEFT", 0, -4)
 	appearanceDesc:SetText("Adjust how the Adventure Guide window is displayed.")
 	appearanceDesc:SetTextColor(0.6, 0.6, 0.6)
 
-	local appearanceContainer = CreateFrame("Frame", "AGCSettingsAppearanceContainer", settingsPanel)
+	local appearanceContainer = CreateFrame("Frame", "AGCSettingsAppearanceContainer", content)
 	appearanceContainer:SetPoint("TOPLEFT", appearanceDesc, "BOTTOMLEFT", 0, -8)
 	appearanceContainer:SetSize(400, 80)
 
@@ -291,17 +335,17 @@ function component.Init(components_)
 		function(val) SettingsService.SetScale(val) end
 	)
 
-	local toastPosHeader = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local toastPosHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	toastPosHeader:SetPoint("TOPLEFT", appearanceContainer, "BOTTOMLEFT", 0, -8)
 	toastPosHeader:SetText("Toast Position & Scale")
 	toastPosHeader:SetTextColor(1, 0.82, 0)
 
-	local toastPosDesc = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	local toastPosDesc = content:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	toastPosDesc:SetPoint("TOPLEFT", toastPosHeader, "BOTTOMLEFT", 0, -4)
 	toastPosDesc:SetText("Scale each toast and drag it to where you want on the screen.")
 	toastPosDesc:SetTextColor(0.6, 0.6, 0.6)
 
-	local toastPosContainer = CreateFrame("Frame", "AGCSettingsToastPositionContainer", settingsPanel)
+	local toastPosContainer = CreateFrame("Frame", "AGCSettingsToastPositionContainer", content)
 	toastPosContainer:SetPoint("TOPLEFT", toastPosDesc, "BOTTOMLEFT", 0, -8)
 	toastPosContainer:SetSize(500, 200)
 
@@ -318,6 +362,10 @@ function component.Init(components_)
 		settingsPanel.levelUpPositionRow.Refresh()
 		settingsPanel.bossDefeatedPositionRow.Refresh()
 		settingsPanel.wishlistPositionRow.Refresh()
+		local top, bottom = content:GetTop(), toastPosContainer:GetBottom()
+		if top and bottom then
+			content:SetHeight(math.max(top - bottom + 24, 1))
+		end
 	end)
 
 	settingsPanel:SetScript("OnHide", function()
