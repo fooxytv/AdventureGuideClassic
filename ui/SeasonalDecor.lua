@@ -1,0 +1,155 @@
+--[[
+Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
+All rights reserved.
+
+Programming by: FooxyTV
+]]
+select(2, ...).SetupGlobalFacade()
+
+local component = UI.CreateComponent("SeasonalDecor")
+local decor = { }
+local canvas
+
+--[[
+	Blizzard's own Hallow's End trim, measured off the sheet. Every piece is cut
+	from one 1024x1024 file that holds them on transparency, so the coordinates
+	are the whole of the layout work.
+
+	Laid out the way Blizzard lays out a seasonal surround for this very frame.
+	The Traveler's Log dresses the Encounter Journal with these themes, and its
+	MonthlyActivitiesThemeContainerMixin anchors four pieces around the window --
+	top, bottom, left and right -- each at its native size. So the art is not a
+	swag for the top of the frame; it is a border for the whole of it.
+
+	Blizzard's own layout for these themes is a surround -- their
+	MonthlyActivitiesThemeContainerMixin hangs four pieces around this very frame
+	-- but their anchors assume a window whose edges are decoration, and this one
+	has a breadcrumb, a search box and a tab row on its edges. So the pieces are
+	chosen and placed for this frame instead.
+]]
+--[[
+	Cobwebs in the corners, and nothing else.
+
+	The witch's hat was tried on the portrait and taken off again: mocked onto a
+	screenshot it looked worn, and in the game it looked daft. The swag went the
+	same way. What is left is the part of this sheet that asks nothing of the
+	frame it hangs on.
+
+	The swag went through four positions and never settled, because the piece is
+	the problem rather than the placement: a pumpkin the size of the title bar
+	wants the top of the window to be decoration, and the top of this window is
+	where the breadcrumb, the search and its results all live. Webs have no such
+	demand. They sit in corners, which is what corners are for, and a corner is
+	the one part of a frame nothing is ever drawn into.
+
+	One piece used three times. Mirrored by swapping the horizontal coordinates
+	for the left-hand corners, so a web always spins away from the edge it hangs
+	off rather than into it.
+]]
+local WEB = { left = 0.105469, right = 0.216797, top = 0.520508, bottom = 0.613281 }
+
+local HALLOWS_END = {
+	{
+		-- Top right, the biggest, under the close button.
+		left = WEB.left, right = WEB.right, top = WEB.top, bottom = WEB.bottom,
+		width = 124, height = 104,
+		point = "TOPRIGHT", relativePoint = "TOPRIGHT", x = -2, y = -24,
+	},
+	{
+		-- Top left, mirrored, kept clear of the portrait ring.
+		left = WEB.right, right = WEB.left, top = WEB.top, bottom = WEB.bottom,
+		width = 96, height = 80,
+		point = "TOPLEFT", relativePoint = "TOPLEFT", x = 2, y = -46,
+	},
+	{
+		-- Bottom right, smallest, so the eye is not pulled down to it.
+		left = WEB.left, right = WEB.right, top = WEB.bottom, bottom = WEB.top,
+		width = 84, height = 70,
+		point = "BOTTOMRIGHT", relativePoint = "BOTTOMRIGHT", x = -2, y = 2,
+	},
+}
+
+local SHEETS = { hallowsend = { texture = "SeasonalHallowsEnd", pieces = HALLOWS_END } }
+
+local function Build(sheet)
+	for index, piece in ipairs(sheet.pieces) do
+		local texture = decor[index]
+		if not texture then
+			texture = canvas:CreateTexture(nil, "OVERLAY")
+			decor[index] = texture
+		end
+		texture:SetTexture(I[sheet.texture])
+		texture:SetTexCoord(piece.left, piece.right, piece.top, piece.bottom)
+		texture:SetSize(piece.width, piece.height)
+		texture:ClearAllPoints()
+		-- A piece can hang off something other than the frame, by its key.
+		local anchor = piece.anchor and EncounterJournal[piece.anchor] or canvas
+		texture:SetPoint(piece.point, anchor, piece.relativePoint, piece.x, piece.y)
+		texture:Show()
+	end
+end
+
+function component.Refresh()
+	local event = SeasonalService and SeasonalService.GetActiveEvent()
+	local sheet = event and SHEETS[event]
+	if not sheet then
+		for _, texture in ipairs(decor) do texture:Hide() end
+		return
+	end
+	Build(sheet)
+end
+
+function component.Init()
+	--[[
+		A frame of its own, well above the journal's children.
+
+		Textures put straight on EncounterJournal sit in its own layers, under every
+		child frame it has, so the swag was behind the top of the window.
+
+		Raising the level was not enough either, because strata is decided before
+		level: the journal has pieces at HIGH (the lore text, the map button) and
+		at DIALOG (the search results, the difficulty dropdown), and no level in
+		the journal's own strata gets above those.
+
+		So it goes to DIALOG, but at the bottom of it rather than the top. Being
+		in that strata at all is what lifts it clear of the frame and its header;
+		being at level 50 keeps it under everything there that is functional --
+		the search results sit at 100, the difficulty dropdown at 100 -- so a list
+		of results opens in front of the decoration rather than behind it.
+
+		Not TOOLTIP either, for the same reason: the loot preview lives there, and
+		a preview should cover the decoration rather than the other way round.
+
+		The frame does not clip, so a piece can hang over the edge, which is what
+		makes a swag look draped rather than pasted on.
+	]]
+	canvas = CreateFrame("Frame", nil, EncounterJournal)
+	canvas:SetAllPoints(EncounterJournal)
+	--[[
+		Explicitly mouse-through. It covers the title bar and reaches the search
+		box, and a frame at DIALOG that swallowed clicks would make the search
+		unusable for a fortnight a year.
+	]]
+	canvas:EnableMouse(false)
+	canvas:SetFrameStrata("DIALOG")
+	canvas:SetFrameLevel(50)
+
+	--[[
+		Checked on load and then every ten minutes.
+
+		A date range rather than a countdown, deliberately. Counting down from now
+		only works for a session that is running when the clock is started -- it
+		says nothing to someone who logs in next week, or who installs the addon in
+		November. Asking "what is today" answers for all of them.
+
+		The ticker is what makes it come down on its own. Without it a player
+		online across the last midnight keeps the webs until they reload, and ten
+		minutes of lag on a fortnight-long event costs nothing.
+	]]
+	component.Refresh()
+	if C_Timer and C_Timer.NewTicker then
+		C_Timer.NewTicker(600, component.Refresh)
+	end
+end
+
+UI.Add(component)

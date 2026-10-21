@@ -22,11 +22,52 @@ function AdventureGuideNavigationService.GetEncounter()
 	return encounter
 end
 
-function AdventureGuideNavigationService.GetEncounterName()
-    return encounter and encounter.name or "Unknown Encounter"
+--[[
+	Whether a boss may be shown in full, for the discovery mode. Lives here because
+	every gated accessor needs the instance the boss belongs to, and this file is
+	what knows which instance is selected.
+]]
+function AdventureGuideNavigationService.IsEncounterDiscovered(forEncounter)
+	local target = forEncounter or encounter
+	if not target then return true end
+	return DiscoveryService.IsDiscovered(instance and instance.name, target)
+end
+
+--[[
+	Gated like every other accessor here, and for a reason Copilot spotted: the list
+	draws ??? over an undiscovered boss, but this feeds the detail title, the nav-bar
+	breadcrumb, the model's caption and the creature tooltips. Ungated, clicking a ???
+	printed the real name in four places at once.
+]]
+function AdventureGuideNavigationService.GetEncounterName(forEncounter)
+	local target = forEncounter or encounter
+	if not target then return "Unknown Encounter" end
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(target) then
+		return DiscoveryService.UNKNOWN_NAME
+	end
+	return target.name or "Unknown Encounter"
+end
+
+--[[
+	The selected boss's abilities, or another boss's if one is passed -- the same
+	optional-argument convention as GetEncounterLoot.
+
+	Empty rather than nil when there is no encounter or none were recorded, so a
+	caller can ask `#... > 0` without first checking both. 240 of the 389 encounters
+	in the data have none yet, so that is the common case, not the edge one.
+]]
+function AdventureGuideNavigationService.GetEncounterAbilities(forEncounter)
+	local target = forEncounter or encounter
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(target) then
+		return { }
+	end
+	return target and target.abilities or { }
 end
 
 function AdventureGuideNavigationService.GetEncounterContent()
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(encounter) then
+		return { "You have not faced this foe yet. Defeat it to record what it does here." }
+	end
 	return encounter.overview or { }
 end
 
@@ -38,6 +79,10 @@ end
 ]]
 function AdventureGuideNavigationService.GetEncounterLoot(forEncounter)
 	local target = forEncounter or encounter
+	if not AdventureGuideNavigationService.IsEncounterDiscovered(target) then
+		return { loot = { }, sharedLoot = { }, rareLoot = { },
+			veryRareLoot = { }, extremelyRareLoot = { } }
+	end
 	local userFilter = InstanceService.GetExpansionFilter and InstanceService.GetExpansionFilter() or nil
 	local isTBC = Compat.isTBC
 	local isClassicClient = Compat.isVanillaLoot

@@ -3,6 +3,8 @@
 
     <Script file="services/ForeverContentService.lua" />
     <Script file="services/Instance.lua" />
+    <Script file="services/ProgressService.lua" />
+    <Script file="services/DiscoveryService.lua" />
     <Script file="services/AdventureGuideNavigation.lua" />
     <Script file="services/HyperlinkService.lua" />
     <Script file="services/NPC.lua" />
@@ -10,6 +12,7 @@
     <Script file="services/EncounterObjectives.lua" />
     <Script file="services/Maps.lua" />
     <Script file="services/WishlistService.lua" />
+    <Script file="services/SeasonalService.lua" />
     <Script file="services/WishlistLootHook.lua" />
     <Script file="services/SettingsService.lua" />
     <Script file="services/SearchService.lua" />

@@ -20,7 +20,15 @@ function widgetType:Construct(parent)
 	frame.text = frame:CreateFontString(nil, "ARTWORK", "GameFontBlack")
 	frame.text:SetJustifyH("LEFT")
 	frame.text:SetPoint("TOPLEFT", 2, -8)
-	frame.text:SetPoint("RIGHT", -12, -8)
+	--[[
+		TOPRIGHT, not RIGHT. A RIGHT anchor pins the font string's vertical centre to
+		the frame's, and with TOPLEFT fixing the top that resolves its height from the
+		frame's -- which is 1 above, so the text clipped to a single ellipsised line.
+		GetStringHeight then reported that clipped height and the frame was sized to
+		it. Anchoring both corners to the top constrains the width and leaves the
+		height free, so the string wraps and measures truthfully.
+	]]
+	frame.text:SetPoint("TOPRIGHT", -12, -8)
 	frame.text:SetTextColor(0.25, 0.1484375, 0.02, 1)
 	frame.text:SetWordWrap(true)
 	frame.textBG = frame:CreateTexture(nil, "BACKGROUND", "UI-PaperOverlay-AbilityTextBG")

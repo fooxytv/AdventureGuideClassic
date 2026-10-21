@@ -88,6 +88,20 @@ reach each other as `components.EncounterFrame`. `UI.GetComponent(name)` also wo
 Register the file in `ui/UI.xml`. By convention `component.Show()` rebuilds and displays
 the view.
 
+### Widget types are matched in registration order
+
+`Widgets.GetTypeForContent` returns the **first** type whose `IsTypeFor` passes, and the
+order is the order of the `<Script>` lines in `ui/UI.xml`. So two types that both claim a
+content table are resolved by load order, not by which fits better.
+
+Keep each `IsTypeFor` narrow enough that only one can match. Testing a key for mere
+truthiness is how this goes wrong: `Heading` claimed any table with a `heading` key, so
+abilities written `{ spell = N, heading = true }` reached it instead of `Spell` and it
+called `SetText(true)`. A heading is its text, so it now requires a string.
+
+`ci/tests/smoke_test.py` asserts both that every ability entry is claimed and that the
+claimant is `Spell` or `Ability` — claimed by *something* was not a strong enough check.
+
 ## Data shapes that will surprise you
 
 - **An instance table *is* its array of encounters**, and also carries `name`. So
@@ -167,6 +181,49 @@ env.LootFilterService.PassesFilter(...)  -- the real code, no game needed
 
 Anything touching frames, templates or textures still needs an in-game pass, and so
 does anything client-specific. Say plainly which of the two a change has had.
+
+### The three gates
+
+```sh
+python ci/tests/smoke_test.py      # loads the addon five times, once per client
+python ci/scripts/check_globals.py # every global read must be declared
+./ci/scripts/lint.sh               # luacheck, 11x on
+```
+
+`.github/workflows/ci.yaml` runs all three on every push. They are deliberately
+**not** in `main.yaml`: a release has already been decided by the time a `v*.*.*` tag
+exists, and a lint nit is not a reason to fail a CurseForge upload.
+
+**`ci/tests/smoke_test.py` is the one to reach for first.** It follows `Script` and
+`Include` from `Main.xml`, loads all 141 files against `ci/tests/wow_stub.lua`, and
+asserts `Compat`'s flags, the loot filter's verdicts and the instance counts -- once
+each for `era`, `sod`, `tbc`, `forever` and `forever_old`. The stub owns
+`GetBuildInfo`, `WOW_PROJECT_ID` and whether `C_Seasons` exists at all, so a
+client-specific change can be checked here instead of on four machines. It needs
+`pip install lupa` and exits 0 without it.
+
+Rather than reimplement the facade, the stub **captures** it: `GlobalFacade.lua` loads
+normally and the table handed to the stubbed `setfenv` becomes the `_ENV` every later
+file loads with. So the addon's own facade is under test, not a copy of it. Anything
+loaded that way -- including a throwaway probe chunk -- must be compiled with that
+table as its `_ENV`, or `Compat` and the services read as nil.
+
+Two things it does not cover: `ui/`, which additionally needs `ScrollUtil`,
+`CreateDataProvider` and `CreateScrollBoxListLinearView` stubbed, and anything whose
+behaviour is visual. **If an expectation and the code disagree, suspect the
+expectation.** Both times it has fired so far the harness was wrong and the addon was
+right.
+
+`.luacheckrc` is not decorative. `lint.sh` leaves the `11x` undefined-global codes
+**on**, so it is the enumeration of every name allowed to resolve through the facade
+to `_G`. A legitimate new API goes in that list; do not restore the ignore.
+
+### Testing a branch in game
+
+`./ci/scripts/deploy-branch.sh <flavour>` stamps the branch name into the `.toc`
+version before packaging, so the in-game addon list says which build is loaded rather
+than two builds both reporting the same version. The `.toc` edits are restored on the
+way out, including on failure.
 
 ## Releasing
 
@@ -356,10 +413,16 @@ it to be read.
 | `AGC_PreviewQuests("active")` | draw every quest row in that state (`available`, `active`, `completed`; no argument to clear) |
 | `AGC_DebugLootFilter()` | why the selected encounter's loot was filtered |
 | `AGC_ToggleDebug()` | encounter-detection debug printing |
+| `AGC_MarkDefeated("Deadmines", "Mr. Smite")` | mark one boss beaten without beating it |
+| `AGC_MarkInstanceDefeated("Deadmines")` | mark every boss in an instance |
 | `AGC_ResetInstance("Deadmines")` | clear defeated marks for one instance |
-| `AGC_ResetAllEncounters()` | clear them everywhere |
+| `AGC_ResetAllEncounters()` | clear them everywhere, raids included |
+| `AGC_ResetAllDungeons()` | clear every dungeon, leaving instances you are saved to alone |
+| `AGC_ProgressDump()` | every defeat stored for this character, as `Instance\|Boss` |
 | `AGC_Wishlist()` | print the wishlist |
 | `AGC_CheckEquipped()` | re-run the equipped-item wishlist sweep |
+| `AGC_ModelDump()` | what the model preset asks for next to what the model reports back |
+| `AGC_ModelPoke()` | drive each model camera control in turn, two seconds apart, to find which one the client honours |
 | `AGC_NpcPreview(id)` | show an NPC model |
 | `TestLevelUpToast()`, `TestLevelUpToastAt(level)` | level-up toast |
 | `TestBossDefeatedToast()`, `TestBossDefeatedToastCustom(name)` | defeat toast |
@@ -367,16 +430,16 @@ it to be read.
 
 ## Commit and pull request attribution
 
-Commits made by an agent end with a `Co-Authored-By:` line and nothing else. Pull
-request bodies carry no attribution footer at all.
+Commits and pull request bodies made by an agent carry **no attribution of any kind**.
 
-So: no `Claude-Session:` trailer, no session URL, and no "Generated with Claude Code"
-line on a pull request.
+So: no `Co-Authored-By:` trailer, no `Claude-Session:` trailer, no session URL, and no
+"Generated with Claude Code" line.
 
 Session links are not readable without authentication, so they leak no conversation, but
 this repository is public and a session identifier is not something the maintainer has
-chosen to publish permanently in git history. The footer is simply noise: there is one
-contributor, and he knows.
+chosen to publish permanently in git history. The rest is simply noise: there is one
+contributor, he knows which commits an agent wrote, and the commit author field already
+records it.
 
 ## Known, deliberate rough edges
 

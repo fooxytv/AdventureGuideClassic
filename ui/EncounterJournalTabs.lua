@@ -86,6 +86,16 @@ function component.GetTab(idx)
     return tabs[idx]
 end
 
+--[[
+    Light a tab without running its OnClick. Clicking a wishlist row navigates
+    straight to one instance, so the tab has to follow the content without the
+    instance list being thrown over the top of it.
+]]
+function component.SelectTab(idx)
+    if not tabs[idx] then return end
+    PanelTemplates_SetTab(EncounterJournal, idx)
+end
+
 function component.Init(components_)
     components = components_
     EncounterJournal.Tabs = tabs
@@ -114,6 +124,15 @@ function component.Init(components_)
         AdventureGuideNavigationService.SetInstances(InstanceService.GetRaids())
         components.InstanceSelect.SetTitle(RAIDS)
         components.InstanceSelect.Show()
+    end)
+    --[[
+        A top-level tab rather than one of the five beside Overview and Loot: the
+        wishlist is per character and spans every instance, so it would show the same
+        content whichever boss was lit.
+    ]]
+    EncounterJournal.wishlistTab = AddTab("Wishlist", "Wishlist", function()
+        AdventureGuideNavigationService.Reset()
+        components.Wishlist.Show()
     end)
     EncounterJournal.Tabs[1]:GetScript("OnClick")()
 end

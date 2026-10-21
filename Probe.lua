@@ -246,6 +246,88 @@ local function ProbeEvents(...)
 	step()
 end
 
+--[[
+	Collects the ids Forever's data is missing, /agcids.
+
+	encounterID is matched against the first argument of ENCOUNTER_END and BOSS_KILL,
+	so the only way to read it is to kill the boss. npcs comes off the target.
+]]
+
+local collected = { }
+
+local function Paste(text)
+	print("    |cff00ff00" .. text .. "|r")
+end
+
+local function RecordKill(source, encounterID, encounterName)
+	if not encounterID then return end
+	local instanceName = GetInstanceInfo() or "unknown"
+	collected[instanceName .. "|" .. tostring(encounterName)] = {
+		id = encounterID, name = encounterName, instance = instanceName,
+	}
+	Header(source .. " in " .. instanceName)
+	Paste("encounterID = " .. tostring(encounterID) .. ", -- " .. tostring(encounterName))
+end
+
+-- Creature-0-serverID-instanceID-zoneUID-npcID-spawnUID
+local function TargetNpcId()
+	local guid = UnitGUID("target")
+	if not guid then return nil end
+	local kind, _, _, _, _, npcID = strsplit("-", guid)
+	if kind ~= "Creature" and kind ~= "Vehicle" then return nil end
+	return tonumber(npcID)
+end
+
+local function ReportTarget()
+	local npcID = TargetNpcId()
+	if not npcID then
+		print("  |cffff5555No creature targeted.|r")
+		return
+	end
+	Header("Target")
+	Paste("npcs = { " .. npcID .. " }, -- " .. tostring(UnitName("target")))
+end
+
+local function DumpCollected()
+	local count = 0
+	for _, entry in pairs(collected) do
+		count = count + 1
+		Header(entry.instance)
+		Paste("encounterID = " .. tostring(entry.id) .. ", -- " .. tostring(entry.name))
+	end
+	if count == 0 then
+		print("  |cffff5555Nothing collected yet. Kill a boss with this loaded.|r")
+	end
+end
+
+local idFrame = CreateFrame("Frame")
+idFrame:SetScript("OnEvent", function(_, event, ...)
+	if event == "ENCOUNTER_END" then
+		local encounterID, encounterName, _, _, success = ...
+		if success and success ~= 0 then
+			RecordKill("ENCOUNTER_END", encounterID, encounterName)
+		end
+	elseif event == "BOSS_KILL" then
+		RecordKill("BOSS_KILL", ...)
+	end
+end)
+Compat.RegisterEvents(idFrame, "ENCOUNTER_END", "BOSS_KILL")
+
+local function ProbeIds(msg)
+	if msg == "dump" then
+		DumpCollected()
+	else
+		ReportTarget()
+	end
+end
+
+_G.AGC_Ids = ProbeIds
+
+_G.SLASH_AGCIDS1 = "/agcids"
+SlashCmdList["AGCIDS"] = function(msg)
+	ProbeIds(msg and msg:trim() or "")
+end
+
 _G.AGC_ProbeEvents = ProbeEvents
 
 _G.SLASH_AGCPROBEEVENTS1 = "/agcprobeevents"

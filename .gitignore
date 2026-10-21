@@ -5,3 +5,10 @@ ci/dist/
 code/
 .claude/
 CLAUDE.local.md
+
+# Unpacked by the CI Lua/LuaRocks actions into the workspace.
+.lua/
+.luarocks/
+
+# Left behind by importing ci/tests/smoke_test.py from a throwaway script.
+__pycache__/

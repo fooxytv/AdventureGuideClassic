@@ -11,9 +11,48 @@ local components
 local encountersScrollBox
 local sharedHighlightFrame
 
+--[[
+	The boss behind the portrait, in the shape of a unit tooltip: the name, then a
+	level line.
+
+	It is anchored where the player keeps their tooltip rather than beside the
+	button, since for most people that is the bottom right corner and a tooltip
+	appearing over the boss list would cover the thing being pointed at.
+
+	The level reads ?? because the data has not been gathered yet -- seven of the
+	encounters carry a level and none carry a creature type. Drawing the line
+	anyway means the shape is right now and only the value changes later.
+
+	The name is taken from the button rather than from the encounter, so whatever
+	the list is willing to show is what the tooltip shows. That matters once the
+	discovery mode lands, where an unmet boss reads ??? -- the tooltip follows it
+	without needing to know the rule.
+]]
+local function BossOnEnter(self)
+	if not self.encounter then return end
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	if GameTooltip_SetDefaultAnchor then
+		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+	else
+		GameTooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -30, 80)
+	end
+	GameTooltip:SetText(self.name:GetText() or "")
+	GameTooltip:AddLine(("Level %s"):format(self.encounter.level or "??"), 1, 1, 1)
+	GameTooltip:Show()
+end
+
+local function BossOnLeave()
+	GameTooltip_Hide()
+end
+
 local function EncounterButton_OnClick(self)
 	local currentEncounter = AdventureGuideNavigationService.GetEncounter()
-	if currentEncounter and currentEncounter.encounterID == self.encounter.encounterID then
+	-- Compare the encounter tables, not their encounterIDs. Forever's bosses carry
+	-- no encounterID yet, so ID equality made every one of them look like the
+	-- selected boss -- nil == nil -- and the list refused to change selection.
+	-- SetEncounter stores the reference it is given, so identity is exact and is
+	-- a stronger test than the ID was.
+	if currentEncounter and currentEncounter == self.encounter then
 		return
 	end
 
@@ -57,7 +96,18 @@ local function EncounterButton_OnClick(self)
 		components.InfoTabs.SelectOverview()
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Abilities" then
-		components.DynamicContentScroller.ShowAbilities()
+		--[[
+			Most bosses have no abilities recorded, and the tab is disabled for those,
+			so switching to one would otherwise leave the previous boss's abilities on
+			screen under the new boss's name. Fall back to the overview, the same way
+			Quest and Model already do.
+		]]
+		if (#AdventureGuideNavigationService.GetEncounterAbilities() > 0) then
+			components.DynamicContentScroller.ShowAbilities()
+		else
+			components.DynamicContentScroller.ShowOverview()
+			components.InfoTabs.SelectOverview()
+		end
 		components.InfoTabs.Refresh()
 	elseif selectedTabName == "Model" then
 		if not components.ModelFrame.Show() then
@@ -127,6 +177,8 @@ function component.Init(components_)
 			button:SetHighlightFontObject("GameFontNormalMed3")
 			button:SetDisabledFontObject("GameFontHighlightMedium")
 			button:SetScript("OnClick", EncounterButton_OnClick)
+			button:SetScript("OnEnter", BossOnEnter)
+			button:SetScript("OnLeave", BossOnLeave)
 			button.initialized = true
 		end
 		if (encounter and encounter == AdventureGuideNavigationService.GetEncounter()) then
@@ -137,8 +189,17 @@ function component.Init(components_)
 			sharedHighlightFrame:Hide()
 		end
 		button.encounter = encounter
-		button.name:SetText(encounter.name);
-		button.bgImage:SetTexture(encounter.portrait);
+		-- A boss this character has not met shows as an unnamed silhouette while the
+		-- discovery mode is on. IsDiscovered is always true while it is off.
+		local instance = AdventureGuideNavigationService.GetInstance()
+		local discovered = DiscoveryService.IsDiscovered(instance and instance.name, encounter)
+		button.name:SetText(discovered and encounter.name or DiscoveryService.UNKNOWN_NAME);
+		-- These buttons are recycled by the scroll box, so a boss with no portrait
+		-- must be given the default explicitly: the one set when the button was
+		-- created has long since been overwritten by whichever boss used it last.
+		-- Same fallback as ModelFrame does for a missing instance splash.
+		button.bgImage:SetTexture((discovered and encounter.portrait)
+			or "Interface/EncounterJournal/UI-EJ-BOSS-Default");
 		if (encounter.defeated == 1) then
 			button.DefeatedOverlay:Show()
 		else
