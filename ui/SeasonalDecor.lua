@@ -100,12 +100,17 @@ function component.Init()
 
 		Raising the level was not enough either, because strata is decided before
 		level: the journal has pieces at HIGH (the lore text, the map button) and
-		at DIALOG (the difficulty dropdown), and no level in the journal's own
-		strata can get above those. So this goes to DIALOG and takes a level well
-		clear of the dropdown's 100.
+		at DIALOG (the search results, the difficulty dropdown), and no level in
+		the journal's own strata gets above those.
 
-		Not TOOLTIP, deliberately -- the loot preview lives there, and a preview
-		should cover the decoration rather than the other way round.
+		So it goes to DIALOG, but at the bottom of it rather than the top. Being
+		in that strata at all is what lifts it clear of the frame and its header;
+		being at level 50 keeps it under everything there that is functional --
+		the search results sit at 100, the difficulty dropdown at 100 -- so a list
+		of results opens in front of the decoration rather than behind it.
+
+		Not TOOLTIP either, for the same reason: the loot preview lives there, and
+		a preview should cover the decoration rather than the other way round.
 
 		The frame does not clip, so a piece can hang over the edge, which is what
 		makes a swag look draped rather than pasted on.
@@ -119,7 +124,7 @@ function component.Init()
 	]]
 	canvas:EnableMouse(false)
 	canvas:SetFrameStrata("DIALOG")
-	canvas:SetFrameLevel(600)
+	canvas:SetFrameLevel(50)
 
 	--[[
 		Worked out once on load. The window is a date range rather than anything
