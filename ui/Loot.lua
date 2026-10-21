@@ -523,7 +523,18 @@ function component.Init(components_)
 			local truncatedName = truncateText(lootItem.name, 31)
 			button.name:SetText(truncatedName)
 			button.name:Show()
+			--[[
+				Red when the player cannot wear or wield it -- plate on a Mage, a
+				shield on a Rogue, a bow on a Warlock. Covers weapons as well as
+				armour, since both land in this one field as the item's subtype.
+				A deeper red than Blizzard's, because this sits on light parchment.
+			]]
 			button.armorType:SetText(lootItem.armorType or "Unknown")
+			if LootFilterService.IsUsableByPlayer(lootItem) then
+				button.armorType:SetTextColor(0, 0, 0)
+			else
+				button.armorType:SetTextColor(0.72, 0.06, 0.06)
+			end
 			button.armorType:Show()
 			button.slot:SetText(lootItem.slot or "Unknown")
 			button.slot:Show()

@@ -374,7 +374,18 @@ _G.C_CombatLog = {
 _G.GetInstanceInfo = function() return "Test Instance", "party", 1, "Normal", 5 end
 _G.GetRealmName = function() return "TestRealm" end
 _G.UnitName = function() return "Tester" end
-_G.UnitClass = function() return "Warrior", "WARRIOR", 1 end
+--[[
+	The player's class and level are settable, because what a class can wear and
+	wield is exactly the kind of rule worth checking as more than one character.
+	A test sets AGC_TEST_CLASS / AGC_TEST_LEVEL and the defaults stand otherwise.
+]]
+_G.AGC_TEST_CLASS = "WARRIOR"
+_G.AGC_TEST_LEVEL = 60
+_G.UnitClass = function()
+	local token = _G.AGC_TEST_CLASS or "WARRIOR"
+	return token:sub(1, 1) .. token:sub(2):lower(), token, 1
+end
+_G.UnitLevel = function() return _G.AGC_TEST_LEVEL or 60 end
 _G.UnitFactionGroup = function() return "Alliance", "Alliance" end
 _G.UnitGUID = function() return "Player-1-00000001" end
 _G.GetInventoryItemID = function() return nil end

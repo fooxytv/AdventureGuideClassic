@@ -567,6 +567,46 @@ PROBE = """
 
     WishlistService.ClearAll()
     out.wishlistClearedGroups = #WishlistService.GetGrouped(true)
+
+    --[[
+        What a class can wear and wield, which the loot row colours red when it
+        cannot. Checked as several characters, because a rule that is the same for
+        everyone is not the rule being tested -- and the level-40 cases cannot be
+        reached at all by asking only about a level 60.
+
+        Note the Paladin and cloth case: CLASS_ARMOR says a Paladin *wants* plate,
+        but it can wear cloth perfectly well, so that row must not go red.
+    ]]
+    local PROF_ARMOR, PROF_WEAPON = 4, 2
+    local SUB_CLOTH, SUB_LEATHER, SUB_MAIL, SUB_PLATE, SUB_SHIELD = 1, 2, 3, 4, 6
+    local SUB_BOW, SUB_SWORD1H, SUB_STAFF, SUB_DAGGER = 2, 7, 10, 15
+    local function canUse(class, level, classID, subclassID, equipLoc)
+        local item = { classID = classID, subclassID = subclassID, equipLoc = equipLoc }
+        return LootFilterService.IsUsableByPlayer(item, class, level) and 1 or 0
+    end
+
+    out.profPlateOnMage = canUse("MAGE", 60, PROF_ARMOR, SUB_PLATE)
+    out.profLeatherOnMage = canUse("MAGE", 60, PROF_ARMOR, SUB_LEATHER)
+    out.profClothOnMage = canUse("MAGE", 60, PROF_ARMOR, SUB_CLOTH)
+    out.profClothOnPaladin = canUse("PALADIN", 60, PROF_ARMOR, SUB_CLOTH)
+    out.profPlateOnWarrior60 = canUse("WARRIOR", 60, PROF_ARMOR, SUB_PLATE)
+    out.profPlateOnWarrior39 = canUse("WARRIOR", 39, PROF_ARMOR, SUB_PLATE)
+    out.profMailOnWarrior39 = canUse("WARRIOR", 39, PROF_ARMOR, SUB_MAIL)
+    out.profMailOnHunter39 = canUse("HUNTER", 39, PROF_ARMOR, SUB_MAIL)
+    out.profMailOnHunter40 = canUse("HUNTER", 40, PROF_ARMOR, SUB_MAIL)
+    out.profShieldOnRogue = canUse("ROGUE", 60, PROF_ARMOR, SUB_SHIELD)
+    out.profShieldOnWarrior = canUse("WARRIOR", 60, PROF_ARMOR, SUB_SHIELD)
+    -- A cloak is cloth, so without the slot pass every plate wearer would see red.
+    out.profCloakOnWarrior =
+        canUse("WARRIOR", 60, PROF_ARMOR, SUB_CLOTH, "INVTYPE_CLOAK")
+    out.profBowOnWarlock = canUse("WARLOCK", 60, PROF_WEAPON, SUB_BOW)
+    out.profDaggerOnWarlock = canUse("WARLOCK", 60, PROF_WEAPON, SUB_DAGGER)
+    out.profSwordOnPriest = canUse("PRIEST", 60, PROF_WEAPON, SUB_SWORD1H)
+    out.profStaffOnPriest = canUse("PRIEST", 60, PROF_WEAPON, SUB_STAFF)
+    -- Neither armour nor weapon, and an unreadable subclass: both pass rather than
+    -- being called unusable on a guess.
+    out.profUnknownClassPasses = canUse("MAGE", 60, 15, 99)
+    out.profUnknownArmorPasses = canUse("MAGE", 60, PROF_ARMOR, 99)
     return out
 
 """
@@ -618,6 +658,24 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
         "pinnedShowsWanted": 1,
         "wantedWhileHunting": 1,
         "wantedDropsObtained": 1,
@@ -669,6 +727,24 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
         "pinnedShowsWanted": 1,
         "wantedWhileHunting": 1,
         "wantedDropsObtained": 1,
@@ -720,6 +796,24 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
         "pinnedShowsWanted": 1,
         "wantedWhileHunting": 1,
         "wantedDropsObtained": 1,
@@ -785,6 +879,24 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
         "pinnedShowsWanted": 1,
         "wantedWhileHunting": 1,
         "wantedDropsObtained": 1,
@@ -837,6 +949,24 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
         "pinnedShowsWanted": 1,
         "wantedWhileHunting": 1,
         "wantedDropsObtained": 1,
