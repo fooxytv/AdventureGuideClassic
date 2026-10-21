@@ -25,7 +25,13 @@ local HALLOWS_END = {
 		left = 0.138672, right = 0.708984, top = 0.035156, bottom = 0.159180,
 		-- 584x127 on the sheet, kept to that ratio so the vines do not stretch.
 		width = 560, height = 122,
-		point = "TOP", relativePoint = "TOP", x = 0, y = 34,
+		--[[
+			Nudged right of centre. The pumpkin does not sit in the middle of its
+			own swag -- it is about two thirds along -- so a centred swag puts it
+			over the word "Guide". Forty five clears the title without pushing the
+			hat into the search box, which is the other thing it can reach.
+		]]
+		point = "TOP", relativePoint = "TOP", x = 45, y = 34,
 	},
 	{
 		-- A cobweb, for the corner the portrait does not already fill.
@@ -86,6 +92,12 @@ function component.Init()
 	]]
 	canvas = CreateFrame("Frame", nil, EncounterJournal)
 	canvas:SetAllPoints(EncounterJournal)
+	--[[
+		Explicitly mouse-through. It covers the title bar and reaches the search
+		box, and a frame at DIALOG that swallowed clicks would make the search
+		unusable for a fortnight a year.
+	]]
+	canvas:EnableMouse(false)
 	canvas:SetFrameStrata("DIALOG")
 	canvas:SetFrameLevel(600)
 
