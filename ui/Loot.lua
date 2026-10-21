@@ -254,7 +254,9 @@ local function ButtonOnClick(self, mouseButton)
 	if not lootItem then return end
 	if mouseButton == "RightButton" and IsShiftKeyDown() then
 		if lootItem.itemId and WishlistService then
-			local currentEncounter = AdventureGuideNavigationService.GetEncounter()
+			-- The row's own boss first: on the instance page there is no selection.
+			local currentEncounter = lootItem.sourceEncounter
+				or AdventureGuideNavigationService.GetEncounter()
 			local currentInstance = AdventureGuideNavigationService.GetInstance()
 			local sourceBoss = currentEncounter and currentEncounter.name or "Unknown"
 			local sourceInstance = currentInstance and currentInstance.name or "Unknown"
@@ -660,6 +662,13 @@ local function ShowAcrossInstance(dataProvider, Collect)
 				for _, lootItem in ipairs(Collect(itemIds)) do
 					if not seen[lootItem.itemId] then
 						seen[lootItem.itemId] = true
+						--[[
+							Which boss this row belongs to. On the instance page no
+							encounter is selected, so without this a wishlisted item
+							recorded its source as Unknown and the wishlist had no
+							boss to name or navigate to.
+						]]
+						lootItem.sourceEncounter = boss
 						table.insert(items, lootItem)
 					end
 				end

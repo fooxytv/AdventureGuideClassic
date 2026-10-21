@@ -181,6 +181,51 @@ function WishlistService.GetGrouped(includeObtained)
     return groups
 end
 
+--[[
+    Entries saved before the loot rows carried their boss recorded "Unknown" as
+    the source, because the instance page has no selected encounter. The fix stops
+    new ones being written that way; this repairs the ones already saved.
+
+    The boss is found by looking for the item in each encounter's own loot tables
+    rather than through GetEncounterLoot, which applies the season and difficulty
+    filters -- an item hidden by the current client's filter is still the item
+    that was wishlisted, and should still be attributed.
+]]
+local LOOT_KEYS = {
+    "loot", "sharedLoot", "rareLoot", "veryRareLoot", "extremelyRareLoot",
+}
+
+local function FindBossFor(instanceName, itemID)
+    if not (InstanceService and instanceName) then return nil end
+    local instance = InstanceService.GetInstanceByName(instanceName)
+    if not instance then return nil end
+    for _, encounter in ipairs(instance) do
+        for _, key in ipairs(LOOT_KEYS) do
+            for _, entry in ipairs(encounter[key] or {}) do
+                local id = type(entry) == "table" and entry.id or entry
+                if id == itemID then return encounter.name end
+            end
+        end
+    end
+    return nil
+end
+
+function WishlistService.RepairSources()
+    local wishlist = WishlistService.GetWishlist()
+    local repaired = 0
+    for itemID, data in pairs(wishlist) do
+        if not data.sourceBoss or data.sourceBoss == "Unknown" then
+            local name = FindBossFor(data.sourceInstance, itemID)
+            if name then
+                data.sourceBoss = name
+                repaired = repaired + 1
+            end
+        end
+    end
+    if repaired > 0 then NotifyChanged() end
+    return repaired
+end
+
 function WishlistService.CheckLootTable(lootItems)
     local matches = {}
     for _, itemID in ipairs(lootItems) do
@@ -252,6 +297,8 @@ equipFrame:SetScript("OnEvent", function(self, event, ...)
         C_Timer.After(0.2, CheckEquippedItems)
     elseif event == "PLAYER_ENTERING_WORLD" then
         C_Timer.After(1, CheckEquippedItems)
+        -- Once the data files are loaded, give any Unknown sources their boss back.
+        C_Timer.After(2, WishlistService.RepairSources)
     end
 end)
 
