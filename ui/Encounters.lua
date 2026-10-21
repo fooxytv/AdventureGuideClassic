@@ -11,6 +11,40 @@ local components
 local encountersScrollBox
 local sharedHighlightFrame
 
+--[[
+	The boss behind the portrait, in the shape of a unit tooltip: the name, then a
+	level line.
+
+	It is anchored where the player keeps their tooltip rather than beside the
+	button, since for most people that is the bottom right corner and a tooltip
+	appearing over the boss list would cover the thing being pointed at.
+
+	The level reads ?? because the data has not been gathered yet -- seven of the
+	encounters carry a level and none carry a creature type. Drawing the line
+	anyway means the shape is right now and only the value changes later.
+
+	The name is taken from the button rather than from the encounter, so whatever
+	the list is willing to show is what the tooltip shows. That matters once the
+	discovery mode lands, where an unmet boss reads ??? -- the tooltip follows it
+	without needing to know the rule.
+]]
+local function BossOnEnter(self)
+	if not self.encounter then return end
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	if GameTooltip_SetDefaultAnchor then
+		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+	else
+		GameTooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -30, 80)
+	end
+	GameTooltip:SetText(self.name:GetText() or "")
+	GameTooltip:AddLine(("Level %s"):format(self.encounter.level or "??"), 1, 1, 1)
+	GameTooltip:Show()
+end
+
+local function BossOnLeave()
+	GameTooltip_Hide()
+end
+
 local function EncounterButton_OnClick(self)
 	local currentEncounter = AdventureGuideNavigationService.GetEncounter()
 	-- Compare the encounter tables, not their encounterIDs. Forever's bosses carry
@@ -143,6 +177,8 @@ function component.Init(components_)
 			button:SetHighlightFontObject("GameFontNormalMed3")
 			button:SetDisabledFontObject("GameFontHighlightMedium")
 			button:SetScript("OnClick", EncounterButton_OnClick)
+			button:SetScript("OnEnter", BossOnEnter)
+			button:SetScript("OnLeave", BossOnLeave)
 			button.initialized = true
 		end
 		if (encounter and encounter == AdventureGuideNavigationService.GetEncounter()) then
