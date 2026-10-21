@@ -18,7 +18,11 @@ local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 -- The order ui/EncounterJournalTabs.lua adds them in.
 local DUNGEONS_TAB, RAIDS_TAB = 1, 2
 
-local ROW_WIDTH = 740
+-- Blizzard's own offset for this page: the parchment starts 51 below the inset
+-- top and the band above it carries the title and the first filter.
+local HEADER_HEIGHT = 50
+
+local ROW_WIDTH = 700
 local ROW_HEIGHT = 48
 local ICON_SIZE = 34
 local ICON_GAP = 3
@@ -259,7 +263,8 @@ end
 local function BuildFilters(parent)
 	parent.filterDropdown = CreateFrame("Frame", parent:GetName() .. "FilterDropdown",
 			parent, "UIDropDownMenuTemplate")
-	parent.filterDropdown:SetPoint("TOPLEFT", 8, -34)
+	-- On the dark band beside the title, where "Current Season" sits.
+	parent.filterDropdown:SetPoint("TOPRIGHT", -8, -9)
 	UIDropDownMenu_SetWidth(parent.filterDropdown, 140)
 
 	local SCOPES = {
@@ -300,13 +305,8 @@ local function BuildFilters(parent)
 	]]
 	parent.obtainedButton = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
 	parent.obtainedButton:SetSize(140, 22)
-	--[[
-		Seven pixels below the dropdown's anchor, not level with it. A
-		UIDropDownMenuTemplate's visible box sits about six pixels inside its frame
-		and stands taller than a 22pt button, so matching the two anchors leaves them
-		looking out of line; this matches their middles instead.
-	]]
-	parent.obtainedButton:SetPoint("TOPRIGHT", -18, -41)
+	-- On the parchment rather than the band, which is where "Havoc" sits.
+	parent.obtainedButton:SetPoint("TOPRIGHT", -26, -(HEADER_HEIGHT + 12))
 	parent.obtainedButton:SetText("Show Obtained")
 	parent.obtainedButton:SetScript("OnClick", function(self)
 		showObtained = not showObtained
@@ -342,14 +342,30 @@ function component.Init(components_)
 		within a few percent of its own proportions, so stretching it to the frame
 		costs nothing and its edges land where the frame's edges are.
 	]]
+	--[[
+		The structure, not just the art. Blizzard's own markup anchors this page at
+		`TOPLEFT $parentInset x=4 y=-51`, which is the whole point: the title and the
+		first filter sit on a dark band *above* the parchment, and only the second
+		filter sits on the page itself. Stretching the parchment over the full inset
+		and putting everything on its orange strip is what kept looking wrong, and no
+		amount of adjusting tex coords was going to fix it.
+	]]
+	wishlist.header = wishlist:CreateTexture(nil, "BACKGROUND")
+	wishlist.header:SetColorTexture(0.102, 0.094, 0.086, 1)
+	wishlist.header:SetPoint("TOPLEFT", 3, -1)
+	wishlist.header:SetPoint("TOPRIGHT", -2, -1)
+	wishlist.header:SetHeight(HEADER_HEIGHT)
+
 	wishlist.bg = wishlist:CreateTexture(nil, "BACKGROUND")
 	wishlist.bg:SetTexture(I.LootTabBackground)
 	wishlist.bg:SetTexCoord(0, 0.769531, 0, 0.832031)
-	wishlist.bg:SetPoint("TOPLEFT", 3, -1)
+	wishlist.bg:SetPoint("TOPLEFT", 3, -HEADER_HEIGHT)
 	wishlist.bg:SetPoint("BOTTOMRIGHT", -2, 1)
-	wishlist.title = wishlist:CreateFontString(nil, "BACKGROUND", "GameFontNormalLarge2")
+
+	-- On the dark band, as "Item Sets" is, not on the parchment below it.
+	wishlist.title = wishlist:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge2")
 	wishlist.title:SetJustifyH("LEFT")
-	wishlist.title:SetPoint("TOPLEFT", 20, -15)
+	wishlist.title:SetPoint("TOPLEFT", 20, -14)
 	BuildFilters(wishlist)
 
 	wishlist.empty = wishlist:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -358,8 +374,8 @@ function component.Init(components_)
 	wishlist.empty:Hide()
 
 	scrollbox = CreateFrame("Frame", nil, wishlist, "WowScrollBoxList")
-	scrollbox:SetSize(ROW_WIDTH, 348)
-	scrollbox:SetPoint("TOPLEFT", 14, -72)
+	scrollbox:SetSize(ROW_WIDTH, 326)
+	scrollbox:SetPoint("BOTTOMLEFT", 28, 12)
 	local scrollbar = CreateFrame("EventFrame", nil, wishlist, "MinimalScrollBar")
 	scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 12, -6)
 	scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 12, 4)
