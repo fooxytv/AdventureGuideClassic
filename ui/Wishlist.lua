@@ -38,14 +38,8 @@ local ROW_HEIGHT = 41
 local ROW_FADE_IN = 70
 -- One line of the sub-line's font; anything taller is a wrap.
 local SUBLINE_HEIGHT = 12
---[[
-	Room under the boss list. More than it looks like it needs, because the bar is
-	not solid for its full height: measured, it holds full alpha only to about
-	y=42 of its 14-to-79 band and then eases off, dropping away sharply over the
-	last half dozen rows. Padding to the row's edge would leave a wrapped second
-	line sitting in that drop, which is what it looked like was overflowing.
-]]
-local ROW_PADDING = 14
+-- Breathing room under the boss list, so a wrapped one is not against the edge.
+local ROW_PADDING = 9
 -- One line of the name's font, which the boss list is anchored under.
 local NAME_LINE_HEIGHT = 14
 -- Past this the list is trimmed rather than allowed to own the panel.
