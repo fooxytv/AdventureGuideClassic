@@ -253,6 +253,194 @@ PROBE = """
     out.miscastAbilities = miscast
     out.claimedAbilities = claimed
 
+    --[[
+        The seasonal window, asked about dates rather than about today -- which is
+        the only way its edges can be checked at all, since a test that asked what
+        is running now would answer differently every day of the year.
+
+        Both edges are inclusive, so the day before and the day after are checked
+        as well as the days themselves.
+    ]]
+    local function season(month, day)
+        return SeasonalService.GetEventFor(month, day) or "none"
+    end
+    out.seasonBeforeStart = season(10, 17)
+    out.seasonOnStart = season(10, 18)
+    out.seasonMidway = season(10, 25)
+    out.seasonOnEnd = season(11, 1)
+    -- The last day it shows, and the first day it does not.
+    out.seasonLastDay = season(11, 2)
+    out.seasonAfterEnd = season(11, 3)
+    out.seasonFarOff = season(3, 14)
+    out.seasonNoDate = season(nil, nil)
+
+    --[[
+        The wishlist grouped by instance, which is what the wishlist tab draws a row
+        from. Only the service side is reachable here, since ui/ needs frames, so the
+        grouping, the boss de-duplication and the obtained filter are asserted here
+        rather than left to an in-game look.
+
+        Nothing asserts the order of the groups. Four items added in a loop all take
+        the same timestamp, and the sort that orders them is not stable, so an order
+        assertion would pass or fail on which way pairs() happened to walk.
+    ]]
+    local function DeadminesGroup(includeObtained)
+        for _, group in ipairs(WishlistService.GetGrouped(includeObtained)) do
+            if group.name == "Deadmines" then return group end
+        end
+        return nil
+    end
+
+    WishlistService.ClearAll()
+    WishlistService.AddItem(101, "link101", "Item 101", "Mr. Smite", "Deadmines")
+    WishlistService.AddItem(102, "link102", "Item 102", "Mr. Smite", "Deadmines")
+    WishlistService.AddItem(103, "link103", "Item 103", "Cookie", "Deadmines")
+    WishlistService.AddItem(201, "link201", "Item 201", "Ragnaros", "Molten Core")
+
+    out.wishlistGroups = #WishlistService.GetGrouped(false)
+    --[[
+        Ordered lowest instance first. Nothing in data/ carries minLevel yet, so
+        the fallback is the name -- asserted here so that the day the field lands
+        it is a level sort and not a surprise.
+    ]]
+    local order = WishlistService.GetGrouped(false)
+    out.wishlistSortedByName =
+        (order[1] and order[2] and order[1].name < order[2].name) and 1 or 0
+
+    local deadmines = DeadminesGroup(false)
+    out.wishlistGroupItems = deadmines and #deadmines.items or -1
+    -- Two entries name Mr. Smite; the sub-line lists a boss once.
+    out.wishlistGroupBosses = deadmines and #deadmines.bosses or -1
+    -- The scratch field the de-duplication uses must not reach the view.
+    out.wishlistNoScratchField = (deadmines and deadmines.seenBoss == nil) and 1 or 0
+
+    --[[
+        Equipping marks rather than deletes, so the entry has to leave the default
+        view and still be there when the view asks for it.
+    ]]
+    WishlistService.GetWishlist()[101].obtainedDate = 1
+    out.wishlistObtainedFlag = WishlistService.IsObtained(101) and 1 or 0
+    local visible, all = DeadminesGroup(false), DeadminesGroup(true)
+    out.wishlistHidesObtained = visible and #visible.items or -1
+    out.wishlistShowsObtained = all and #all.items or -1
+
+    --[[
+        "Pinned only" shows what you are still hunting. Equipping used to delete the
+        entry, which took the row with it; now that it is only marked, the filter has
+        to exclude it or the list keeps offering gear already on your back.
+    ]]
+    WishlistService.ClearAll()
+    WishlistService.AddItem(301, "link301", "Item 301", "Mr. Smite", "Deadmines")
+    LootFilterService.SetPinnedFilter(true)
+    local pinnedItem = { itemId = 301 }
+    out.pinnedShowsWanted = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
+    --[[
+        The loot star, its tooltip and the loot-window glow all ask IsWanted rather
+        than IsOnWishlist, because marking leaves an obtained item on the list and
+        the broader question would have kept all three lit for gear already worn.
+    ]]
+    out.wantedWhileHunting = WishlistService.IsWanted(301) and 1 or 0
+    WishlistService.GetWishlist()[301].obtainedDate = 1
+    out.wantedDropsObtained = WishlistService.IsWanted(301) and 0 or 1
+    out.listedKeepsObtained = WishlistService.IsOnWishlist(301) and 1 or 0
+    out.pinnedHidesObtained = LootFilterService.PassesFilter(pinnedItem) and 0 or 1
+    LootFilterService.SetPinnedFilter(false)
+    out.pinnedOffShowsObtained = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
+
+    --[[
+        With a level, that wins over the name. Set on the instance table itself,
+        which is what GetGrouped reads through InstanceService.
+    ]]
+    local dungeons = InstanceService.GetDungeons()
+    local first, second = dungeons[1], dungeons[2]
+    WishlistService.ClearAll()
+    WishlistService.AddItem(401, "l", "I", "Boss", first.name)
+    WishlistService.AddItem(402, "l", "I", "Boss", second.name)
+    -- The one that sorts later by name is given the lower level, so only a level
+    -- sort can put it first. Named instances were no good here: the five clients
+    -- do not ship the same ones, and "Deadmines" is not "The Deadmines".
+    local low, high = first, second
+    if second.name < first.name then low, high = second, first end
+    low.minLevel, high.minLevel = 60, 10
+    local byLevel = WishlistService.GetGrouped(false)
+    out.wishlistLevelBeatsName = (byLevel[1].name == high.name) and 1 or 0
+    low.minLevel, high.minLevel = nil, nil
+
+    --[[
+        An entry saved from the instance page, before the loot rows carried their
+        boss, recorded "Unknown". The repair looks the item up in the instance's
+        own encounters and gives it the right name back.
+
+        The instance and the item are searched for rather than named, because the
+        five clients do not ship the same ones.
+    ]]
+    WishlistService.ClearAll()
+    local repairInstance, repairBoss, repairItem
+    for _, candidate in ipairs(InstanceService.GetDungeons()) do
+        for _, encounter in ipairs(candidate) do
+            local entry = encounter.loot and encounter.loot[1]
+            local id = entry and (type(entry) == "table" and entry.id or entry)
+            if id and id > 0 then
+                repairInstance, repairBoss, repairItem = candidate, encounter, id
+                break
+            end
+        end
+        if repairItem then break end
+    end
+    if repairItem then
+        WishlistService.AddItem(repairItem, "link", "Item", "Unknown", repairInstance.name)
+        out.repairStartsUnknown =
+            (WishlistService.IsOnWishlist(repairItem).sourceBoss == "Unknown") and 1 or 0
+        out.repairedCount = WishlistService.RepairSources()
+        out.repairNamesTheBoss =
+            (WishlistService.IsOnWishlist(repairItem).sourceBoss == repairBoss.name)
+                and 1 or 0
+        -- Nothing left to do on a second pass.
+        out.repairIsIdempotent = (WishlistService.RepairSources() == 0) and 1 or 0
+    end
+
+    WishlistService.ClearAll()
+    out.wishlistClearedGroups = #WishlistService.GetGrouped(true)
+
+    --[[
+        What a class can wear and wield, which the loot row colours red when it
+        cannot. Checked as several characters, because a rule that is the same for
+        everyone is not the rule being tested -- and the level-40 cases cannot be
+        reached at all by asking only about a level 60.
+
+        Note the Paladin and cloth case: CLASS_ARMOR says a Paladin *wants* plate,
+        but it can wear cloth perfectly well, so that row must not go red.
+    ]]
+    local PROF_ARMOR, PROF_WEAPON = 4, 2
+    local SUB_CLOTH, SUB_LEATHER, SUB_MAIL, SUB_PLATE, SUB_SHIELD = 1, 2, 3, 4, 6
+    local SUB_BOW, SUB_SWORD1H, SUB_STAFF, SUB_DAGGER = 2, 7, 10, 15
+    local function canUse(class, level, classID, subclassID, equipLoc)
+        local item = { classID = classID, subclassID = subclassID, equipLoc = equipLoc }
+        return LootFilterService.IsUsableByPlayer(item, class, level) and 1 or 0
+    end
+
+    out.profPlateOnMage = canUse("MAGE", 60, PROF_ARMOR, SUB_PLATE)
+    out.profLeatherOnMage = canUse("MAGE", 60, PROF_ARMOR, SUB_LEATHER)
+    out.profClothOnMage = canUse("MAGE", 60, PROF_ARMOR, SUB_CLOTH)
+    out.profClothOnPaladin = canUse("PALADIN", 60, PROF_ARMOR, SUB_CLOTH)
+    out.profPlateOnWarrior60 = canUse("WARRIOR", 60, PROF_ARMOR, SUB_PLATE)
+    out.profPlateOnWarrior39 = canUse("WARRIOR", 39, PROF_ARMOR, SUB_PLATE)
+    out.profMailOnWarrior39 = canUse("WARRIOR", 39, PROF_ARMOR, SUB_MAIL)
+    out.profMailOnHunter39 = canUse("HUNTER", 39, PROF_ARMOR, SUB_MAIL)
+    out.profMailOnHunter40 = canUse("HUNTER", 40, PROF_ARMOR, SUB_MAIL)
+    out.profShieldOnRogue = canUse("ROGUE", 60, PROF_ARMOR, SUB_SHIELD)
+    out.profShieldOnWarrior = canUse("WARRIOR", 60, PROF_ARMOR, SUB_SHIELD)
+    -- A cloak is cloth, so without the slot pass every plate wearer would see red.
+    out.profCloakOnWarrior =
+        canUse("WARRIOR", 60, PROF_ARMOR, SUB_CLOTH, "INVTYPE_CLOAK")
+    out.profBowOnWarlock = canUse("WARLOCK", 60, PROF_WEAPON, SUB_BOW)
+    out.profDaggerOnWarlock = canUse("WARLOCK", 60, PROF_WEAPON, SUB_DAGGER)
+    out.profSwordOnPriest = canUse("PRIEST", 60, PROF_WEAPON, SUB_SWORD1H)
+    out.profStaffOnPriest = canUse("PRIEST", 60, PROF_WEAPON, SUB_STAFF)
+    -- Neither armour nor weapon, and an unreadable subclass: both pass rather than
+    -- being called unusable on a guess.
+    out.profUnknownClassPasses = canUse("MAGE", 60, 15, 99)
+    out.profUnknownArmorPasses = canUse("MAGE", 60, PROF_ARMOR, 99)
     -- Both Compat.GetSpellDescription branches, one per client shape, and the empty
     -- string the client gives before spell data loads must read back as nil.
     out.spellDescription = Compat.GetSpellDescription(12054) or "nil"
@@ -514,8 +702,54 @@ EXPECTED = {
         "loot": "1,2,4,7", "dungeons": 19, "raids": 6,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
+        "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -551,8 +785,54 @@ EXPECTED = {
         "loot": "1,3,4", "dungeons": 18, "raids": 10,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
+        "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -588,8 +868,54 @@ EXPECTED = {
         "loot": "1,5,7", "dungeons": 19, "raids": 6,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
+        "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -639,8 +965,54 @@ EXPECTED = {
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
+        "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -677,8 +1049,54 @@ EXPECTED = {
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonLastDay": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "wishlistGroups": 2,
+        "wishlistSortedByName": 1,
+        "wishlistLevelBeatsName": 1,
+        "wishlistGroupItems": 3,
+        "wishlistGroupBosses": 2,
+        "wishlistNoScratchField": 1,
+        "wishlistObtainedFlag": 1,
+        "wishlistHidesObtained": 2,
+        "wishlistShowsObtained": 3,
+        "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
+        "profPlateOnMage": 0,
+        "profLeatherOnMage": 0,
+        "profClothOnMage": 1,
+        "profClothOnPaladin": 1,
+        "profPlateOnWarrior60": 1,
+        "profPlateOnWarrior39": 0,
+        "profMailOnWarrior39": 1,
+        "profMailOnHunter39": 0,
+        "profMailOnHunter40": 1,
+        "profShieldOnRogue": 0,
+        "profShieldOnWarrior": 1,
+        "profCloakOnWarrior": 1,
+        "profBowOnWarlock": 0,
+        "profDaggerOnWarlock": 1,
+        "profSwordOnPriest": 0,
+        "profStaffOnPriest": 1,
+        "profUnknownClassPasses": 1,
+        "profUnknownArmorPasses": 1,
+        "pinnedShowsWanted": 1,
+        "wantedWhileHunting": 1,
+        "wantedDropsObtained": 1,
+        "listedKeepsObtained": 1,
+        "pinnedHidesObtained": 1,
+        "pinnedOffShowsObtained": 1,
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,

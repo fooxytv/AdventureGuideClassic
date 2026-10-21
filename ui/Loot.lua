@@ -33,6 +33,26 @@ local pendingItemIds = {}
 	the item is obtained somewhere, so switching boss clears this and asks again.
 ]]
 local failedItemIds = {}
+--[[
+	The two secondary lines on a loot row, the slot and the subtype.
+
+	Black, with a pale shadow. Retail draws these light grey, and that was tried
+	here, but it was judged in game on Era and read worse -- the row bar is lighter
+	on that client than the shot of retail suggests, and light text on it loses
+	against a background it is supposed to stand out from.
+
+	The shadow is pale rather than dark for the same reason it is there at all: the
+	bar is darker at the icon end than at the subtype end, so black needs lifting
+	on the left and nothing on the right, and a light shadow does exactly that.
+
+	The red keeps its deeper shade. It is the one that reads on the lighter end,
+	where the subtype sits.
+]]
+local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0, 0, 0
+local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.72, 0.06, 0.06
+local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 1, 0.96, 0.88, 0.5
+local SUBTEXT_FONT, SUBTEXT_SIZE = "Fonts\\FRIZQT__.TTF", 10
+
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
 local currentEncounterId = nil
@@ -200,13 +220,20 @@ local function ButtonOnEnter(self)
 	if lootItem and lootItem.link then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetHyperlink(lootItem.link)
-		if lootItem.itemId then
-			if WishlistService and WishlistService.IsOnWishlist(lootItem.itemId) then
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("|cff00ff00On your Wishlist|r |cffaaaaaa(Shift+Right-click to remove)|r")
-			else
-				GameTooltip:AddLine(" ")
+		--[[
+			Three states, not two. An obtained item is still on the list, so saying
+			"Shift+Right-click to add" over one would be a lie about what the click
+			does -- it would drop the entry.
+		]]
+		if lootItem.itemId and WishlistService then
+			local entry = WishlistService.IsOnWishlist(lootItem.itemId)
+			GameTooltip:AddLine(" ")
+			if not entry then
 				GameTooltip:AddLine("|cffaaaaaa(Shift+Right-click to add to Wishlist)|r")
+			elseif entry.obtainedDate then
+				GameTooltip:AddLine("|cff00ff00Obtained|r |cffaaaaaa(Shift+Right-click to drop it)|r")
+			else
+				GameTooltip:AddLine("|cff00ff00On your Wishlist|r |cffaaaaaa(Shift+Right-click to remove)|r")
 			end
 		end
 		GameTooltip:Show()
@@ -230,7 +257,9 @@ local function ButtonOnClick(self, mouseButton)
 	if not lootItem then return end
 	if mouseButton == "RightButton" and IsShiftKeyDown() then
 		if lootItem.itemId and WishlistService then
-			local currentEncounter = AdventureGuideNavigationService.GetEncounter()
+			-- The row's own boss first: on the instance page there is no selection.
+			local currentEncounter = lootItem.sourceEncounter
+				or AdventureGuideNavigationService.GetEncounter()
 			local currentInstance = AdventureGuideNavigationService.GetInstance()
 			local sourceBoss = currentEncounter and currentEncounter.name or "Unknown"
 			local sourceInstance = currentInstance and currentInstance.name or "Unknown"
@@ -471,15 +500,20 @@ function component.Init(components_)
 			button.armorType = button:CreateFontString()
 			button.armorType:SetJustifyH("LEFT")
 			button.armorType:SetSize(0, 12)
-			button.armorType:SetPoint("BOTTOMRIGHT", -25, 5)
-			button.armorType:SetTextColor(0, 0, 0)
+			-- 60, not 25: the row bar has faded to nothing by 25 in.
+			button.armorType:SetPoint("BOTTOMRIGHT", -60, 5)
+			button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			button.armorType:SetFont("Fonts\\FRIZQT__.TTF", 10)
+			button.armorType:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
+			button.armorType:SetShadowOffset(1, -1)
 			button.slot = button:CreateFontString()
 			button.slot:SetJustifyH("LEFT")
 			button.slot:SetSize(0, 12)
 			button.slot:SetPoint("BOTTOMLEFT", 55, 3)
-			button.slot:SetTextColor(0, 0, 0)
+			button.slot:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			button.slot:SetFont("Fonts\\FRIZQT__.TTF", 10)
+			button.slot:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
+			button.slot:SetShadowOffset(1, -1)
 			button.headerText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 			button.headerText:SetPoint("LEFT", 5, -7)
 			button.wishlistStar = button:CreateTexture(nil, "OVERLAY")
@@ -516,7 +550,27 @@ function component.Init(components_)
 			local truncatedName = truncateText(lootItem.name, 31)
 			button.name:SetText(truncatedName)
 			button.name:Show()
+			--[[
+				Red when the player cannot wear or wield it -- plate on a Mage, a
+				shield on a Rogue, a bow on a Warlock. Covers weapons as well as
+				armour, since both land in this one field as the item's subtype.
+				A deeper red than Blizzard's, because this sits on light parchment.
+			]]
 			button.armorType:SetText(lootItem.armorType or "Unknown")
+			if LootFilterService.IsUsableByPlayer(lootItem) then
+				button.armorType:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE)
+				button.armorType:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
+				button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
+			else
+				--[[
+					Plain. An outline was tried and looked wrong against the rest
+					of the row, where nothing else is outlined; the colour alone is
+					enough to say it, and it is the only coloured thing on the row.
+				]]
+				button.armorType:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE)
+				button.armorType:SetShadowColor(0, 0, 0, 0)
+				button.armorType:SetTextColor(UNUSABLE_R, UNUSABLE_G, UNUSABLE_B)
+			end
 			button.armorType:Show()
 			button.slot:SetText(lootItem.slot or "Unknown")
 			button.slot:Show()
@@ -524,7 +578,8 @@ function component.Init(components_)
 			button.name:SetTextColor(color.r, color.g, color.b)
 			button.iconBorder:SetVertexColor(color.r, color.g, color.b)
 			button.iconOverlay:SetVertexColor(color.r, color.g, color.b)
-			if lootItem.itemId and WishlistService and WishlistService.IsOnWishlist(lootItem.itemId) then
+			-- The star means "still hunting", so an obtained item does not carry one.
+			if lootItem.itemId and WishlistService and WishlistService.IsWanted(lootItem.itemId) then
 				button.wishlistStar:Show()
 			else
 				button.wishlistStar:Hide()
@@ -541,9 +596,12 @@ function component.Init(components_)
 	ScrollUtil.InitScrollBoxListWithScrollBar(lootScrollBox, lootScrollBar, lootView)
 
 	--[[
-		WishlistService drops an item as soon as it is equipped. With the pinned filter on
-		that row has to go, and nothing clicked to cause it, so the view needs telling.
-		Nothing else claims this hook.
+		WishlistService marks an item obtained as soon as it is equipped, and the pinned
+		filter excludes an obtained item, so that row has to go with nothing clicked to
+		cause it -- the view needs telling.
+
+		This slot is one deep. ui/Wishlist.lua registers through RegisterChangeListener
+		rather than assigning here, which would have unhooked this silently.
 	]]
 	if WishlistService then
 		WishlistService.OnWishlistChanged = function()
@@ -616,6 +674,13 @@ local function ShowAcrossInstance(dataProvider, Collect)
 				for _, lootItem in ipairs(Collect(itemIds)) do
 					if not seen[lootItem.itemId] then
 						seen[lootItem.itemId] = true
+						--[[
+							Which boss this row belongs to. On the instance page no
+							encounter is selected, so without this a wishlisted item
+							recorded its source as Unknown and the wishlist had no
+							boss to name or navigate to.
+						]]
+						lootItem.sourceEncounter = boss
 						table.insert(items, lootItem)
 					end
 				end
