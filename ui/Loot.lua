@@ -563,15 +563,11 @@ function component.Init(components_)
 				button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
 			else
 				--[[
-					Outlined, not merely coloured. This line lands on the pale end
-					of the row where the bar has faded out, and red on parchment is
-					two mid tones against each other; a thin dark edge round the
-					glyphs is what makes it carry.
-
-					The shadow comes off with it -- an outline and a pale shadow
-					fight, and the outline is doing that job already.
+					Plain. An outline was tried and looked wrong against the rest
+					of the row, where nothing else is outlined; the colour alone is
+					enough to say it, and it is the only coloured thing on the row.
 				]]
-				button.armorType:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE, "OUTLINE")
+				button.armorType:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE)
 				button.armorType:SetShadowColor(0, 0, 0, 0)
 				button.armorType:SetTextColor(UNUSABLE_R, UNUSABLE_G, UNUSABLE_B)
 			end
