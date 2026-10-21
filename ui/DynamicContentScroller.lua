@@ -9,6 +9,7 @@ select(2, ...).SetupGlobalFacade()
 local component = UI.CreateComponent("DynamicContentScroller")
 
 local components
+local showing
 
 function component.Init(components_)
 	components = components_
@@ -40,13 +41,35 @@ function component.Init(components_)
 end
 
 function component.ShowOverview()
+	showing = component.ShowOverview
 	components.EncounterFrame.SetCurrentView(component.frame)
 	component.scrollFrame.child:SetContents(AdventureGuideNavigationService.GetEncounterContent())
 end
 
 function component.ShowAbilities()
+	showing = component.ShowAbilities
 	components.EncounterFrame.SetCurrentView(component.frame)
 	component.scrollFrame.child:SetContents(AdventureGuideNavigationService.GetEncounterAbilities())
 end
+
+--[[
+	A spell the client had not cached draws without its description, and the data
+	arrives later. Redraw once when it does, rather than per spell: a boss asks for
+	several at once and they land one event each.
+]]
+local spellDataFrame = CreateFrame("Frame")
+local redrawQueued = false
+spellDataFrame:SetScript("OnEvent", function()
+	if redrawQueued or not showing then return end
+	if not (component.frame and component.frame:IsShown()) then return end
+	redrawQueued = true
+	C_Timer.After(0, function()
+		redrawQueued = false
+		if showing and component.frame and component.frame:IsShown() then
+			showing()
+		end
+	end)
+end)
+Compat.RegisterEvents(spellDataFrame, "SPELL_DATA_LOAD_RESULT")
 
 UI.Add(component)

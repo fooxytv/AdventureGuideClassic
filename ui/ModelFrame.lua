@@ -522,8 +522,11 @@ function component.Show()
 	modelContainer.dungeonBG:SetTexture((instance and instance.splash)
 		or "Interface\\EncounterJournal\\UI-EJ-BACKGROUND-Default")
 
-	components.CreatureButtons.SetCreatures(displayIds, encounter.name)
-	component.SetDisplay(displayIds[1], encounter.name)
+	-- Through the service, not encounter.name: this caption and the creature
+	-- tooltips are two more places the discovery mode must not reveal a boss.
+	local shownName = AdventureGuideNavigationService.GetEncounterName()
+	components.CreatureButtons.SetCreatures(displayIds, shownName)
+	component.SetDisplay(displayIds[1], shownName)
 	components.EncounterFrame.SetCurrentView(modelContainer)
 	return true
 end
