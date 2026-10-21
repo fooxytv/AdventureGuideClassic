@@ -180,6 +180,7 @@ local function IconOnEnter(self)
 		GameTooltip:AddLine("|cff00ff00Obtained|r")
 	end
 	GameTooltip:AddLine("|cffaaaaaa(Click to open its loot)|r")
+	GameTooltip:AddLine("|cffaaaaaa(Shift+Right-click to remove it)|r")
 	GameTooltip:Show()
 end
 
@@ -187,9 +188,22 @@ local function IconOnLeave()
 	GameTooltip_Hide()
 end
 
-local function IconOnClick(self)
+--[[
+	Shift+right-click to drop it, which is the gesture that put it here from the
+	loot view, so there is one thing to remember rather than two. A plain
+	right-click on an item icon usually means link or compare, and this is the one
+	place where a mis-click costs a trip back to the boss to undo.
+]]
+local function IconOnClick(self, button)
 	local item = self.item
-	if item then GoTo(item.sourceInstance, item.sourceBoss) end
+	if not item then return end
+	if button == "RightButton" and IsShiftKeyDown() then
+		WishlistService.RemoveItem(item.itemID)
+		print("|cffff9900[AGC]|r Removed from Wishlist:", item.link or item.name)
+		GameTooltip_Hide()
+		return
+	end
+	GoTo(item.sourceInstance, item.sourceBoss)
 end
 
 --[[
@@ -234,6 +248,7 @@ local function IconAt(row, index)
 		icon.border:SetTexture(I.LootTabBorders)
 		icon.border:SetSize(ICON_BORDER, ICON_BORDER)
 		icon.border:SetPoint("CENTER")
+		icon:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 		icon:SetScript("OnEnter", IconOnEnter)
 		icon:SetScript("OnLeave", IconOnLeave)
 		icon:SetScript("OnClick", IconOnClick)
