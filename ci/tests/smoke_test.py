@@ -565,6 +565,39 @@ PROBE = """
     LootFilterService.SetPinnedFilter(false)
     out.pinnedOffShowsObtained = LootFilterService.PassesFilter(pinnedItem) and 1 or 0
 
+    --[[
+        An entry saved from the instance page, before the loot rows carried their
+        boss, recorded "Unknown". The repair looks the item up in the instance's
+        own encounters and gives it the right name back.
+
+        The instance and the item are searched for rather than named, because the
+        five clients do not ship the same ones.
+    ]]
+    WishlistService.ClearAll()
+    local repairInstance, repairBoss, repairItem
+    for _, candidate in ipairs(InstanceService.GetDungeons()) do
+        for _, encounter in ipairs(candidate) do
+            local entry = encounter.loot and encounter.loot[1]
+            local id = entry and (type(entry) == "table" and entry.id or entry)
+            if id and id > 0 then
+                repairInstance, repairBoss, repairItem = candidate, encounter, id
+                break
+            end
+        end
+        if repairItem then break end
+    end
+    if repairItem then
+        WishlistService.AddItem(repairItem, "link", "Item", "Unknown", repairInstance.name)
+        out.repairStartsUnknown =
+            (WishlistService.IsOnWishlist(repairItem).sourceBoss == "Unknown") and 1 or 0
+        out.repairedCount = WishlistService.RepairSources()
+        out.repairNamesTheBoss =
+            (WishlistService.IsOnWishlist(repairItem).sourceBoss == repairBoss.name)
+                and 1 or 0
+        -- Nothing left to do on a second pass.
+        out.repairIsIdempotent = (WishlistService.RepairSources() == 0) and 1 or 0
+    end
+
     WishlistService.ClearAll()
     out.wishlistClearedGroups = #WishlistService.GetGrouped(true)
 
@@ -658,6 +691,10 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
         "profPlateOnMage": 0,
         "profLeatherOnMage": 0,
         "profClothOnMage": 1,
@@ -727,6 +764,10 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
         "profPlateOnMage": 0,
         "profLeatherOnMage": 0,
         "profClothOnMage": 1,
@@ -796,6 +837,10 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
         "profPlateOnMage": 0,
         "profLeatherOnMage": 0,
         "profClothOnMage": 1,
@@ -879,6 +924,10 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
         "profPlateOnMage": 0,
         "profLeatherOnMage": 0,
         "profClothOnMage": 1,
@@ -949,6 +998,10 @@ EXPECTED = {
         "wishlistHidesObtained": 2,
         "wishlistShowsObtained": 3,
         "wishlistClearedGroups": 0,
+        "repairStartsUnknown": 1,
+        "repairedCount": 1,
+        "repairNamesTheBoss": 1,
+        "repairIsIdempotent": 1,
         "profPlateOnMage": 0,
         "profLeatherOnMage": 0,
         "profClothOnMage": 1,
