@@ -502,6 +502,25 @@ PROBE = """
     out.abilitiesMissingIcon = missingIcon
     out.abilitiesMissingBody = missingBody
     --[[
+        The seasonal window, asked about dates rather than about today -- which is
+        the only way its edges can be checked at all, since a test that asked what
+        is running now would answer differently every day of the year.
+
+        Both edges are inclusive, so the day before and the day after are checked
+        as well as the days themselves.
+    ]]
+    local function season(month, day)
+        return SeasonalService.GetEventFor(month, day) or "none"
+    end
+    out.seasonBeforeStart = season(10, 17)
+    out.seasonOnStart = season(10, 18)
+    out.seasonMidway = season(10, 25)
+    out.seasonOnEnd = season(11, 1)
+    out.seasonAfterEnd = season(11, 2)
+    out.seasonFarOff = season(3, 14)
+    out.seasonNoDate = season(nil, nil)
+
+    --[[
         The wishlist grouped by instance, which is what the wishlist tab draws a row
         from. Only the service side is reachable here, since ui/ needs frames, so the
         grouping, the boss de-duplication and the obtained filter are asserted here
@@ -681,6 +700,13 @@ EXPECTED = {
         "loot": "1,2,4,7", "dungeons": 19, "raids": 6,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
         "progressKeptPriorHistory": 1,
@@ -756,6 +782,13 @@ EXPECTED = {
         "loot": "1,3,4", "dungeons": 18, "raids": 10,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
         "progressKeptPriorHistory": 1,
@@ -831,6 +864,13 @@ EXPECTED = {
         "loot": "1,5,7", "dungeons": 19, "raids": 6,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
         "progressKeptPriorHistory": 1,
@@ -920,6 +960,13 @@ EXPECTED = {
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
         "progressKeptPriorHistory": 1,
@@ -996,6 +1043,13 @@ EXPECTED = {
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
+        "seasonBeforeStart": "none",
+        "seasonOnStart": "hallowsend",
+        "seasonMidway": "hallowsend",
+        "seasonOnEnd": "hallowsend",
+        "seasonAfterEnd": "none",
+        "seasonFarOff": "none",
+        "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
         "progressKeptPriorHistory": 1,

@@ -435,6 +435,7 @@ _G.wipe = function(t)
 end
 
 _G.time = os.time
+_G.date = os.date
 
 -- WoW's string metatable carries these; Lua's does not.
 local stringMeta = getmetatable("")
