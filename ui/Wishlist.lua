@@ -23,6 +23,8 @@ local DUNGEONS_TAB, RAIDS_TAB = 1, 2
 local HEADER_HEIGHT = 50
 
 local ROW_WIDTH = 700
+-- How far the dark reaches before the icons start.
+local ROW_FADE_WIDTH = 330
 local ROW_HEIGHT = 48
 local ICON_SIZE = 34
 local ICON_GAP = 3
@@ -211,11 +213,27 @@ local function RowInitializer(row, group)
 			icon well on its left and is dark the whole way down with no highlight,
 			which is why it read as a stripe laid over the page.
 		]]
+		--[[
+			Two pieces, because one cannot do both jobs. The dark is only wanted at
+			the left, under the names, and has to be gone by the time the icons
+			start -- so it is the loot bar's gradient, which runs dark-to-nothing
+			left to right, stopped at just under half the row.
+
+			The separator is the inset row's own highlight line, two pixels of it,
+			run the full width. That is the part that reads as a page rule.
+		]]
 		row.bg = row:CreateTexture(nil, "BACKGROUND")
 		row.bg:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
-		row.bg:SetTexCoord(0.0390625, 0.625, 0.58691406, 0.61425781)
+		row.bg:SetTexCoord(0.08398438, 0.62890625, 0.61816406, 0.66210938)
 		row.bg:SetPoint("TOPLEFT", 2, -1)
-		row.bg:SetPoint("BOTTOMRIGHT", -2, 1)
+		row.bg:SetPoint("BOTTOMLEFT", 2, 1)
+		row.bg:SetWidth(ROW_FADE_WIDTH)
+		row.line = row:CreateTexture(nil, "BORDER")
+		row.line:SetTexture("Interface/EncounterJournal/UI-EncounterJournalTextures")
+		row.line:SetTexCoord(0.0390625, 0.625, 0.58789063, 0.58984375)
+		row.line:SetHeight(2)
+		row.line:SetPoint("BOTTOMLEFT", 2, 0)
+		row.line:SetPoint("BOTTOMRIGHT", -2, 0)
 		row.hover = row:CreateTexture(nil, "HIGHLIGHT")
 		row.hover:SetPoint("TOPLEFT", 2, -2)
 		row.hover:SetPoint("BOTTOMRIGHT", -2, 2)
@@ -358,7 +376,16 @@ function component.Init(components_)
 
 	wishlist.bg = wishlist:CreateTexture(nil, "BACKGROUND")
 	wishlist.bg:SetTexture(I.LootTabBackground)
-	wishlist.bg:SetTexCoord(0, 0.769531, 0, 0.832031)
+	--[[
+		Measured off the sheet: the page is solid to y=382, and everything below that
+		is the shadow it was drawn with. Drawn over the frame's dark backing that
+		shadow reads as a black strip along the bottom, so the cut stops at the solid
+		edge and the parchment runs to the frame.
+
+		The right edge keeps its full width on purpose. The page darkens from x=756
+		to x=791, and that band is where the scroll bar belongs.
+	]]
+	wishlist.bg:SetTexCoord(0, 0.769531, 0, 0.74609375)
 	wishlist.bg:SetPoint("TOPLEFT", 3, -HEADER_HEIGHT)
 	wishlist.bg:SetPoint("BOTTOMRIGHT", -2, 1)
 
@@ -374,11 +401,16 @@ function component.Init(components_)
 	wishlist.empty:Hide()
 
 	scrollbox = CreateFrame("Frame", nil, wishlist, "WowScrollBoxList")
-	scrollbox:SetSize(ROW_WIDTH, 326)
+	--[[
+		Both are anchored to the frame's own edges rather than given a width. The
+		inset is wider than the numbers here used to assume, which is what left the
+		scroll bar stranded on parchment instead of sitting in the page's dark edge.
+	]]
 	scrollbox:SetPoint("BOTTOMLEFT", 28, 12)
+	scrollbox:SetPoint("TOPRIGHT", wishlist, "TOPRIGHT", -40, -(HEADER_HEIGHT + 42))
 	local scrollbar = CreateFrame("EventFrame", nil, wishlist, "MinimalScrollBar")
-	scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 12, -6)
-	scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 12, 4)
+	scrollbar:SetPoint("TOPRIGHT", wishlist, "TOPRIGHT", -14, -(HEADER_HEIGHT + 48))
+	scrollbar:SetPoint("BOTTOMRIGHT", wishlist, "BOTTOMRIGHT", -14, 18)
 
 	local view = CreateScrollBoxListLinearView()
 	view:SetElementExtent(ROW_HEIGHT)
