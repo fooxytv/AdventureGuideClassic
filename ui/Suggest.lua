@@ -281,8 +281,8 @@ end
 
 local function Step(by)
 	local ranked = SuggestionService.GetRanked()
-	-- The last page is the one that still fills the big pane; paging past it
-	-- would leave all three blank with the arrows still lit.
+	-- The last suggestion is the last page: paging past it would blank the big
+	-- pane while the arrow stayed lit.
 	local limit = math.max(#ranked - 1, 0)
 	local wanted = math.min(math.max(offset + by, 0), limit)
 	if wanted == offset then return end
@@ -295,8 +295,15 @@ function component.Refresh()
 	local ranked = SuggestionService.GetRanked()
 	if offset > math.max(#ranked - 1, 0) then offset = 0 end
 	FillPane(panes.primary, ranked[offset + 1])
-	FillPane(panes.secondary, ranked[offset + 2])
-	FillPane(panes.tertiary, ranked[offset + 3])
+	--[[
+		The two side panes are not pages of the same list, so the offset is none of
+		their business -- they hold the second and third suggestions and stay there
+		while the big pane is read through. Retail's own frame calls this the
+		*primary* offset for that reason: C_AdventureJournal.SetPrimaryOffset moves
+		one pane, and Suggestion2 and Suggestion3 come from elsewhere entirely.
+	]]
+	FillPane(panes.secondary, ranked[2])
+	FillPane(panes.tertiary, ranked[3])
 	suggest.empty:SetShown(#ranked == 0)
 	suggest.prev:SetEnabled(offset > 0)
 	suggest.next:SetEnabled(offset + 1 < #ranked)
@@ -337,9 +344,10 @@ function component.Init(components_)
 	panes.tertiary:SetPoint("TOPLEFT", panes.secondary, "BOTTOMLEFT", 0, -11)
 
 	--[[
-		The arrows page the whole list by one, which is what the big pane's two
-		buttons do in retail. Stepping by three would make the thing it is best at
-		-- "here is the one place to go" -- the hardest reading to get back to.
+		The arrows move the big pane alone, one suggestion at a time, as the two
+		buttons on retail's own primary pane do. They sit on that pane rather than
+		on the page for the same reason: what they page is the thing they are drawn
+		on, and a reader should not have to find that out by pressing one.
 	]]
 	suggest.prev = CreateFrame("Button", nil, panes.primary)
 	suggest.prev:SetSize(32, 32)
