@@ -111,19 +111,9 @@ end
 	carries its file does not reliably take, and an unmasked icon shows its corners
 	past the ring -- the hole is wider than the band can cover.
 ]]
-local function SetIcon(texture, icon, wide)
+local function SetIcon(texture, icon)
 	MaskIcon(texture)
 	texture:SetTexture(icon or QUESTION_MARK_ICON or 134400)
-	if wide then
-		--[[
-			The dungeon thumbnails this addon ships are 256x128, so the middle
-			square is taken rather than squeezing a 2:1 picture into a round hole.
-		]]
-		texture:SetTexCoord(0.25, 0.75, 0, 1)
-	elseif texture.SetMask then
-		-- Clear a crop a previous fill left behind; masking does not reset it.
-		texture:SetTexCoord(0, 1, 0, 1)
-	end
 end
 
 --[[
@@ -133,19 +123,22 @@ end
 	data files, and it draws as a question mark. That is honest in a list and poor
 	in a 94pt ring, which is the whole subject of the pane.
 
-	Several of those instances do have a picture -- the dungeon thumbnails shipped
-	in images/ -- that was never wired to the icon field, so it is preferred where
-	it exists. What is left over gets the journal's own generic creature portrait,
-	which is what retail shows for a creature it has no art for.
+	Five of those instances did have a picture -- the dungeon art shipped in
+	images/ -- which is now cropped square and pointed at by their icon field, so
+	they arrive here needing nothing special. What is left over gets the journal's
+	own generic creature portrait, which is what retail shows for a creature it
+	has no art for.
+
+	Cropping the art rather than the quad is not a preference: a texture carrying
+	a mask cannot be given tex coords at all, and asking raises an error.
 ]]
 local PLACEHOLDER_ICON = 527422
 local GENERIC_ICON = "Interface\\EncounterJournal\\UI-EJ-GenericSearchCreature"
 
 local function InstanceIcon(instance)
-	if instance.thumbnail then return instance.thumbnail, true end
 	local icon = instance.icon
-	if not icon or icon == PLACEHOLDER_ICON then return GENERIC_ICON, false end
-	return icon, false
+	if not icon or icon == PLACEHOLDER_ICON then return GENERIC_ICON end
+	return icon
 end
 
 --[[

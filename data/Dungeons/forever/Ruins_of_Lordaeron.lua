@@ -9,7 +9,7 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Ruins of Lordaeron",
 	thumbnail = I.UIEJDungeonButtonRuinsOfLordaeron,
-	icon = 527422,
+	icon = I.UIEJDungeonPortraitRuinsOfLordaeron,
 	splash = 527422,
 	mapID = 2999,
 	seasonFilter = "forever",
