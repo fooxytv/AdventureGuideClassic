@@ -157,7 +157,7 @@ end
 	left uncounted rather than attributed to a guess.
 ]]
 local function QuestsByZone()
-	local counts = { }
+	local counts, titles = { }, { }
 	local zone
 	for index = 1, Compat.GetNumQuestLogEntries() do
 		local entry = Compat.GetQuestLogEntry(index)
@@ -166,10 +166,12 @@ local function QuestsByZone()
 				zone = entry.title
 			elseif zone then
 				counts[zone] = (counts[zone] or 0) + 1
+				titles[zone] = titles[zone] or { }
+				table.insert(titles[zone], entry.title)
 			end
 		end
 	end
-	return counts
+	return counts, titles
 end
 
 --[[
@@ -197,7 +199,7 @@ end
 ]]
 function LevellingService.GetWhereYouLeftOff()
 	Load()
-	local counts = QuestsByZone()
+	local counts, titles = QuestsByZone()
 
 	if remembered and remembered.zone then
 		local days
@@ -210,13 +212,21 @@ function LevellingService.GetWhereYouLeftOff()
 			when = remembered.when,
 			days = days,
 			quests = counts[remembered.zone] or 0,
+			-- The names as well as the count, because three lines of pane will not
+			-- hold them and a tooltip will.
+			questTitles = titles[remembered.zone],
 			remembered = true,
 		}
 	end
 
 	local zone, quests = BusiestQuestZone(counts)
 	if not zone then return nil end
-	return { zone = zone, quests = quests, remembered = false }
+	return {
+		zone = zone,
+		quests = quests,
+		questTitles = titles[zone],
+		remembered = false,
+	}
 end
 
 --[[

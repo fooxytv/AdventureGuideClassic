@@ -1043,6 +1043,12 @@ PROBE = """
     local counted = LevellingService.GetWhereYouLeftOff()
     out.levellingCountsQuestsInZone = (counted and counted.quests == 2) and 1 or 0
 
+    -- And their names, which is what the badge on that pane hangs in a tooltip.
+    out.levellingNamesTheQuests = (counted and counted.questTitles
+            and #counted.questTitles == 2
+            and counted.questTitles[1] == "Lost Deathstalkers"
+            and counted.questTitles[2] == "Stromgarde Badge") and 1 or 0
+
     --[[
         Nothing recorded -- a character who was levelling before the addon learned
         to watch -- and the log answers instead, with the zone holding most of it.
@@ -1229,6 +1235,7 @@ EXPECTED = {
         "levellingIgnoresInstanceGains": 1,
         "levellingAgesTheMemory": 1,
         "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
         "levellingFallsBackToQuestLog": 1,
         "questLogShimReadsClassicApi": 1,
         "unlockIsNilAtTheCeiling": 1,
@@ -1345,6 +1352,7 @@ EXPECTED = {
         "levellingIgnoresInstanceGains": 1,
         "levellingAgesTheMemory": 1,
         "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
         "levellingFallsBackToQuestLog": 1,
         "questLogShimReadsClassicApi": 1,
         "unlockIsNilAtTheCeiling": 1,
@@ -1461,6 +1469,7 @@ EXPECTED = {
         "levellingIgnoresInstanceGains": 1,
         "levellingAgesTheMemory": 1,
         "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
         "levellingFallsBackToQuestLog": 1,
         "questLogShimReadsClassicApi": 1,
         "unlockIsNilAtTheCeiling": 1,
@@ -1591,6 +1600,7 @@ EXPECTED = {
         "levellingIgnoresInstanceGains": 1,
         "levellingAgesTheMemory": 1,
         "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
         "levellingFallsBackToQuestLog": 1,
         "questLogShimReadsClassicApi": 1,
         "unlockIsNilAtTheCeiling": 1,
@@ -1708,6 +1718,7 @@ EXPECTED = {
         "levellingIgnoresInstanceGains": 1,
         "levellingAgesTheMemory": 1,
         "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
         "levellingFallsBackToQuestLog": 1,
         "questLogShimReadsClassicApi": 1,
         "unlockIsNilAtTheCeiling": 1,

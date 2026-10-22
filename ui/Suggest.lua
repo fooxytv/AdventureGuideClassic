@@ -198,6 +198,26 @@ end
 	they are for the instances. A remembered zone is stated; a zone worked out
 	from the quest log is worded as the deduction it is.
 ]]
+--[[
+	The quest badge's icon, and how many quests the tooltip names before it stops
+	counting them out. Ten is already more than the pane could ever say.
+]]
+local QUEST_ICON = "Interface\\Icons\\INV_Misc_Note_01"
+local MAX_TOOLTIP_QUESTS = 10
+
+local function QuestBadge(state)
+	local titles = state.questTitles
+	if not (titles and #titles > 0) then return nil end
+	local lines = { }
+	for index = 1, math.min(#titles, MAX_TOOLTIP_QUESTS) do
+		lines[index] = titles[index]
+	end
+	if #titles > MAX_TOOLTIP_QUESTS then
+		lines[#lines + 1] = ("...and %d more."):format(#titles - MAX_TOOLTIP_QUESTS)
+	end
+	return { icon = QUEST_ICON, title = state.zone, lines = lines }
+end
+
 local function LeftOffCard()
 	local state = LevellingService and LevellingService.GetWhereYouLeftOff()
 	if not (state and state.zone) then return nil end
@@ -225,6 +245,7 @@ local function LeftOffCard()
 		title = state.zone,
 		description = table.concat(lines, "\n"),
 		icon = LEFT_OFF_ICON,
+		badge = QuestBadge(state),
 	}
 end
 
@@ -255,10 +276,24 @@ local function GoTo(suggestion)
 	components.NavBar.SetInstance(instance)
 end
 
+--[[
+	The small ring carries either an item or a list, so the tooltip does both. An
+	item is the client's own tooltip; a list is a heading and its lines, which is
+	what a card hangs there when it has more to say than three lines of pane hold.
+]]
 local function RewardOnEnter(self)
-	if not self.itemLink then return end
+	if self.itemLink then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetHyperlink(self.itemLink)
+		GameTooltip:Show()
+		return
+	end
+	if not self.tooltipTitle then return end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetHyperlink(self.itemLink)
+	GameTooltip:SetText(self.tooltipTitle)
+	for _, line in ipairs(self.tooltipLines or { }) do
+		GameTooltip:AddLine(line, 1, 0.82, 0)
+	end
 	GameTooltip:Show()
 end
 
@@ -371,6 +406,27 @@ end
 	carries one. Everything the art provides is shared; what differs is that a card
 	brings its own words and has no trip to offer.
 ]]
+--[[
+	The smaller ring on the portrait's shoulder. Retail hangs the reward item there;
+	a card hangs a badge, which is the same ring carrying a tooltip instead of a
+	trip. Both fields are cleared on every fill, or a pane that held one would keep
+	showing its tooltip under the next thing put in it.
+]]
+local function ShowBadge(pane, badge)
+	pane.reward.itemLink = nil
+	pane.reward.tooltipTitle = nil
+	pane.reward.tooltipLines = nil
+	if not badge then
+		pane.reward:Hide()
+		return
+	end
+	SetIcon(pane.reward.icon, badge.icon)
+	pane.reward.itemLink = badge.itemLink
+	pane.reward.tooltipTitle = badge.title
+	pane.reward.tooltipLines = badge.lines
+	pane.reward:Show()
+end
+
 local function FillPane(pane, entry)
 	pane.entry = entry
 	if not entry then
@@ -384,7 +440,7 @@ local function FillPane(pane, entry)
 		pane.title:SetText(entry.title)
 		pane.description:SetText(entry.description)
 		pane.button:Hide()
-		pane.reward:Hide()
+		ShowBadge(pane, entry.badge)
 		return
 	end
 
@@ -394,13 +450,10 @@ local function FillPane(pane, entry)
 	pane.button:SetText(ButtonLabel(entry))
 	pane.button:Show()
 	local item = entry.kind == "wishlist" and entry.wantedItem
-	if item then
-		pane.reward.itemLink = item.itemLink
-		SetIcon(pane.reward.icon, GetItemIcon and GetItemIcon(item.itemID))
-		pane.reward:Show()
-	else
-		pane.reward:Hide()
-	end
+	ShowBadge(pane, item and {
+		icon = GetItemIcon and GetItemIcon(item.itemID),
+		itemLink = item.itemLink,
+	} or nil)
 end
 
 local function Step(by)
