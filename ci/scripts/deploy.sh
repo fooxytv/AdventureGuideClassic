@@ -26,8 +26,12 @@ if [ -z "$toc_file" ]; then
     exit 1
 fi
 
-addon_name=$(grep -oP '^## Title:\s*\K.*' "$toc_file" | tr -d '\r')
-version=$(grep -oP '^## Version:\s*\K.*' "$toc_file" | tr -d '\r')
+# sed, not `grep -oP`. PCRE needs a unibyte or UTF-8 locale, and a Git Bash whose
+# locale is neither fails the match outright -- "grep: -P supports only unibyte and
+# UTF-8 locales" -- leaving both of these empty and killing the deploy on the next
+# check. sed has no such dependency.
+addon_name=$(sed -n 's/^## Title:[[:space:]]*//p' "$toc_file" | tr -d '\r')
+version=$(sed -n 's/^## Version:[[:space:]]*//p' "$toc_file" | tr -d '\r')
 
 echo "Detected TOC file: $toc_file"
 echo "Extracted Addon Name: '$addon_name'"

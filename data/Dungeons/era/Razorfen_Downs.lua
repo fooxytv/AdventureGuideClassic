@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Razorfen Downs",
 	instanceID = 233,
+	minLevel = 35,
+	levelRange = { 37, 46 },
 	thumbnail = 608212,
 	icon = 136352,
 	splash = 608251,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Tuten'kash",
 		defeated = 0,
 		encounterID = 7355,
+		level = 40,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607799,
 		loot = {
 			{ id = 10775, seasonFilter = "all" },
@@ -55,6 +60,9 @@ InstanceService.AddDungeon({
 		name = "Plaguemaw the Rotting",
 		defeated = 0,
 		encounterID = 7356,
+		level = 40,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossPlaguemawTheRotting,
 		loot = {
 			{ id = 10760, seasonFilter = "all" },
@@ -89,6 +97,9 @@ InstanceService.AddDungeon({
 		name = "Mordresh Fire Eye",
 		defeated = 0,
 		encounterID = 7357,
+		level = 39,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607718,
 		loot = {
 			{ id = 10769, seasonFilter = "all" },
@@ -124,6 +135,9 @@ InstanceService.AddDungeon({
 		name = "Ragglesnout",
 		defeated = 0,
 		encounterID = 7354,
+		level = 40,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossRagglesnout,
 		loot = {
 			{ id = 10767, seasonFilter = "all" },
@@ -159,6 +173,9 @@ InstanceService.AddDungeon({
 		name = "Glutton",
 		defeated = 0,
 		encounterID = 8567,
+		level = 40,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607617,
 		loot = {
 			{ id = 10772, seasonFilter = "all" },
@@ -193,6 +210,9 @@ InstanceService.AddDungeon({
 		name = "Amnennar the Coldbringer",
 		defeated = 0,
 		encounterID = 7358,
+		level = 41,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607537,
 		loot = {
 			{ id = 10761, seasonFilter = "all" },

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Scarlet Monastery",
 	instanceID = 316,
+	minLevel = 20,
+	levelRange = { 26, 45 },
 	thumbnail = 608214,
 	icon = 136354,
 	splash = 608253,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Interrogator Vishas",
 		defeated = 0,
 		encounterID = 3983,
+		level = 32,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607662,
 		loot = {
 			{ id = 7682, seasonFilter = "all" },
@@ -52,6 +57,9 @@ InstanceService.AddDungeon({
 		name = "Bloodmage Thalnos",
 		defeated = 0,
 		encounterID = 4543,
+		level = 34,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607557,
 		loot = {
 			{ id = 7684, seasonFilter = "all" },
@@ -86,6 +94,9 @@ InstanceService.AddDungeon({
 		name = "Houndmaster Loksey",
 		defeated = 0,
 		encounterID = 3974,
+		level = 34,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607648,
 		loot = {
 			{ id = 7756, seasonFilter = "all" },
@@ -121,6 +132,9 @@ InstanceService.AddDungeon({
 		name = "Arcanist Doan",
 		defeated = 0,
 		encounterID = 6487,
+		level = 37,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607545,
 		loot = {
 			{ id = 7712, seasonFilter = "all" },
@@ -157,6 +171,9 @@ InstanceService.AddDungeon({
 		name = "Herod",
 		defeated = 0,
 		encounterID = 3975,
+		level = 40,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607640,
 		loot = {
 			{ id = 7719, seasonFilter = "all" },
@@ -193,6 +210,9 @@ InstanceService.AddDungeon({
 		name = "High Inquisitor Fairbanks",
 		defeated = 0,
 		encounterID = 4542,
+		level = 40,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607642,
 		loot = {
 			{ id = 19508, seasonFilter = "all" },
@@ -228,6 +248,9 @@ InstanceService.AddDungeon({
 		name = "Scarlet Commander Mograine",
 		defeated = 0,
 		encounterID = 3976,
+		level = 42,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607764,
 		loot = {
 			{ id = 7726, seasonFilter = "all" },
@@ -264,6 +287,9 @@ InstanceService.AddDungeon({
 		name = "High Inquisitor Whitemane",
 		defeated = 0,
 		encounterID = 3977,
+		level = 42,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607643,
 		loot = {
 			{ id = 7720, seasonFilter = "all" },

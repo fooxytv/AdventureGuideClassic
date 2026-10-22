@@ -31,7 +31,8 @@ globals = {
     "ProgressService", "DiscoveryService",
     "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
-    "SeasonalService",
+    "LevellingService",
+    "SeasonalService", "SuggestionService",
     "TierTokenService", "TokenizedTextService", "WishlistService",
 
     -- Frames and widget mixins the addon creates. EncounterJournal is in here
@@ -67,6 +68,7 @@ globals = {
     "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "AGC_Ids", "SLASH_AGCIDS1",
     "AGC_MarkDefeated", "AGC_MarkInstanceDefeated", "AGC_ProgressDump",
+    "AGC_SetLeftOff",
     "AGC_ResetAllDungeons",
     "SLASH_AGCPROBE1", "SLASH_AGCPROBEEVENTS1",
     "TestBossDefeatedToast", "TestBossDefeatedToastCustom",
@@ -113,6 +115,10 @@ read_globals = {
     "C_EncounterJournal", "C_QuestLog", "C_Map", "C_CombatLog",
     "EJ_GetInstanceByIndex", "EJ_GetNumTiers",
     "GetNumSavedInstances", "GetSavedInstanceInfo", "INSTANCE_RESET_SUCCESS",
+    -- The classic-line half of Compat.GetQuestLogEntry. Both are gone on the
+    -- mainline family, where C_QuestLog answers instead, so each call site
+    -- tests for them.
+    "GetNumQuestLogEntries", "GetQuestLogTitle",
     "WorldMapFrame", "OpenWorldMap", "ShowUIPanel",
 
     -- Project constants. Only Compat.lua and Probe.lua should read these
@@ -122,8 +128,15 @@ read_globals = {
     -- Unit, item and world queries
     "GetBuildInfo", "GetInstanceInfo", "GetRealmName", "GetTime",
     "IsInInstance", "InCombatLockdown", "UnitClass", "UnitFactionGroup",
+    -- Where the player is, for the levelling reminder. GetRealZoneText is
+    -- the zone proper; GetZoneText stands in for it and can be the PvP
+    -- name, which is why it is only the fallback.
+    "GetRealZoneText", "GetZoneText",
     "UnitGUID", "UnitLevel", "UnitName",
     "GetInventoryItemID", "GetItemInfo", "GetItemInfoInstant",
+    -- GetItemIcon is guarded at every call site and QUESTION_MARK_ICON has a
+    -- literal fallback beside it, so neither has to exist on every client.
+    "GetItemIcon", "QUESTION_MARK_ICON",
     "GetSpellInfo", "GetSpellTexture", "GetBindingByKey",
     "GetLootSlotLink", "GetNumLootItems",
     "ITEM_QUALITY_COLORS", "RAID_CLASS_COLORS",

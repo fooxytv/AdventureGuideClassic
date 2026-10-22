@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Temple of Ahn'Qiraj",
 	instanceID = 744,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = 1396593,
 	icon = 136321,
 	splash = 1396512,
@@ -18,6 +20,8 @@ InstanceService.AddRaid({
 	{
 		name = "The Prophet Skeram",
 		encounterID = 15263,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385769,
 		loot = {
 			{ id = 21699, seasonFilter = "restricted" },
@@ -87,6 +91,8 @@ InstanceService.AddRaid({
 	{
 		name = "Silithid Royalty",
 		encounterID = 15543,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385763,
 		loot = {
 			{ id = 21693, seasonFilter = "restricted" },
@@ -166,6 +172,8 @@ InstanceService.AddRaid({
 	{
 		name = "Battleguard Sartura",
 		encounterID = 15516,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385720,
 		loot = {
 			{ id = 21669, seasonFilter = "restricted" },
@@ -232,6 +240,8 @@ InstanceService.AddRaid({
 	{
 		name = "Fankriss the Unyielding",
 		encounterID = 15510,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385728,
 		loot = {
 			{ id = 21665, seasonFilter = "restricted" },
@@ -300,6 +310,8 @@ InstanceService.AddRaid({
 	{
 		name = "Viscidus",
 		encounterID = 15299,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385771,
 		loot = {
 			{ id = 21624, seasonFilter = "restricted" },
@@ -358,6 +370,8 @@ InstanceService.AddRaid({
 	{
 		name = "Princess Huhuran",
 		encounterID = 15509,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385761,
 		loot = {
 			{ id = 21621, seasonFilter = "restricted" },
@@ -417,6 +431,9 @@ InstanceService.AddRaid({
 	{
 		name = "Twin Emperors",
 		encounterID = 15276,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1390437,
 		loot = {
 			{ id = 20930, seasonFilter = "restricted" },
@@ -492,6 +509,9 @@ InstanceService.AddRaid({
 	{
 		name = "Ouro",
 		encounterID = 15517,
+		level = 63,
+		creatureType = "Beast",
+		classification = "Boss",
 		portrait = 1385760,
 		loot = {
 			{ id = 21615, seasonFilter = "restricted" },
@@ -548,6 +568,8 @@ InstanceService.AddRaid({
 	{
 		name = "C'Thun",
 		encounterID = 15727,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385726,
 		loot = {
 			{ id = 22732, seasonFilter = "restricted" },

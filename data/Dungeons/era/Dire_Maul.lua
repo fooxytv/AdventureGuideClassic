@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Dire Maul",
 	instanceID = 230,
+	minLevel = 31,
+	levelRange = { 55, 60 },
 	thumbnail = 608200,
 	icon = 136333,
 	splash = 608239,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Pusillin",
 		defeated = 0,
 		encounterID = 14354,
+		level = 57,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = I.UIEJBossPusillin,
 		loot = {
 			{ id = 18267, seasonFilter = "all" },
@@ -54,6 +59,9 @@ InstanceService.AddDungeon({
 		name = "Lethtendris",
 		defeated = 0,
 		encounterID = 14327,
+		level = 57,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607686,
 		loot = {
 			{ id = 18325, seasonFilter = "all" },
@@ -91,6 +99,9 @@ InstanceService.AddDungeon({
 		name = "Hydrospawn",
 		defeated = 0,
 		encounterID = 13280,
+		level = 57,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607653,
 		loot = {
 			{ id = 18317, seasonFilter = "all" },
@@ -128,6 +139,9 @@ InstanceService.AddDungeon({
 		name = "Zevrim Thornhoof",
 		defeated = 0,
 		encounterID = 11490,
+		level = 57,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607824,
 		loot = {
 			{ id = 18319, seasonFilter = "all" },
@@ -166,6 +180,9 @@ InstanceService.AddDungeon({
 		name = "Alzzin the Wildshaper",
 		defeated = 0,
 		encounterID = 11492,
+		level = 58,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607533,
 		loot = {
 			{ id = 18321, seasonFilter = "all" },
@@ -209,6 +226,9 @@ InstanceService.AddDungeon({
 		name = "Guard Mol'dar",
 		defeated = 0,
 		encounterID = 14326,
+		level = 59,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607630,
 		loot = {
 			{ id = 18451, seasonFilter = "all" },
@@ -255,6 +275,9 @@ InstanceService.AddDungeon({
 		name = "Stomper Kreeg",
 		defeated = 0,
 		encounterID = 14322,
+		level = 59,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607777,
 		loot = {
 			{ id = 18425, seasonFilter = "all" },
@@ -289,6 +312,9 @@ InstanceService.AddDungeon({
 		name = "Guard Fengus",
 		defeated = 0,
 		encounterID = 14321,
+		level = 59,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607629,
 		loot = {
 			{ id = 18451, seasonFilter = "all" },
@@ -329,6 +355,9 @@ InstanceService.AddDungeon({
 		name = "Guard Slip'kik",
 		defeated = 0,
 		encounterID = 14323,
+		level = 59,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607631,
 		loot = {
 			{ id = 18493, seasonFilter = "all" },
@@ -368,6 +397,9 @@ InstanceService.AddDungeon({
 		name = "Captain Kromcrush",
 		defeated = 0,
 		encounterID = 14325,
+		level = 61,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607560,
 		loot = {
 			{ id = 18502, seasonFilter = "all" },
@@ -432,6 +464,9 @@ InstanceService.AddDungeon({
 		name = "King Gordok",
 		defeated = 0,
 		encounterID = 11501,
+		level = 62,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607673,
 		loot = {
 			{ id = 18523, seasonFilter = "all" },
@@ -477,6 +512,9 @@ InstanceService.AddDungeon({
 		name = "Tendris Warpwood",
 		defeated = 0,
 		encounterID = 11489,
+		level = 60,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607785,
 		loot = {
 			{ id = 18390, seasonFilter = "all" },
@@ -514,6 +552,9 @@ InstanceService.AddDungeon({
 		name = "Magister Kalendris",
 		defeated = 0,
 		encounterID = 11487,
+		level = 60,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607703,
 		loot = {
 			{ id = 18374, seasonFilter = "all" },
@@ -552,6 +593,9 @@ InstanceService.AddDungeon({
 		name = "Illyanna Ravenoak",
 		defeated = 0,
 		encounterID = 11488,
+		level = 60,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607656,
 		loot = {
 			{ id = 18383, seasonFilter = "all" },
@@ -589,6 +633,9 @@ InstanceService.AddDungeon({
 		name = "Immol'thar",
 		defeated = 0,
 		encounterID = 11496,
+		level = 61,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607657,
 		loot = {
 			{ id = 18370, seasonFilter = "all" },
@@ -632,6 +679,9 @@ InstanceService.AddDungeon({
 		name = "Prince Tortheldrin",
 		defeated = 0,
 		encounterID = 11486,
+		level = "60-61",
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607745,
 		loot = {
 			{ id = 18382, seasonFilter = "all" },

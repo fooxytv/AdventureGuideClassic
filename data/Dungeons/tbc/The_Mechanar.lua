@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "The Mechanar",
 	instanceID = 554,
+	minLevel = 65,
+	levelRange = { 68, 70 },
 	thumbnail = 608218,
 	icon = 136350,
 	splash = 608257,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Mechano-Lord Capacitus",
 		defeated = 0,
 		encounterID = 19219,
+		level = 72,
+		creatureType = "Mechanical",
+		classification = "Elite",
 		portrait = 607712,
 		loot = {
 			{ id = 28256, seasonFilter = "tbc" },
@@ -74,6 +79,9 @@ InstanceService.AddDungeon({
 		name = "Nethermancer Sepethrea",
 		defeated = 0,
 		encounterID = 19221,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607725,
 		loot = {
 			{ id = 28262, seasonFilter = "tbc" },
@@ -130,6 +138,9 @@ InstanceService.AddDungeon({
 		name = "Pathaleon the Calculator",
 		defeated = 0,
 		encounterID = 19220,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607739,
 		loot = {
 			{ id = 28269, seasonFilter = "tbc" },

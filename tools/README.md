@@ -117,6 +117,68 @@ file was built from `5.5.4.68806` with `1.15.9.68808` filling the gaps.
 The camera curve itself lives in `services/CreatureModelService.lua`, not here —
 tune `BASELINE_HEIGHT` there rather than regenerating this file.
 
+## gen_instance_levels.py
+
+Writes `minLevel` and `levelRange` onto every instance, from AtlasLoot's
+`LevelRange`:
+
+```bash
+python tools/gen_instance_levels.py            # report the join, write nothing
+python tools/gen_instance_levels.py --apply    # write it in
+```
+
+56 of 67 instances resolve. The eleven that do not are Forever's own, which
+AtlasLoot has never heard of; they ship without a range rather than with a guess.
+
+**Joined on the name, never on an id.** `instanceID` and `mapID` mean opposite
+things in the two halves of `data/` — Era files are journal-id/map-id, TBC files
+are the reverse, Forever files carry `mapID` alone. Joining on `mapID` matches 27
+of 67 and puts three of them on the wrong instance.
+
+Two wrinkles the script handles and the docstring explains at length: AtlasLoot
+splits Scarlet Monastery, Dire Maul and Blackrock Spire into wings, and its
+current Classic file has replaced Blackfathom Deeps, Gnomeregan and Sunken
+Temple with their Season of Discovery *raid* entries. The pre-SoD copy on the
+checkout's TBC branch still has the dungeons, so `Dungeons/` reads that one and
+`Raids/` reads the newer — which is why Blackfathom Deeps reads 24–32 as a
+dungeon and 25–40 as a raid.
+
+## gen_npc_meta.py
+
+Gives the boss portrait tooltip its second line — "Level 19 Humanoid Elite" — by
+writing `level`, `creatureType` and `classification` onto each encounter.
+
+```bash
+python tools/gen_npc_meta.py extract <classicmangos.sql> <tbcmangos.sql>
+python tools/gen_npc_meta.py apply [--force]
+python tools/gen_npc_meta.py report
+```
+
+`extract` needs the CMaNGOS world dumps; `apply` reads only the checked-in
+`tools/npc_meta.tsv`, so a normal run needs neither the 85MB of SQL nor the
+network. Re-extract only when encounters are added.
+
+    https://github.com/cmangos/classic-db  (GPL-2.0)
+    https://github.com/cmangos/tbc-db      (GPL-2.0)
+
+A creature's level, type and classification are server-side in this era: the
+client learns them from the unit in front of it, the journal has no API for
+them, and `Creature.db2` ships empty. wago.tools cannot stand in — its Era
+`Creature.db2` has one row, and retail's covers 8 of our 361 encounter ids and
+carries no level at all.
+
+**The name has to agree before a row is accepted.** Our `encounterID` is an npc
+id, but Forever numbers its own bosses in the vanilla range: Witherfang in the
+Ruins of Lordaeron is 3353, which in classic-db is Grezz Ragefist, a level 60
+Humanoid in Orgrimmar. So a dump is only consulted for the matching folder, the
+name must match, and every rejection is printed. That guard found Shirrak the
+Dead Watcher carrying 17371 — a Shadowmoon Warlock — instead of 18371.
+
+`ALIASES` carries the encounters the guide models as one fight and the database
+as several, naming the combatant whose stats stand for it. Fights whose id
+points at an announcer rather than a fighter are left out: Blackrock Depths' Ring
+of Law resolves to the herald on the balcony, Karazhan's Opera Hall to Barnes.
+
 ## item_meta.tsv
 
 The filter reads item quality/class/slot from `tools/item_meta.tsv`:

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Stratholme",
 	instanceID = 236,
+	minLevel = 37,
+	levelRange = { 58, 60 },
 	thumbnail = 608216,
 	icon = 136359,
 	splash = 608255,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Skul",
 		defeated = 0,
 		encounterID = 10393,
+		level = 58,
+		creatureType = "Undead",
+		classification = "Rare Elite",
 		portrait = 607804,
 		loot = {
 			{ id = 13395, seasonFilter = "all" },
@@ -54,6 +59,9 @@ InstanceService.AddDungeon({
 		name = "Hearthsinger Forresten",
 		defeated = 0,
 		encounterID = 10558,
+		level = 57,
+		creatureType = "Undead",
+		classification = "Rare Elite",
 		portrait = I.UIEJBossHearthsingerForresten,
 		loot = {
 			{ id = 16682, seasonFilter = "all" },
@@ -91,6 +99,9 @@ InstanceService.AddDungeon({
 		name = "The Unforgiven",
 		defeated = 0,
 		encounterID = 10516,
+		level = 57,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607792,
 		loot = {
 			{ id = 13404, seasonFilter = "all" },
@@ -128,6 +139,9 @@ InstanceService.AddDungeon({
 		name = "Postmaster Malown",
 		defeated = 0,
 		encounterID = 11143,
+		level = 60,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = I.UIEJBossPostmasterMalown,
 		loot = {
 			{ id = 13393, seasonFilter = "all" },
@@ -166,6 +180,9 @@ InstanceService.AddDungeon({
 		name = "Timmy the Cruel",
 		defeated = 0,
 		encounterID = 10808,
+		level = 58,
+		creatureType = "Undead",
+		classification = "Rare Elite",
 		portrait = 607795,
 		loot = {
 			{ id = 13403, seasonFilter = "all" },
@@ -203,6 +220,9 @@ InstanceService.AddDungeon({
 		name = "Cannon Master Willey",
 		defeated = 0,
 		encounterID = 10997,
+		level = 60,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossCannonMasterWilley,
 		loot = {
 			{ id = 22405, seasonFilter = "all" },
@@ -245,6 +265,9 @@ InstanceService.AddDungeon({
 		name = "Archivist Galford",
 		defeated = 0,
 		encounterID = 10811,
+		level = 60,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossArchivistGalford,
 		loot = {
 			{ id = 13386, seasonFilter = "all" },
@@ -282,6 +305,9 @@ InstanceService.AddDungeon({
 		name = "Balnazzar",
 		defeated = 0,
 		encounterID = 10813,
+		level = 62,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607551,
 		loot = {
 			{ id = 22334, seasonFilter = "all" },
@@ -329,6 +355,9 @@ InstanceService.AddDungeon({
 		name = "Magistrate Barthilas",
 		defeated = 0,
 		encounterID = 10435,
+		level = 58,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607704,
 		loot = {
 			{ id = 23198, seasonFilter = "all" },
@@ -367,6 +396,9 @@ InstanceService.AddDungeon({
 		name = "Stonespine",
 		defeated = 0,
 		encounterID = 10809,
+		level = 60,
+		creatureType = "Undead",
+		classification = "Rare Elite",
 		portrait = 607675,
 		loot = {
 			{ id = 13954, seasonFilter = "all" },
@@ -402,6 +434,9 @@ InstanceService.AddDungeon({
 		name = "Nerub'enkan",
 		defeated = 0,
 		encounterID = 10437,
+		level = 60,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607724,
 		loot = {
 			{ id = 16675, seasonFilter = "all" },
@@ -444,6 +479,9 @@ InstanceService.AddDungeon({
 		name = "Black Guard Swordsmith",
 		defeated = 0,
 		encounterID = 11121,
+		level = "61-62",
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = I.UIEJBossBlackGuardSwordsmith,
 		loot = {
 			{ id = 18783, seasonFilter = "all" },
@@ -474,9 +512,12 @@ InstanceService.AddDungeon({
 		}
 	},
 	{
-		name = "Maleki the Palid",
+		name = "Maleki the Pallid",
 		defeated = 0,
 		encounterID = 10438,
+		level = 61,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607707,
 		loot = {
 			{ id = 18737, seasonFilter = "all" },
@@ -519,6 +560,9 @@ InstanceService.AddDungeon({
 		name = "Baroness Anastari",
 		defeated = 0,
 		encounterID = 10436,
+		level = 59,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607553,
 		loot = {
 			{ id = 18728, seasonFilter = "all" },
@@ -561,6 +605,9 @@ InstanceService.AddDungeon({
 		name = "Ramstein the Gorger",
 		defeated = 0,
 		encounterID = 10439,
+		level = 61,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607752,
 		loot = {
 			{ id = 13373, seasonFilter = "all" },
@@ -600,6 +647,9 @@ InstanceService.AddDungeon({
 		name = "Baron Rivendare",
 		defeated = 0,
 		encounterID = 10440,
+		level = 62,
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = I.UIEJBossBaronRivendare,
 		loot = {
 			{ id = 22412, seasonFilter = "all" },

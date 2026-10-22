@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Gruul's Lair",
 	instanceID = 565,
+	minLevel = 70,
+	levelRange = { 70, 70 },
 	thumbnail = 1396582,
 	icon = 136337,
 	splash = 1396501,
@@ -19,6 +21,9 @@ InstanceService.AddRaid({
 		name = "High King Maulgar",
 		defeated = 0,
 		encounterID = 18831,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378985,
 		loot = {
 			{ id = 28797, seasonFilter = "tbc" },
@@ -92,6 +97,9 @@ InstanceService.AddRaid({
 		name = "Gruul the Dragonkiller",
 		defeated = 0,
 		encounterID = 19044,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378982,
 		loot = {
 			{ id = 28804, seasonFilter = "tbc" },

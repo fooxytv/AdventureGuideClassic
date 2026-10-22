@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "The Shattered Halls",
 	instanceID = 540,
+	minLevel = 65,
+	levelRange = { 69, 70 },
 	thumbnail = 608207,
 	icon = 136350,
 	splash = 608246,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Grand Warlock Nethekurse",
 		defeated = 0,
 		encounterID = 16807,
+		level = 71,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607624,
 		loot = {
 			{ id = 24312, seasonFilter = "tbc" },
@@ -72,6 +77,9 @@ InstanceService.AddDungeon({
 		name = "Blood Guard Porung",
 		defeated = 0,
 		encounterID = 20923,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607556,
 		loot = {
 			{ id = 30709, seasonFilter = "tbc" },
@@ -123,6 +131,9 @@ InstanceService.AddDungeon({
 		name = "Warbringer O'mrogg",
 		defeated = 0,
 		encounterID = 16809,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607811,
 		loot = {
 			{ id = 27525, seasonFilter = "tbc" },
@@ -177,6 +188,9 @@ InstanceService.AddDungeon({
 		name = "Warchief Kargath Bladefist",
 		defeated = 0,
 		encounterID = 16808,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607812,
 		loot = {
 			{ id = 27527, seasonFilter = "tbc" },

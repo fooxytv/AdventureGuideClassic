@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Karazhan",
 	instanceID = 532,
+	minLevel = 68,
+	levelRange = { 70, 70 },
 	thumbnail = 1396584,
 	icon = 136343,
 	splash = 1396503,
@@ -18,6 +20,9 @@ InstanceService.AddRaid({
 	{
 		name = "Servant's Quarters",
 		encounterID = 16179,
+		level = 73,
+		creatureType = "Beast",
+		classification = "Rare Elite",
 		portrait = 1385766,
 		loot = {
 			{ id = 30675, seasonFilter = "tbc" },
@@ -68,6 +73,9 @@ InstanceService.AddRaid({
 	{
 		name = "Attumen the Huntsman",
 		encounterID = 15550,
+		level = 73,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378965,
 		loot = {
 			{ id = 28477, seasonFilter = "tbc" },
@@ -121,6 +129,9 @@ InstanceService.AddRaid({
 	{
 		name = "Moroes",
 		encounterID = 15687,
+		level = 73,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378999,
 		loot = {
 			{ id = 28529, seasonFilter = "tbc" },
@@ -174,6 +185,8 @@ InstanceService.AddRaid({
 	{
 		name = "Maiden of Virtue",
 		encounterID = 16457,
+		level = 73,
+		classification = "Boss",
 		portrait = 1378997,
 		loot = {
 			{ id = 28511, seasonFilter = "tbc" },
@@ -285,6 +298,9 @@ InstanceService.AddRaid({
 	{
 		name = "Curator",
 		encounterID = 15691,
+		level = 73,
+		creatureType = "Mechanical",
+		classification = "Boss",
 		portrait = 1379020,
 		loot = {
 			{ id = 28612, seasonFilter = "tbc" },
@@ -336,6 +352,9 @@ InstanceService.AddRaid({
 	{
 		name = "Terestian Illhoof",
 		encounterID = 15688,
+		level = 70,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1379017,
 		loot = {
 			{ id = 28660, seasonFilter = "tbc" },
@@ -390,6 +409,9 @@ InstanceService.AddRaid({
 	{
 		name = "Shade of Aran",
 		encounterID = 16524,
+		level = 73,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1379012,
 		loot = {
 			{ id = 28672, seasonFilter = "tbc" },
@@ -444,6 +466,9 @@ InstanceService.AddRaid({
 	{
 		name = "Netherspite",
 		encounterID = 15689,
+		level = 70,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1379002,
 		loot = {
 			{ id = 28744, seasonFilter = "tbc" },
@@ -552,6 +577,9 @@ InstanceService.AddRaid({
 	{
 		name = "Prince Malchezaar",
 		encounterID = 15690,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1379006,
 		loot = {
 			{ id = 28765, seasonFilter = "tbc" },
@@ -609,6 +637,9 @@ InstanceService.AddRaid({
 	{
 		name = "Nightbane",
 		encounterID = 17225,
+		level = 73,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1379003,
 		loot = {
 			{ id = 28602, seasonFilter = "tbc" },

@@ -9,7 +9,7 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Excavation Site: Wetlands",
 	thumbnail = I.UIEJDungeonButtonExcavationSiteWetlands,
-	icon = 527422,
+	icon = I.UIEJDungeonPortraitExcavationSiteWetlands,
 	splash = 527422,
 	mapID = 2998,
 	seasonFilter = "forever",

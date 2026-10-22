@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "Old Hillsbrad Foothills",
 	instanceID = 560,
+	minLevel = 63,
+	levelRange = { 66, 70 },
 	thumbnail = 608198,
 	icon = 136350,
 	splash = 608237,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Lieutenant Drake",
 		defeated = 0,
 		encounterID = 17848,
+		level = 68,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607689,
 		loot = {
 			{ id = 27423, seasonFilter = "tbc" },
@@ -74,6 +79,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Captain Skarloc",
 		defeated = 0,
 		encounterID = 17862,
+		level = 68,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607561,
 		loot = {
 			{ id = 27428, seasonFilter = "tbc" },
@@ -135,6 +143,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Epoch Hunter",
 		defeated = 0,
 		encounterID = 18096,
+		level = 68,
+		creatureType = "Dragonkin",
+		classification = "Elite",
 		portrait = 607596,
 		loot = {
 			{ id = 24173, seasonFilter = "tbc" },

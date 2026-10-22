@@ -17,7 +17,6 @@ local Colors = GetColorMapping()
 local GetItemInfoCompat = C_Item and C_Item.GetItemInfo or GetItemInfo
 
 -- The order ui/EncounterJournalTabs.lua adds them in.
-local DUNGEONS_TAB, RAIDS_TAB = 1, 2
 
 -- Blizzard's own offset for this page: the parchment starts 51 below the inset
 -- top and the band above it carries the title and the first filter.
@@ -162,7 +161,8 @@ local function GoTo(instanceName, bossName)
 	AdventureGuideNavigationService.SetInstances(
 			isRaid and InstanceService.GetRaids() or InstanceService.GetDungeons())
 	components.InstanceSelect.SetTitle(isRaid and RAIDS or DUNGEONS)
-	components.EncounterJournalTabs.SelectTab(isRaid and RAIDS_TAB or DUNGEONS_TAB)
+	components.EncounterJournalTabs.SelectTab(
+			isRaid and EncounterJournal.raidsTab or EncounterJournal.dungeonsTab)
 	AdventureGuideNavigationService.SetInstance(instance)
 	local encounter = bossName and FindEncounter(instance, bossName)
 	if encounter then
