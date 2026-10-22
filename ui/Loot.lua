@@ -36,10 +36,21 @@ local failedItemIds = {}
 --[[
 	The two secondary lines on a loot row, the slot and the subtype.
 
-	Settled by measuring, after several rounds of settling it by eye. Retail's own
-	row uses GameFontBlack for both -- FRIZQT at 12, pure black, no shadow -- and
-	wraps the subtype in INVALID_EQUIPMENT_COLOR when the item cannot be used.
-	These are that, in the numbers this addon can set directly.
+	Retail's own row inherits GameFontBlack for both and wraps the subtype in
+	INVALID_EQUIPMENT_COLOR when the item cannot be used. These are that, in the
+	numbers this addon can set directly -- with one deliberate departure, below.
+
+	GameFontBlack is FRIZQT at 12, and that size was tried here. It reads far
+	heavier on our rows than on retail's, and the reason is the colour it is
+	paired with: the retail template does not keep GameFontBlack's black, it
+	overrides it to (0.25, 0.148, 0.02), a dark brown that measures 3.8 against
+	the row bar where black measures 5.7. Retail gets away with 12 because its
+	ink recedes. Ours is black, which carries more weight at the same size, so
+	a long subtype like "One-Handed Swords" competed with the item name above it.
+
+	So: retail's black, at 10 rather than 12. The alternative is retail's 12 with
+	retail's brown, which was not taken because the black reads better on the
+	lighter Era bar and legibility is what sent us here in the first place.
 
 	The pale shadow is gone. It was lifting black off a bar believed to be dark,
 	and the bar is not: sampled where the text actually sits, it runs about
@@ -54,7 +65,7 @@ local failedItemIds = {}
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0, 0, 0
 local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.2824, 0.0157, 0.0157
 local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 0, 0, 0, 0
-local SUBTEXT_FONT, SUBTEXT_SIZE = "Fonts\\FRIZQT__.TTF", 12
+local SUBTEXT_FONT, SUBTEXT_SIZE = "Fonts\\FRIZQT__.TTF", 10
 
 local PREVIEW_ZOOM = 0
 local PREVIEW_CAM_DISTANCE_SCALE = 1
