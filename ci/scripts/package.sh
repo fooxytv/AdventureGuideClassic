@@ -42,13 +42,13 @@ echo "Packaging addon into $zip_file.."
 # does.
 #]]
 if command -v zip >/dev/null 2>&1; then
-    zip -r "$zip_file" . -x "*.git*" "dist/*" "ci/*" "README.md" ".vscode/*" ".env*" "code/*" ".claude/*" "CLAUDE.md" "CLAUDE.local.md"
+    zip -r "$zip_file" . -x "*.git*" "dist/*" "ci/*" "README.md" ".vscode/*" ".env*" "code/*" ".claude/*" "CLAUDE.md" "CLAUDE.local.md" "__pycache__/*" "*/__pycache__/*"
 else
     echo "zip not found; packaging with python instead."
     python - "$zip_file" <<'PYTHON'
 import os, sys, zipfile
 
-EXCLUDED_DIRS = {".git", "dist", "ci", ".vscode", "code", ".claude"}
+EXCLUDED_DIRS = {".git", "dist", "ci", ".vscode", "code", ".claude", "__pycache__"}
 EXCLUDED_FILES = {"README.md", "CLAUDE.md", "CLAUDE.local.md"}
 
 written = []
