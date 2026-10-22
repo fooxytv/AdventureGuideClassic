@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Magtheridon's Lair",
 	instanceID = 544,
+	minLevel = 70,
+	levelRange = { 70, 70 },
 	thumbnail = 1396585,
 	icon = 136340,
 	splash = 1396504,
@@ -19,6 +21,9 @@ InstanceService.AddRaid({
 		name = "Magtheridon",
 		defeated = 0,
 		encounterID = 17257,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1378996,
 		loot = {
 			{ id = 28777, seasonFilter = "tbc" },

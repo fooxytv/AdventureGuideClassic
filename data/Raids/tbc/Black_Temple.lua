@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddRaid({
 	name = "Black Temple",
 	instanceID = 564,
+	minLevel = 70,
+	levelRange = { 70, 70 },
 	thumbnail = 1396579,
 	icon = 136328,
 	splash = 1396498,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "High Warlord Naj'entus",
 		defeated = 0,
 		encounterID = 22887,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378986,
 		loot = {
 			{ id = 32239, seasonFilter = "tbc" },
@@ -80,6 +85,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Supremus",
 		defeated = 0,
 		encounterID = 22898,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1379016,
 		loot = {
 			{ id = 32256, seasonFilter = "tbc" },
@@ -141,6 +149,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Shade of Akama",
 		defeated = 0,
 		encounterID = 22841,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1379011,
 		loot = {
 			{ id = 32273, seasonFilter = "tbc" },
@@ -202,6 +213,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Teron Gorefiend",
 		defeated = 0,
 		encounterID = 22871,
+		level = 73,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1379018,
 		loot = {
 			{ id = 32323, seasonFilter = "tbc" },
@@ -263,6 +277,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Gurtogg Bloodboil",
 		defeated = 0,
 		encounterID = 22948,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378983,
 		loot = {
 			{ id = 32337, seasonFilter = "tbc" },
@@ -329,6 +346,8 @@ select(2, ...).SetupGlobalFacade()
 		name = "Reliquary of Souls",
 		defeated = 0,
 		encounterID = 23418,
+		level = 73,
+		classification = "Boss",
 		portrait = 1385764,
 		loot = {
 			{ id = 32353, seasonFilter = "tbc" },
@@ -399,6 +418,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Mother Shahraz",
 		defeated = 0,
 		encounterID = 22947,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1379000,
 		loot = {
 			{ id = 32367, seasonFilter = "tbc" },
@@ -465,6 +487,8 @@ select(2, ...).SetupGlobalFacade()
 		name = "The Illidari Council",
 		defeated = 0,
 		encounterID = 23426,
+		level = 70,
+		classification = "Boss",
 		portrait = 1385743,
 		loot = {
 			{ id = 32331, seasonFilter = "tbc" },
@@ -532,6 +556,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Illidan Stormrage",
 		defeated = 0,
 		encounterID = 22917,
+		level = 73,
+		creatureType = "Demon",
+		classification = "Boss",
 		portrait = 1378987,
 		loot = {
 			{ id = 32524, seasonFilter = "tbc" },

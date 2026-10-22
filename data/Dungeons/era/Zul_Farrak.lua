@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Zul'Farrak",
 	instanceID = 241,
+	minLevel = 39,
+	levelRange = { 44, 54 },
 	thumbnail = 608230,
 	icon = 136368,
 	splash = 608267,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Antu'sul",
 		defeated = 0,
 		encounterID = 8127,
+		level = 48,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607541,
 		loot = {
 			{ id = 9641, seasonFilter = "all" },
@@ -61,6 +66,9 @@ InstanceService.AddDungeon({
 		name = "Theka the Martyr",
 		defeated = 0,
 		encounterID = 7272,
+		level = "45-46",
+		creatureType = "Undead",
+		classification = "Elite",
 		portrait = 607793,
 		loot = {
 			{ id = 10660, seasonFilter = "all" },
@@ -97,6 +105,9 @@ InstanceService.AddDungeon({
 		name = "Witch Doctor Zum'rah",
 		defeated = 0,
 		encounterID = 7271,
+		level = 46,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607819,
 		loot = {
 			{ id = 18083, seasonFilter = "all" },
@@ -162,6 +173,9 @@ InstanceService.AddDungeon({
 		name = "Shadowpriest Sezz'ziz",
 		defeated = 0,
 		encounterID = 7275,
+		level = 47,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607770,
 		loot = {
 			{ id = 9470, seasonFilter = "all" },
@@ -200,6 +214,9 @@ InstanceService.AddDungeon({
 		name = "Sergeant Bly",
 		defeated = 0,
 		encounterID = 7604,
+		level = 45,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossSergeantBly,
 		loot = {
 			{ id = 8548, seasonFilter = "all" },
@@ -236,6 +253,9 @@ InstanceService.AddDungeon({
 		name = "Hydromancer Velratha",
 		defeated = 0,
 		encounterID = 7795,
+		level = 46,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607652,
 		loot = {
 			{ id = 9234, seasonFilter = "all" },
@@ -272,6 +292,9 @@ InstanceService.AddDungeon({
 		name = "Chief Ukorz Sandscalp",
 		defeated = 0,
 		encounterID = 7267,
+		level = 48,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607564,
 		loot = {
 			{ id = 9476, seasonFilter = "all" },

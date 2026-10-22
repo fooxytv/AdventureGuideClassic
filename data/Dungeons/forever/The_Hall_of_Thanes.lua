@@ -9,7 +9,7 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "The Hall of Thanes",
 	thumbnail = I.UIEJDungeonButtonTheHallOfThanes,
-	icon = 527422,
+	icon = I.UIEJDungeonPortraitTheHallOfThanes,
 	splash = 527422,
 	mapID = 3065,
 	seasonFilter = "forever",

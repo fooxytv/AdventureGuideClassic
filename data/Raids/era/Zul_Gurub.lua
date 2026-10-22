@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Zul'Gurub",
 	instanceID = 745,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = 522364,
 	icon = 136369,
 	splash = 526416,
@@ -18,6 +20,9 @@ InstanceService.AddRaid({
 	{
 		name = "High Priestess Jeklik",
 		encounterID = 14517,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = I.UIEJBossJeklik,
 		loot = {
 			{ id = 19918, seasonFilter = "restricted" },
@@ -77,6 +82,9 @@ InstanceService.AddRaid({
 	{
 		name = "High Priest Venoxis",
 		encounterID = 14507,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 522236,
 		loot = {
 			{ id = 19904, seasonFilter = "restricted" },
@@ -137,6 +145,9 @@ InstanceService.AddRaid({
 	{
 		name = "High Priestess Mar'li",
 		encounterID = 14510,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = I.UIEJBossMarli,
 		loot = {
 			{ id = 20032, seasonFilter = "restricted" },
@@ -197,6 +208,9 @@ InstanceService.AddRaid({
 	{
 		name = "Bloodlord Mandokir",
 		encounterID = 11382,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = I.UIEJBossMandokir,
 		loot = {
 			{ id = 22637, seasonFilter = "restricted" },
@@ -275,6 +289,9 @@ InstanceService.AddRaid({
 	{
 		name = "Edge of Madness",
 		encounterID = 15083,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = I.UIEJBossHazzarah,
 		loot = {
 			{ id = 19967, seasonFilter = "restricted" },
@@ -333,6 +350,9 @@ InstanceService.AddRaid({
 	{
 		name = "High Priest Thekal",
 		encounterID = 14509,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = I.UIEJBossThekal,
 		loot = {
 			{ id = 19897, seasonFilter = "restricted" },
@@ -400,6 +420,9 @@ InstanceService.AddRaid({
 	{
 		name = "High Priestess Arlokk",
 		encounterID = 14515,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = I.UIEJBossArlokk,
 		loot = {
 			{ id = 19910, seasonFilter = "restricted" },
@@ -458,8 +481,11 @@ InstanceService.AddRaid({
 		}
 	},
 	{
-		name = "Jin'do the Hexxar",
+		name = "Jin'do the Hexxer",
 		encounterID = 11380,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = I.UIEJBossJindo,
 		loot = {
 			{ id = 19885, seasonFilter = "restricted" },
@@ -532,6 +558,8 @@ InstanceService.AddRaid({
 	{
 		name = "Hakkar",
 		encounterID = 14834,
+		level = 63,
+		classification = "Boss",
 		portrait = I.UIEJBossHakkar,
 		loot = {
 			{ id = 19857, seasonFilter = "restricted" },
@@ -601,6 +629,8 @@ InstanceService.AddRaid({
 	{
 		name = "Gahz'ranka",
 		encounterID = 15114,
+		level = 63,
+		classification = "Boss",
 		portrait = 607614,
 		loot = {
 			{ id = 19945, seasonFilter = "restricted" },

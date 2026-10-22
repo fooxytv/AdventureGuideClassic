@@ -216,6 +216,62 @@ function Compat.RequestSpellData(spellID)
 end
 
 --[[
+	The quest log, read the same way on every client.
+
+	The log is the one place that records where a character has been questing, which
+	is what the suggested-content reminder needs: its header rows are zone names and
+	the quests beneath each one are in that zone.
+
+	C_QuestLog.GetInfo returns a table on the mainline family, where the
+	GetQuestLogTitle global was removed outright; the classic clients still have the
+	global and hand the same facts back as a list, in a different order. Both
+	namespace functions are tested together rather than separately, so a client that
+	has only one of them is not read through half of each API.
+
+	Returns a table with the four fields the addon cares about, or nil past the end
+	of the log, so callers have one shape to handle.
+]]
+local function HasModernQuestLog()
+	return not not (C_QuestLog and C_QuestLog.GetInfo
+			and C_QuestLog.GetNumQuestLogEntries)
+end
+
+function Compat.GetNumQuestLogEntries()
+	if HasModernQuestLog() then
+		return C_QuestLog.GetNumQuestLogEntries() or 0
+	end
+	if GetNumQuestLogEntries then
+		-- Two returns on the classic clients: entries, then quests. Entries counts
+		-- the zone headers, and walking them is the point of this.
+		return (GetNumQuestLogEntries()) or 0
+	end
+	return 0
+end
+
+function Compat.GetQuestLogEntry(index)
+	if not index then return nil end
+
+	if HasModernQuestLog() then
+		local info = C_QuestLog.GetInfo(index)
+		if not info then return nil end
+		return {
+			title = info.title,
+			isHeader = info.isHeader,
+			level = info.level,
+			questID = info.questID,
+		}
+	end
+
+	if GetQuestLogTitle then
+		local title, level, _, isHeader, _, _, _, questID = GetQuestLogTitle(index)
+		if not title then return nil end
+		return { title = title, isHeader = isHeader, level = level, questID = questID }
+	end
+
+	return nil
+end
+
+--[[
 	The tab button template differs by client.
 
 	Era and TBC have CharacterFrameTabButtonTemplate. On Forever the file defining it

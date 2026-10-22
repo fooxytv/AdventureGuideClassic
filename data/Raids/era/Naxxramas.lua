@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Naxxramas",
 	instanceID = 746,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = 1396587,
 	icon = 136347,
 	splash = 1396506,
@@ -18,6 +20,9 @@ InstanceService.AddRaid({
 	{
 		name = "Anub'Rekhan",
 		encounterID = 15956,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378964,
 		loot = {
 			{ id = 22369, seasonFilter = "restricted" },
@@ -73,6 +78,9 @@ InstanceService.AddRaid({
 	{
 		name = "Grand Widow Faerlina",
 		encounterID = 15953,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378980,
 		loot = {
 			{ id = 22369, seasonFilter = "restricted" },
@@ -127,6 +135,9 @@ InstanceService.AddRaid({
 	{
 		name = "Maexxna",
 		encounterID = 15952,
+		level = 63,
+		creatureType = "Beast",
+		classification = "Boss",
 		portrait = 1378994,
 		loot = {
 			{ id = 22371, seasonFilter = "restricted" },
@@ -182,6 +193,9 @@ InstanceService.AddRaid({
 	{
 		name = "Noth the Plaguebringer",
 		encounterID = 15954,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1379004,
 		loot = {
 			{ id = 22370, seasonFilter = "restricted" },
@@ -242,6 +256,9 @@ InstanceService.AddRaid({
 	{
 		name = "Heigan the Unclean",
 		encounterID = 15936,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378984,
 		loot = {
 			{ id = 22370, seasonFilter = "restricted" },
@@ -296,6 +313,9 @@ InstanceService.AddRaid({
 	{
 		name = "Loatheb",
 		encounterID = 16011,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378991,
 		loot = {
 			{ id = 22366, seasonFilter = "restricted" },
@@ -349,6 +369,9 @@ InstanceService.AddRaid({
 	{
 		name = "Instructor Razuvious",
 		encounterID = 16061,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378988,
 		loot = {
 			{ id = 22372, seasonFilter = "restricted" },
@@ -405,6 +428,9 @@ InstanceService.AddRaid({
 	{
 		name = "Gothik the Harvester",
 		encounterID = 16060,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378979,
 		loot = {
 			{ id = 22372, seasonFilter = "restricted" },
@@ -513,6 +539,9 @@ InstanceService.AddRaid({
 	{
 		name = "Patchwerk",
 		encounterID = 16028,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1379005,
 		loot = {
 			{ id = 22368, seasonFilter = "restricted" },
@@ -567,6 +596,9 @@ InstanceService.AddRaid({
 	{
 		name = "Grobbulus",
 		encounterID = 15931,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378981,
 		loot = {
 			{ id = 22368, seasonFilter = "restricted" },
@@ -622,6 +654,9 @@ InstanceService.AddRaid({
 	{
 		name = "Gluth",
 		encounterID = 15932,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378977,
 		loot = {
 			{ id = 22983, seasonFilter = "restricted" },
@@ -696,6 +731,9 @@ InstanceService.AddRaid({
 	{
 		name = "Thaddius",
 		encounterID = 15928,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1379019,
 		loot = {
 			{ id = 22367, seasonFilter = "restricted" },
@@ -749,6 +787,9 @@ InstanceService.AddRaid({
 	{
 		name = "Sapphiron",
 		encounterID = 15989,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1379010,
 		loot = {
 			{ id = 23050, seasonFilter = "restricted" },
@@ -814,6 +855,9 @@ InstanceService.AddRaid({
 	{
 		name = "Kel'Thuzad",
 		encounterID = 15990,
+		level = 63,
+		creatureType = "Undead",
+		classification = "Boss",
 		portrait = 1378989,
 		loot = {
 			{ id = 23057, seasonFilter = "restricted" },

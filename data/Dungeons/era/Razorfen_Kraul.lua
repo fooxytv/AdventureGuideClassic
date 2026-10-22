@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Razorfen Kraul",
 	instanceID = 234,
+	minLevel = 25,
+	levelRange = { 29, 38 },
 	thumbnail = 608213,
 	icon = 136353,
 	splash = 608252,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Roogug",
 		defeated = 0,
 		encounterID = 6168,
+		level = 28,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607760,
 		loot = {},
 		sharedLoot = {},
@@ -50,6 +55,9 @@ InstanceService.AddDungeon({
 		name = "Aggem Thorncurse",
 		defeated = 0,
 		encounterID = 4424,
+		level = 30,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607531,
 		loot = {
 			{ id = 6681, seasonFilter = "all" },
@@ -83,6 +91,9 @@ InstanceService.AddDungeon({
 		name = "Death Speaker Jargba",
 		defeated = 0,
 		encounterID = 4428,
+		level = 30,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607584,
 		loot = {
 			{ id = 6682, seasonFilter = "all" },
@@ -118,6 +129,9 @@ InstanceService.AddDungeon({
 		name = "Overlord Ramtusk",
 		defeated = 0,
 		encounterID = 4420,
+		level = 32,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607736,
 		loot = {
 			{ id = 6686, seasonFilter = "all" },
@@ -152,6 +166,9 @@ InstanceService.AddDungeon({
 		name = "Agathelos the Raging",
 		defeated = 0,
 		encounterID = 4422,
+		level = 33,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607530,
 		loot = {
 			{ id = 6690, seasonFilter = "all" },
@@ -186,6 +203,9 @@ InstanceService.AddDungeon({
 		name = "Charlga Razorflank",
 		defeated = 0,
 		encounterID = 4421,
+		level = 33,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607563,
 		loot = {
 			{ id = 6693, seasonFilter = "all" },

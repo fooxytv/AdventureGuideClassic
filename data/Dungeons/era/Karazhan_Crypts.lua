@@ -9,8 +9,10 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Karazhan Crypts",
 	instanceID = 227,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = I.UIEJDungeonButtonKarazhanCrypts,
-	icon = 527422,
+	icon = I.UIEJDungeonPortraitKarazhanCrypts,
 	splash = 527422,
 	mapID = 48,
 	seasonFilter = "exclusive",

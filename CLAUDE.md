@@ -418,6 +418,7 @@ it to be read.
 | `AGC_ResetInstance("Deadmines")` | clear defeated marks for one instance |
 | `AGC_ResetAllEncounters()` | clear them everywhere, raids included |
 | `AGC_ResetAllDungeons()` | clear every dungeon, leaving instances you are saved to alone |
+| `AGC_SetLeftOff("Hillsbrad Foothills", 32, 3)` | fake the levelling reminder: zone, level, and how many days ago |
 | `AGC_ProgressDump()` | every defeat stored for this character, as `Instance\|Boss` |
 | `AGC_Wishlist()` | print the wishlist |
 | `AGC_CheckEquipped()` | re-run the equipped-item wishlist sweep |

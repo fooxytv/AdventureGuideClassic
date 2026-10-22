@@ -36,21 +36,41 @@ local failedItemIds = {}
 --[[
 	The two secondary lines on a loot row, the slot and the subtype.
 
-	Black, with a pale shadow. Retail draws these light grey, and that was tried
-	here, but it was judged in game on Era and read worse -- the row bar is lighter
-	on that client than the shot of retail suggests, and light text on it loses
-	against a background it is supposed to stand out from.
+	Retail's own row inherits GameFontBlack for both and wraps the subtype in
+	INVALID_EQUIPMENT_COLOR when the item cannot be used. These are that, in the
+	numbers this addon can set directly -- with one deliberate departure, below.
 
-	The shadow is pale rather than dark for the same reason it is there at all: the
-	bar is darker at the icon end than at the subtype end, so black needs lifting
-	on the left and nothing on the right, and a light shadow does exactly that.
+	GameFontBlack is FRIZQT at 12, and that size was tried here. It reads far
+	heavier on our rows than on retail's, and the reason is the colour it is
+	paired with: the retail template does not keep GameFontBlack's black, it
+	overrides it to (0.25, 0.148, 0.02), a dark brown that measures 3.8 against
+	the row bar where black measures 5.7. Retail gets away with 12 because its
+	ink recedes. Ours is black, which carries more weight at the same size, so
+	a long subtype like "One-Handed Swords" competed with the item name above it.
 
-	The red keeps its deeper shade. It is the one that reads on the lighter end,
-	where the subtype sits.
+	So: retail's black, at 10 rather than 12. The alternative is retail's 12 with
+	retail's brown, which was not taken because the black reads better on the
+	lighter Era bar and legibility is what sent us here in the first place.
+
+	The pale shadow is gone. It was lifting black off a bar believed to be dark,
+	and the bar is not: sampled where the text actually sits, it runs about
+	(170, 125, 72) on Forever and lighter again on Era, which puts plain black near
+	a contrast ratio of 5.7 and needs no help. What the shadow did instead was
+	emboss the text, which is what it looked like.
+
+	The unusable red has to do two jobs: be legible, and be recognisably red. It
+	is the only thing on the row that says the item cannot be used, so a red so
+	dark it reads as black has stopped saying it.
+
+	Measured against the row bar at both extremes -- (170, 125, 72) on Forever,
+	lighter on Era -- the brightness that balances the two is about 0.45. That
+	scores 3.3 on the darker bar and 5.7 on the lighter one, against 1.8 for the
+	bright red that could not be read at all and 4.4 for the near-black one that
+	could be read but no longer looked red.
 ]]
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0, 0, 0
-local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.72, 0.06, 0.06
-local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 1, 0.96, 0.88, 0.5
+local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.45, 0.04, 0.04
+local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 0, 0, 0, 0
 local SUBTEXT_FONT, SUBTEXT_SIZE = "Fonts\\FRIZQT__.TTF", 10
 
 local PREVIEW_ZOOM = 0
@@ -503,7 +523,7 @@ function component.Init(components_)
 			-- 60, not 25: the row bar has faded to nothing by 25 in.
 			button.armorType:SetPoint("BOTTOMRIGHT", -60, 5)
 			button.armorType:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
-			button.armorType:SetFont("Fonts\\FRIZQT__.TTF", 10)
+			button.armorType:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE)
 			button.armorType:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
 			button.armorType:SetShadowOffset(1, -1)
 			button.slot = button:CreateFontString()
@@ -511,7 +531,7 @@ function component.Init(components_)
 			button.slot:SetSize(0, 12)
 			button.slot:SetPoint("BOTTOMLEFT", 55, 3)
 			button.slot:SetTextColor(SUBTEXT_R, SUBTEXT_G, SUBTEXT_B)
-			button.slot:SetFont("Fonts\\FRIZQT__.TTF", 10)
+			button.slot:SetFont(SUBTEXT_FONT, SUBTEXT_SIZE)
 			button.slot:SetShadowColor(SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A)
 			button.slot:SetShadowOffset(1, -1)
 			button.headerText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -554,7 +574,6 @@ function component.Init(components_)
 				Red when the player cannot wear or wield it -- plate on a Mage, a
 				shield on a Rogue, a bow on a Warlock. Covers weapons as well as
 				armour, since both land in this one field as the item's subtype.
-				A deeper red than Blizzard's, because this sits on light parchment.
 			]]
 			button.armorType:SetText(lootItem.armorType or "Unknown")
 			if LootFilterService.IsUsableByPlayer(lootItem) then

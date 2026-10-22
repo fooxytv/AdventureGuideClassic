@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "The Blood Furnace",
 	instanceID = 542,
+	minLevel = 58,
+	levelRange = { 60, 68 },
 	thumbnail = 608207,
 	icon = 136350,
 	splash = 608246,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "The Maker",
 		defeated = 0,
 		encounterID = 17381,
+		level = 62,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607789,
 		loot = {
 			{ id = 24388, seasonFilter = "tbc" },
@@ -71,6 +76,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Broggok",
 		defeated = 0,
 		encounterID = 17380,
+		level = 63,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607558,
 		loot = {
 			{ id = 24392, seasonFilter = "tbc" },
@@ -127,6 +135,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Keli'dan the Breaker",
 		defeated = 0,
 		encounterID = 17377,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607670,
 		loot = {
 			{ id = 24397, seasonFilter = "tbc" },

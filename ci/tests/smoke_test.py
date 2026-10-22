@@ -70,6 +70,13 @@ WIDGET_FILES = (
     "ui/widgets/NPC.lua",
 )
 
+# ui/UI.lua, loaded the same way and for the same reason: the component registry
+# needs nothing but the one CreateFrame the stub already answers, and the order its
+# two Init passes run in is not something an in-game look checks cheaply. Getting it
+# wrong took the whole journal out -- the landing tab's click reached a component
+# registered after it, before that component had built anything.
+REGISTRY_FILES = ("ui/UI.lua",)
+
 
 def check(name, actual, expected):
     if actual != expected:
@@ -146,11 +153,11 @@ def load_addon(lua, files):
 
 
 def load_widgets(lua, facade):
-    """Load the widget type files into the same facade environment."""
+    """Load the widget types and the UI registry into the same facade environment."""
     make_chunk = lua.eval(
         'function(src, name, env) return assert(load(src, name, "t", env)) end'
     )
-    for rel in WIDGET_FILES:
+    for rel in WIDGET_FILES + REGISTRY_FILES:
         source = (ROOT / rel).read_text(encoding="utf-8", errors="replace")
         make_chunk(source, "@" + rel, facade)(ADDON, lua.globals().__ns)
 
@@ -254,6 +261,37 @@ PROBE = """
     out.claimedAbilities = claimed
 
     --[[
+        The boss tooltip's second line -- "Level 19 Humanoid Elite" -- is built from
+        three fields written by tools/gen_npc_meta.py.
+
+        One known boss is asserted outright. Rhahk'Zor is reached through
+        GetInstanceByName, which searches the unfiltered set, so this reads the same
+        on all five clients rather than depending on which instances each ships.
+
+        The invariant is the one worth having: the tooltip drops the whole line
+        without a level, so a creature type with no level beside it is data nothing
+        will ever show. Counting them catches a generator that half-filled a file.
+    ]]
+    local deadmines = InstanceService.GetInstanceByName("The Deadmines")
+    local rhahkzor
+    for _, encounter in ipairs(deadmines or { }) do
+        if encounter.name == "Rhahk'Zor" then rhahkzor = encounter end
+    end
+    out.bossLevel = rhahkzor and tostring(rhahkzor.level) or "none"
+    out.bossCreatureType = rhahkzor and rhahkzor.creatureType or "none"
+    out.bossClassification = rhahkzor and rhahkzor.classification or "none"
+
+    local typeWithoutLevel = 0
+    for _, instance in ipairs(InstanceService.GetAllInstances()) do
+        for _, encounter in ipairs(instance) do
+            if encounter.creatureType and not encounter.level then
+                typeWithoutLevel = typeWithoutLevel + 1
+            end
+        end
+    end
+    out.typeWithoutLevel = typeWithoutLevel
+
+    --[[
         The seasonal window, asked about dates rather than about today -- which is
         the only way its edges can be checked at all, since a test that asked what
         is running now would answer differently every day of the year.
@@ -286,26 +324,35 @@ PROBE = """
     ]]
     local function DeadminesGroup(includeObtained)
         for _, group in ipairs(WishlistService.GetGrouped(includeObtained)) do
-            if group.name == "Deadmines" then return group end
+            if group.name == "The Deadmines" then return group end
         end
         return nil
     end
 
     WishlistService.ClearAll()
-    WishlistService.AddItem(101, "link101", "Item 101", "Mr. Smite", "Deadmines")
-    WishlistService.AddItem(102, "link102", "Item 102", "Mr. Smite", "Deadmines")
-    WishlistService.AddItem(103, "link103", "Item 103", "Cookie", "Deadmines")
+    WishlistService.AddItem(101, "link101", "Item 101", "Mr. Smite", "The Deadmines")
+    WishlistService.AddItem(102, "link102", "Item 102", "Mr. Smite", "The Deadmines")
+    WishlistService.AddItem(103, "link103", "Item 103", "Cookie", "The Deadmines")
     WishlistService.AddItem(201, "link201", "Item 201", "Ragnaros", "Molten Core")
 
     out.wishlistGroups = #WishlistService.GetGrouped(false)
     --[[
-        Ordered lowest instance first. Nothing in data/ carries minLevel yet, so
-        the fallback is the name -- asserted here so that the day the field lands
-        it is a level sort and not a surprise.
+        Ordered lowest instance first, by the instance's own minLevel: The Deadmines
+        at 10 ahead of Molten Core at 60. That is the opposite of the alphabetical
+        order the sort falls back to on a tie, so an assertion that passes here
+        cannot be passing on the fallback.
+
+        The names have to be the instances' real ones. This said "Deadmines" until
+        the levels landed, which no instance is called, so both groups resolved to
+        nothing, both sorted at math.huge, and the test asserted the name tie-break
+        while claiming to assert the level.
+
+        GetInstanceByName searches the unfiltered set, so Molten Core resolves on
+        Forever too even though the journal there does not offer it.
     ]]
     local order = WishlistService.GetGrouped(false)
-    out.wishlistSortedByName =
-        (order[1] and order[2] and order[1].name < order[2].name) and 1 or 0
+    out.wishlistSortedByLevel =
+        (order[1] and order[1].name == "The Deadmines") and 1 or 0
 
     local deadmines = DeadminesGroup(false)
     out.wishlistGroupItems = deadmines and #deadmines.items or -1
@@ -361,10 +408,13 @@ PROBE = """
     -- do not ship the same ones, and "Deadmines" is not "The Deadmines".
     local low, high = first, second
     if second.name < first.name then low, high = second, first end
+    -- Put back what was there, not nil. These instances carry a real minLevel now,
+    -- and clearing it would leave every later assertion reading a doctored table.
+    local lowWas, highWas = low.minLevel, high.minLevel
     low.minLevel, high.minLevel = 60, 10
     local byLevel = WishlistService.GetGrouped(false)
     out.wishlistLevelBeatsName = (byLevel[1].name == high.name) and 1 or 0
-    low.minLevel, high.minLevel = nil, nil
+    low.minLevel, high.minLevel = lowWas, highWas
 
     --[[
         An entry saved from the instance page, before the loot rows carried their
@@ -689,6 +739,455 @@ PROBE = """
         ProgressService.ClearAll()
         out.discoveryDefaultsOff = DiscoveryService.IsEnabled() and 0 or 1
     end
+
+    --[[
+        The suggestion ranking.
+
+        Two real instances are doctored and put back, rather than named, because
+        the five clients do not ship the same ones and a named instance would make
+        this a test of which client is running. Only their relative order is
+        asserted, so whatever else ranks between them is free to.
+    ]]
+    local alpha, beta
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        -- An instance with no bosses is never ranked, so it cannot stand in here.
+        if #dungeon > 0 then
+            if not alpha then alpha = dungeon elseif not beta then beta = dungeon end
+        end
+    end
+    local alphaWas = { alpha.minLevel, alpha.levelRange }
+    local betaWas = { beta.minLevel, beta.levelRange }
+    -- _G, not the bare name: assigning through the facade would put it on the
+    -- facade table and leave the stub's UnitLevel reading _G's unchanged 60.
+    local levelWas = _G.AGC_TEST_LEVEL
+    WishlistService.ClearAll()
+    ProgressService.ClearAll()
+    _G.AGC_TEST_LEVEL = 30
+
+    --[[
+        Hand in every quest in the pair, so the quest term cannot move either of
+        them while the terms below are being asserted.
+
+        Each assertion here separates two instances by a level or two, and an open
+        quest is worth two of those -- nineteen Era dungeons carry quest data and
+        the pair is whatever the client lists first, so without this the ranking
+        turns on which of the two happens to have more quests. That is exactly how
+        the "somewhere new" assertion started failing on Forever.
+    ]]
+    local function handInQuests(instance)
+        for _, quest in ipairs(QuestService.GetQuests(instance.name)) do
+            _G.AGC_TEST_COMPLETED_QUESTS[quest.id] = true
+        end
+    end
+    local function reopenQuests(instance)
+        for _, quest in ipairs(QuestService.GetQuests(instance.name)) do
+            _G.AGC_TEST_COMPLETED_QUESTS[quest.id] = nil
+        end
+    end
+    handInQuests(alpha)
+    handInQuests(beta)
+
+    --[[
+        Found by identity, not by name. Blackfathom Deeps, Gnomeregan and Sunken
+        Temple are each a dungeon *and* a raid under the same name, so a name
+        search finds the raid when the dungeon is the one being doctored -- which
+        is how the door assertion first passed a locked instance.
+    ]]
+    local function rankOf(instance)
+        for index, suggestion in ipairs(SuggestionService.GetRanked()) do
+            if suggestion.instance == instance then return index end
+        end
+        return math.huge
+    end
+    local function suggestionFor(instance)
+        for _, suggestion in ipairs(SuggestionService.GetRanked()) do
+            if suggestion.instance == instance then return suggestion end
+        end
+        return nil
+    end
+
+    -- Nothing the player cannot walk into is offered at all.
+    alpha.minLevel, alpha.levelRange = 55, { 55, 60 }
+    beta.minLevel, beta.levelRange = 1, { 28, 32 }
+    out.suggestionRespectsTheDoor = (rankOf(alpha) == math.huge) and 1 or 0
+
+    -- The better level fit leads.
+    alpha.minLevel, alpha.levelRange = 1, { 80, 90 }
+    out.suggestionPrefersLevelFit = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+
+    -- Untouched reads as untouched, asked before anything below beats a boss.
+    local freshSuggestion = suggestionFor(beta)
+    out.suggestionKindUnvisited =
+        (freshSuggestion and freshSuggestion.kind == "unvisited") and 1 or 0
+
+    --[[
+        A wanted item lifts an instance over a slightly better fit, and cannot lift
+        one the player has no business in. Alpha is one level out and beta fits, so
+        a single item is enough; alpha twenty-five levels out and it is not.
+    ]]
+    alpha.levelRange = { 31, 36 }
+    WishlistService.AddItem(501, "link", "Item", "Boss", alpha.name)
+    out.suggestionWishlistLifts = (rankOf(alpha) < rankOf(beta)) and 1 or 0
+    alpha.levelRange = { 1, 5 }
+    out.suggestionWishlistIsNotAVeto = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+
+    --[[
+        Somewhere new edges out somewhere already started, but only just.
+
+        Beta is given the worse band by one level, so the nudge toward new content
+        is the only thing that can put it first, and setting that nudge to zero
+        flips it. Any wider a gap and the band alone would decide.
+    ]]
+    WishlistService.ClearAll()
+    alpha.levelRange, beta.levelRange = { 28, 32 }, { 31, 36 }
+    ProgressService.MarkDefeated(alpha.name, alpha[1])
+    out.suggestionPrefersSomewhereNew = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+
+    --[[
+        Beaten everything sinks, and says so.
+
+        Alpha is given the better level fit and beta a worse one, so only the
+        cleared penalty can put beta first. An earlier version gave both the same
+        band, and then the unvisited bonus on beta was enough on its own -- it
+        passed with the penalty set to zero, which is no test of the penalty.
+
+        Beta also has a boss beaten, so it is partial rather than unvisited and
+        carries no bonus either. What is left between them is the penalty alone.
+    ]]
+    WishlistService.ClearAll()
+    alpha.levelRange, beta.levelRange = { 28, 32 }, { 34, 38 }
+    for _, encounter in ipairs(alpha) do
+        ProgressService.MarkDefeated(alpha.name, encounter)
+    end
+    ProgressService.MarkDefeated(beta.name, beta[1])
+    out.suggestionClearedSinks = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+    local alphaSuggestion = suggestionFor(alpha)
+    out.suggestionKindCleared =
+        (alphaSuggestion and alphaSuggestion.kind == "cleared") and 1 or 0
+    local betaSuggestion = suggestionFor(beta)
+    out.suggestionKindPartial =
+        (betaSuggestion and betaSuggestion.kind == "partial") and 1 or 0
+
+    -- GetTop never pads beyond what there is.
+    out.suggestionTopCapped = (#SuggestionService.GetTop(3) <= 3) and 1 or 0
+
+    alpha.minLevel, alpha.levelRange = alphaWas[1], alphaWas[2]
+    beta.minLevel, beta.levelRange = betaWas[1], betaWas[2]
+    reopenQuests(alpha)
+    reopenQuests(beta)
+
+    --[[
+        Open quests lift an instance, and handing them in puts it back.
+
+        A pair again, but chosen for whether they carry quest data rather than taken
+        off the top of the list: the one with quests is given the *worse* band by a
+        level, so nothing but the quest term can put it first. Both are unvisited and
+        neither is wishlisted, so the other terms cancel.
+
+        Quest data ships for Era's nineteen dungeons only. All five clients list at
+        least one of them today, so the -1 branch below is a guard rather than a
+        path any of them takes: a client that listed none would otherwise record a
+        pass for a rule it never checked.
+    ]]
+    WishlistService.ClearAll()
+    ProgressService.ClearAll()
+    local questInstance, plainInstance
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        if #dungeon > 0 then
+            if not questInstance and #QuestService.GetQuests(dungeon.name) > 0 then
+                questInstance = dungeon
+            elseif not plainInstance then
+                plainInstance = dungeon
+            end
+        end
+    end
+    if questInstance and plainInstance then
+        local questWas = { questInstance.minLevel, questInstance.levelRange }
+        local plainWas = { plainInstance.minLevel, plainInstance.levelRange }
+        handInQuests(plainInstance)
+        reopenQuests(questInstance)
+        questInstance.minLevel, questInstance.levelRange = 1, { 31, 36 }
+        plainInstance.minLevel, plainInstance.levelRange = 1, { 28, 32 }
+        out.suggestionQuestsLift =
+            (rankOf(questInstance) < rankOf(plainInstance)) and 1 or 0
+        -- The same instance, once its quests are handed in. The band it was given
+        -- is still the worse one, so it drops back.
+        handInQuests(questInstance)
+        out.suggestionHandedInQuestsDoNotCount =
+            (rankOf(plainInstance) < rankOf(questInstance)) and 1 or 0
+        --[[
+            What the pane reads is the number still open to this character, which
+            is not the number of quests the instance has.
+
+            Both of the rules that make those differ are checked by moving the
+            count by one, rather than by recomputing it here -- a test that works
+            out the expected number the same way the service does would agree with
+            it however wrong both were.
+
+            The quest moved is the one the service itself named, so there is no
+            second opinion about which quest it was counting.
+        ]]
+        reopenQuests(questInstance)
+        local open = suggestionFor(questInstance)
+        out.suggestionNamesAQuest = (open and open.questName ~= nil) and 1 or 0
+        local named
+        for _, quest in ipairs(QuestService.GetQuests(questInstance.name)) do
+            if open and quest.name == open.questName then named = quest break end
+        end
+
+        --[[
+            Both of the moves below need that named quest, so a service that stopped
+            naming one has to read as a failure here rather than as an error -- an
+            error aborts the probe and takes every assertion after it with it, which
+            reads as a harness fault rather than as the fault it is.
+        ]]
+        if named then
+            -- Handed in: one fewer reason to go.
+            _G.AGC_TEST_COMPLETED_QUESTS[named.id] = true
+            out.suggestionCountsOpenQuests =
+                (suggestionFor(questInstance).quests == open.quests - 1) and 1 or 0
+            _G.AGC_TEST_COMPLETED_QUESTS[named.id] = nil
+
+            -- Out of reach: likewise. The quest is doctored rather than the player's
+            -- level, so the instance's door and band stay where this block set them.
+            local namedMinWas = named.minLevel
+            named.minLevel = 99
+            out.suggestionIgnoresQuestsAboveLevel =
+                (suggestionFor(questInstance).quests == open.quests - 1) and 1 or 0
+            named.minLevel = namedMinWas
+        else
+            out.suggestionCountsOpenQuests = 0
+            out.suggestionIgnoresQuestsAboveLevel = 0
+        end
+        questInstance.minLevel, questInstance.levelRange = questWas[1], questWas[2]
+        plainInstance.minLevel, plainInstance.levelRange = plainWas[1], plainWas[2]
+    else
+        out.suggestionQuestsLift = -1
+        out.suggestionHandedInQuestsDoNotCount = -1
+        out.suggestionCountsOpenQuests = -1
+        out.suggestionIgnoresQuestsAboveLevel = -1
+        out.suggestionNamesAQuest = -1
+    end
+    _G.AGC_TEST_COMPLETED_QUESTS = {}
+    _G.AGC_TEST_LEVEL = levelWas
+    WishlistService.ClearAll()
+    ProgressService.ClearAll()
+    --[[
+        Where this character left off.
+
+        No client records it. There is no "last zone" to read and the quest log is
+        the nearest thing, which answers what is unfinished rather than where they
+        were, so LevellingService watches XP land and remembers where. The stub owns
+        the zone and whether it counts as an instance, which makes all three rules
+        drivable here: repetition before a zone is believed, instances thrown away,
+        and the quest log standing in for a character with nothing recorded yet.
+    ]]
+    local zoneWas, inInstanceWas = _G.AGC_TEST_ZONE, _G.AGC_TEST_IN_INSTANCE
+    local questLogWas = _G.AGC_TEST_QUEST_LOG
+    _G.AGC_TEST_QUEST_LOG = {}
+
+    -- One gain is not evidence: a quest handed in at Ironforge pays out there.
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_ZONE = "Ironforge"
+    LevellingService.NoteXPGain()
+    out.levellingNeedsRepeatedGains =
+        (LevellingService.GetWhereYouLeftOff() == nil) and 1 or 0
+
+    -- Three in the same zone is.
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_ZONE = "Hillsbrad Foothills"
+    _G.AGC_TEST_LEVEL = 32
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    local leftOff = LevellingService.GetWhereYouLeftOff()
+    out.levellingRemembersAZone = (leftOff
+            and leftOff.zone == "Hillsbrad Foothills"
+            and leftOff.level == 32
+            and leftOff.remembered == true) and 1 or 0
+
+    --[[
+        XP earned in a dungeon is not levelling in a zone. Clearing Deadmines pays
+        a great deal of it, and answering "where were you" with a dungeon is both
+        true and useless -- the panes beside this one are the ones for dungeons.
+    ]]
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_IN_INSTANCE = true
+    _G.AGC_TEST_ZONE = "The Deadmines"
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    out.levellingIgnoresInstanceGains =
+        (LevellingService.GetWhereYouLeftOff() == nil) and 1 or 0
+    _G.AGC_TEST_IN_INSTANCE = false
+
+    -- How long ago, in whole days, so the pane can say "yesterday" rather than a
+    -- timestamp. Set three days back; the service does the arithmetic.
+    LevellingService.Remember("Arathi Highlands", 35, time() - 3 * 86400)
+    local aged = LevellingService.GetWhereYouLeftOff()
+    out.levellingAgesTheMemory = (aged and aged.days == 3) and 1 or 0
+
+    --[[
+        The quests still open there, counted off the log's zone headers rather than
+        its rows: a row belongs to the header above it, and five rows here are two
+        quests in the remembered zone.
+    ]]
+    LevellingService.Remember("Arathi Highlands", 35)
+    _G.AGC_TEST_QUEST_LOG = {
+        { title = "Arathi Highlands", isHeader = true },
+        { title = "Lost Deathstalkers", questID = 661 },
+        { title = "Stromgarde Badge", questID = 664 },
+        { title = "Wetlands", isHeader = true },
+        { title = "The Absent-Minded Prospector", questID = 1393 },
+    }
+    local counted = LevellingService.GetWhereYouLeftOff()
+    out.levellingCountsQuestsInZone = (counted and counted.quests == 2) and 1 or 0
+
+    -- And their names, which is what the badge on that pane hangs in a tooltip.
+    out.levellingNamesTheQuests = (counted and counted.questTitles
+            and #counted.questTitles == 2
+            and counted.questTitles[1] == "Lost Deathstalkers"
+            and counted.questTitles[2] == "Stromgarde Badge") and 1 or 0
+
+    --[[
+        Nothing recorded -- a character who was levelling before the addon learned
+        to watch -- and the log answers instead, with the zone holding most of it.
+        Reported as a deduction rather than a memory, because the pane words it as
+        one.
+    ]]
+    LevellingService.Remember(nil)
+    local deduced = LevellingService.GetWhereYouLeftOff()
+    out.levellingFallsBackToQuestLog = (deduced
+            and deduced.zone == "Arathi Highlands"
+            and deduced.quests == 2
+            and deduced.remembered == false) and 1 or 0
+
+    --[[
+        The classic-line half of the quest log shim, which nothing else here
+        reaches: the stub answers as the mainline family does, so C_QuestLog is
+        taken away to force the other branch. The same facts arrive as a list
+        rather than a table and in a different order, and reading that order wrong
+        is the whole risk of the shim.
+    ]]
+    local getInfoWas = C_QuestLog.GetInfo
+    local getCountWas = C_QuestLog.GetNumQuestLogEntries
+    C_QuestLog.GetInfo, C_QuestLog.GetNumQuestLogEntries = nil, nil
+    _G.GetNumQuestLogEntries = function() return 2, 1 end
+    _G.GetQuestLogTitle = function(index)
+        if index == 1 then return "Westfall", nil, nil, true end
+        return "Red Linen Goods", 12, nil, false, nil, nil, nil, 5541
+    end
+    local header = Compat.GetQuestLogEntry(1)
+    local row = Compat.GetQuestLogEntry(2)
+    out.questLogShimReadsClassicApi = (Compat.GetNumQuestLogEntries() == 2
+            and header and header.isHeader == true and header.title == "Westfall"
+            and row and row.isHeader == false and row.level == 12
+            and row.questID == 5541) and 1 or 0
+    C_QuestLog.GetInfo, C_QuestLog.GetNumQuestLogEntries = getInfoWas, getCountWas
+    _G.GetNumQuestLogEntries, _G.GetQuestLogTitle = nil, nil
+
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_ZONE, _G.AGC_TEST_IN_INSTANCE = zoneWas, inInstanceWas
+    _G.AGC_TEST_QUEST_LOG = questLogWas or {}
+
+    --[[
+        The pane beside the big one: what opens up next, which the ranking can
+        never offer because it leaves out everything the player cannot enter.
+
+        Driven off the highest door this client ships rather than off a number, so
+        it does not become a test of which client is running. At that level nothing
+        is above the player, so the two doctored doors are the only candidates.
+    ]]
+    local ceiling = 0
+    for _, instance in ipairs(InstanceService.GetDungeons()) do
+        if instance.minLevel and instance.minLevel > ceiling then
+            ceiling = instance.minLevel
+        end
+    end
+    for _, instance in ipairs(InstanceService.GetRaids()) do
+        if instance.minLevel and instance.minLevel > ceiling then
+            ceiling = instance.minLevel
+        end
+    end
+    local alphaMinWas, betaMinWas = alpha.minLevel, beta.minLevel
+    _G.AGC_TEST_LEVEL = ceiling
+    alpha.minLevel, beta.minLevel = nil, nil
+    out.unlockIsNilAtTheCeiling =
+        (SuggestionService.GetNextUnlock() == nil) and 1 or 0
+
+    alpha.minLevel = ceiling + 10
+    local unlock = SuggestionService.GetNextUnlock()
+    out.unlockIsAboveThePlayer = (unlock
+            and unlock.instance == alpha
+            and unlock.kind == "locked"
+            and unlock.unlockLevel == ceiling + 10) and 1 or 0
+
+    -- The nearest door, not the first one the lists happen to hold.
+    beta.minLevel = ceiling + 5
+    unlock = SuggestionService.GetNextUnlock()
+    out.unlockIsTheNearestDoor = (unlock and unlock.instance == beta) and 1 or 0
+
+    -- And that is what the companion pane holds, rather than the runner-up the
+    -- arrows used to leave stranded in it.
+    local companion = SuggestionService.GetCompanion(SuggestionService.GetRanked())
+    out.companionIsTheNextUnlock =
+        (companion and companion.instance == beta) and 1 or 0
+
+    --[[
+        With nothing left to unlock the character is at the cap, where the raids are
+        the content they have not run.
+
+        Forever takes the -1 branch, and should: its two raids are placeholders
+        carrying no encounters, so neither is ever ranked and there is no raid for
+        the pane to fall back to. On that client the companion stays the runner-up,
+        which is the honest answer while the data says nothing.
+    ]]
+    alpha.minLevel, beta.minLevel = nil, nil
+    local raidNames = {}
+    for _, instance in ipairs(InstanceService.GetRaids()) do
+        if #instance > 0 then raidNames[instance.name] = true end
+    end
+    if next(raidNames) then
+        companion = SuggestionService.GetCompanion(SuggestionService.GetRanked())
+        out.companionFallsBackToARaid =
+            (companion and raidNames[companion.name] == true) and 1 or 0
+    else
+        out.companionFallsBackToARaid = -1
+    end
+
+    alpha.minLevel, beta.minLevel = alphaMinWas, betaMinWas
+    _G.AGC_TEST_LEVEL = levelWas
+
+    --[[
+        UI.Init's two passes, with a component registered *after* the one that reaches
+        for it -- which is the arrangement that broke.
+
+        ui/UI.xml decides the order of the first pass, so a component acting on
+        another from its own Init sees whatever that file's position gives it. The
+        journal's landing tab did exactly that: EncounterJournalTabs ends by clicking
+        its first tab, and when that became Suggested Content -- five lines further
+        down ui/UI.xml -- the click ran against a component whose Init had not run.
+
+        Both halves are asserted. That PostInit runs at all is the fix; that it runs
+        after the later component's Init is the whole point of it, and a PostInit
+        called from inside the first loop would still pass the first assertion.
+    ]]
+    local order = {}
+    local actor = { Init = function() order[#order + 1] = "actor-init" end,
+                    PostInit = function() order[#order + 1] = "actor-post" end }
+    local late = { Init = function() order[#order + 1] = "late-init" end }
+    UI.Add(actor)
+    UI.Add(late)
+    UI.Init()
+    out.uiRunsPostInit = (order[#order] == "actor-post") and 1 or 0
+    local actorPost, lateInit
+    for index, step in ipairs(order) do
+        if step == "actor-post" then actorPost = index end
+        if step == "late-init" then lateInit = index end
+    end
+    out.uiPostInitWaitsForEveryInit =
+        (actorPost and lateInit and lateInit < actorPost) and 1 or 0
+
     return out
 
 """
@@ -712,8 +1211,42 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -795,8 +1328,42 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -878,8 +1445,42 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -975,8 +1576,42 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": -1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,
@@ -1059,8 +1694,42 @@ EXPECTED = {
         "seasonNoDate": "none",
         "unclaimedAbilities": 0,
         "miscastAbilities": 0,
+        "bossLevel": "19",
+        "bossCreatureType": "Humanoid",
+        "bossClassification": "Elite",
+        "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingNamesTheQuests": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": -1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
-        "wishlistSortedByName": 1,
+        "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
         "wishlistGroupItems": 3,
         "wishlistGroupBosses": 2,

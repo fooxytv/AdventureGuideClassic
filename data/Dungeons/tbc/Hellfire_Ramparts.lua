@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Hellfire Ramparts",
 	instanceID = 543,
+	minLevel = 57,
+	levelRange = { 59, 67 },
 	thumbnail = 608207,
 	icon = 608207,
 	splash = 608246,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Watchkeeper Gargolmar",
 		defeated = 0,
 		encounterID = 17306,
+		level = 62,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607817,
 		loot = {
 			{ id = 24024, seasonFilter = "tbc" },
@@ -72,6 +77,9 @@ InstanceService.AddDungeon({
 		name = "Omor the Unscarred",
 		defeated = 0,
 		encounterID = 17308,
+		level = 62,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607734,
 		loot = {
 			{ id = 24090, seasonFilter = "tbc" },
@@ -133,6 +141,9 @@ InstanceService.AddDungeon({
 		name = "Vazruden the Herald",
 		defeated = 0,
 		encounterID = 17537,
+		level = 62,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607812,
 		loot = {
 			{ id = 24150, seasonFilter = "tbc" },
