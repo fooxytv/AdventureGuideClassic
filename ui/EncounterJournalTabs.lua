@@ -143,7 +143,20 @@ function component.Init(components_)
         AdventureGuideNavigationService.Reset()
         components.Wishlist.Show()
     end)
-    EncounterJournal.Tabs[1]:GetScript("OnClick")()
+end
+
+--[[
+    The landing view, chosen once the rest of the UI exists.
+
+    This was the last line of Init, which was fine while the first tab was Dungeons:
+    ui/InstanceSelect.lua is registered ahead of this file, so it had built its
+    frames by then. Suggested Content is registered *after* it, so clicking it from
+    Init called Suggest.Show() before Suggest.Init had made a single pane --
+    "attempt to perform indexed assignment on local 'pane'". PostInit runs after
+    every component's Init, whatever the order in ui/UI.xml.
+]]
+function component.PostInit()
+    tabs[1]:GetScript("OnClick")()
 end
 
 UI.Add(component)

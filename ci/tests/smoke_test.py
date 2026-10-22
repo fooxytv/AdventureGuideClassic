@@ -70,6 +70,13 @@ WIDGET_FILES = (
     "ui/widgets/NPC.lua",
 )
 
+# ui/UI.lua, loaded the same way and for the same reason: the component registry
+# needs nothing but the one CreateFrame the stub already answers, and the order its
+# two Init passes run in is not something an in-game look checks cheaply. Getting it
+# wrong took the whole journal out -- the landing tab's click reached a component
+# registered after it, before that component had built anything.
+REGISTRY_FILES = ("ui/UI.lua",)
+
 
 def check(name, actual, expected):
     if actual != expected:
@@ -146,11 +153,11 @@ def load_addon(lua, files):
 
 
 def load_widgets(lua, facade):
-    """Load the widget type files into the same facade environment."""
+    """Load the widget types and the UI registry into the same facade environment."""
     make_chunk = lua.eval(
         'function(src, name, env) return assert(load(src, name, "t", env)) end'
     )
-    for rel in WIDGET_FILES:
+    for rel in WIDGET_FILES + REGISTRY_FILES:
         source = (ROOT / rel).read_text(encoding="utf-8", errors="replace")
         make_chunk(source, "@" + rel, facade)(ADDON, lua.globals().__ns)
 
@@ -846,6 +853,37 @@ PROBE = """
     _G.AGC_TEST_LEVEL = levelWas
     WishlistService.ClearAll()
     ProgressService.ClearAll()
+
+    --[[
+        UI.Init's two passes, with a component registered *after* the one that reaches
+        for it -- which is the arrangement that broke.
+
+        ui/UI.xml decides the order of the first pass, so a component acting on
+        another from its own Init sees whatever that file's position gives it. The
+        journal's landing tab did exactly that: EncounterJournalTabs ends by clicking
+        its first tab, and when that became Suggested Content -- five lines further
+        down ui/UI.xml -- the click ran against a component whose Init had not run.
+
+        Both halves are asserted. That PostInit runs at all is the fix; that it runs
+        after the later component's Init is the whole point of it, and a PostInit
+        called from inside the first loop would still pass the first assertion.
+    ]]
+    local order = {}
+    local actor = { Init = function() order[#order + 1] = "actor-init" end,
+                    PostInit = function() order[#order + 1] = "actor-post" end }
+    local late = { Init = function() order[#order + 1] = "late-init" end }
+    UI.Add(actor)
+    UI.Add(late)
+    UI.Init()
+    out.uiRunsPostInit = (order[#order] == "actor-post") and 1 or 0
+    local actorPost, lateInit
+    for index, step in ipairs(order) do
+        if step == "actor-post" then actorPost = index end
+        if step == "late-init" then lateInit = index end
+    end
+    out.uiPostInitWaitsForEveryInit =
+        (actorPost and lateInit and lateInit < actorPost) and 1 or 0
+
     return out
 
 """
@@ -883,6 +921,8 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -980,6 +1020,8 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -1077,6 +1119,8 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -1188,6 +1232,8 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -1286,6 +1332,8 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "uiRunsPostInit": 1,
+        "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
