@@ -45,6 +45,14 @@ local LARGE_RING, LARGE_ICON = 78, 50
 local SMALL_RING, SMALL_ICON = 66, 42
 local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
+--[[
+	The levelling reminder's portrait. A map, because that pane is about a place
+	and the client has no art for a zone. Checked against the client's own icon
+	set rather than guessed: I is a path generator, so a name that does not exist
+	is a blank ring instead of an error.
+]]
+local LEFT_OFF_ICON = "Interface\\Icons\\INV_Misc_Map_01"
+
 -- Blizzard's ink: near-black for a heading, a dark red-brown for the body.
 local TITLE_COLOUR = { 0.1, 0.07, 0.04 }
 local BODY_COLOUR = { 0.2824, 0.0157, 0.0157 }
@@ -93,6 +101,10 @@ local function Describe(suggestion)
 		lines[1] = count == 1
 				and "An item you are still hunting drops here."
 				or ("%d items you are still hunting drop here."):format(count)
+	elseif suggestion.kind == "locked" then
+		-- The door, which is the one thing the other three panes never mention:
+		-- they only ever show what can be entered today.
+		lines[1] = ("Opens at level %d."):format(suggestion.unlockLevel or 0)
 	elseif suggestion.kind == "unvisited" then
 		lines[1] = "You have never set foot in here."
 	elseif suggestion.kind == "partial" then
@@ -120,6 +132,70 @@ local function Describe(suggestion)
 		lines[#lines + 1] = ("%d quests here are still open."):format(quests)
 	end
 	return table.concat(lines, "\n")
+end
+
+--[[
+	What the pane's button offers.
+
+	A locked instance reads as a look rather than as a trip: the journal shows its
+	bosses and its loot at any level, which is the point of offering it four levels
+	early, but the player cannot walk in yet and the button should not imply they
+	can.
+]]
+local function ButtonLabel(suggestion)
+	if suggestion.kind == "locked" then return "Preview" end
+	if suggestion.kind == "cleared" then return "Revisit" end
+	return "Open"
+end
+
+-- How long ago, in words. Past a month the number stops being the useful part.
+local function AgePhrase(days)
+	if not days then return nil end
+	if days == 0 then return "today" end
+	if days == 1 then return "yesterday" end
+	if days <= 30 then return ("%d days ago"):format(days) end
+	return "a while back"
+end
+
+--[[
+	The bottom-right pane: where this character was levelling.
+
+	A card rather than a suggestion. It is not an instance and there is nowhere to
+	send anyone -- the client will not open the world map to a zone by name -- so
+	the pane hides its button rather than offering a trip it cannot make.
+
+	The service decides which of the two cases holds and the words are here, as
+	they are for the instances. A remembered zone is stated; a zone worked out
+	from the quest log is worded as the deduction it is.
+]]
+local function LeftOffCard()
+	local state = LevellingService and LevellingService.GetWhereYouLeftOff()
+	if not (state and state.zone) then return nil end
+
+	local lines = { }
+	if state.remembered then
+		local age = AgePhrase(state.days)
+		lines[1] = age and ("You left off here, %s."):format(age)
+				or "This is where you left off."
+		if state.level then
+			lines[#lines + 1] = ("You were level %d."):format(state.level)
+		end
+	else
+		lines[1] = "Where your open quests are."
+	end
+
+	local quests = state.quests or 0
+	if quests == 1 then
+		lines[#lines + 1] = "One quest still open."
+	elseif quests > 1 then
+		lines[#lines + 1] = ("%d quests still open."):format(quests)
+	end
+
+	return {
+		title = state.zone,
+		description = table.concat(lines, "\n"),
+		icon = LEFT_OFF_ICON,
+	}
 end
 
 local function GoTo(suggestion)
@@ -205,7 +281,7 @@ local function BuildPane(parent, large)
 
 	pane.button = CreateFrame("Button", nil, pane, "UIPanelButtonTemplate")
 	pane.button:SetScript("OnClick", function(self)
-		GoTo(self:GetParent().suggestion)
+		GoTo(self:GetParent().entry)
 	end)
 
 	BuildReward(pane)
@@ -256,18 +332,34 @@ local function BuildPane(parent, large)
 	return pane
 end
 
-local function FillPane(pane, suggestion)
-	pane.suggestion = suggestion
-	if not suggestion then
+--[[
+	A pane holds either a suggested instance or a card, told apart by whether it
+	carries one. Everything the art provides is shared; what differs is that a card
+	brings its own words and has no trip to offer.
+]]
+local function FillPane(pane, entry)
+	pane.entry = entry
+	if not entry then
 		pane:Hide()
 		return
 	end
 	pane:Show()
-	SetIcon(pane.icon, suggestion.instance.icon)
-	pane.title:SetText(suggestion.name)
-	pane.description:SetText(Describe(suggestion))
-	pane.button:SetText(suggestion.kind == "cleared" and "Revisit" or "Open")
-	local item = suggestion.kind == "wishlist" and suggestion.wantedItem
+
+	if not entry.instance then
+		SetIcon(pane.icon, entry.icon)
+		pane.title:SetText(entry.title)
+		pane.description:SetText(entry.description)
+		pane.button:Hide()
+		pane.reward:Hide()
+		return
+	end
+
+	SetIcon(pane.icon, entry.instance.icon)
+	pane.title:SetText(entry.name)
+	pane.description:SetText(Describe(entry))
+	pane.button:SetText(ButtonLabel(entry))
+	pane.button:Show()
+	local item = entry.kind == "wishlist" and entry.wantedItem
 	if item then
 		pane.reward.itemLink = item.itemLink
 		local icon = GetItemIcon and GetItemIcon(item.itemID)
@@ -291,20 +383,34 @@ local function Step(by)
 	component.Refresh()
 end
 
+--[[
+	The three panes, each answering its own question.
+
+	Only the big one is a page of the ranking, and the offset is none of the other
+	two's business -- retail's own frame calls it the *primary* offset for that
+	reason, and fills its Suggestion2 and Suggestion3 from elsewhere entirely.
+
+	So: what to do now, what opens up next, and where this character left off.
+	Each side pane falls back to the ranking when it has nothing of its own to
+	say, because an empty pane is a hole in the artwork rather than a blank space.
+]]
 function component.Refresh()
 	local ranked = SuggestionService.GetRanked()
-	if offset > math.max(#ranked - 1, 0) then offset = 0 end
+	if #ranked == 0 then
+		FillPane(panes.primary, nil)
+		FillPane(panes.secondary, nil)
+		FillPane(panes.tertiary, nil)
+		suggest.empty:Show()
+		suggest.prev:SetEnabled(false)
+		suggest.next:SetEnabled(false)
+		return
+	end
+
+	suggest.empty:Hide()
+	if offset > #ranked - 1 then offset = 0 end
 	FillPane(panes.primary, ranked[offset + 1])
-	--[[
-		The two side panes are not pages of the same list, so the offset is none of
-		their business -- they hold the second and third suggestions and stay there
-		while the big pane is read through. Retail's own frame calls this the
-		*primary* offset for that reason: C_AdventureJournal.SetPrimaryOffset moves
-		one pane, and Suggestion2 and Suggestion3 come from elsewhere entirely.
-	]]
-	FillPane(panes.secondary, ranked[2])
-	FillPane(panes.tertiary, ranked[3])
-	suggest.empty:SetShown(#ranked == 0)
+	FillPane(panes.secondary, SuggestionService.GetCompanion(ranked))
+	FillPane(panes.tertiary, LeftOffCard() or ranked[3])
 	suggest.prev:SetEnabled(offset > 0)
 	suggest.next:SetEnabled(offset + 1 < #ranked)
 end
