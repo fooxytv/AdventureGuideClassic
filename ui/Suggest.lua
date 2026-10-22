@@ -106,6 +106,19 @@ local function Describe(suggestion)
 				and ("Level %d."):format(range[1])
 				or ("Levels %d to %d."):format(range[1], range[2])
 	end
+	--[[
+		The quests, named when there is one of them. A single quest's name is the
+		useful thing to say and fits the pane; nine names would be the pane's whole
+		contents, so those are counted instead.
+	]]
+	local quests = suggestion.quests or 0
+	if quests == 1 and suggestion.questName then
+		lines[#lines + 1] = ("Quest to pick up: %s."):format(suggestion.questName)
+	elseif quests == 1 then
+		lines[#lines + 1] = "One quest here is still open."
+	elseif quests > 1 then
+		lines[#lines + 1] = ("%d quests here are still open."):format(quests)
+	end
 	return table.concat(lines, "\n")
 end
 

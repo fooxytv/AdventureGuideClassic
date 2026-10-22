@@ -62,6 +62,17 @@ local WANTED_WEIGHT = 3
 local WANTED_CAP = 5
 
 --[[
+	An open quest pulls an instance up too, a little less hard than a wanted item.
+
+	Deliberately less: a wishlist entry is loot the player went and chose, where a
+	dungeon quest is one the game handed out. Capped for the same reason as the
+	loot -- Blackrock Depths has a dozen, and twelve is not twelve times the reason
+	to go.
+]]
+local QUEST_WEIGHT = 2
+local QUEST_CAP = 4
+
+--[[
 	Items still wanted, by the instance they were taken from.
 
 	Keyed on the instance *name*, because that is all a wishlist entry stores.
@@ -95,6 +106,31 @@ local function DefeatedCount(instance)
 		end
 	end
 	return defeated
+end
+
+--[[
+	Quests here that are still worth walking in with, and one of them to name.
+
+	Still worth it means: not already handed in, and not above the player's level,
+	since a quest that cannot be picked up yet is not a reason to go now. The
+	faction filter is QuestService's own, so a Horde player is never pulled toward
+	an Alliance quest.
+
+	Quest data ships for Era's nineteen dungeons, so most instances answer zero and
+	the term simply drops out of their score. That includes every raid and every TBC
+	dungeon, which is a gap in the data rather than a judgement about them.
+]]
+local function OutstandingQuests(instance, playerLevel)
+	if not QuestService then return 0, nil end
+	local count, sample = 0, nil
+	for _, quest in ipairs(QuestService.GetQuests(instance.name)) do
+		local reachable = not quest.minLevel or playerLevel >= quest.minLevel
+		if reachable and QuestService.GetState(quest.id) ~= "completed" then
+			count = count + 1
+			sample = sample or quest
+		end
+	end
+	return count, sample
 end
 
 local function PlayerLevel()
@@ -148,6 +184,8 @@ function SuggestionService.GetRanked()
 				score = score - UNVISITED_BONUS
 			end
 			score = score - math.min(wanted, WANTED_CAP) * WANTED_WEIGHT
+			local quests, questSample = OutstandingQuests(instance, playerLevel)
+			score = score - math.min(quests, QUEST_CAP) * QUEST_WEIGHT
 			table.insert(ranked, {
 				instance = instance,
 				name = instance.name,
@@ -155,6 +193,8 @@ function SuggestionService.GetRanked()
 				score = score,
 				wanted = wanted,
 				wantedItem = samples[instance.name],
+				quests = quests,
+				questName = questSample and questSample.name,
 				defeated = defeated,
 				total = total,
 				levelRange = instance.levelRange,

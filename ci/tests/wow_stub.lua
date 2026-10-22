@@ -356,8 +356,17 @@ end
 
 _G.EJ_GetEncounterInfoByIndex = function() return nil end
 
+--[[
+	Quests this character has handed in, settable by a test. Nothing is completed by
+	default, which is the state a fresh character is in and the one most assertions
+	want; a test that needs the other branch puts the id in here.
+]]
+_G.AGC_TEST_COMPLETED_QUESTS = {}
+
 _G.C_QuestLog = {
-	IsQuestFlaggedCompleted = function() return false end,
+	IsQuestFlaggedCompleted = function(questID)
+		return _G.AGC_TEST_COMPLETED_QUESTS[questID] == true
+	end,
 	GetNumQuestLogEntries = function() return 0 end,
 	GetInfo = function() return nil end,
 	GetQuestIDForLogIndex = function() return nil end,

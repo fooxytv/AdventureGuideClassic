@@ -765,6 +765,29 @@ PROBE = """
     _G.AGC_TEST_LEVEL = 30
 
     --[[
+        Hand in every quest in the pair, so the quest term cannot move either of
+        them while the terms below are being asserted.
+
+        Each assertion here separates two instances by a level or two, and an open
+        quest is worth two of those -- nineteen Era dungeons carry quest data and
+        the pair is whatever the client lists first, so without this the ranking
+        turns on which of the two happens to have more quests. That is exactly how
+        the "somewhere new" assertion started failing on Forever.
+    ]]
+    local function handInQuests(instance)
+        for _, quest in ipairs(QuestService.GetQuests(instance.name)) do
+            _G.AGC_TEST_COMPLETED_QUESTS[quest.id] = true
+        end
+    end
+    local function reopenQuests(instance)
+        for _, quest in ipairs(QuestService.GetQuests(instance.name)) do
+            _G.AGC_TEST_COMPLETED_QUESTS[quest.id] = nil
+        end
+    end
+    handInQuests(alpha)
+    handInQuests(beta)
+
+    --[[
         Found by identity, not by name. Blackfathom Deeps, Gnomeregan and Sunken
         Temple are each a dungeon *and* a raid under the same name, so a name
         search finds the raid when the dungeon is the one being doctored -- which
@@ -850,6 +873,102 @@ PROBE = """
 
     alpha.minLevel, alpha.levelRange = alphaWas[1], alphaWas[2]
     beta.minLevel, beta.levelRange = betaWas[1], betaWas[2]
+    reopenQuests(alpha)
+    reopenQuests(beta)
+
+    --[[
+        Open quests lift an instance, and handing them in puts it back.
+
+        A pair again, but chosen for whether they carry quest data rather than taken
+        off the top of the list: the one with quests is given the *worse* band by a
+        level, so nothing but the quest term can put it first. Both are unvisited and
+        neither is wishlisted, so the other terms cancel.
+
+        Quest data ships for Era's nineteen dungeons only. All five clients list at
+        least one of them today, so the -1 branch below is a guard rather than a
+        path any of them takes: a client that listed none would otherwise record a
+        pass for a rule it never checked.
+    ]]
+    WishlistService.ClearAll()
+    ProgressService.ClearAll()
+    local questInstance, plainInstance
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        if #dungeon > 0 then
+            if not questInstance and #QuestService.GetQuests(dungeon.name) > 0 then
+                questInstance = dungeon
+            elseif not plainInstance then
+                plainInstance = dungeon
+            end
+        end
+    end
+    if questInstance and plainInstance then
+        local questWas = { questInstance.minLevel, questInstance.levelRange }
+        local plainWas = { plainInstance.minLevel, plainInstance.levelRange }
+        handInQuests(plainInstance)
+        reopenQuests(questInstance)
+        questInstance.minLevel, questInstance.levelRange = 1, { 31, 36 }
+        plainInstance.minLevel, plainInstance.levelRange = 1, { 28, 32 }
+        out.suggestionQuestsLift =
+            (rankOf(questInstance) < rankOf(plainInstance)) and 1 or 0
+        -- The same instance, once its quests are handed in. The band it was given
+        -- is still the worse one, so it drops back.
+        handInQuests(questInstance)
+        out.suggestionHandedInQuestsDoNotCount =
+            (rankOf(plainInstance) < rankOf(questInstance)) and 1 or 0
+        --[[
+            What the pane reads is the number still open to this character, which
+            is not the number of quests the instance has.
+
+            Both of the rules that make those differ are checked by moving the
+            count by one, rather than by recomputing it here -- a test that works
+            out the expected number the same way the service does would agree with
+            it however wrong both were.
+
+            The quest moved is the one the service itself named, so there is no
+            second opinion about which quest it was counting.
+        ]]
+        reopenQuests(questInstance)
+        local open = suggestionFor(questInstance)
+        out.suggestionNamesAQuest = (open and open.questName ~= nil) and 1 or 0
+        local named
+        for _, quest in ipairs(QuestService.GetQuests(questInstance.name)) do
+            if open and quest.name == open.questName then named = quest break end
+        end
+
+        --[[
+            Both of the moves below need that named quest, so a service that stopped
+            naming one has to read as a failure here rather than as an error -- an
+            error aborts the probe and takes every assertion after it with it, which
+            reads as a harness fault rather than as the fault it is.
+        ]]
+        if named then
+            -- Handed in: one fewer reason to go.
+            _G.AGC_TEST_COMPLETED_QUESTS[named.id] = true
+            out.suggestionCountsOpenQuests =
+                (suggestionFor(questInstance).quests == open.quests - 1) and 1 or 0
+            _G.AGC_TEST_COMPLETED_QUESTS[named.id] = nil
+
+            -- Out of reach: likewise. The quest is doctored rather than the player's
+            -- level, so the instance's door and band stay where this block set them.
+            local namedMinWas = named.minLevel
+            named.minLevel = 99
+            out.suggestionIgnoresQuestsAboveLevel =
+                (suggestionFor(questInstance).quests == open.quests - 1) and 1 or 0
+            named.minLevel = namedMinWas
+        else
+            out.suggestionCountsOpenQuests = 0
+            out.suggestionIgnoresQuestsAboveLevel = 0
+        end
+        questInstance.minLevel, questInstance.levelRange = questWas[1], questWas[2]
+        plainInstance.minLevel, plainInstance.levelRange = plainWas[1], plainWas[2]
+    else
+        out.suggestionQuestsLift = -1
+        out.suggestionHandedInQuestsDoNotCount = -1
+        out.suggestionCountsOpenQuests = -1
+        out.suggestionIgnoresQuestsAboveLevel = -1
+        out.suggestionNamesAQuest = -1
+    end
+    _G.AGC_TEST_COMPLETED_QUESTS = {}
     _G.AGC_TEST_LEVEL = levelWas
     WishlistService.ClearAll()
     ProgressService.ClearAll()
@@ -921,6 +1040,11 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1020,6 +1144,11 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1119,6 +1248,11 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1232,6 +1366,11 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1332,6 +1471,11 @@ EXPECTED = {
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
         "suggestionTopCapped": 1,
+        "suggestionQuestsLift": 1,
+        "suggestionHandedInQuestsDoNotCount": 1,
+        "suggestionCountsOpenQuests": 1,
+        "suggestionIgnoresQuestsAboveLevel": 1,
+        "suggestionNamesAQuest": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
