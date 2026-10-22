@@ -90,10 +90,15 @@ end
     Light a tab without running its OnClick. Clicking a wishlist row navigates
     straight to one instance, so the tab has to follow the content without the
     instance list being thrown over the top of it.
+
+    Takes the tab itself rather than its number. The numbers move every time a tab
+    is added -- the suggested-content tab pushed dungeons from 1 to 2 -- and a
+    stale constant lights the wrong tab without erroring, which is the kind of
+    fault nobody goes looking for.
 ]]
-function component.SelectTab(idx)
-    if not tabs[idx] then return end
-    PanelTemplates_SetTab(EncounterJournal, idx)
+function component.SelectTab(tab)
+    if not tab then return end
+    PanelTemplates_SetTab(EncounterJournal, tab:GetID())
 end
 
 function component.Init(components_)
@@ -108,11 +113,15 @@ function component.Init(components_)
     EncounterJournal.tabPadding = 0
     EncounterJournal.minTabWidth = 36
     EncounterJournal.maxTabWidth = 300
-    -- EncounterJournal.suggestTab = AddTab("Suggest", "Suggested Content", function()
-    --    --todo: Create suggested content tab
-    -- end)
-    -- EncounterJournal.suggestTab:Disable()
-    -- EncounterJournal.suggestTab:EnableMouse(false)
+    --[[
+        First, as it is in retail, and the tab the journal opens on. It is the only
+        view that answers "what now" rather than "what is in here", which is the
+        question someone opening the journal usually has.
+    ]]
+    EncounterJournal.suggestTab = AddTab("Suggest", "Suggested Content", function()
+        AdventureGuideNavigationService.Reset()
+        components.Suggest.Show()
+    end)
     EncounterJournal.dungeonsTab = AddTab("Dungeon", "Dungeons", function()
         AdventureGuideNavigationService.Reset()
         AdventureGuideNavigationService.SetInstances(InstanceService.GetDungeons())

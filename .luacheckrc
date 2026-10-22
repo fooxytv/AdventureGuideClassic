@@ -124,6 +124,9 @@ read_globals = {
     "IsInInstance", "InCombatLockdown", "UnitClass", "UnitFactionGroup",
     "UnitGUID", "UnitLevel", "UnitName",
     "GetInventoryItemID", "GetItemInfo", "GetItemInfoInstant",
+    -- GetItemIcon is guarded at every call site and QUESTION_MARK_ICON has a
+    -- literal fallback beside it, so neither has to exist on every client.
+    "GetItemIcon", "QUESTION_MARK_ICON",
     "GetSpellInfo", "GetSpellTexture", "GetBindingByKey",
     "GetLootSlotLink", "GetNumLootItems",
     "ITEM_QUALITY_COLORS", "RAID_CLASS_COLORS",
