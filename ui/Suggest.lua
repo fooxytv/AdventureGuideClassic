@@ -29,17 +29,31 @@ local HEADER_HEIGHT = 44
 -- 335 + 30 + 344. Blizzard drew these for a narrower frame than ours, so the
 -- group is centred rather than stretched -- the panes are art, not a layout.
 local GROUP_WIDTH = LARGE.width + 30 + SMALL.width
-local ICON_SIZE = 64
+
+--[[
+	Portrait sizes, per pane, because the ring art is mostly band.
+
+	Measured off the sheet: the ring's transparent middle is 0.53 of the texture it
+	is drawn at, so the portrait only ever shows at about half the ring's size and
+	shrinking one shrinks the other. At the sheet's own 94 the ring took most of the
+	height of a 161pt small pane and read as the subject rather than the frame.
+
+	The icon is kept a little wider than the hole so the band lands on its rim
+	instead of on bare parchment.
+]]
+local LARGE_RING, LARGE_ICON = 78, 50
+local SMALL_RING, SMALL_ICON = 66, 42
 local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
 -- Blizzard's ink: near-black for a heading, a dark red-brown for the body.
 local TITLE_COLOUR = { 0.1, 0.07, 0.04 }
 local BODY_COLOUR = { 0.2824, 0.0157, 0.0157 }
 
-local function ApplyPiece(texture, piece)
+-- `size` overrides the piece's natural dimensions, for the square ring pieces.
+local function ApplyPiece(texture, piece, size)
 	texture:SetTexture(SHEET)
 	texture:SetTexCoord(piece[1], piece[2], piece[3], piece[4])
-	texture:SetSize(piece.width, piece.height)
+	texture:SetSize(size or piece.width, size or piece.height)
 end
 
 --[[
@@ -164,9 +178,10 @@ local function BuildPane(parent, large)
 	pane.bg:SetAllPoints(pane)
 
 	pane.icon = pane:CreateTexture(nil, "ARTWORK")
-	pane.icon:SetSize(ICON_SIZE, ICON_SIZE)
+	pane.icon:SetSize(large and LARGE_ICON or SMALL_ICON,
+			large and LARGE_ICON or SMALL_ICON)
 	pane.ring = pane:CreateTexture(nil, "OVERLAY")
-	ApplyPiece(pane.ring, RING)
+	ApplyPiece(pane.ring, RING, large and LARGE_RING or SMALL_RING)
 	pane.ring:SetPoint("CENTER", pane.icon, "CENTER")
 
 	pane.title = pane:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
@@ -182,9 +197,13 @@ local function BuildPane(parent, large)
 
 	BuildReward(pane)
 	if large then
-		-- The portrait sits just inside the top edge and centred, so its ring
-		-- overhangs the page the way Blizzard's does.
-		pane.icon:SetPoint("TOP", 0, -2)
+		--[[
+			Anchored by its centre rather than its top edge, so the ring can be
+			resized without dragging the portrait up the page with it. The point is
+			where a 64pt icon hung 2pt below the top edge put it, which is what
+			leaves the ring overhanging the page the way Blizzard's does.
+		]]
+		pane.icon:SetPoint("CENTER", pane, "TOP", 0, -34)
 		--[[
 			The text block sits low rather than under the portrait. Composited at
 			-78 it left a hand's width of blank parchment between the description
@@ -208,7 +227,8 @@ local function BuildPane(parent, large)
 		pane.reward.label:SetPoint("RIGHT", pane.reward, "LEFT", -8, 0)
 		pane.reward.label:SetText("Still wanted")
 	else
-		pane.icon:SetPoint("TOPLEFT", 22, -14)
+		-- Centred where the old 64pt icon sat, for the same reason as above.
+		pane.icon:SetPoint("CENTER", pane, "TOPLEFT", 54, -46)
 		pane.title:SetPoint("TOPLEFT", 96, -22)
 		pane.title:SetWidth(232)
 		pane.title:SetJustifyH("LEFT")
