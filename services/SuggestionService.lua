@@ -150,6 +150,32 @@ local function KindFor(wanted, defeated, total)
 end
 
 --[[
+	Every instance this client shows, dungeons then raids. Both lists are already
+	filtered for the client and the season by InstanceService, so this is only
+	putting them end to end.
+]]
+local function AllInstances()
+	local instances = { }
+	for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+		table.insert(instances, dungeon)
+	end
+	for _, raid in ipairs(InstanceService.GetRaids()) do
+		table.insert(instances, raid)
+	end
+	return instances
+end
+
+-- Raids by name, because an entry carries the instance table and not which list
+-- it came out of. ui/Suggest.lua works the same question out the same way.
+local function RaidNames()
+	local names = { }
+	for _, raid in ipairs(InstanceService.GetRaids()) do
+		names[raid.name] = true
+	end
+	return names
+end
+
+--[[
 	Every instance this character could walk into today, ranked.
 
 	An instance the player is too low for is left out rather than ranked badly.
@@ -162,15 +188,7 @@ function SuggestionService.GetRanked()
 	local counts, samples = WantedByInstance()
 	local ranked = { }
 
-	local instances = { }
-	for _, dungeon in ipairs(InstanceService.GetDungeons()) do
-		table.insert(instances, dungeon)
-	end
-	for _, raid in ipairs(InstanceService.GetRaids()) do
-		table.insert(instances, raid)
-	end
-
-	for _, instance in ipairs(instances) do
+	for _, instance in ipairs(AllInstances()) do
 		local total = #instance
 		local locked = instance.minLevel and playerLevel < instance.minLevel
 		if total > 0 and not locked then
@@ -222,4 +240,65 @@ function SuggestionService.GetTop(count)
 		top[index] = ranked[index]
 	end
 	return top
+end
+--[[
+	The next instance that opens up, for the "coming up" pane.
+
+	GetRanked deliberately leaves out anything the player is too low to enter, so
+	the three panes can only ever show today. That makes the door the one thing the
+	tab never mentions, and the door is the most useful thing to know at level 22:
+	Scarlet Monastery is four levels away.
+
+	The lowest minLevel above the player, name breaking a tie so the pane does not
+	swap between two dungeons that unlock together. An instance with no minLevel --
+	Forever's have none -- has no door to be waiting at, so it is not a candidate.
+]]
+function SuggestionService.GetNextUnlock()
+	local playerLevel = PlayerLevel()
+	local best
+	for _, instance in ipairs(AllInstances()) do
+		local minLevel = instance.minLevel
+		if #instance > 0 and minLevel and minLevel > playerLevel
+				and (not best or minLevel < best.minLevel
+					or (minLevel == best.minLevel and instance.name < best.instance.name)) then
+			best = { instance = instance, minLevel = minLevel }
+		end
+	end
+	if not best then return nil end
+	return {
+		instance = best.instance,
+		name = best.instance.name,
+		kind = "locked",
+		unlockLevel = best.minLevel,
+		total = #best.instance,
+		defeated = 0,
+		levelRange = best.instance.levelRange,
+	}
+end
+
+--[[
+	What the pane beside the big one holds: content the ranking cannot offer.
+
+	Deliberately not the second-ranked suggestion. That pane is read next to the
+	big one rather than after it, so repeating the same list there wastes the only
+	other place on the page -- and the arrows now move the big pane alone, which
+	left this one showing the runner-up for ever.
+
+	What is next to unlock, then. A character with nothing left to unlock is at the
+	level cap, where the raids are the content they have not run, so the best-ranked
+	one stands in. Takes the ranked list rather than asking for it again, because
+	the caller has just built one.
+]]
+function SuggestionService.GetCompanion(ranked)
+	ranked = ranked or SuggestionService.GetRanked()
+
+	local unlock = SuggestionService.GetNextUnlock()
+	if unlock then return unlock end
+
+	local raids = RaidNames()
+	for _, entry in ipairs(ranked) do
+		if raids[entry.name] then return entry end
+	end
+
+	return ranked[2]
 end

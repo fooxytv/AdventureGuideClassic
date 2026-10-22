@@ -972,6 +972,185 @@ PROBE = """
     _G.AGC_TEST_LEVEL = levelWas
     WishlistService.ClearAll()
     ProgressService.ClearAll()
+    --[[
+        Where this character left off.
+
+        No client records it. There is no "last zone" to read and the quest log is
+        the nearest thing, which answers what is unfinished rather than where they
+        were, so LevellingService watches XP land and remembers where. The stub owns
+        the zone and whether it counts as an instance, which makes all three rules
+        drivable here: repetition before a zone is believed, instances thrown away,
+        and the quest log standing in for a character with nothing recorded yet.
+    ]]
+    local zoneWas, inInstanceWas = _G.AGC_TEST_ZONE, _G.AGC_TEST_IN_INSTANCE
+    local questLogWas = _G.AGC_TEST_QUEST_LOG
+    _G.AGC_TEST_QUEST_LOG = {}
+
+    -- One gain is not evidence: a quest handed in at Ironforge pays out there.
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_ZONE = "Ironforge"
+    LevellingService.NoteXPGain()
+    out.levellingNeedsRepeatedGains =
+        (LevellingService.GetWhereYouLeftOff() == nil) and 1 or 0
+
+    -- Three in the same zone is.
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_ZONE = "Hillsbrad Foothills"
+    _G.AGC_TEST_LEVEL = 32
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    local leftOff = LevellingService.GetWhereYouLeftOff()
+    out.levellingRemembersAZone = (leftOff
+            and leftOff.zone == "Hillsbrad Foothills"
+            and leftOff.level == 32
+            and leftOff.remembered == true) and 1 or 0
+
+    --[[
+        XP earned in a dungeon is not levelling in a zone. Clearing Deadmines pays
+        a great deal of it, and answering "where were you" with a dungeon is both
+        true and useless -- the panes beside this one are the ones for dungeons.
+    ]]
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_IN_INSTANCE = true
+    _G.AGC_TEST_ZONE = "The Deadmines"
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    LevellingService.NoteXPGain()
+    out.levellingIgnoresInstanceGains =
+        (LevellingService.GetWhereYouLeftOff() == nil) and 1 or 0
+    _G.AGC_TEST_IN_INSTANCE = false
+
+    -- How long ago, in whole days, so the pane can say "yesterday" rather than a
+    -- timestamp. Set three days back; the service does the arithmetic.
+    LevellingService.Remember("Arathi Highlands", 35, time() - 3 * 86400)
+    local aged = LevellingService.GetWhereYouLeftOff()
+    out.levellingAgesTheMemory = (aged and aged.days == 3) and 1 or 0
+
+    --[[
+        The quests still open there, counted off the log's zone headers rather than
+        its rows: a row belongs to the header above it, and five rows here are two
+        quests in the remembered zone.
+    ]]
+    LevellingService.Remember("Arathi Highlands", 35)
+    _G.AGC_TEST_QUEST_LOG = {
+        { title = "Arathi Highlands", isHeader = true },
+        { title = "Lost Deathstalkers", questID = 661 },
+        { title = "Stromgarde Badge", questID = 664 },
+        { title = "Wetlands", isHeader = true },
+        { title = "The Absent-Minded Prospector", questID = 1393 },
+    }
+    local counted = LevellingService.GetWhereYouLeftOff()
+    out.levellingCountsQuestsInZone = (counted and counted.quests == 2) and 1 or 0
+
+    --[[
+        Nothing recorded -- a character who was levelling before the addon learned
+        to watch -- and the log answers instead, with the zone holding most of it.
+        Reported as a deduction rather than a memory, because the pane words it as
+        one.
+    ]]
+    LevellingService.Remember(nil)
+    local deduced = LevellingService.GetWhereYouLeftOff()
+    out.levellingFallsBackToQuestLog = (deduced
+            and deduced.zone == "Arathi Highlands"
+            and deduced.quests == 2
+            and deduced.remembered == false) and 1 or 0
+
+    --[[
+        The classic-line half of the quest log shim, which nothing else here
+        reaches: the stub answers as the mainline family does, so C_QuestLog is
+        taken away to force the other branch. The same facts arrive as a list
+        rather than a table and in a different order, and reading that order wrong
+        is the whole risk of the shim.
+    ]]
+    local getInfoWas = C_QuestLog.GetInfo
+    local getCountWas = C_QuestLog.GetNumQuestLogEntries
+    C_QuestLog.GetInfo, C_QuestLog.GetNumQuestLogEntries = nil, nil
+    _G.GetNumQuestLogEntries = function() return 2, 1 end
+    _G.GetQuestLogTitle = function(index)
+        if index == 1 then return "Westfall", nil, nil, true end
+        return "Red Linen Goods", 12, nil, false, nil, nil, nil, 5541
+    end
+    local header = Compat.GetQuestLogEntry(1)
+    local row = Compat.GetQuestLogEntry(2)
+    out.questLogShimReadsClassicApi = (Compat.GetNumQuestLogEntries() == 2
+            and header and header.isHeader == true and header.title == "Westfall"
+            and row and row.isHeader == false and row.level == 12
+            and row.questID == 5541) and 1 or 0
+    C_QuestLog.GetInfo, C_QuestLog.GetNumQuestLogEntries = getInfoWas, getCountWas
+    _G.GetNumQuestLogEntries, _G.GetQuestLogTitle = nil, nil
+
+    LevellingService.Remember(nil)
+    _G.AGC_TEST_ZONE, _G.AGC_TEST_IN_INSTANCE = zoneWas, inInstanceWas
+    _G.AGC_TEST_QUEST_LOG = questLogWas or {}
+
+    --[[
+        The pane beside the big one: what opens up next, which the ranking can
+        never offer because it leaves out everything the player cannot enter.
+
+        Driven off the highest door this client ships rather than off a number, so
+        it does not become a test of which client is running. At that level nothing
+        is above the player, so the two doctored doors are the only candidates.
+    ]]
+    local ceiling = 0
+    for _, instance in ipairs(InstanceService.GetDungeons()) do
+        if instance.minLevel and instance.minLevel > ceiling then
+            ceiling = instance.minLevel
+        end
+    end
+    for _, instance in ipairs(InstanceService.GetRaids()) do
+        if instance.minLevel and instance.minLevel > ceiling then
+            ceiling = instance.minLevel
+        end
+    end
+    local alphaMinWas, betaMinWas = alpha.minLevel, beta.minLevel
+    _G.AGC_TEST_LEVEL = ceiling
+    alpha.minLevel, beta.minLevel = nil, nil
+    out.unlockIsNilAtTheCeiling =
+        (SuggestionService.GetNextUnlock() == nil) and 1 or 0
+
+    alpha.minLevel = ceiling + 10
+    local unlock = SuggestionService.GetNextUnlock()
+    out.unlockIsAboveThePlayer = (unlock
+            and unlock.instance == alpha
+            and unlock.kind == "locked"
+            and unlock.unlockLevel == ceiling + 10) and 1 or 0
+
+    -- The nearest door, not the first one the lists happen to hold.
+    beta.minLevel = ceiling + 5
+    unlock = SuggestionService.GetNextUnlock()
+    out.unlockIsTheNearestDoor = (unlock and unlock.instance == beta) and 1 or 0
+
+    -- And that is what the companion pane holds, rather than the runner-up the
+    -- arrows used to leave stranded in it.
+    local companion = SuggestionService.GetCompanion(SuggestionService.GetRanked())
+    out.companionIsTheNextUnlock =
+        (companion and companion.instance == beta) and 1 or 0
+
+    --[[
+        With nothing left to unlock the character is at the cap, where the raids are
+        the content they have not run.
+
+        Forever takes the -1 branch, and should: its two raids are placeholders
+        carrying no encounters, so neither is ever ranked and there is no raid for
+        the pane to fall back to. On that client the companion stays the runner-up,
+        which is the honest answer while the data says nothing.
+    ]]
+    alpha.minLevel, beta.minLevel = nil, nil
+    local raidNames = {}
+    for _, instance in ipairs(InstanceService.GetRaids()) do
+        if #instance > 0 then raidNames[instance.name] = true end
+    end
+    if next(raidNames) then
+        companion = SuggestionService.GetCompanion(SuggestionService.GetRanked())
+        out.companionFallsBackToARaid =
+            (companion and raidNames[companion.name] == true) and 1 or 0
+    else
+        out.companionFallsBackToARaid = -1
+    end
+
+    alpha.minLevel, beta.minLevel = alphaMinWas, betaMinWas
+    _G.AGC_TEST_LEVEL = levelWas
 
     --[[
         UI.Init's two passes, with a component registered *after* the one that reaches
@@ -1045,6 +1224,18 @@ EXPECTED = {
         "suggestionCountsOpenQuests": 1,
         "suggestionIgnoresQuestsAboveLevel": 1,
         "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1149,6 +1340,18 @@ EXPECTED = {
         "suggestionCountsOpenQuests": 1,
         "suggestionIgnoresQuestsAboveLevel": 1,
         "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1253,6 +1456,18 @@ EXPECTED = {
         "suggestionCountsOpenQuests": 1,
         "suggestionIgnoresQuestsAboveLevel": 1,
         "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": 1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1371,6 +1586,18 @@ EXPECTED = {
         "suggestionCountsOpenQuests": 1,
         "suggestionIgnoresQuestsAboveLevel": 1,
         "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": -1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
@@ -1476,6 +1703,18 @@ EXPECTED = {
         "suggestionCountsOpenQuests": 1,
         "suggestionIgnoresQuestsAboveLevel": 1,
         "suggestionNamesAQuest": 1,
+        "levellingNeedsRepeatedGains": 1,
+        "levellingRemembersAZone": 1,
+        "levellingIgnoresInstanceGains": 1,
+        "levellingAgesTheMemory": 1,
+        "levellingCountsQuestsInZone": 1,
+        "levellingFallsBackToQuestLog": 1,
+        "questLogShimReadsClassicApi": 1,
+        "unlockIsNilAtTheCeiling": 1,
+        "unlockIsAboveThePlayer": 1,
+        "unlockIsTheNearestDoor": 1,
+        "companionIsTheNextUnlock": 1,
+        "companionFallsBackToARaid": -1,
         "uiRunsPostInit": 1,
         "uiPostInitWaitsForEveryInit": 1,
         "wishlistGroups": 2,
