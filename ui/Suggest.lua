@@ -31,18 +31,20 @@ local HEADER_HEIGHT = 44
 local GROUP_WIDTH = LARGE.width + 30 + SMALL.width
 
 --[[
-	Portrait sizes, per pane, because the ring art is mostly band.
+	Portrait and ring, at the size the art was drawn for and the size Blizzard draws
+	it at: a 94pt ring around a 64pt icon, on both panes.
 
-	Measured off the sheet: the ring's transparent middle is 0.53 of the texture it
-	is drawn at, so the portrait only ever shows at about half the ring's size and
-	shrinking one shrinks the other. At the sheet's own 94 the ring took most of the
-	height of a 161pt small pane and read as the subject rather than the frame.
+	The ring was shrunk once to stop it dominating the small pane, which treated the
+	symptom. Measured off the sheet, its opaque band runs from radius 29 to 34 of the
+	94pt box, so the hole is 58 across -- and a square icon cannot both fill that
+	hole and keep its corners behind the band: 58 across to fill it, 48 at most to
+	hide them. That is why the portrait is masked round rather than inset, and why
+	shrinking it put corners out past the band.
 
-	The icon is kept a little wider than the hole so the band lands on its rim
-	instead of on bare parchment.
+	What keeps a 94pt ring off a 161pt pane is the overhang, not the size. Retail
+	hangs the small pane's portrait off its top-left corner, which is copied below.
 ]]
-local LARGE_RING, LARGE_ICON = 78, 50
-local SMALL_RING, SMALL_ICON = 66, 42
+local RING_SIZE, ICON_SIZE = 94, 64
 local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
 --[[
@@ -53,9 +55,30 @@ local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 ]]
 local LEFT_OFF_ICON = "Interface\\Icons\\INV_Misc_Map_01"
 
--- Blizzard's ink: near-black for a heading, a dark red-brown for the body.
-local TITLE_COLOUR = { 0.1, 0.07, 0.04 }
+--[[
+	Blizzard's own ink and lettering for these panes, read off the retail frame: a
+	black heading over a dark red body, in two faces that differ by more than their
+	size so the two do not read as one block of text. Near-black over dark red, in
+	one face, read as exactly that.
+
+	QuestFont_Huge and SystemFont_Med1 are the parchment pair and are what retail
+	uses here. Both exist on the classic line, but a client that lacks one gets a
+	plainer face rather than no face: a font string built from a template that does
+	not exist has no font at all and draws nothing.
+]]
+local TITLE_COLOUR = { 0, 0, 0 }
 local BODY_COLOUR = { 0.2824, 0.0157, 0.0157 }
+
+local function FirstFont(...)
+	for index = 1, select("#", ...) do
+		local name = select(index, ...)
+		if _G[name] then return name end
+	end
+	return "GameFontNormal"
+end
+
+local TITLE_FONT = FirstFont("QuestFont_Huge", "GameFontNormalLarge")
+local BODY_FONT = FirstFont("SystemFont_Med1", "GameFontNormal")
 
 -- `size` overrides the piece's natural dimensions, for the square ring pieces.
 local function ApplyPiece(texture, piece, size)
@@ -81,9 +104,16 @@ local function MaskIcon(texture)
 	end
 end
 
+--[[
+	Mask first, texture second, and both every time a pane is filled rather than
+	once when it is built. That is the order Blizzard's own refresh uses, in both of
+	its branches, and it is not decoration: a mask set on a texture that already
+	carries its file does not reliably take, and an unmasked icon shows its corners
+	past the ring -- the hole is wider than the band can cover.
+]]
 local function SetIcon(texture, icon)
-	texture:SetTexture(icon or QUESTION_MARK_ICON or 134400)
 	MaskIcon(texture)
+	texture:SetTexture(icon or QUESTION_MARK_ICON or 134400)
 end
 
 --[[
@@ -267,15 +297,14 @@ local function BuildPane(parent, large)
 	pane.bg:SetAllPoints(pane)
 
 	pane.icon = pane:CreateTexture(nil, "ARTWORK")
-	pane.icon:SetSize(large and LARGE_ICON or SMALL_ICON,
-			large and LARGE_ICON or SMALL_ICON)
+	pane.icon:SetSize(ICON_SIZE, ICON_SIZE)
 	pane.ring = pane:CreateTexture(nil, "OVERLAY")
-	ApplyPiece(pane.ring, RING, large and LARGE_RING or SMALL_RING)
+	ApplyPiece(pane.ring, RING, RING_SIZE)
 	pane.ring:SetPoint("CENTER", pane.icon, "CENTER")
 
-	pane.title = pane:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	pane.title = pane:CreateFontString(nil, "ARTWORK", TITLE_FONT)
 	pane.title:SetTextColor(unpack(TITLE_COLOUR))
-	pane.description = pane:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	pane.description = pane:CreateFontString(nil, "ARTWORK", BODY_FONT)
 	pane.description:SetTextColor(unpack(BODY_COLOUR))
 	pane.description:SetSpacing(2)
 
@@ -302,7 +331,7 @@ local function BuildPane(parent, large)
 		pane.title:SetWidth(264)
 		pane.title:SetJustifyH("CENTER")
 		pane.description:SetPoint("TOP", pane.title, "BOTTOM", 0, -12)
-		pane.description:SetWidth(252)
+		pane.description:SetWidth(264)
 		pane.description:SetJustifyH("CENTER")
 		pane.button:SetSize(140, 30)
 		pane.button:SetPoint("BOTTOM", 0, 34)
@@ -316,18 +345,23 @@ local function BuildPane(parent, large)
 		pane.reward.label:SetPoint("RIGHT", pane.reward, "LEFT", -8, 0)
 		pane.reward.label:SetText("Still wanted")
 	else
-		-- Centred where the old 64pt icon sat, for the same reason as above.
-		pane.icon:SetPoint("CENTER", pane, "TOPLEFT", 54, -46)
-		pane.title:SetPoint("TOPLEFT", 96, -22)
-		pane.title:SetWidth(232)
+		--[[
+			Retail's own offsets. The portrait hangs off the pane's top-left corner --
+			a 64pt icon anchored at (-10, -2) from it, which is this centre -- so the
+			ring overhangs the parchment instead of sitting on it, and the text starts
+			at 70, just clear of the ring's edge at 69.
+		]]
+		pane.icon:SetPoint("CENTER", pane, "TOPLEFT", 22, -34)
+		pane.title:SetPoint("TOPLEFT", 70, -20)
+		pane.title:SetWidth(260)
 		pane.title:SetJustifyH("LEFT")
 		pane.description:SetPoint("TOPLEFT", pane.title, "BOTTOMLEFT", 0, -6)
-		pane.description:SetWidth(232)
+		pane.description:SetWidth(240)
 		pane.description:SetJustifyH("LEFT")
-		pane.button:SetSize(116, 26)
-		pane.button:SetPoint("TOPLEFT", 96, -108)
-		-- On the portrait's corner, which is where the small pane carries it.
-		pane.reward:SetPoint("CENTER", pane.icon, "BOTTOMRIGHT", -2, 6)
+		pane.button:SetSize(116, 24)
+		pane.button:SetPoint("TOPLEFT", 70, -108)
+		-- Tucked into the portrait's lower right, where retail carries it.
+		pane.reward:SetPoint("CENTER", pane.icon, "BOTTOMRIGHT", -11, 6)
 	end
 	return pane
 end
@@ -362,9 +396,7 @@ local function FillPane(pane, entry)
 	local item = entry.kind == "wishlist" and entry.wantedItem
 	if item then
 		pane.reward.itemLink = item.itemLink
-		local icon = GetItemIcon and GetItemIcon(item.itemID)
-		pane.reward.icon:SetTexture(icon or QUESTION_MARK_ICON or 134400)
-		MaskIcon(pane.reward.icon)
+		SetIcon(pane.reward.icon, GetItemIcon and GetItemIcon(item.itemID))
 		pane.reward:Show()
 	else
 		pane.reward:Hide()
