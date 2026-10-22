@@ -58,12 +58,18 @@ local failedItemIds = {}
 	a contrast ratio of 5.7 and needs no help. What the shadow did instead was
 	emboss the text, which is what it looked like.
 
-	The unusable red is the Adventure Guide's own body ink. It measures about 4.6
-	against that same bar, where the brighter red it replaces managed 1.8 -- and
-	that red was the one that could not be read on Era's lighter art.
+	The unusable red has to do two jobs: be legible, and be recognisably red. It
+	is the only thing on the row that says the item cannot be used, so a red so
+	dark it reads as black has stopped saying it.
+
+	Measured against the row bar at both extremes -- (170, 125, 72) on Forever,
+	lighter on Era -- the brightness that balances the two is about 0.45. That
+	scores 3.3 on the darker bar and 5.7 on the lighter one, against 1.8 for the
+	bright red that could not be read at all and 4.4 for the near-black one that
+	could be read but no longer looked red.
 ]]
 local SUBTEXT_R, SUBTEXT_G, SUBTEXT_B = 0, 0, 0
-local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.2824, 0.0157, 0.0157
+local UNUSABLE_R, UNUSABLE_G, UNUSABLE_B = 0.45, 0.04, 0.04
 local SHADOW_R, SHADOW_G, SHADOW_B, SHADOW_A = 0, 0, 0, 0
 local SUBTEXT_FONT, SUBTEXT_SIZE = "Fonts\\FRIZQT__.TTF", 10
 
