@@ -732,6 +732,120 @@ PROBE = """
         ProgressService.ClearAll()
         out.discoveryDefaultsOff = DiscoveryService.IsEnabled() and 0 or 1
     end
+
+    --[[
+        The suggestion ranking.
+
+        Two real instances are doctored and put back, rather than named, because
+        the five clients do not ship the same ones and a named instance would make
+        this a test of which client is running. Only their relative order is
+        asserted, so whatever else ranks between them is free to.
+    ]]
+    local alpha, beta
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        -- An instance with no bosses is never ranked, so it cannot stand in here.
+        if #dungeon > 0 then
+            if not alpha then alpha = dungeon elseif not beta then beta = dungeon end
+        end
+    end
+    local alphaWas = { alpha.minLevel, alpha.levelRange }
+    local betaWas = { beta.minLevel, beta.levelRange }
+    -- _G, not the bare name: assigning through the facade would put it on the
+    -- facade table and leave the stub's UnitLevel reading _G's unchanged 60.
+    local levelWas = _G.AGC_TEST_LEVEL
+    WishlistService.ClearAll()
+    ProgressService.ClearAll()
+    _G.AGC_TEST_LEVEL = 30
+
+    --[[
+        Found by identity, not by name. Blackfathom Deeps, Gnomeregan and Sunken
+        Temple are each a dungeon *and* a raid under the same name, so a name
+        search finds the raid when the dungeon is the one being doctored -- which
+        is how the door assertion first passed a locked instance.
+    ]]
+    local function rankOf(instance)
+        for index, suggestion in ipairs(SuggestionService.GetRanked()) do
+            if suggestion.instance == instance then return index end
+        end
+        return math.huge
+    end
+    local function suggestionFor(instance)
+        for _, suggestion in ipairs(SuggestionService.GetRanked()) do
+            if suggestion.instance == instance then return suggestion end
+        end
+        return nil
+    end
+
+    -- Nothing the player cannot walk into is offered at all.
+    alpha.minLevel, alpha.levelRange = 55, { 55, 60 }
+    beta.minLevel, beta.levelRange = 1, { 28, 32 }
+    out.suggestionRespectsTheDoor = (rankOf(alpha) == math.huge) and 1 or 0
+
+    -- The better level fit leads.
+    alpha.minLevel, alpha.levelRange = 1, { 80, 90 }
+    out.suggestionPrefersLevelFit = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+
+    -- Untouched reads as untouched, asked before anything below beats a boss.
+    local freshSuggestion = suggestionFor(beta)
+    out.suggestionKindUnvisited =
+        (freshSuggestion and freshSuggestion.kind == "unvisited") and 1 or 0
+
+    --[[
+        A wanted item lifts an instance over a slightly better fit, and cannot lift
+        one the player has no business in. Alpha is one level out and beta fits, so
+        a single item is enough; alpha twenty-five levels out and it is not.
+    ]]
+    alpha.levelRange = { 31, 36 }
+    WishlistService.AddItem(501, "link", "Item", "Boss", alpha.name)
+    out.suggestionWishlistLifts = (rankOf(alpha) < rankOf(beta)) and 1 or 0
+    alpha.levelRange = { 1, 5 }
+    out.suggestionWishlistIsNotAVeto = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+
+    --[[
+        Somewhere new edges out somewhere already started, but only just.
+
+        Beta is given the worse band by one level, so the nudge toward new content
+        is the only thing that can put it first, and setting that nudge to zero
+        flips it. Any wider a gap and the band alone would decide.
+    ]]
+    WishlistService.ClearAll()
+    alpha.levelRange, beta.levelRange = { 28, 32 }, { 31, 36 }
+    ProgressService.MarkDefeated(alpha.name, alpha[1])
+    out.suggestionPrefersSomewhereNew = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+
+    --[[
+        Beaten everything sinks, and says so.
+
+        Alpha is given the better level fit and beta a worse one, so only the
+        cleared penalty can put beta first. An earlier version gave both the same
+        band, and then the unvisited bonus on beta was enough on its own -- it
+        passed with the penalty set to zero, which is no test of the penalty.
+
+        Beta also has a boss beaten, so it is partial rather than unvisited and
+        carries no bonus either. What is left between them is the penalty alone.
+    ]]
+    WishlistService.ClearAll()
+    alpha.levelRange, beta.levelRange = { 28, 32 }, { 34, 38 }
+    for _, encounter in ipairs(alpha) do
+        ProgressService.MarkDefeated(alpha.name, encounter)
+    end
+    ProgressService.MarkDefeated(beta.name, beta[1])
+    out.suggestionClearedSinks = (rankOf(beta) < rankOf(alpha)) and 1 or 0
+    local alphaSuggestion = suggestionFor(alpha)
+    out.suggestionKindCleared =
+        (alphaSuggestion and alphaSuggestion.kind == "cleared") and 1 or 0
+    local betaSuggestion = suggestionFor(beta)
+    out.suggestionKindPartial =
+        (betaSuggestion and betaSuggestion.kind == "partial") and 1 or 0
+
+    -- GetTop never pads beyond what there is.
+    out.suggestionTopCapped = (#SuggestionService.GetTop(3) <= 3) and 1 or 0
+
+    alpha.minLevel, alpha.levelRange = alphaWas[1], alphaWas[2]
+    beta.minLevel, beta.levelRange = betaWas[1], betaWas[2]
+    _G.AGC_TEST_LEVEL = levelWas
+    WishlistService.ClearAll()
+    ProgressService.ClearAll()
     return out
 
 """
@@ -759,6 +873,16 @@ EXPECTED = {
         "bossCreatureType": "Humanoid",
         "bossClassification": "Elite",
         "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -846,6 +970,16 @@ EXPECTED = {
         "bossCreatureType": "Humanoid",
         "bossClassification": "Elite",
         "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -933,6 +1067,16 @@ EXPECTED = {
         "bossCreatureType": "Humanoid",
         "bossClassification": "Elite",
         "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -1034,6 +1178,16 @@ EXPECTED = {
         "bossCreatureType": "Humanoid",
         "bossClassification": "Elite",
         "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,
@@ -1122,6 +1276,16 @@ EXPECTED = {
         "bossCreatureType": "Humanoid",
         "bossClassification": "Elite",
         "typeWithoutLevel": 0,
+        "suggestionRespectsTheDoor": 1,
+        "suggestionPrefersLevelFit": 1,
+        "suggestionWishlistLifts": 1,
+        "suggestionWishlistIsNotAVeto": 1,
+        "suggestionClearedSinks": 1,
+        "suggestionKindCleared": 1,
+        "suggestionKindUnvisited": 1,
+        "suggestionKindPartial": 1,
+        "suggestionPrefersSomewhereNew": 1,
+        "suggestionTopCapped": 1,
         "wishlistGroups": 2,
         "wishlistSortedByLevel": 1,
         "wishlistLevelBeatsName": 1,

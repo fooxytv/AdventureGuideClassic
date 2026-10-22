@@ -31,7 +31,7 @@ globals = {
     "ProgressService", "DiscoveryService",
     "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
-    "SeasonalService",
+    "SeasonalService", "SuggestionService",
     "TierTokenService", "TokenizedTextService", "WishlistService",
 
     -- Frames and widget mixins the addon creates. EncounterJournal is in here
