@@ -293,6 +293,11 @@ def cmd_apply(args):
         changed = False
         # Rebuild back to front, so each insert leaves the earlier offsets valid.
         for npc, name, match in reversed(list(encounters(text))):
+            # Already stamped, and --force stripped it above if it was wanted gone.
+            # Without this a second run inserts the block again rather than skipping.
+            if EXISTING_RE.match(text, match.end() + len(eol)):
+                kept += 1
+                continue
             row = meta.get((npc, source))
             if not row:
                 skipped += 1
