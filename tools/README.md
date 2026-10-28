@@ -221,3 +221,95 @@ are verified against real files; palettised and BGRA are implemented from the fo
 and have not had a sample to test against. BLP1 is reported rather than guessed at.
 
 Needs Pillow (`pip install pillow`); no other dependency.
+
+## make_lorebg.py
+
+Builds an instance's lore background -- the picture behind the overview text.
+
+Forever publishes no journal, so its dungeons ship no `UI-EJ-LOREBG-*` art and the
+overview falls back to a flat dark panel. Making one by hand in Photoshop is slow and
+hard to repeat; it is also unnecessary, because a lore background is a recipe rather
+than a composition.
+
+```sh
+python tools/make_lorebg.py build <source> CityOfDalaran
+python tools/make_lorebg.py build <source> CityOfDalaran --zoom 1.3 --pan-y 0.3
+```
+
+`build` writes `images/UIEJLoreBG<Name>.png` and prints the `splash` line to paste
+into the instance's data file. The source may be PNG, JPEG or BLP; `--zoom` and
+`--pan-x/--pan-y` choose the crop when the default centre is wrong.
+
+Forever's own loading screens are the best sources and are already the right subject:
+they live in the client under `Interface/GLUES/LOADINGSCREENS/Camelot160/Main/`, as
+2992x1684 painted art. The flat grey bands they are padded with are detected and
+trimmed, so the source can be passed as it comes.
+
+### The frame
+
+`lorebg_mask.png` and `lorebg_frame.png` beside the script are the template, measured
+from the 179 retail lore backgrounds rather than guessed:
+
+- The canvas is 512x512 and the picture occupies exactly (4, 4)-(394, 340).
+- The torn edge is an alpha mask, identical in 99.4% of pixels across all of them.
+- The frame is an overlay, which is why `splash` art cannot simply be a screenshot.
+  Pixels near the edge barely vary between instances -- a luminance spread of about
+  17 six pixels in, against 100 forty pixels in -- so frame and picture separate on
+  that spread.
+
+`python tools/make_lorebg.py frame <dir-of-retail-lore-art>` rebuilds both from a
+folder of `UI-EJ-LOREBG-*` art. That has been run; it is here so the two templates
+are reproducible rather than mystery binaries, and needs running again only if they
+are lost.
+
+## make_bossportrait.py
+
+Builds a boss portrait -- the cut-out of the model on the encounter button.
+
+```sh
+python tools/make_bossportrait.py worklist              # who still needs one
+python tools/make_bossportrait.py worklist --names      # the filenames to shoot
+python tools/make_bossportrait.py batch shots/ --wire   # do the lot
+python tools/make_bossportrait.py build shot.png LynTheIgnored
+python tools/make_bossportrait.py build shot.png LynTheIgnored --tolerance 40 --erode 2
+```
+
+### The whole job, three steps
+
+1. `worklist --names` prints one filename per boss still on the placeholder id.
+2. Shoot those models, saving each under the name it printed. Capitalisation,
+   spaces, underscores and apostrophes are all ignored when matching, so
+   `lyn_the_ignored.png` finds Lyn the Ignored.
+3. `batch shots/ --wire` builds every one into `images/` **and** repoints that
+   encounter's `portrait` in `data/`.
+
+`--wire` edits one line per boss and nothing else, preserving the file's line
+endings; `--dry-run` shows what it would do first. Files matching no boss on the
+placeholder are listed rather than guessed at, so a typo is reported instead of
+landing on the wrong encounter.
+
+It writes `images/UIEJBoss<Name>.png` and prints the `portrait` line. The source may
+be PNG, JPEG or BLP; art that is already a 128x64 cut-out passes through untouched,
+so retail's own `UI-EJ-BOSS-*` files can be used directly.
+
+The format, measured from the 59 shipped and confirmed against retail's (also
+128x64): the model stands on the bottom edge, fills about 60 of the 64 points of
+height and 96 of the 128 across, and centres at x 59 rather than 64.
+
+### Shooting the model
+
+What the script cannot do is produce the model. That still comes from the game,
+through the addon's own viewer -- `/run AGC_NpcPreview(id)`.
+
+**Shoot it against a flat colour the model does not contain.** Magenta or green, for
+the same reason film uses them. The backdrop is removed by flooding in from the
+edges, so a creature sharing the backdrop's colour somewhere in its middle will not
+be punched through. The edges are the hard part: an edge pixel is a genuine blend of
+model and backdrop, and recovering those is what decides whether the result looks
+cut out or looks like it has a coloured rim.
+
+That recovery is a colour-difference key rather than a distance test, because
+distance does not work -- half a dark model mixed into magenta still lands far from
+magenta, so it reads as pure model and keeps its rim. What shrinks in proportion as
+model mixes in is the backdrop's shape: magenta is high red and blue against low
+green. That is what is measured. If a rim survives anyway, raise `--erode`.

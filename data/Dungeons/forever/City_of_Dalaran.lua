@@ -9,7 +9,7 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "City of Dalaran",
 	icon = 527422,
-	splash = 527422,
+	splash = I.UIEJLoreBGCityOfDalaran,
 	mapID = 2959,
 	seasonFilter = "forever",
 	overview = "Dalaran as an instance, set down in the Alterac Mountains and entered through the northwest gate with the Dalaran Sewers Key. The run starts in the sewers and climbs into the city proper, where the Kirin Tor's work has got away from them -- loose arcane constructs, mana-starved horrors and a shade in the Purple Parlor.",

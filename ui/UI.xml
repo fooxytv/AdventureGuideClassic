@@ -33,6 +33,7 @@
     <Script file="ui/IconProbe.lua" />
     <Script file="ui/InstanceOverview.lua" />
     <Script file="ui/NpcPreview.lua" />
+    <Script file="ui/PortraitStudio.lua" />
     <Script file="ui/QuestList.lua" />
     <Script file="ui/DynamicContentScroller.lua" />
     <Script file="ui/Encounters.lua" />

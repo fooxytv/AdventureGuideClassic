@@ -10,7 +10,7 @@ InstanceService.AddDungeon({
 	name = "Excavation Site: Wetlands",
 	thumbnail = I.UIEJDungeonButtonExcavationSiteWetlands,
 	icon = I.UIEJDungeonPortraitExcavationSiteWetlands,
-	splash = 527422,
+	splash = I.UIEJLoreBGExcavationSiteWetlands,
 	mapID = 2998,
 	seasonFilter = "forever",
 	overview = "A Titan dig site opened up in the Wetlands marshes, and everything living in that country has moved into it -- crocolisks off the lake, raptors along the ridges, spiders in the tall grass, and a Dragonmaw camp working the edges. What the diggers were trying to reach is still sealed, and still guarded.",

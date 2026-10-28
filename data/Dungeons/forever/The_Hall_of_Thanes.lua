@@ -10,7 +10,7 @@ InstanceService.AddDungeon({
 	name = "The Hall of Thanes",
 	thumbnail = I.UIEJDungeonButtonTheHallOfThanes,
 	icon = I.UIEJDungeonPortraitTheHallOfThanes,
-	splash = 527422,
+	splash = I.UIEJLoreBGTheHallOfThanes,
 	mapID = 3065,
 	seasonFilter = "forever",
 	overview = "Old Ironforge lay sealed beneath the High Seat for generations, and the Dark Iron have broken it open. The hall runs in a single line through the tombs of the old thanes, and what the incursion has stirred up -- risen dwarves, bound fire and the stone guardians set to watch the dead -- is still down there with them.",
