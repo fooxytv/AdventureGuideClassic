@@ -24,10 +24,22 @@ local panel
 
 local DEFAULT_ICON = 136325
 
+local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+
+--[[
+	The two ways to mask a texture.
+
+	SetMask takes a file path and does its own sizing, which is the problem: both
+	mask files, at every icon size, draw the art in the top-left of a disc larger
+	than the quad. Nothing about the icon or the mask file changes it.
+
+	AddMaskTexture takes a MaskTexture that is anchored and sized like any other
+	region, so the circle is wherever it is put. That is the column to watch.
+]]
 local MASKS = {
-	{ label = "no mask", path = nil },
-	{ label = "Mask 128", path = "Interface\\CharacterFrame\\TempPortraitAlphaMask" },
-	{ label = "MaskSmall 64", path = "Interface\\CharacterFrame\\TempPortraitAlphaMaskSmall" },
+	{ label = "no mask" },
+	{ label = "SetMask (now)", path = PORTRAIT_MASK },
+	{ label = "AddMaskTexture", path = PORTRAIT_MASK, region = true },
 }
 
 local SIZES = { 32, 64, 96 }
@@ -49,9 +61,28 @@ local function BuildCell(parent, column, row, mask, size)
 	local icon = holder:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(size, size)
 	icon:SetPoint("CENTER")
-	-- The order ui/Suggest.lua uses: mask first, texture second.
-	if mask.path and icon.SetMask then icon:SetMask(mask.path) end
+	if mask.region then
+		-- A mask that is a region: sized and anchored onto the icon exactly.
+		if holder.CreateMaskTexture and icon.AddMaskTexture then
+			local shape = holder:CreateMaskTexture()
+			shape:SetTexture(mask.path, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+			shape:SetSize(size, size)
+			shape:SetPoint("CENTER", icon, "CENTER")
+			icon:AddMaskTexture(shape)
+			holder.shape = shape
+		else
+			holder.unsupported = true
+		end
+	elseif mask.path and icon.SetMask then
+		-- The order ui/Suggest.lua uses: mask first, texture second.
+		icon:SetMask(mask.path)
+	end
 	icon:SetTexture(panel.iconID)
+	if holder.unsupported then
+		local note = holder:CreateFontString(nil, "OVERLAY", "GameFontRedSmall")
+		note:SetPoint("TOP", 0, -4)
+		note:SetText("unsupported")
+	end
 
 	local caption = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	caption:SetPoint("BOTTOM", 0, 2)
