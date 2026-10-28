@@ -64,10 +64,11 @@ local REWARD_ICON = 30
 	Its 64pt sibling does the same, and so does a centred 64pt circle made for the
 	job, which rules out the file's dimensions as the difference.
 
-	This one is already shipped and already used -- ui/Info.lua masks the instance
-	button's icon with it -- and photographed against the others at 32, 64 and 96
-	points it is the only one that gives a filled circle at every size. Why the
-	client treats it differently is not known; that it does is measured.
+	This one is already shipped and already used -- ui/EncounterFrame.lua masks the
+	instance button's icon with it, on the texture ui/Info.lua builds -- and
+	photographed against the others at 32, 64 and 96 points it is the only one
+	that gives a filled circle at every size. Why the client treats it differently
+	is not known; that it does is measured.
 
 	/agc icontest on the debug/icon-probe branch draws that comparison, if a mask
 	ever needs choosing again. Do not swap this on reasoning alone.
