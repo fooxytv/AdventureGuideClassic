@@ -221,3 +221,43 @@ are verified against real files; palettised and BGRA are implemented from the fo
 and have not had a sample to test against. BLP1 is reported rather than guessed at.
 
 Needs Pillow (`pip install pillow`); no other dependency.
+
+## make_lorebg.py
+
+Builds an instance's lore background -- the picture behind the overview text.
+
+Forever publishes no journal, so its dungeons ship no `UI-EJ-LOREBG-*` art and the
+overview falls back to a flat dark panel. Making one by hand in Photoshop is slow and
+hard to repeat; it is also unnecessary, because a lore background is a recipe rather
+than a composition.
+
+```sh
+python tools/make_lorebg.py build <source> CityOfDalaran
+python tools/make_lorebg.py build <source> CityOfDalaran --zoom 1.3 --pan-y 0.3
+```
+
+`build` writes `images/UIEJLoreBG<Name>.png` and prints the `splash` line to paste
+into the instance's data file. The source may be PNG, JPEG or BLP; `--zoom` and
+`--pan-x/--pan-y` choose the crop when the default centre is wrong.
+
+Forever's own loading screens are the best sources and are already the right subject:
+they live in the client under `Interface/GLUES/LOADINGSCREENS/Camelot160/Main/`, as
+2992x1684 painted art. The flat grey bands they are padded with are detected and
+trimmed, so the source can be passed as it comes.
+
+### The frame
+
+`lorebg_mask.png` and `lorebg_frame.png` beside the script are the template, measured
+from the 179 retail lore backgrounds rather than guessed:
+
+- The canvas is 512x512 and the picture occupies exactly (4, 4)-(394, 340).
+- The torn edge is an alpha mask, identical in 99.4% of pixels across all of them.
+- The frame is an overlay, which is why `splash` art cannot simply be a screenshot.
+  Pixels near the edge barely vary between instances -- a luminance spread of about
+  17 six pixels in, against 100 forty pixels in -- so frame and picture separate on
+  that spread.
+
+`python tools/make_lorebg.py frame <dir-of-retail-lore-art>` rebuilds both from a
+folder of `UI-EJ-LOREBG-*` art. That has been run; it is here so the two templates
+are reproducible rather than mystery binaries, and needs running again only if they
+are lost.

@@ -10,7 +10,7 @@ InstanceService.AddDungeon({
 	name = "Ruins of Lordaeron",
 	thumbnail = I.UIEJDungeonButtonRuinsOfLordaeron,
 	icon = I.UIEJDungeonPortraitRuinsOfLordaeron,
-	splash = 527422,
+	splash = I.UIEJLoreBGRuinsOfLordaeron,
 	mapID = 2999,
 	seasonFilter = "forever",
 	overview = "The broken city above the Undercity, walked now by the dead of its own garrison. Seven encounters spread across the alleys, the market and the overlook, several of them only appearing once something has been disturbed. Horde adventurers come up through the Undercity; the Alliance walk in from Southshore.",
