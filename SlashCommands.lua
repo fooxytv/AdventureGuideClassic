@@ -21,6 +21,14 @@ SlashCmdList["ADVENTUREGUIDECLASSIC"] = function(message)
 		else
 			print("|cffff5555[AGC]|r ModelTuner is not available on this client.")
 		end
+	elseif (message == "portraits") then
+		-- Developer rig for photographing models; see ui/PortraitStudio.lua.
+		local studio = UI.GetComponent and UI.GetComponent("PortraitStudio")
+		if studio and studio.Toggle then
+			studio.Toggle()
+		else
+			print("|cffff5555[AGC]|r PortraitStudio is not available on this client.")
+		end
 	else
 		--todo: print usage instructions to the console
 	end
