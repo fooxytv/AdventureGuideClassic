@@ -45,7 +45,25 @@ local GROUP_WIDTH = LARGE.width + 30 + SMALL.width
 	hangs the small pane's portrait off its top-left corner, which is copied below.
 ]]
 local RING_SIZE, ICON_SIZE = 94, 64
-local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+
+--[[
+	The mask that actually rounds an icon on these clients.
+
+	Interface\CharacterFrame\TempPortraitAlphaMask was the obvious choice and does
+	not work: it draws the art in the top-left of a disc wider than the icon, so
+	the picture sits small and off-centre inside the ring with black around it.
+	Its 64pt sibling does the same, and so does a centred 64pt circle made for the
+	job, which rules out the file's dimensions as the difference.
+
+	This one is already shipped and already used -- ui/Info.lua masks the instance
+	button's icon with it -- and photographed against the others at 32, 64 and 96
+	points it is the only one that gives a filled circle at every size. Why the
+	client treats it differently is not known; that it does is measured.
+
+	/agc icontest on the debug/icon-probe branch draws that comparison, if a mask
+	ever needs choosing again. Do not swap this on reasoning alone.
+]]
+local PORTRAIT_MASK = I.InstanceButtonIconMask
 
 --[[
 	The levelling reminder's portrait. A map, because that pane is about a place
