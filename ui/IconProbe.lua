@@ -48,14 +48,18 @@ local PORTRAIT_MASK_SMALL =
 
 local MASKS = {
 	{ label = "no mask" },
-	{ label = "SetMask (now)", path = PORTRAIT_MASK },
-	{ label = "AddMask 128", path = PORTRAIT_MASK, region = true },
-	{ label = "AddMask 64", path = PORTRAIT_MASK_SMALL, region = true },
+	{ label = "SetMask 128 (now)", path = PORTRAIT_MASK },
+	{ label = "SetMask 64", path = PORTRAIT_MASK_SMALL },
+	-- The one already working in this addon: ui/Info.lua pairs it with a 64pt
+	-- icon. Its circle is cut off-centre for that button's anchor, though.
+	{ label = "InstanceButton", path = I.InstanceButtonIconMask },
+	-- 64pt, circle centred and filling the file. Ours.
+	{ label = "UIEJPortraitMask", path = I.UIEJPortraitMask },
 }
 
 local SIZES = { 32, 64, 96 }
 
-local CELL = 104
+local CELL = 96
 local LEFT, TOP = 70, 70
 
 local function BuildCell(parent, column, row, mask, size)
