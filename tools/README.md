@@ -261,3 +261,38 @@ from the 179 retail lore backgrounds rather than guessed:
 folder of `UI-EJ-LOREBG-*` art. That has been run; it is here so the two templates
 are reproducible rather than mystery binaries, and needs running again only if they
 are lost.
+
+## make_bossportrait.py
+
+Builds a boss portrait -- the cut-out of the model on the encounter button.
+
+```sh
+python tools/make_bossportrait.py build shot.png LynTheIgnored
+python tools/make_bossportrait.py build shot.png LynTheIgnored --tolerance 40 --erode 2
+```
+
+It writes `images/UIEJBoss<Name>.png` and prints the `portrait` line. The source may
+be PNG, JPEG or BLP; art that is already a 128x64 cut-out passes through untouched,
+so retail's own `UI-EJ-BOSS-*` files can be used directly.
+
+The format, measured from the 59 shipped and confirmed against retail's (also
+128x64): the model stands on the bottom edge, fills about 60 of the 64 points of
+height and 96 of the 128 across, and centres at x 59 rather than 64.
+
+### Shooting the model
+
+What the script cannot do is produce the model. That still comes from the game,
+through the addon's own viewer -- `/run AGC_NpcPreview(id)`.
+
+**Shoot it against a flat colour the model does not contain.** Magenta or green, for
+the same reason film uses them. The backdrop is removed by flooding in from the
+edges, so a creature sharing the backdrop's colour somewhere in its middle will not
+be punched through. The edges are the hard part: an edge pixel is a genuine blend of
+model and backdrop, and recovering those is what decides whether the result looks
+cut out or looks like it has a coloured rim.
+
+That recovery is a colour-difference key rather than a distance test, because
+distance does not work -- half a dark model mixed into magenta still lands far from
+magenta, so it reads as pure model and keeps its rim. What shrinks in proportion as
+model mixes in is the backdrop's shape: magenta is high red and blue against low
+green. That is what is measured. If a rim survives anyway, raise `--erode`.
