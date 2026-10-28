@@ -4,17 +4,30 @@ All rights reserved.
 
 Programming by: FooxyTV
 
-Developer aid for seeing how a texture behaves under a mask. Off by default and
-reachable only through /agc icontest [fileID].
+Developer aid for choosing an icon's mask and size against the ring it has to
+fill. Off by default and reachable only through /agc icontest [fileID].
 
-It exists because the Suggested Content portraits do not fill their ring and three
-rounds of measuring the art could not say why. A mask changes both what a texture
-may be given -- it refuses tex coords once masked -- and, it appears, how it is
-scaled, and neither is visible from outside the client.
+It exists because the Suggested Content portraits do not fill their ring and the
+cause was reasoned out wrongly four times from measurements of the art. A mask
+changes what a texture may be given, how it is scaled, and -- as it turned out --
+behaves differently from one mask file to the next for reasons not visible from
+outside the client. So this photographs it instead.
 
-So this draws one icon as a grid: every size down one side, every mask across the
-top, each cell labelled. One screenshot then answers which combination fills,
-instead of a /run per question with the state lost on every reload.
+Each cell draws the icon under a mask with the real ring over it, at the size its
+row says. The question is only ever which cell fills its ring, which is a thing
+to look at rather than to calculate.
+
+What earlier rounds settled, so none of it is retried here:
+
+- TempPortraitAlphaMask draws the art in the top-left of a disc wider than the
+  icon. Its 64pt sibling does the same, and so does a centred circle generated to
+  fill a 64pt file, so the mask's own dimensions are not the difference.
+- InstanceButtonIconMask fills a circle at every size, which is why Suggest now
+  uses it. Its circle is only 45 of its 64 points though, and cut off-centre for
+  the instance button's anchor, so it rounds the icon smaller than the ring's
+  hole and sits up and to the left of it.
+- UIEJPortraitRingMask is that same file with the circle moved to the middle,
+  which is what this round is for.
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -24,81 +37,47 @@ local panel
 
 local DEFAULT_ICON = 136325
 
-local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
-
---[[
-	The two ways to mask a texture.
-
-	SetMask takes a file path and does its own sizing, which is the problem: both
-	mask files, at every icon size, draw the art in the top-left of a disc larger
-	than the quad. Nothing about the icon or the mask file changes it.
-
-	AddMaskTexture takes a MaskTexture that is anchored and sized like any other
-	region, which fixed the offset: the art fills its quad again. It did not make
-	a circle, though -- only the corners of a 96pt icon are touched and a 64pt one
-	is untouched, which is what a 128pt circle over them would do.
-
-	So the reading is that a mask draws at its file's own size whatever SetSize
-	says, and the file has to match the icon. Both sizes are here to settle it. If
-	that is right, the 64pt file gives a clean circle at 64pt, leaves 32pt square,
-	and crops 96pt hard.
-]]
-local PORTRAIT_MASK_SMALL =
-	"Interface\\CharacterFrame\\TempPortraitAlphaMaskSmall"
+-- The ring from ui/Suggest.lua, at the size it is drawn there.
+local SHEET = I.AdventureGuide
+local RING = { 0.775391, 0.958984, 0.001953, 0.1875 }
+local RING_SIZE = 94
 
 local MASKS = {
-	{ label = "no mask" },
-	{ label = "SetMask 128 (now)", path = PORTRAIT_MASK },
-	{ label = "SetMask 64", path = PORTRAIT_MASK_SMALL },
-	-- The one already working in this addon: ui/Info.lua pairs it with a 64pt
-	-- icon. Its circle is cut off-centre for that button's anchor, though.
 	{ label = "InstanceButton", path = I.InstanceButtonIconMask },
+	{ label = "RingMask centred", path = I.UIEJPortraitRingMask },
 }
 
-local SIZES = { 32, 64, 96 }
+-- 64 is what ships. The rest follow from the mask's circle being 0.703 of its
+-- file: about 83 to reach the 58pt hole, about 91 to sit mid-band.
+local SIZES = { 64, 83, 91, 96 }
 
-local CELL = 96
-local LEFT, TOP = 70, 70
+local CELL = 112
+local LEFT, TOP = 56, 70
 
 local function BuildCell(parent, column, row, mask, size)
 	local holder = CreateFrame("Frame", nil, parent)
 	holder:SetSize(CELL, CELL)
 	holder:SetPoint("TOPLEFT", LEFT + (column - 1) * CELL, -(TOP + (row - 1) * CELL))
 
-	-- A mid grey behind every cell, so a transparent corner and a black one are
-	-- told apart. Against black they look the same, which is the whole question.
+	-- Mid grey, so a transparent gap and a black one are told apart.
 	local bg = holder:CreateTexture(nil, "BACKGROUND")
 	bg:SetAllPoints(holder)
 	bg:SetColorTexture(0.35, 0.35, 0.38, 1)
 
 	local icon = holder:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(size, size)
-	icon:SetPoint("CENTER")
-	if mask.region then
-		-- A mask that is a region: sized and anchored onto the icon exactly.
-		if holder.CreateMaskTexture and icon.AddMaskTexture then
-			local shape = holder:CreateMaskTexture()
-			shape:SetTexture(mask.path, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-			shape:SetSize(size, size)
-			shape:SetPoint("CENTER", icon, "CENTER")
-			icon:AddMaskTexture(shape)
-			holder.shape = shape
-		else
-			holder.unsupported = true
-		end
-	elseif mask.path and icon.SetMask then
-		-- The order ui/Suggest.lua uses: mask first, texture second.
-		icon:SetMask(mask.path)
-	end
+	icon:SetPoint("CENTER", 0, 6)
+	if mask.path and icon.SetMask then icon:SetMask(mask.path) end
 	icon:SetTexture(panel.iconID)
-	if holder.unsupported then
-		local note = holder:CreateFontString(nil, "OVERLAY", "GameFontRedSmall")
-		note:SetPoint("TOP", 0, -4)
-		note:SetText("unsupported")
-	end
+
+	local ring = holder:CreateTexture(nil, "OVERLAY")
+	ring:SetTexture(SHEET)
+	ring:SetTexCoord(RING[1], RING[2], RING[3], RING[4])
+	ring:SetSize(RING_SIZE, RING_SIZE)
+	ring:SetPoint("CENTER", icon, "CENTER")
 
 	local caption = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	caption:SetPoint("BOTTOM", 0, 2)
+	caption:SetPoint("BOTTOM", 0, 1)
 	caption:SetText(size .. "pt")
 	holder.icon = icon
 	return holder
@@ -107,7 +86,7 @@ end
 local function Build()
 	if panel then return panel end
 	panel = CreateFrame("Frame", "AGCIconProbe", UIParent, "BackdropTemplate")
-	panel:SetSize(LEFT + #MASKS * CELL + 20, TOP + #SIZES * CELL + 30)
+	panel:SetSize(LEFT + #MASKS * CELL + 20, TOP + #SIZES * CELL + 34)
 	panel:SetPoint("CENTER")
 	panel:SetFrameStrata("FULLSCREEN_DIALOG")
 	panel:SetMovable(true)
@@ -127,10 +106,14 @@ local function Build()
 	panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	panel.title:SetPoint("TOPLEFT", 14, -12)
 
+	panel.hint = panel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+	panel.hint:SetPoint("TOPLEFT", 14, -32)
+	panel.hint:SetText("Which cell fills its ring, with the picture centred in it?")
+
 	panel.cells = { }
 	for column, mask in ipairs(MASKS) do
 		local heading = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-		heading:SetPoint("TOPLEFT", LEFT + (column - 1) * CELL, -(TOP - 16))
+		heading:SetPoint("TOPLEFT", LEFT + (column - 1) * CELL, -(TOP - 14))
 		heading:SetWidth(CELL)
 		heading:SetJustifyH("CENTER")
 		heading:SetText(mask.label)
@@ -141,7 +124,7 @@ local function Build()
 
 	local close = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 	close:SetSize(70, 20)
-	close:SetPoint("BOTTOMRIGHT", -12, 10)
+	close:SetPoint("BOTTOMRIGHT", -12, 8)
 	close:SetText("Close")
 	close:SetScript("OnClick", function() panel:Hide() end)
 	return panel
@@ -159,9 +142,6 @@ function component.Toggle(iconID)
 	end
 	panel.title:SetText(("Icon probe -- %s"):format(tostring(panel.iconID)))
 	panel:Show()
-	print(("|cff66ff66[AGC]|r icon probe showing %s; SetMask is %s"):format(
-		tostring(panel.iconID),
-		panel.cells[1].icon.SetMask and "available" or "MISSING on this client"))
 end
 
 function component.Init()
