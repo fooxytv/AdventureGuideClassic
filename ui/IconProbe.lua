@@ -34,17 +34,28 @@ local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 	than the quad. Nothing about the icon or the mask file changes it.
 
 	AddMaskTexture takes a MaskTexture that is anchored and sized like any other
-	region, so the circle is wherever it is put. That is the column to watch.
+	region, which fixed the offset: the art fills its quad again. It did not make
+	a circle, though -- only the corners of a 96pt icon are touched and a 64pt one
+	is untouched, which is what a 128pt circle over them would do.
+
+	So the reading is that a mask draws at its file's own size whatever SetSize
+	says, and the file has to match the icon. Both sizes are here to settle it. If
+	that is right, the 64pt file gives a clean circle at 64pt, leaves 32pt square,
+	and crops 96pt hard.
 ]]
+local PORTRAIT_MASK_SMALL =
+	"Interface\\CharacterFrame\\TempPortraitAlphaMaskSmall"
+
 local MASKS = {
 	{ label = "no mask" },
 	{ label = "SetMask (now)", path = PORTRAIT_MASK },
-	{ label = "AddMaskTexture", path = PORTRAIT_MASK, region = true },
+	{ label = "AddMask 128", path = PORTRAIT_MASK, region = true },
+	{ label = "AddMask 64", path = PORTRAIT_MASK_SMALL, region = true },
 }
 
 local SIZES = { 32, 64, 96 }
 
-local CELL = 110
+local CELL = 104
 local LEFT, TOP = 70, 70
 
 local function BuildCell(parent, column, row, mask, size)
