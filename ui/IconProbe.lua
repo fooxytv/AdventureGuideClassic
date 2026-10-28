@@ -144,6 +144,10 @@ local function Build()
 	close:SetPoint("BOTTOMRIGHT", -12, 8)
 	close:SetText("Close")
 	close:SetScript("OnClick", function() panel:Hide() end)
+	-- A frame is shown the moment it is made, and Toggle reads that as "already
+	-- open" and closes it again -- so without this the first /agc icontest builds
+	-- the panel and hides it, and nothing appears until the second.
+	panel:Hide()
 	return panel
 end
 
