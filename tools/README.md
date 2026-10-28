@@ -267,9 +267,26 @@ are lost.
 Builds a boss portrait -- the cut-out of the model on the encounter button.
 
 ```sh
+python tools/make_bossportrait.py worklist              # who still needs one
+python tools/make_bossportrait.py worklist --names      # the filenames to shoot
+python tools/make_bossportrait.py batch shots/ --wire   # do the lot
 python tools/make_bossportrait.py build shot.png LynTheIgnored
 python tools/make_bossportrait.py build shot.png LynTheIgnored --tolerance 40 --erode 2
 ```
+
+### The whole job, three steps
+
+1. `worklist --names` prints one filename per boss still on the placeholder id.
+2. Shoot those models, saving each under the name it printed. Capitalisation,
+   spaces, underscores and apostrophes are all ignored when matching, so
+   `lyn_the_ignored.png` finds Lyn the Ignored.
+3. `batch shots/ --wire` builds every one into `images/` **and** repoints that
+   encounter's `portrait` in `data/`.
+
+`--wire` edits one line per boss and nothing else, preserving the file's line
+endings; `--dry-run` shows what it would do first. Files matching no boss on the
+placeholder are listed rather than guessed at, so a typo is reported instead of
+landing on the wrong encounter.
 
 It writes `images/UIEJBoss<Name>.png` and prints the `portrait` line. The source may
 be PNG, JPEG or BLP; art that is already a 128x64 cut-out passes through untouched,

@@ -28,7 +28,9 @@ retail's own (also 128x64):
 - it sits a little left of centre, at x 59 rather than 64
 """
 import argparse
+import glob
 import os
+import re
 import sys
 from collections import deque
 
@@ -227,6 +229,123 @@ def cmd_build(args):
     print("    portrait = I.UIEJBoss%s," % name)
 
 
+# The id every boss with no art of its own carries.
+PLACEHOLDER = "521744"
+ENCOUNTER_RE = re.compile(r'^\t\tname = "([^"]+)",(.*?)(?=^\t\tname = "|\Z)',
+                          re.M | re.S)
+PORTRAIT_RE = re.compile(r"^\t\tportrait = ([^,\r\n]+),", re.M)
+
+
+def art_key(boss):
+    """LynTheIgnored from "Lyn the Ignored"."""
+    words = re.findall(r"[A-Za-z0-9]+", boss)
+    return "".join(w[:1].upper() + w[1:] for w in words)
+
+
+def normalise(text):
+    return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+def read_text(path):
+    with open(path, newline="", encoding="utf-8") as fh:
+        return fh.read()
+
+
+def placeholder_bosses():
+    """Every encounter still carrying the placeholder, in file order."""
+    found = []
+    pattern = os.path.join(AG_ROOT, "data", "*", "*", "*.lua")
+    for path in sorted(glob.glob(pattern)):
+        text = read_text(path)
+        instance = re.search(r'^\tname = "([^"]+)"', text, re.M)
+        if not instance:
+            continue
+        for match in ENCOUNTER_RE.finditer(text):
+            portrait = PORTRAIT_RE.search(match.group(2))
+            if portrait and portrait.group(1).strip() == PLACEHOLDER:
+                found.append((path, instance.group(1), match.group(1)))
+    return found
+
+
+def cmd_worklist(args):
+    found = placeholder_bosses()
+    current = None
+    for path, instance, boss in found:
+        if instance != current:
+            current = instance
+            print("\n%s" % instance)
+        if args.names:
+            print("    %s.png" % boss)
+        else:
+            print("    %-28s -> images/UIEJBoss%s.png" % (boss, art_key(boss)))
+    print("\n%d bosses still on the placeholder." % len(found))
+    if not args.names:
+        print("`worklist --names` prints just the filenames to shoot, one per line.")
+
+
+def wire(path, boss, key):
+    """Point one encounter's portrait at its new art, leaving the rest alone."""
+    text = read_text(path)
+    eol = "\r\n" if "\r\n" in text else "\n"
+    for match in ENCOUNTER_RE.finditer(text):
+        if match.group(1) != boss:
+            continue
+        body = match.group(2)
+        portrait = PORTRAIT_RE.search(body)
+        if not portrait:
+            return False, "no portrait line"
+        start = match.start(2) + portrait.start()
+        end = match.start(2) + portrait.end()
+        new = "\t\tportrait = I.UIEJBoss%s," % key
+        text = text[:start] + new + text[end:]
+        with open(path, "w", newline="", encoding="utf-8") as fh:
+            fh.write(text)
+        return True, None
+    return False, "encounter not found"
+
+
+def cmd_batch(args):
+    wanted = {normalise(boss): (path, boss) for path, _, boss in placeholder_bosses()}
+    sources = [p for p in sorted(glob.glob(os.path.join(args.folder, "*")))
+               if p.lower().endswith((".png", ".jpg", ".jpeg", ".blp", ".tga"))]
+    if not sources:
+        sys.exit("no images in %s" % args.folder)
+
+    done, unmatched = 0, []
+    for source in sources:
+        stem = os.path.splitext(os.path.basename(source))[0]
+        hit = wanted.get(normalise(stem))
+        if not hit:
+            unmatched.append(stem)
+            continue
+        path, boss = hit
+        key = art_key(boss)
+        out, note = build(source, args.tolerance, args.height, args.centre_x,
+                          args.erode)
+        target = os.path.join(AG_ROOT, "images", "UIEJBoss%s.png" % key)
+        if not args.dry_run:
+            out.save(target)
+        print("  %-28s -> UIEJBoss%s.png   (%s)" % (boss, key, note))
+        if args.wire and not args.dry_run:
+            ok, why = wire(path, boss, key)
+            if not ok:
+                print("      could not wire it up: %s" % why)
+        done += 1
+
+    print("\n%d portrait%s%s" % (done, "" if done == 1 else "s",
+                                 " (dry run, nothing written)" if args.dry_run else ""))
+    if args.wire and not args.dry_run:
+        print("data files updated; the rest still carry the placeholder.")
+    elif done:
+        print("run again with --wire to point the data files at them.")
+    if unmatched:
+        print("\n%d file%s matched no boss still on the placeholder:"
+              % (len(unmatched), "" if len(unmatched) == 1 else "s"))
+        for stem in unmatched:
+            print("    %s" % stem)
+        print("Name each file after the boss -- `worklist --names` prints them.")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -246,6 +365,23 @@ def main():
     b.add_argument("--out", help="write here instead of images/")
     b.add_argument("--dry-run", action="store_true")
     b.set_defaults(func=cmd_build)
+
+    w = sub.add_parser("worklist", help="bosses still carrying the placeholder")
+    w.add_argument("--names", action="store_true",
+                   help="print just the filenames to shoot, one per line")
+    w.set_defaults(func=cmd_worklist)
+
+    t = sub.add_parser("batch", help="build every image in a folder at once")
+    t.add_argument("folder", help="folder of exports, each named after its boss")
+    t.add_argument("--wire", action="store_true",
+                   help="also point the data files at the new art")
+    t.add_argument("--tolerance", type=int, default=32)
+    t.add_argument("--height", type=int, default=TARGET_HEIGHT)
+    t.add_argument("--centre-x", type=int, default=CENTRE_X)
+    t.add_argument("--erode", type=int, default=None)
+    t.add_argument("--dry-run", action="store_true")
+    t.set_defaults(func=cmd_batch)
+
     args = ap.parse_args()
     args.func(args)
 
