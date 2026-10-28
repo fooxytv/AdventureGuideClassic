@@ -134,7 +134,8 @@ local function OutstandingQuests(instance, playerLevel)
 end
 
 local function PlayerLevel()
-	return (UnitLevel and UnitLevel("player")) or 1
+	-- Through Compat so the tuner's pretend level reaches the ranking.
+	return Compat.GetPlayerLevel()
 end
 
 --[[

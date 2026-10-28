@@ -1188,6 +1188,82 @@ PROBE = """
     out.uiPostInitWaitsForEveryInit =
         (actorPost and lateInit and lateInit < actorPost) and 1 or 0
 
+    --[[
+        Pretending to be another client, which ui/ClientTuner.lua drives.
+
+        Checked from every client rather than one, because the claim is that the
+        flags alone decide what shows: a Forever pretend has to give Forever's list
+        whichever client is really running. The counts are the same ones asserted
+        for each real client below, so the two cannot drift apart.
+    ]]
+    --[[
+        The loot filter is covered here too, and deliberately.
+
+        It reads isVanillaLoot, isEraClient, isTBC and the active season, every one
+        of which SetPretend recomputes. If it did not follow, the tuner would show
+        the right dungeon list with the wrong loot inside it, which is worse than
+        showing nothing: the list is obviously another client's, a drop is not.
+
+        The strings are the same ones asserted for each real client below.
+    ]]
+    local PRETEND_WANT = {
+        { "era", 19, 6, "1,2,4,7" },
+        { "sod", 18, 10, "1,3,4" },
+        { "tbc", 19, 6, "1,5,7" },
+        { "forever", 28, 2, "1,2,4,6,7" },
+    }
+    local LOOT_PROBE = { { id = 1, filter = "all" }, { id = 2, filter = "era" },
+        { id = 3, filter = "sod" }, { id = 4, filter = "classic" },
+        { id = 5, filter = "tbc" }, { id = 6, filter = "forever" },
+        { id = 7, filter = "restricted" } }
+
+    local function LootNow()
+        local kept = { }
+        local got = AdventureGuideNavigationService.GetEncounterLoot(
+            { name = "Pretend probe", loot = LOOT_PROBE }).loot
+        for _, id in ipairs(got) do kept[#kept + 1] = tostring(id) end
+        return table.concat(kept, ",")
+    end
+
+    local problems = { }
+    for _, want in ipairs(PRETEND_WANT) do
+        local name, wantDungeons, wantRaids, wantLoot =
+            want[1], want[2], want[3], want[4]
+        if not Compat.SetPretend(name) then
+            problems[#problems + 1] = "SetPretend refused " .. name
+        else
+            local gotDungeons = #(InstanceService.GetDungeons() or { })
+            local gotRaids = #(InstanceService.GetRaids() or { })
+            if gotDungeons ~= wantDungeons or gotRaids ~= wantRaids then
+                problems[#problems + 1] = ("%s gave %d/%d, wanted %d/%d"):format(
+                    name, gotDungeons, gotRaids, wantDungeons, wantRaids)
+            end
+            local gotLoot = LootNow()
+            if gotLoot ~= wantLoot then
+                problems[#problems + 1] = ("%s loot gave %s, wanted %s"):format(
+                    name, gotLoot, wantLoot)
+            end
+        end
+    end
+    if Compat.SetPretend("nonsense") then
+        problems[#problems + 1] = "an unknown client name was accepted"
+    end
+    Compat.ClearPretend()
+    if Compat.flavor ~= out.flavor then
+        problems[#problems + 1] =
+            "ClearPretend left flavor as " .. tostring(Compat.flavor)
+    end
+    local realLevel = Compat.GetPlayerLevel()
+    Compat.SetPretendLevel(42)
+    if Compat.GetPlayerLevel() ~= 42 then
+        problems[#problems + 1] = "the pretend level was ignored"
+    end
+    Compat.SetPretendLevel(nil)
+    if Compat.GetPlayerLevel() ~= realLevel then
+        problems[#problems + 1] = "the real level did not come back"
+    end
+    out.pretendFailures = table.concat(problems, "; ")
+
     return out
 
 """
@@ -1196,6 +1272,7 @@ PROBE = """
 # and which of the seven tagged items survive the loot filter.
 EXPECTED = {
     "era": {
+        "pretendFailures": "",
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 1, "combatLogAvailable": 1,
         "loot": "1,2,4,7", "dungeons": 19, "raids": 6,
@@ -1313,6 +1390,7 @@ EXPECTED = {
         "discoveryDefaultsOff": 1,
     },
     "sod": {
+        "pretendFailures": "",
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
         "isVanillaLoot": 1, "isSoD": 1, "isEra": 0, "combatLogAvailable": 1,
         "loot": "1,3,4", "dungeons": 18, "raids": 10,
@@ -1430,6 +1508,7 @@ EXPECTED = {
         "discoveryDefaultsOff": 1,
     },
     "tbc": {
+        "pretendFailures": "",
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
         "isVanillaLoot": 0, "isSoD": 0, "isEra": 0, "combatLogAvailable": 1,
         "loot": "1,5,7", "dungeons": 19, "raids": 6,
@@ -1561,6 +1640,7 @@ EXPECTED = {
     # with the journal cold, ForeverContentService falls back to ABSENT_ON_FOREVER
     # and unknown beats hidden.
     "forever": {
+        "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
@@ -1679,6 +1759,7 @@ EXPECTED = {
     },
     # Older Forever, reporting WOW_PROJECT_MAINLINE. A fix must satisfy both.
     "forever_old": {
+        "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
         "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
