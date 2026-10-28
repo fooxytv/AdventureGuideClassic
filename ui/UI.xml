@@ -31,6 +31,7 @@
     <Script file="ui/CreatureButtons.lua" />
     <Script file="ui/ModelTuner.lua" />
     <Script file="ui/ClientTuner.lua" />
+    <Script file="ui/IconProbe.lua" />
     <Script file="ui/InstanceOverview.lua" />
     <Script file="ui/NpcPreview.lua" />
     <Script file="ui/PortraitStudio.lua" />
