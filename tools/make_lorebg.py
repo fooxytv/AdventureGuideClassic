@@ -181,6 +181,14 @@ def cmd_frame(args):
     for y in range(BOX[1], BOX[3]):
         for x in range(BOX[0], BOX[2]):
             vs = [p[x, y] for p in px]
+            # Where the mask is feathered the pixel is torn edge, which is frame by
+            # definition -- no picture ever reaches it. Leaving it to the spread
+            # test let the picture through in patches, so the edge faded out in the
+            # picture's own colour instead of the parchment's.
+            if mp[x, y] < 250:
+                rgb = tuple(int(statistics.median(v[c] for v in vs)) for c in range(3))
+                fp[x, y] = rgb + (255,)
+                continue
             lum = sorted(sum(v[:3]) / 3 for v in vs)
             spread = lum[int(len(lum) * 0.9)] - lum[int(len(lum) * 0.1)]
             if spread >= FRAME_HI:
