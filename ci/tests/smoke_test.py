@@ -1196,12 +1196,39 @@ PROBE = """
         whichever client is really running. The counts are the same ones asserted
         for each real client below, so the two cannot drift apart.
     ]]
+    --[[
+        The loot filter is covered here too, and deliberately.
+
+        It reads isVanillaLoot, isEraClient, isTBC and the active season, every one
+        of which SetPretend recomputes. If it did not follow, the tuner would show
+        the right dungeon list with the wrong loot inside it, which is worse than
+        showing nothing: the list is obviously another client's, a drop is not.
+
+        The strings are the same ones asserted for each real client below.
+    ]]
     local PRETEND_WANT = {
-        { "era", 19, 6 }, { "sod", 18, 10 }, { "tbc", 19, 6 }, { "forever", 28, 2 },
+        { "era", 19, 6, "1,2,4,7" },
+        { "sod", 18, 10, "1,3,4" },
+        { "tbc", 19, 6, "1,5,7" },
+        { "forever", 28, 2, "1,2,4,6,7" },
     }
+    local LOOT_PROBE = { { id = 1, filter = "all" }, { id = 2, filter = "era" },
+        { id = 3, filter = "sod" }, { id = 4, filter = "classic" },
+        { id = 5, filter = "tbc" }, { id = 6, filter = "forever" },
+        { id = 7, filter = "restricted" } }
+
+    local function LootNow()
+        local kept = { }
+        local got = AdventureGuideNavigationService.GetEncounterLoot(
+            { name = "Pretend probe", loot = LOOT_PROBE }).loot
+        for _, id in ipairs(got) do kept[#kept + 1] = tostring(id) end
+        return table.concat(kept, ",")
+    end
+
     local problems = { }
     for _, want in ipairs(PRETEND_WANT) do
-        local name, wantDungeons, wantRaids = want[1], want[2], want[3]
+        local name, wantDungeons, wantRaids, wantLoot =
+            want[1], want[2], want[3], want[4]
         if not Compat.SetPretend(name) then
             problems[#problems + 1] = "SetPretend refused " .. name
         else
@@ -1210,6 +1237,11 @@ PROBE = """
             if gotDungeons ~= wantDungeons or gotRaids ~= wantRaids then
                 problems[#problems + 1] = ("%s gave %d/%d, wanted %d/%d"):format(
                     name, gotDungeons, gotRaids, wantDungeons, wantRaids)
+            end
+            local gotLoot = LootNow()
+            if gotLoot ~= wantLoot then
+                problems[#problems + 1] = ("%s loot gave %s, wanted %s"):format(
+                    name, gotLoot, wantLoot)
             end
         end
     end
