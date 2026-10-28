@@ -21,6 +21,14 @@ SlashCmdList["ADVENTUREGUIDECLASSIC"] = function(message)
 		else
 			print("|cffff5555[AGC]|r ModelTuner is not available on this client.")
 		end
+	elseif (message == "clienttune") then
+		-- Developer aid for testing another client's content; see ui/ClientTuner.lua.
+		local tuner = UI.GetComponent and UI.GetComponent("ClientTuner")
+		if tuner and tuner.Toggle then
+			tuner.Toggle()
+		else
+			print("|cffff5555[AGC]|r ClientTuner is not available on this client.")
+		end
 	else
 		--todo: print usage instructions to the console
 	end
