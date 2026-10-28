@@ -376,10 +376,6 @@ local PRETEND = {
 	forever = { flavor = "forever", tocVersion = 16001, season = 0 },
 }
 
-function Compat.GetPretendNames()
-	return { "era", "sod", "tbc", "forever" }
-end
-
 function Compat.SetPretend(name)
 	if not name then
 		Compat.ClearPretend()

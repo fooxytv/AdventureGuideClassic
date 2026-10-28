@@ -34,6 +34,9 @@ local FLAVOURS = {
 
 local MIN_LEVEL, MAX_LEVEL = 1, 70
 
+-- Every client button the same width; the row is laid out from it.
+local BUTTON_WIDTH = 48
+
 --[[
 	Redraw whatever the journal is showing.
 
@@ -122,14 +125,13 @@ local function CreatePanel()
 	local x = 12
 	for _, flavour in ipairs(FLAVOURS) do
 		local button = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-		local width = (flavour.key == nil) and 48 or 48
-		button:SetSize(width, 20)
+		button:SetSize(BUTTON_WIDTH, 20)
 		button:SetPoint("TOPLEFT", x, -78)
 		button:SetText(flavour.label)
 		button:SetScript("OnClick", function() SetFlavour(flavour.key) end)
 		button.flavourKey = flavour.key
 		panel.flavourButtons[#panel.flavourButtons + 1] = button
-		x = x + width + 2
+		x = x + BUTTON_WIDTH + 2
 	end
 
 	local levelLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
