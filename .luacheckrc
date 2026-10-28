@@ -145,6 +145,9 @@ read_globals = {
     -- Input, sound, chat
     "GetBindingKey", "SetBinding", "GetCursorPosition",
     "IsControlKeyDown", "IsShiftKeyDown",
+    -- Read and restored by the portrait studio, which writes lossless screenshots
+    -- while it is open and puts the client's own setting back on the way out.
+    "GetCVar", "SetCVar",
     "PlaySound", "PlaySoundFile", "SOUNDKIT", "Screenshot",
     "ChatEdit_InsertLink", "DressUpItemLink",
 
