@@ -42,8 +42,19 @@ local SHEET = I.AdventureGuide
 local RING = { 0.775391, 0.958984, 0.001953, 0.1875 }
 local RING_SIZE = 94
 
+--[[
+	InstanceButtonIconMask's circle is cut off-centre: it spans (3, 1) to (48, 46)
+	of a 64pt file, so its middle sits 6.5 left and 8.5 up of the file's. Moving
+	the icon by that much, scaled to whatever size the icon is drawn at, puts the
+	circle in the middle of the ring while leaving the mask itself alone -- the
+	same crop of the art, just placed where it belongs.
+]]
+local MASK_OFFSET_X, MASK_OFFSET_Y = 6.5, 8.5
+
 local MASKS = {
 	{ label = "InstanceButton", path = I.InstanceButtonIconMask },
+	{ label = "InstanceButton centred", path = I.InstanceButtonIconMask,
+	  compensate = true },
 	{ label = "RingMask centred", path = I.UIEJPortraitRingMask },
 }
 
@@ -51,7 +62,7 @@ local MASKS = {
 -- file: about 83 to reach the 58pt hole, about 91 to sit mid-band.
 local SIZES = { 64, 83, 91, 96 }
 
-local CELL = 112
+local CELL = 108
 local LEFT, TOP = 56, 70
 
 local function BuildCell(parent, column, row, mask, size)
@@ -64,17 +75,23 @@ local function BuildCell(parent, column, row, mask, size)
 	bg:SetAllPoints(holder)
 	bg:SetColorTexture(0.35, 0.35, 0.38, 1)
 
-	local icon = holder:CreateTexture(nil, "ARTWORK")
-	icon:SetSize(size, size)
-	icon:SetPoint("CENTER", 0, 6)
-	if mask.path and icon.SetMask then icon:SetMask(mask.path) end
-	icon:SetTexture(panel.iconID)
-
+	-- The ring is placed by the layout, not by the icon, exactly as in Suggest --
+	-- otherwise moving the icon to centre its circle would move the ring with it
+	-- and nothing would change.
 	local ring = holder:CreateTexture(nil, "OVERLAY")
 	ring:SetTexture(SHEET)
 	ring:SetTexCoord(RING[1], RING[2], RING[3], RING[4])
 	ring:SetSize(RING_SIZE, RING_SIZE)
-	ring:SetPoint("CENTER", icon, "CENTER")
+	ring:SetPoint("CENTER", 0, 6)
+
+	local scale = size / 64
+	local dx = mask.compensate and MASK_OFFSET_X * scale or 0
+	local dy = mask.compensate and MASK_OFFSET_Y * scale or 0
+	local icon = holder:CreateTexture(nil, "ARTWORK")
+	icon:SetSize(size, size)
+	icon:SetPoint("CENTER", dx, 6 - dy)
+	if mask.path and icon.SetMask then icon:SetMask(mask.path) end
+	icon:SetTexture(panel.iconID)
 
 	local caption = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 	caption:SetPoint("BOTTOM", 0, 1)
