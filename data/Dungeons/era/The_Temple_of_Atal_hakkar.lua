@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "The Temple of Atal'hakkar",
 	instanceID = 237,
+	minLevel = 45,
+	levelRange = { 50, 60 },
 	thumbnail = 608217,
 	icon = 136360,
 	splash = 608256,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Atal'alarion",
 		defeated = 0,
 		encounterID = 8580,
+		level = 50,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = I.UIEJBossAtalalarion,
 		loot = {
 			{ id = 10798, seasonFilter = "all" },
@@ -54,6 +59,9 @@ InstanceService.AddDungeon({
 		name = "Jammal'an the Prophet",
 		defeated = 0,
 		encounterID = 5710,
+		level = 54,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607665,
 		loot = {
 			{ id = 10808, seasonFilter = "all" },
@@ -89,6 +97,9 @@ InstanceService.AddDungeon({
 		name = "Weaver and Dreamscythe",
 		defeated = 0,
 		encounterID = 5721,
+		level = 53,
+		creatureType = "Dragonkin",
+		classification = "Elite",
 		portrait = 608311,
 		loot = {
 			{ id = 12243, seasonFilter = "all" },
@@ -129,6 +140,9 @@ InstanceService.AddDungeon({
 		name = "Hazzas and Morphaz",
 		defeated = 0,
 		encounterID = 5722,
+		level = 53,
+		creatureType = "Dragonkin",
+		classification = "Elite",
 		portrait = 608311,
 		loot = {
 			{ id = 12243, seasonFilter = "all" },
@@ -169,6 +183,8 @@ InstanceService.AddDungeon({
 		name = "Avatar of Hakkar",
 		defeated = 0,
 		encounterID = 8443,
+		level = "49-50",
+		classification = "Elite",
 		portrait = 607548,
 		loot = {
 			{ id = 10846, seasonFilter = "all" },
@@ -208,6 +224,9 @@ InstanceService.AddDungeon({
 		name = "Shade of Eranikus",
 		defeated = 0,
 		encounterID = 5709,
+		level = 55,
+		creatureType = "Dragonkin",
+		classification = "Elite",
 		portrait = 607768,
 		loot = {
 			{ id = 10836, seasonFilter = "all" },

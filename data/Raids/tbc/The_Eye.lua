@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddRaid({
 	name = "The Eye",
 	instanceID = 550,
+	minLevel = 70,
+	levelRange = { 70, 70 },
 	thumbnail = 608218,
 	icon = 136362,
 	splash = 608257,
@@ -18,6 +20,9 @@ select(2, ...).SetupGlobalFacade()
 	{
 		name = "Al'ar",
 		encounterID = 19514,
+		level = 73,
+		creatureType = "Elemental",
+		classification = "Boss",
 		portrait = 1385712,
 		loot = {
 			{ id = 29925, seasonFilter = "tbc" },
@@ -76,6 +81,9 @@ select(2, ...).SetupGlobalFacade()
 	{
 		name = "Void Reaver",
 		encounterID = 19516,
+		level = 73,
+		creatureType = "Mechanical",
+		classification = "Boss",
 		portrait = 1385772,
 		loot = {
 			{ id = 29986, seasonFilter = "tbc" },
@@ -131,6 +139,9 @@ select(2, ...).SetupGlobalFacade()
 	{
 		name = "High Astromancer Solarian",
 		encounterID = 18805,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1385739,
 		loot = {
 			{ id = 29977, seasonFilter = "tbc" },
@@ -189,6 +200,9 @@ select(2, ...).SetupGlobalFacade()
 	{
 		name = "Kael'thas Sunstrider",
 		encounterID = 19622,
+		level = 73,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 607669,
 		loot = {
 			{ id = 29992, seasonFilter = "tbc" },

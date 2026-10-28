@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Wailing Caverns",
 	instanceID = 240,
+	minLevel = 10,
+	levelRange = { 17, 24 },
 	thumbnail = 608229,
 	icon = 136364,
 	splash = 608313,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Kresh",
 		defeated = 0,
 		encounterID = 3653,
+		level = 20,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607676,
 		loot = {
 			{ id = 13245, seasonFilter = "all" },
@@ -53,6 +58,9 @@ InstanceService.AddDungeon({
 		name = "Lady Anacondra",
 		defeated = 0,
 		encounterID = 3671,
+		level = 20,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607680,
 		loot = {
 			{ id = 10412, seasonFilter = "all" },
@@ -89,6 +97,9 @@ InstanceService.AddDungeon({
 		name = "Lord Cobrahn",
 		defeated = 0,
 		encounterID = 3669,
+		level = 20,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607693,
 		loot = {
 			{ id = 6460, seasonFilter = "all" },
@@ -131,6 +142,9 @@ InstanceService.AddDungeon({
 		name = "Lord Pythas",
 		defeated = 0,
 		encounterID = 3670,
+		level = 21,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607696,
 		loot = {
 			{ id = 6473, seasonFilter = "all" },
@@ -166,6 +180,9 @@ InstanceService.AddDungeon({
 		name = "Skum",
 		defeated = 0,
 		encounterID = 3674,
+		level = 21,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607775,
 		loot = {
 			{ id = 6449, seasonFilter = "all" },
@@ -200,6 +217,9 @@ InstanceService.AddDungeon({
 		name = "Lord Serpentis",
 		defeated = 0,
 		encounterID = 3673,
+		level = 21,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607698,
 		loot = {
 			{ id = 10411, seasonFilter = "all" },
@@ -236,6 +256,9 @@ InstanceService.AddDungeon({
 		name = "Verdan the Everliving",
 		defeated = 0,
 		encounterID = 5775,
+		level = 21,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607805,
 		loot = {
 			{ id = 6631, seasonFilter = "all" },
@@ -273,6 +296,9 @@ InstanceService.AddDungeon({
 		name = "Mutanus the Devourer",
 		defeated = 0,
 		encounterID = 3654,
+		level = 22,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607721,
 		loot = {
 			{ id = 6463, seasonFilter = "all" },

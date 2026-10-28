@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Blackfathom Deeps",
 	instanceID = 227,
+	minLevel = 25,
+	levelRange = { 25, 40 },
 	thumbnail = 608195,
 	icon = 136325,
 	splash = 608234,
@@ -18,6 +20,9 @@ InstanceService.AddRaid({
 	{
 		name = "Ghamoo-Ra",
 		encounterID = 4887,
+		level = 25,
+		creatureType = "Beast",
+		classification = "Elite",
 		portrait = 607613,
 		instance = "Blackfathom Deeps",
 		loot = {
@@ -73,6 +78,9 @@ InstanceService.AddRaid({
 	{
 		name = "Lady Sarevess",
 		encounterID = 4831,
+		level = 25,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607682,
 		loot = {
 			{ id = 888, seasonFilter = "all" },
@@ -126,6 +134,9 @@ InstanceService.AddRaid({
 	{
 		name = "Gelihast",
 		encounterID = 6243,
+		level = 26,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607609,
 		loot = {
 			{ id = 6906, seasonFilter = "all" },
@@ -189,6 +200,9 @@ InstanceService.AddRaid({
 	{
 		name = "Baron Aquanis",
 		encounterID = 12876,
+		level = 28,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607552,
 		loot = {
 			{ id = 209574, seasonFilter = "all" },
@@ -243,6 +257,9 @@ InstanceService.AddRaid({
 	{
 		name = "Twilight Lord Kelris",
 		encounterID = 4832,
+		level = 27,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607800,
 		loot = {
 			{ id = 1155, seasonFilter = "all" },
@@ -334,6 +351,8 @@ InstanceService.AddRaid({
 	{
 		name = "Aku'mai",
 		encounterID = 4829,
+		level = 28,
+		classification = "Elite",
 		portrait = 607614,
 		loot = {
 			{ id = 6910, seasonFilter = "all" },

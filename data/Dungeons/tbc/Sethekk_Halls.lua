@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "Sethekk Halls",
 	instanceID = 556,
+	minLevel = 63,
+	levelRange = { 66, 70 },
 	thumbnail = 608193,
 	icon = 136350,
 	splash = 608232,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Darkweaver Syth",
 		defeated = 0,
 		encounterID = 18472,
+		level = 69,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607583,
 		loot = {
 			{ id = 27919, seasonFilter = "tbc" },
@@ -70,6 +75,8 @@ select(2, ...).SetupGlobalFacade()
 		name = "Anzu",
 		defeated = 0,
 		encounterID = 23035,
+		level = 72,
+		classification = "Elite",
 		portrait = 607544,
 		loot = {
 			{ id = 32769, seasonFilter = "tbc" },
@@ -124,6 +131,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Talon King Ikiss",
 		defeated = 0,
 		encounterID = 18473,
+		level = 69,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607780,
 		loot = {
 			{ id = 27946, seasonFilter = "tbc" },

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Blackrock Spire",
 	instanceID = 229,
+	minLevel = 48,
+	levelRange = { 55, 60 },
 	thumbnail = 608197,
 	icon = 136327,
 	splash = 608236,

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "Shadow Labyrinth",
 	instanceID = 555,
+	minLevel = 65,
+	levelRange = { 69, 70 },
 	thumbnail = 608193,
 	icon = 136350,
 	splash = 608232,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Ambassador Hellmaw",
 		defeated = 0,
 		encounterID = 18731,
+		level = 72,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607536,
 		loot = {
 			{ id = 27889, seasonFilter = "tbc" },
@@ -84,6 +89,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Blackheart the Inciter",
 		defeated = 0,
 		encounterID = 18667,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607555,
 		loot = {
 			{ id = 27892, seasonFilter = "tbc" },
@@ -153,6 +161,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Grandmaster Vorpil",
 		defeated = 0,
 		encounterID = 18732,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607625,
 		loot = {
 			{ id = 27897, seasonFilter = "tbc" },
@@ -236,6 +247,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Murmur",
 		defeated = 0,
 		encounterID = 18708,
+		level = 72,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607720,
 		loot = {
 			{ id = 24309, seasonFilter = "tbc" },

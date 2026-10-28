@@ -130,12 +130,21 @@ function UI.ToggleEncounterJournal()
 
     local wasHidden = not EncounterJournal:IsShown()
     EncounterJournal:SetShown(not EncounterJournal:IsShown())
+    --[[
+        Reopening lands on the tab it was closed on. It used to land on the overview
+        however it was left, while the tab strip still showed the old tab selected,
+        so the Loot tab sat lit above the overview's text.
+
+        Closing did half of that: the branch below used to show the overview on the
+        way out as well, which threw the loot view away before it could be returned
+        to. There is nothing to draw in a frame that is being hidden, so it is gone.
+    ]]
     if wasHidden and EncounterJournal:IsShown() then
         local autoNavigated = AdventureGuideNavigationService.AutoNavigateToCurrentInstance(components)
-        if not autoNavigated and AdventureGuideNavigationService.GetEncounter() then
-            components.DynamicContentScroller.ShowOverview()
+        if not autoNavigated
+                and (AdventureGuideNavigationService.GetEncounter()
+                    or AdventureGuideNavigationService.GetInstance()) then
+            components.InfoTabs.ShowSelectedView()
         end
-    elseif AdventureGuideNavigationService.GetEncounter() then
-        components.DynamicContentScroller.ShowOverview()
     end
 end

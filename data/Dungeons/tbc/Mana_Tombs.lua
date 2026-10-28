@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Mana-Tombs",
 	instanceID = 557,
+	minLevel = 61,
+	levelRange = { 63, 70 },
 	thumbnail = 608193,
 	icon = 136350,
 	splash = 608232,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Pandemonius",
 		defeated = 0,
 		encounterID = 18341,
+		level = 66,
+		creatureType = "Demon",
+		classification = "Elite",
 		portrait = 607738,
 		loot = {
 			{ id = 25941, seasonFilter = "tbc" },
@@ -75,6 +80,9 @@ InstanceService.AddDungeon({
 		name = "Tavarok",
 		defeated = 0,
 		encounterID = 18343,
+		level = 66,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607782,
 		loot = {
 			{ id = 25945, seasonFilter = "tbc" },
@@ -132,6 +140,9 @@ InstanceService.AddDungeon({
 		name = "Nexus-Prince Shaffar",
 		defeated = 0,
 		encounterID = 18344,
+		level = 66,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607726,
 		loot = {
 			{ id = 25957, seasonFilter = "tbc" },

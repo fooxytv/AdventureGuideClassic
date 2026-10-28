@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Ruins of Ahn'Qiraj",
 	instanceID = 743,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = 1396591,
 	icon = 136320,
 	splash = 1396510,
@@ -18,6 +20,8 @@ InstanceService.AddRaid({
 	{
 		name = "Kurinnaxx",
 		encounterID = 15348,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385749,
 		loot = {
 			{ id = 21499, seasonFilter = "restricted" },
@@ -73,6 +77,8 @@ InstanceService.AddRaid({
 	{
 		name = "General Rajaxx",
 		encounterID = 15341,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385734,
 		loot = {
 			{ id = 21493, seasonFilter = "restricted" },
@@ -130,6 +136,8 @@ InstanceService.AddRaid({
 	{
 		name = "Moam",
 		encounterID = 15340,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385755,
 		loot = {
 			{ id = 21472, seasonFilter = "restricted" },
@@ -197,6 +205,8 @@ InstanceService.AddRaid({
 	{
 		name = "Buru the Gorger",
 		encounterID = 15370,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385723,
 		loot = {
 			{ id = 21487, seasonFilter = "restricted" },
@@ -253,6 +263,8 @@ InstanceService.AddRaid({
 	{
 		name = "Ayamiss the Hunter",
 		encounterID = 15369,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385718,
 		loot = {
 			{ id = 21479, seasonFilter = "restricted" },
@@ -313,6 +325,8 @@ InstanceService.AddRaid({
 	{
 		name = "Ossirian the Unscarred",
 		encounterID = 15339,
+		level = 63,
+		classification = "Boss",
 		portrait = 1385759,
 		loot = {
 			{ id = 21460, seasonFilter = "restricted" },

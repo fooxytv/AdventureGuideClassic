@@ -285,6 +285,50 @@ function component.SelectQuests()
 	isModelTabSelected = false
 end
 
+--[[
+	Draw the page the selected tab stands for.
+
+	Refresh paints the tab strip from selectedTab; it does not put anything in the
+	frame. Something else always had to do that, and on reopening the journal that
+	something showed the overview unconditionally -- so the Loot tab sat lit above
+	the overview's text. This is the missing half.
+
+	The conditions are the ones Refresh uses to decide whether a tab is enabled at
+	all, so a tab that cannot be drawn here is one that would be disabled anyway,
+	and it falls back to the overview exactly as switching boss already does.
+]]
+function component.ShowSelectedView()
+	local encounter = AdventureGuideNavigationService.GetEncounter()
+	local instance = AdventureGuideNavigationService.GetInstance()
+
+	local function FallBackToOverview()
+		if encounter then
+			components.DynamicContentScroller.ShowOverview()
+		elseif instance then
+			components.InstanceOverview.Show(instance)
+		end
+		component.SelectOverview()
+	end
+
+	if selectedTab == lootTab and (encounter or (instance and #instance > 0)) then
+		components.Loot.Show()
+	elseif selectedTab == questTab and not encounter
+			and instance and QuestService.HasQuests(instance.name) then
+		components.QuestList.Show(instance)
+	elseif selectedTab == modelTab and encounter
+			and CreatureModelService.HasModels(encounter.encounterID) then
+		if not components.ModelFrame.Show() then
+			FallBackToOverview()
+		end
+	elseif selectedTab == abilitiesTab
+			and #AdventureGuideNavigationService.GetEncounterAbilities() > 0 then
+		components.DynamicContentScroller.ShowAbilities()
+	else
+		FallBackToOverview()
+	end
+	component.Refresh()
+end
+
 function component.Refresh()
 	selectTab(selectedTab)
 	if (selectedTab ~= overviewTab) then

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Molten Core",
 	instanceID = 741,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = 1396586,
 	icon = 136346,
 	splash = 1396505,
@@ -18,6 +20,9 @@ InstanceService.AddRaid({
 	{
 		name = "Lucifron",
 		encounterID = 12118,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378993,
 		loot = {
 			{ id = 16800, seasonFilter = "all" },
@@ -77,6 +82,9 @@ InstanceService.AddRaid({
 	{
 		name = "Magmadar",
 		encounterID = 11982,
+		level = 63,
+		creatureType = "Beast",
+		classification = "Boss",
 		portrait = 1378995,
 		loot = {
 			{ id = 16835, seasonFilter = "all" },
@@ -144,6 +152,9 @@ InstanceService.AddRaid({
 	{
 		name = "Gehennas",
 		encounterID = 12259,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378976,
 		loot = {
 			{ id = 16849, seasonFilter = "all" },
@@ -203,6 +214,9 @@ InstanceService.AddRaid({
 	{
 		name = "Garr",
 		encounterID = 12057,
+		level = 63,
+		creatureType = "Elemental",
+		classification = "Boss",
 		portrait = 1378975,
 		loot = {
 			{ id = 16834, seasonFilter = "all" },
@@ -269,6 +283,9 @@ InstanceService.AddRaid({
 	{
 		name = "Shazzrah",
 		encounterID = 12264,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1379013,
 		loot = {
 			{ id = 16831, seasonFilter = "all" },
@@ -330,6 +347,9 @@ InstanceService.AddRaid({
 	{
 		name = "Baron Geddon",
 		encounterID = 12056,
+		level = 63,
+		creatureType = "Elemental",
+		classification = "Boss",
 		portrait = 1378966,
 		loot = {
 			{ id = 16836, seasonFilter = "all" },
@@ -390,6 +410,9 @@ InstanceService.AddRaid({
 	{
 		name = "Golemagg the Incinerator",
 		encounterID = 11988,
+		level = 63,
+		creatureType = "Giant",
+		classification = "Boss",
 		portrait = 1378978,
 		loot = {
 			{ id = 16833, seasonFilter = "all" },
@@ -458,6 +481,9 @@ InstanceService.AddRaid({
 	{
 		name = "Sulfuron Harbinger",
 		encounterID = 12098,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1379015,
 		loot = {
 			{ id = 16848, seasonFilter = "all" },
@@ -519,6 +545,9 @@ InstanceService.AddRaid({
 	{
 		name = "Majordomo Executus",
 		encounterID = 12018,
+		level = 63,
+		creatureType = "Humanoid",
+		classification = "Boss",
 		portrait = 1378998,
 		loot = {
 			{ id = 18703, seasonFilter = "all" },
@@ -572,6 +601,9 @@ InstanceService.AddRaid({
 	{
 		name = "Ragnaros",
 		encounterID = 11502,
+		level = 63,
+		creatureType = "Elemental",
+		classification = "Boss",
 		portrait = 522261,
 		loot = {
 			{ id = 16915, seasonFilter = "all" },

@@ -356,10 +356,27 @@ end
 
 _G.EJ_GetEncounterInfoByIndex = function() return nil end
 
+--[[
+	Quests this character has handed in, settable by a test. Nothing is completed by
+	default, which is the state a fresh character is in and the one most assertions
+	want; a test that needs the other branch puts the id in here.
+]]
+_G.AGC_TEST_COMPLETED_QUESTS = {}
+
+--[[
+	The quest log, as the rows a test puts in it: { title = ..., isHeader = true }
+	for a zone header and { title = ... } for a quest under the one above it. The
+	levelling reminder counts a character's open quests by zone that way, so the
+	grouping is the part worth driving.
+]]
+_G.AGC_TEST_QUEST_LOG = {}
+
 _G.C_QuestLog = {
-	IsQuestFlaggedCompleted = function() return false end,
-	GetNumQuestLogEntries = function() return 0 end,
-	GetInfo = function() return nil end,
+	IsQuestFlaggedCompleted = function(questID)
+		return _G.AGC_TEST_COMPLETED_QUESTS[questID] == true
+	end,
+	GetNumQuestLogEntries = function() return #_G.AGC_TEST_QUEST_LOG end,
+	GetInfo = function(index) return _G.AGC_TEST_QUEST_LOG[index] end,
 	GetQuestIDForLogIndex = function() return nil end,
 }
 
@@ -387,6 +404,19 @@ _G.UnitClass = function()
 end
 _G.UnitLevel = function() return _G.AGC_TEST_LEVEL or 60 end
 _G.UnitFactionGroup = function() return "Alliance", "Alliance" end
+--[[
+	Where the player is standing, and whether that counts as an instance. The
+	levelling reminder records the zone an XP gain happened in and throws away
+	gains earned inside a dungeon, so a test needs both halves.
+]]
+_G.AGC_TEST_ZONE = "Elwynn Forest"
+_G.AGC_TEST_IN_INSTANCE = false
+_G.GetRealZoneText = function() return _G.AGC_TEST_ZONE end
+_G.GetZoneText = function() return _G.AGC_TEST_ZONE end
+_G.IsInInstance = function()
+	if _G.AGC_TEST_IN_INSTANCE then return true, "party" end
+	return false, "none"
+end
 _G.UnitGUID = function() return "Player-1-00000001" end
 _G.GetInventoryItemID = function() return nil end
 _G.GetItemInfo = function() return nil end

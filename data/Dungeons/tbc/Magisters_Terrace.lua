@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Magister's Terrace",
 	instanceID = 585,
+	minLevel = 65,
+	levelRange = { 69, 70 },
 	thumbnail = 608208,
 	icon = 136350,
 	splash = 608247,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Selin Fireheart",
 		defeated = 0,
 		encounterID = 24723,
+		level = 71,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607767,
 		loot = {
 			{ id = 34702, seasonFilter = "tbc" },
@@ -103,6 +108,9 @@ InstanceService.AddDungeon({
 		name = "Vexallus",
 		defeated = 0,
 		encounterID = 24744,
+		level = 71,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607806,
 		loot = {
 			{ id = 34708, seasonFilter = "tbc" },
@@ -190,6 +198,9 @@ InstanceService.AddDungeon({
 		name = "Priestess Delrissa",
 		defeated = 0,
 		encounterID = 24560,
+		level = 70,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607742,
 		loot = {
 			{ id = 34792, seasonFilter = "tbc" },
@@ -286,6 +297,9 @@ InstanceService.AddDungeon({
 		name = "Kael'thas Sunstrider",
 		defeated = 0,
 		encounterID = 24664,
+		level = 72,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607669,
 		loot = {
 			{ id = 34810, seasonFilter = "tbc" },

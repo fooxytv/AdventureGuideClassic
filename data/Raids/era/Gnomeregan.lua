@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Gnomeregan",
 	instanceID = 231,
+	minLevel = 40,
+	levelRange = { 40, 50 },
 	thumbnail = 608202,
 	icon = 136336,
 	splash = 608241,
@@ -19,6 +21,9 @@ InstanceService.AddRaid({
 		name = "Grubbis",
 		defeated = 0,
 		encounterID = 7361,
+		level = 32,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607628,
 		loot = {
 			{ id = 19445, seasonFilter = "all" },
@@ -56,6 +61,9 @@ InstanceService.AddRaid({
 		name = "Viscous Fallout",
 		defeated = 0,
 		encounterID = 7079,
+		level = 30,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607808,
 		loot = {
 			{ id = 9454, seasonFilter = "all" },
@@ -93,6 +101,9 @@ InstanceService.AddRaid({
 		name = "Electrocutioner 6000",
 		defeated = 0,
 		encounterID = 6235,
+		level = 32,
+		creatureType = "Mechanical",
+		classification = "Elite",
 		portrait = 607594,
 		loot = {
 			{ id = 9447, seasonFilter = "all" },
@@ -130,6 +141,9 @@ InstanceService.AddRaid({
 		name = "Crowd Pummeler 9-60",
 		defeated = 0,
 		encounterID = 6229,
+		level = 32,
+		creatureType = "Mechanical",
+		classification = "Elite",
 		portrait = 607572,
 		loot = {
 			{ id = 9449, seasonFilter = "all" },
@@ -166,6 +180,9 @@ InstanceService.AddRaid({
 		name = "Dark Iron Ambassador",
 		defeated = 0,
 		encounterID = 6228,
+		level = 33,
+		creatureType = "Humanoid",
+		classification = "Rare Elite",
 		portrait = I.UIEJBossDarkIronAmbassador,
 		loot = {
 			{ id = 9456, seasonFilter = "all" },
@@ -205,6 +222,9 @@ InstanceService.AddRaid({
 		name = "Mekgineer Thermaplugg",
 		defeated = 0,
 		encounterID = 7800,
+		level = 34,
+		creatureType = "Mechanical",
+		classification = "Elite",
 		portrait = 607714,
 		loot = {
 			{ id = 9458, seasonFilter = "all" },

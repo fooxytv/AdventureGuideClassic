@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
  InstanceService.AddDungeon({
 	name = "The Black Morass",
 	instanceID = 269,
+	minLevel = 65,
+	levelRange = { 68, 70 },
 	thumbnail = 608198,
 	icon = 136350,
 	splash = 608237,
@@ -19,6 +21,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Chrono Lord Deja",
 		defeated = 0,
 		encounterID = 17879,
+		level = 72,
+		creatureType = "Dragonkin",
+		classification = "Elite",
 		portrait = 607566,
 		loot = {
 			{ id = 27988, seasonFilter = "tbc" },
@@ -76,6 +81,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Temporus",
 		defeated = 0,
 		encounterID = 17880,
+		level = 72,
+		creatureType = "Dragonkin",
+		classification = "Elite",
 		portrait = 607784,
 		loot = {
 			{ id = 28185, seasonFilter = "tbc" },
@@ -133,6 +141,9 @@ select(2, ...).SetupGlobalFacade()
 		name = "Aeonus",
 		defeated = 0,
 		encounterID = 17881,
+		level = 72,
+		creatureType = "Dragonkin",
+		classification = "Elite",
 		portrait = 607529,
 		loot = {
 			{ id = 28206, seasonFilter = "tbc" },

@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddRaid({
 	name = "Blackwing Lair",
 	instanceID = 742,
+	minLevel = 60,
+	levelRange = { 60, 60 },
 	thumbnail = 1396580,
 	icon = 136329,
 	splash = 1396499,
@@ -18,6 +20,9 @@ InstanceService.AddRaid({
 	{
 		name = "Razorgore the Untamed",
 		encounterID = 12435,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1379008,
 		loot = {
 			{ id = 16904, seasonFilter = "all" },
@@ -70,6 +75,9 @@ InstanceService.AddRaid({
 	{
 		name = "Vaelastrasz the Corrupt",
 		encounterID = 13020,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1379022,
 		loot = {
 			{ id = 16903, seasonFilter = "all" },
@@ -122,6 +130,9 @@ InstanceService.AddRaid({
 	{
 		name = "Broodlord Lashlayer",
 		encounterID = 12017,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1378968,
 		loot = {
 			{ id = 16898, seasonFilter = "all" },
@@ -173,6 +184,9 @@ InstanceService.AddRaid({
 	{
 		name = "Firemaw",
 		encounterID = 11983,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1378973,
 		loot = {
 			{ id = 16899, seasonFilter = "all" },
@@ -230,6 +244,9 @@ InstanceService.AddRaid({
 	{
 		name = "Ebonroc",
 		encounterID = 14601,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1378971,
 		loot = {
 			{ id = 16899, seasonFilter = "all" },
@@ -285,6 +302,9 @@ InstanceService.AddRaid({
 	{
 		name = "Flamegor",
 		encounterID = 11981,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1378974,
 		loot = {
 			{ id = 16899, seasonFilter = "all" },
@@ -341,6 +361,9 @@ InstanceService.AddRaid({
 	{
 		name = "Chromaggus",
 		encounterID = 14020,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1378969,
 		loot = {
 			{ id = 16902, seasonFilter = "all" },
@@ -405,6 +428,9 @@ InstanceService.AddRaid({
 	{
 		name = "Nefarian",
 		encounterID = 11583,
+		level = 63,
+		creatureType = "Dragonkin",
+		classification = "Boss",
 		portrait = 1379001,
 		loot = {
 			{ id = 16897, seasonFilter = "all" },

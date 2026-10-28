@@ -9,6 +9,8 @@ select(2, ...).SetupGlobalFacade()
 InstanceService.AddDungeon({
 	name = "Blackrock Depths",
 	instanceID = 228,
+	minLevel = 42,
+	levelRange = { 52, 60 },
 	thumbnail = 608196,
 	icon = 136326,
 	splash = 608235,
@@ -19,6 +21,9 @@ InstanceService.AddDungeon({
 		name = "Lord Roccor",
 		defeated = 0,
 		encounterID = 9025,
+		level = 51,
+		creatureType = "Elemental",
+		classification = "Rare Elite",
 		portrait = 607697,
 		loot = {
 			{ id = 22397, seasonFilter = "all" },
@@ -55,6 +60,9 @@ InstanceService.AddDungeon({
 		name = "Bael'Gar",
 		defeated = 0,
 		encounterID = 9016,
+		level = 54,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607549,
 		loot = {
 			{ id = 11802, seasonFilter = "all" },
@@ -91,6 +99,9 @@ InstanceService.AddDungeon({
 		name = "Houndmaster Grebmar",
 		defeated = 0,
 		encounterID = 9319,
+		level = 52,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607647,
 		loot = {
 			{ id = 11623, seasonFilter = "all" },
@@ -127,6 +138,9 @@ InstanceService.AddDungeon({
 		name = "High Interrogator Gerstahn",
 		defeated = 0,
 		encounterID = 9018,
+		level = 52,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607644,
 		loot = {
 			{ id = 22240, seasonFilter = "all" },
@@ -308,6 +322,9 @@ InstanceService.AddDungeon({
 		name = "Pyromancer Loregrain",
 		defeated = 0,
 		encounterID = 9024,
+		level = 52,
+		creatureType = "Humanoid",
+		classification = "Rare Elite",
 		portrait = 607749,
 		loot = {
 			{ id = 11750, seasonFilter = "all" },
@@ -346,6 +363,9 @@ InstanceService.AddDungeon({
 		name = "General Angerforge",
 		defeated = 0,
 		encounterID = 9033,
+		level = 57,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607610,
 		loot = {
 			{ id = 11816, seasonFilter = "all" },
@@ -383,6 +403,9 @@ InstanceService.AddDungeon({
 		name = "Golem Lord Argelmach",
 		defeated = 0,
 		encounterID = 8983,
+		level = 57,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607618,
 		loot = {
 			{ id = 11669, seasonFilter = "all" },
@@ -419,6 +442,9 @@ InstanceService.AddDungeon({
 		name = "Ribbly Screwspigot",
 		defeated = 0,
 		encounterID = 9543,
+		level = 53,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607758,
 		loot = {
 			{ id = 11742, seasonFilter = "all" },
@@ -454,6 +480,9 @@ InstanceService.AddDungeon({
 		name = "Hurley Blackbreath",
 		defeated = 0,
 		encounterID = 9537,
+		level = 55,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607650,
 		loot = {
 			{ id = 22275, seasonFilter = "all" },
@@ -489,6 +518,9 @@ InstanceService.AddDungeon({
 		name = "Plugger Spazzring",
 		defeated = 0,
 		encounterID = 9499,
+		level = 55,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607741,
 		loot = {
 			{ id = 12791, seasonFilter = "all" },
@@ -525,6 +557,9 @@ InstanceService.AddDungeon({
 		name = "Phalanx",
 		defeated = 0,
 		encounterID = 9502,
+		level = 55,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607740,
 		loot = {
 			{ id = 22212, seasonFilter = "all" },
@@ -561,6 +596,9 @@ InstanceService.AddDungeon({
 		name = "Lord Incendius",
 		defeated = 0,
 		encounterID = 9017,
+		level = 55,
+		creatureType = "Elemental",
+		classification = "Elite",
 		portrait = 607694,
 		loot = {
 			{ id = 11764, seasonFilter = "all" },
@@ -597,6 +635,9 @@ InstanceService.AddDungeon({
 		name = "Fineous Darkvire",
 		defeated = 0,
 		encounterID = 9056,
+		level = 54,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607602,
 		loot = {
 			{ id = 22223, seasonFilter = "all" },
@@ -633,6 +674,9 @@ InstanceService.AddDungeon({
 		name = "Warder Stilgiss & Verek",
 		defeated = 0,
 		encounterID = 9041,
+		level = 56,
+		creatureType = "Humanoid",
+		classification = "Rare Elite",
 		portrait = 607814,
 		loot = {
 			{ id = 22241, seasonFilter = "all" },
@@ -671,6 +715,9 @@ InstanceService.AddDungeon({
 		name = "Ambassador Flamelash",
 		defeated = 0,
 		encounterID = 9156,
+		level = 57,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607535,
 		loot = {
 			{ id = 11809, seasonFilter = "all" },
@@ -750,6 +797,9 @@ InstanceService.AddDungeon({
 		name = "Magmus",
 		defeated = 0,
 		encounterID = 9938,
+		level = 57,
+		creatureType = "Giant",
+		classification = "Elite",
 		portrait = 607705,
 		loot = {
 			{ id = 11746, seasonFilter = "all" },
@@ -787,6 +837,9 @@ InstanceService.AddDungeon({
 		name = "Emperor Dagran Thaurissan",
 		defeated = 0,
 		encounterID = 9019,
+		level = 59,
+		creatureType = "Humanoid",
+		classification = "Elite",
 		portrait = 607595,
 		loot = {
 			{ id = 22204, seasonFilter = "all" },
