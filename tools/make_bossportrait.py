@@ -285,8 +285,9 @@ def cmd_worklist(args):
 
 def wire(path, boss, key):
     """Point one encounter's portrait at its new art, leaving the rest alone."""
+    # Only the matched `portrait = ...,` is replaced, so every line ending in the
+    # file survives untouched and none of this has to know what they are.
     text = read_text(path)
-    eol = "\r\n" if "\r\n" in text else "\n"
     for match in ENCOUNTER_RE.finditer(text):
         if match.group(1) != boss:
             continue

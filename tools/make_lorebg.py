@@ -21,10 +21,10 @@ Needs Pillow; shares the BLP decoder with blp2png.py.
 
 Where the frame comes from
 --------------------------
-Measured across 40 retail lore backgrounds, not guessed:
+Measured across the 179 retail lore backgrounds, not guessed:
 
 - The canvas is 512x512 and the picture occupies exactly (4, 4)-(394, 340).
-- The torn edge is an alpha mask, identical in 99.4% of pixels across all 40.
+- The torn edge is an alpha mask, identical in 99.4% of pixels across all of them.
 - The frame is an overlay. Pixels near the edge barely vary between instances
   (a luminance spread of ~17 six pixels in, against ~100 forty pixels in), so
   `frame` separates the two by that spread: consistent means frame, varying

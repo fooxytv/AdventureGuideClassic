@@ -37,7 +37,9 @@ end
 
 --[[
 	Every registered instance, before any filtering. ForeverContentService needs the
-	raw set to decide whether the client's journal agrees with our data.
+	raw set to decide whether the client's journal agrees with our data, and the
+	portrait studio needs it to reach Forever's bosses from an Era client, where
+	every filtered list leaves them out by design.
 ]]
 function InstanceService.GetAllInstances()
 	local all = { }
@@ -111,21 +113,6 @@ end
 ]]
 local function ByDisplayName(a, b)
 	return (a.name or "") < (b.name or "")
-end
-
---[[
-	Every registered instance, whatever client this is.
-
-	The filtered lists are what the journal shows and what nearly everything should
-	ask for. This is for tooling that works on the data rather than on the view --
-	the portrait studio needs to reach Forever's bosses from an Era client, and they
-	are filtered out of every list by design.
-]]
-function InstanceService.GetAllInstances()
-	local all = { }
-	for _, dungeon in ipairs(dungeons) do all[#all + 1] = dungeon end
-	for _, raid in ipairs(raids) do all[#all + 1] = raid end
-	return all
 end
 
 function InstanceService.GetDungeons()
