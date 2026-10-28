@@ -44,8 +44,64 @@ local GROUP_WIDTH = LARGE.width + 30 + SMALL.width
 	What keeps a 94pt ring off a 161pt pane is the overhang, not the size. Retail
 	hangs the small pane's portrait off its top-left corner, which is copied below.
 ]]
-local RING_SIZE, ICON_SIZE = 94, 64
-local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+-- 91, not Blizzard's 64: the mask below rounds an icon to 0.703 of its size, so
+-- 64 came out a 45pt circle in a 58pt hole. 91 gives 64, which clears the hole
+-- and still sits inside the band's solid part.
+local RING_SIZE, ICON_SIZE = 94, 91
+--[[
+	The badge keeps its 30. Its ring's hole is 18 across and the mask rounds 30 to
+	21, so it already fills -- which matches its looking right while the big one
+	did not. Only the nudge is new.
+]]
+local REWARD_ICON = 30
+
+--[[
+	The mask that actually rounds an icon on these clients.
+
+	Interface\CharacterFrame\TempPortraitAlphaMask was the obvious choice and does
+	not work: it draws the art in the top-left of a disc wider than the icon, so
+	the picture sits small and off-centre inside the ring with black around it.
+	Its 64pt sibling does the same, and so does a centred 64pt circle made for the
+	job, which rules out the file's dimensions as the difference.
+
+	This one is already shipped and already used -- ui/EncounterFrame.lua masks the
+	instance button's icon with it, on the texture ui/Info.lua builds -- and
+	photographed against the others at 32, 64 and 96 points it is the only one
+	that gives a filled circle at every size. Why the client treats it differently
+	is not known; that it does is measured.
+
+	/agc icontest on the debug/icon-probe branch draws that comparison, if a mask
+	ever needs choosing again. Do not swap this on reasoning alone.
+]]
+local PORTRAIT_MASK = I.InstanceButtonIconMask
+
+--[[
+	Where that mask's circle actually is, and how big it comes out.
+
+	It is cut for the instance button, not for a ring: the circle spans (3, 1) to
+	(48, 46) of the 64pt file, so it is 45pt across -- 0.703 of the file -- with
+	its middle 6.5 left and 8.5 up of the file's. Masking an icon with it
+	therefore rounds the picture smaller than the icon and off to one side, which
+	is why the portrait sat small and high-left inside the ring.
+
+	Both are fixed by placing rather than by redrawing: the icon is sized so the
+	circle reaches the hole, and moved by the offset so it lands in the middle.
+	The ring is positioned by the layout and the icon hangs off the ring, which is
+	the opposite of how it was -- anchored the other way the icon would drag the
+	ring along with it and nothing would move.
+
+	A copy of the file with its circle recentred would have been tidier and does
+	not work: it renders with a flat dark band across the bottom, on every icon
+	tried. Two files measuring as identical circles behave differently and nothing
+	here explains why, so the working one is left alone. /agc icontest on the
+	debug/icon-probe branch photographs the comparison.
+]]
+local MASK_OFFSET_X, MASK_OFFSET_Y = 6.5, 8.5
+
+local function MaskOffset(size)
+	local scale = size / 64
+	return MASK_OFFSET_X * scale, -MASK_OFFSET_Y * scale
+end
 
 --[[
 	The levelling reminder's portrait. A map, because that pane is about a place
@@ -337,8 +393,9 @@ local function BuildReward(pane)
 	pane.reward:SetSize(48, 48)
 	pane.reward:EnableMouse(true)
 	pane.reward.icon = pane.reward:CreateTexture(nil, "ARTWORK")
-	pane.reward.icon:SetSize(30, 30)
-	pane.reward.icon:SetPoint("CENTER")
+	pane.reward.icon:SetSize(REWARD_ICON, REWARD_ICON)
+	-- The badge is masked by the same file, so it needs the same nudge, scaled.
+	pane.reward.icon:SetPoint("CENTER", pane.reward, "CENTER", MaskOffset(REWARD_ICON))
 	pane.reward.ring = pane.reward:CreateTexture(nil, "OVERLAY")
 	ApplyPiece(pane.reward.ring, REWARD)
 	pane.reward.ring:SetPoint("CENTER")
@@ -356,11 +413,11 @@ local function BuildPane(parent, large)
 	ApplyPiece(pane.bg, piece)
 	pane.bg:SetAllPoints(pane)
 
-	pane.icon = pane:CreateTexture(nil, "ARTWORK")
-	pane.icon:SetSize(ICON_SIZE, ICON_SIZE)
 	pane.ring = pane:CreateTexture(nil, "OVERLAY")
 	ApplyPiece(pane.ring, RING, RING_SIZE)
-	pane.ring:SetPoint("CENTER", pane.icon, "CENTER")
+	pane.icon = pane:CreateTexture(nil, "ARTWORK")
+	pane.icon:SetSize(ICON_SIZE, ICON_SIZE)
+	pane.icon:SetPoint("CENTER", pane.ring, "CENTER", MaskOffset(ICON_SIZE))
 
 	pane.title = pane:CreateFontString(nil, "ARTWORK", TITLE_FONT)
 	pane.title:SetTextColor(unpack(TITLE_COLOUR))
@@ -381,7 +438,7 @@ local function BuildPane(parent, large)
 			where a 64pt icon hung 2pt below the top edge put it, which is what
 			leaves the ring overhanging the page the way Blizzard's does.
 		]]
-		pane.icon:SetPoint("CENTER", pane, "TOP", 0, -34)
+		pane.ring:SetPoint("CENTER", pane, "TOP", 0, -34)
 		--[[
 			The text block sits low rather than under the portrait. Composited at
 			-78 it left a hand's width of blank parchment between the description
@@ -411,7 +468,7 @@ local function BuildPane(parent, large)
 			ring overhangs the parchment instead of sitting on it, and the text starts
 			at 70, just clear of the ring's edge at 69.
 		]]
-		pane.icon:SetPoint("CENTER", pane, "TOPLEFT", 22, -34)
+		pane.ring:SetPoint("CENTER", pane, "TOPLEFT", 22, -34)
 		pane.title:SetPoint("TOPLEFT", 70, -20)
 		pane.title:SetWidth(260)
 		pane.title:SetJustifyH("LEFT")
@@ -425,7 +482,13 @@ local function BuildPane(parent, large)
 		pane.button:SetSize(116, 24)
 		pane.button:SetPoint("TOPLEFT", 70, -108)
 		-- Tucked into the portrait's lower right, where retail carries it.
-		pane.reward:SetPoint("CENTER", pane.icon, "BOTTOMRIGHT", -11, 6)
+		--[[
+			Off the ring rather than off the icon, which has grown and moved. The
+			icon's old corner was the ring's centre plus (32, -32), and this sat
+			(-11, 6) from that, so the same spot is (-26, 21) from the ring's own
+			corner -- the badge has not moved.
+		]]
+		pane.reward:SetPoint("CENTER", pane.ring, "BOTTOMRIGHT", -26, 21)
 	end
 	return pane
 end
