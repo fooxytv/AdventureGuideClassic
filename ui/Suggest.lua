@@ -44,27 +44,7 @@ local GROUP_WIDTH = LARGE.width + 30 + SMALL.width
 	What keeps a 94pt ring off a 161pt pane is the overhang, not the size. Retail
 	hangs the small pane's portrait off its top-left corner, which is copied below.
 ]]
---[[
-	68, not Blizzard's 64, and the four extra points are not taste.
-
-	A client icon carries a painted bevel around its art -- the outer 8% or so --
-	which the unmasked branch of MaskIcon trims off with tex coords. The masked
-	branch cannot: a texture carrying a mask refuses tex coords outright. So on
-	every client that can mask, the bevel stays, and the question is only whether
-	the ring hides it.
-
-	Measured off the ring art itself: the hole is 50pt across, and the band is
-	solid between radius 29 and 34, feathering away either side. At a 64pt icon
-	the bevel starts at radius 27, where the band is still half transparent, so it
-	shows through as a dark rim and the picture reads as too small for its ring --
-	worst on an icon whose art is already inset, which is why Deadmines and
-	Maraudon looked wrong while a full-bleed one like the map did not. At 68 the
-	bevel spans radius 28.6 to 34 and the solid part of the band covers all of it.
-
-	The window is narrow in both directions: 72 pushes the bevel back out to where
-	the band has faded to a third of its alpha.
-]]
-local RING_SIZE, ICON_SIZE = 94, 68
+local RING_SIZE, ICON_SIZE = 94, 64
 local PORTRAIT_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
 --[[
