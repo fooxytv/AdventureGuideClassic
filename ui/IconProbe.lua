@@ -53,8 +53,6 @@ local MASKS = {
 	-- The one already working in this addon: ui/Info.lua pairs it with a 64pt
 	-- icon. Its circle is cut off-centre for that button's anchor, though.
 	{ label = "InstanceButton", path = I.InstanceButtonIconMask },
-	-- 64pt, circle centred and filling the file. Ours.
-	{ label = "UIEJPortraitMask", path = I.UIEJPortraitMask },
 }
 
 local SIZES = { 32, 64, 96 }
