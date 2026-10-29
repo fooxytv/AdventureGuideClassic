@@ -343,10 +343,45 @@ end
 local SHUTTER_DELAY = 0.1
 local RESTORE_DELAY = 0.5
 
+--[[
+	Where the guide box sits, in the pixels the screenshot will have.
+
+	Until this existed the white box was advice and nothing more. The tool crops
+	to the outline of everything that is not backdrop, so a shot framed perfectly
+	inside the box still handed it the legs and the ground glow below them, and
+	the portrait's 61pt height was spent on those instead of on the head. The
+	difference is not small: the same plate measures 18% solid cropped to the
+	whole creature and 36% cropped to the box, which is the band retail's own art
+	sits in.
+
+	So the rectangle is printed beside the boss's name, in the same line the shot
+	is already announced on, and make_bossportrait.py takes it as --crop. A folder
+	of timestamped screenshots then carries its crops in the chat log with it.
+
+	GetRect is UI units measured from the bottom left; a screenshot is pixels from
+	the top left, so the scale goes on and the y axis flips.
+]]
+local function GuideCrop()
+	if not (studio and studio.guide and GetPhysicalScreenSize) then return nil end
+	local left, bottom, width, height = studio.guide:GetRect()
+	if not (left and width and width > 0 and height and height > 0) then return nil end
+	local scale = studio.guide:GetEffectiveScale()
+	local _, screenHeight = GetPhysicalScreenSize()
+	local function px(value) return math.floor(value + 0.5) end
+	return ("%d,%d,%d,%d"):format(
+		px(left * scale),
+		px(screenHeight - (bottom + height) * scale),
+		px(width * scale),
+		px(height * scale))
+end
+
 local function Shoot()
 	local boss = CurrentBoss()
 	if boss then
-		print(("|cff66ff66[AGC]|r shooting %s (%s)"):format(boss.name, boss.instance))
+		local crop = GuideCrop()
+		print(("|cff66ff66[AGC]|r shooting %s (%s)%s"):format(
+			boss.name, boss.instance,
+			crop and ("  |cffffd100--crop " .. crop .. "|r") or ""))
 	end
 	local guideWasShown = studio.guide and studio.guide:IsShown()
 	studio.controls:Hide()

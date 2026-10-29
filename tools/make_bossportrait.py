@@ -8,6 +8,15 @@ every time, which is the whole of this script.
     python tools/make_bossportrait.py build shot.png LynTheIgnored
     python tools/make_bossportrait.py build shot.png LynTheIgnored --tolerance 40
     python tools/make_bossportrait.py build "<retail UI-EJ-BOSS art>.blp" TheButcher
+    python tools/make_bossportrait.py build shot.png Boss --crop 1596,813,648,309
+
+`--crop` is the rectangle the portrait studio prints beside each shot, and it is
+the guide box the studio drew on screen. Pass it. Everything below crops to the
+outline of whatever is not backdrop, so without it a shot framed perfectly inside
+the box is still cut to the whole creature: measured on one plate, 18% of the
+result was solid pixels cropped to the creature and 36% cropped to the box, and
+the shipped and retail portraits sit at 34-55%. The difference is entirely legs
+and the lit ground under them.
 
 It writes `images/UIEJBoss<Name>.png` and prints the line to paste into the
 encounter. What it cannot do is produce the model: that still comes from the game,
@@ -256,9 +265,28 @@ def add_shadow(im, offset=SHADOW_OFFSET, radius=SHADOW_RADIUS,
     return Image.alpha_composite(shadow, im)
 
 
+def parse_crop(text):
+    """`x,y,w,h` as the portrait studio prints it, in screenshot pixels."""
+    if not text:
+        return None
+    parts = [p.strip() for p in text.replace(" ", "").split(",")]
+    if len(parts) != 4 or not all(p.lstrip("-").isdigit() for p in parts):
+        sys.exit("--crop wants four numbers, x,y,w,h -- got %r" % text)
+    x, y, w, h = (int(p) for p in parts)
+    if w <= 0 or h <= 0:
+        sys.exit("--crop width and height must be positive")
+    return (x, y, x + w, y + h)
+
+
 def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
-          erode_px=None, shadow=True):
+          erode_px=None, shadow=True, crop=None):
     im = open_any(source)
+    if crop:
+        # The guide box, as the studio measured it on screen. Taking it before
+        # anything else is the whole point: the steps below crop to the outline
+        # of what is left, so whatever is still in the picture -- the legs, and
+        # the lit ground they stand on -- is what the 61pt height gets spent on.
+        im = im.crop(crop)
     if im.size == (WIDTH, HEIGHT) and has_alpha(im):
         if shadow:
             return add_shadow(im), "already a portrait, shadow added"
@@ -300,7 +328,7 @@ def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
 
 def cmd_build(args):
     out, note = build(args.source, args.tolerance, args.height, args.centre_x,
-                      args.erode, not args.no_shadow)
+                      args.erode, not args.no_shadow, parse_crop(args.crop))
     name = args.name
     for prefix in ("I.UIEJBoss", "UIEJBoss"):
         if name.startswith(prefix):
@@ -441,6 +469,9 @@ def main():
     b = sub.add_parser("build", help="make images/UIEJBoss<Name>.png")
     b.add_argument("source", help="PNG, JPEG or BLP of the model")
     b.add_argument("name", help="boss name, no spaces, e.g. LynTheIgnored")
+    b.add_argument("--crop", metavar="X,Y,W,H",
+                   help="keep only this rectangle of the source; the portrait "
+                        "studio prints the guide box in this form beside each shot")
     b.add_argument("--tolerance", type=int, default=32,
                    help="how close to the corner colour still counts as background")
     b.add_argument("--height", type=int, default=TARGET_HEIGHT,

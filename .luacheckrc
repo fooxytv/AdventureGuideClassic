@@ -149,6 +149,9 @@ read_globals = {
     -- while it is open and puts the client's own setting back on the way out.
     "GetCVar", "SetCVar",
     "PlaySound", "PlaySoundFile", "SOUNDKIT", "Screenshot",
+    -- The studio prints the guide box as a pixel rectangle for the build tool,
+    -- and a screenshot is in physical pixels rather than UI units.
+    "GetPhysicalScreenSize",
     "ChatEdit_InsertLink", "DressUpItemLink",
 
     -- Lua/WoW shims

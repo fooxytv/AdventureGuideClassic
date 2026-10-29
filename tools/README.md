@@ -398,11 +398,19 @@ counts is how much of its own bounding box a portrait fills with solid pixels:
 | the hand-made portraits | 34-55% |
 | retail's own | 34-37% |
 | full-body shots of the same model | 9-26% |
-| the upper body alone, same shots | 28% |
+| the same four shots, cropped to the guide box | 30-38% |
 
 Below about 25% a creature stops reading as itself and becomes scattered specks.
 Retail frames the same model the same way, which is worth noticing before deciding
 their art is simply better drawn.
+
+**Pass `--crop`.** The white guide box in the studio was advice and nothing more
+until the two halves were joined: the tool crops to the outline of everything that
+is not backdrop, so a shot framed perfectly inside the box was still cut to the
+whole creature, legs and all. The studio now prints the box as a pixel rectangle
+beside each shot -- `--crop 1596,813,648,309` -- and that rectangle is the framing.
+The four Harbinger plates measure 15-25% of their box cropped to the creature and
+30-38% cropped to the guide; they are the same four shots.
 
 Cropping above the feet also loses the **ground glow**, which is the other thing
 that ruins a shot. A model standing in its own light pools that light on the floor,
