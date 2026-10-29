@@ -96,16 +96,27 @@ of them, Ghamoo-ra and Mekgineer Thermaplugg among them. They are filled in from
 
 | Join | Fills |
 |---|---|
-| `encounterID` as an npc id | 48 |
-| the encounter's own `npcs` list | 2 |
-| the boss's name, when it picks out exactly one creature | 1 |
+| `encounterID` as an npc id, **name agreeing** | 24 |
+| the encounter's own `npcs` list | 3 |
+| the boss's name, when it picks out exactly one creature | 2 |
 
-The first one carries almost all of it because **Era encounterIDs are vanilla npc
-ids** — Ghamoo-ra is encounter 4887 and npc 4887. A name is used only when it is
-unambiguous, since the world database has distinct creatures sharing a name.
+The first works because **Era encounterIDs are vanilla npc ids** — Ghamoo-ra is
+encounter 4887 and npc 4887.
 
-That leaves 15, all of them invented content with no creature in a Classic database:
-Demon Fall Canyon's six, Karazhan Crypts' six, Atrexis the Grave Knight, Alexei the
+**The name has to agree, and that is not belt and braces.** Only Era numbers its
+encounters that way; SoD and Forever use a different scheme that lands in the same
+range, so City of Dalaran's Arcane Anomaly is encounter 3298 and npc 3298 is
+Gabrielle Chase. Taking the id on trust fills the table with confidently wrong
+models — an Adder for Mana Devourer, a goblin called Nogg for Bjork — which is
+worse than the empty frame it set out to fix, because nothing about it looks broken.
+Twenty-four such collisions are rejected on exactly this check.
+
+Agreement allows one loosening: a paired encounter is named for both creatures but
+numbered for one, so "Weaver and Dreamscythe" matches npc 5721, Dreamscythe. Either
+half of an `and` counts. Nothing looser, or the collisions come back.
+
+That leaves 15, all invented content with no creature in a Classic database: Demon
+Fall Canyon's six, Karazhan Crypts' six, Atrexis the Grave Knight, Alexei the
 Beastlord, and Reliquary of Souls, which is two spirits and has no single model at
 all. Those need a display id by hand.
 

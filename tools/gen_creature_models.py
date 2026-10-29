@@ -84,7 +84,7 @@ def build_npc_models():
         npc, display, name = int(parts[0]), int(parts[1]), parts[2]
         if not display:
             continue
-        by_npc[npc] = display
+        by_npc[npc] = (display, name)
         by_name.setdefault(normalise(name), set()).add(display)
     return by_npc, by_name
 
@@ -96,18 +96,33 @@ def fallback_display(boss, entry, by_npc, by_name):
     is encounter 4887 and npc 4887 -- which is why the first one carries almost all
     of this. A name is matched only when it picks out exactly one creature, since
     the world database has several distinct creatures sharing a name.
+
+    **The encounterID join must agree on the name**, and that is not belt and
+    braces. Only Era ids are npc ids; SoD and Forever number their encounters in a
+    different scheme that lands in the same range, so City of Dalaran's Arcane
+    Anomaly is encounter 3298 and npc 3298 is Gabrielle Chase. Without the check
+    the table fills up with confidently wrong models -- an Adder for Mana Devourer
+    -- which is worse than the empty frame it set out to fix, because nothing
+    about it looks broken.
     """
     enc = boss["encounterID"]
+    # A paired encounter is named for both creatures but numbered for one of them:
+    # "Weaver and Dreamscythe" is npc 5721, Dreamscythe. Either half counts as
+    # agreement; nothing looser, so the collisions above stay rejected.
+    wanted = {normalise(part) for part in re.split(r"\band\b", boss["name"])}
     if enc in by_npc:
-        return [by_npc[enc]], "encounterID"
+        display, npc_name = by_npc[enc]
+        if normalise(npc_name) in wanted:
+            return [display], "encounterID"
     match = re.search(r"npcs\s*=\s*\{([^}]*)\}", entry)
     if match:
         for npc in (int(x) for x in re.findall(r"\d+", match.group(1))):
             if npc in by_npc:
-                return [by_npc[npc]], "npcs"
-    displays = by_name.get(normalise(boss["name"]))
-    if displays and len(displays) == 1:
-        return [next(iter(displays))], "name"
+                return [by_npc[npc][0]], "npcs"
+    for part in wanted:
+        displays = by_name.get(part)
+        if displays and len(displays) == 1:
+            return [next(iter(displays))], "name"
     return None, None
 
 
