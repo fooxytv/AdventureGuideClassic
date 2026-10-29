@@ -38,6 +38,7 @@ PLACEHOLDER = {2135, 12456, 12314}
 # the only way to find a display is to look at the creature.
 HAND_PICKED = {
     237964: ([126313], "Harbinger of Sin"),     # Karazhan Crypts, a red Marrowgar
+    238010: ([126532], "Opera Boss"),           # Karazhan Crypts, whoever is on tonight
     238024: ([126401], "Creeping Malison"),     # Karazhan Crypts, the spider queen
 }
 

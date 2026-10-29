@@ -73,7 +73,7 @@ InstanceService.AddDungeon({
 		name = "Opera Boss",
 		defeated = 0,
 		encounterID = 238010,
-		portrait = 521744,
+		portrait = I.UIEJBossOperaBoss,
 		loot = {
 			{ id = 235883, seasonFilter = "exclusive" },
 			{ id = 235878, seasonFilter = "exclusive" },
