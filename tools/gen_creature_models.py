@@ -37,7 +37,8 @@ PLACEHOLDER = {2135, 12456, 12314}
 # AtlasLoot does not cover them and they are not in a vanilla world database, so
 # the only way to find a display is to look at the creature.
 HAND_PICKED = {
-    237964: ([126313], "Harbinger of Sin"),   # Karazhan Crypts, a red Marrowgar
+    237964: ([126313], "Harbinger of Sin"),     # Karazhan Crypts, a red Marrowgar
+    238024: ([126401], "Creeping Malison"),     # Karazhan Crypts, the spider queen
 }
 
 HEADER = """--[[
