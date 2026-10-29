@@ -27,6 +27,7 @@ from atlasloot_tool import parse_atlasloot, parse_user, match_brace, SOURCES
 AG_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 OUT = os.path.join(AG_ROOT, "data", "CreatureModels.lua")
 HEIGHTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "creature_heights.tsv")
+NPC_MODELS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "npc_models.tsv")
 
 # The npcs value copy-pasted across 156 encounters; not real data for any of them.
 PLACEHOLDER = {2135, 12456, 12314}
@@ -44,7 +45,10 @@ Creature display ids per encounter, for the model viewer. Keyed by encounterID
 rather than npc id: AtlasLoot lists one entry per distinct creature, while npcID
 carries extra ids for heroic copies of the same creature, so the two do not line
 up one to one.
-Source: AtlasLootClassic DungeonsAndRaids data.
+Source: AtlasLootClassic DungeonsAndRaids data, filled in from the CMaNGOS Classic
+world database (tools/npc_models.tsv) where AtlasLoot carries no DisplayIDs --
+about a quarter of the encounters, which until then showed an empty model frame.
+Era encounterIDs are vanilla npc ids, so that join needs no name matching.
 
 The second table is each creature's model height in world units, used to pull the
 camera back for the big ones. Creature heights span roughly 0.9 (Pusillin) to 66
@@ -55,6 +59,71 @@ select(2, ...).SetupGlobalFacade()
 
 CreatureModelService.Register({
 """
+
+
+def normalise(name):
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def build_npc_models():
+    """The Classic world database, as (npc id -> display, name -> displays).
+
+    AtlasLoot is the first source but it leaves gaps: it carries no DisplayIDs for
+    a quarter of the encounters we ship, so those bosses showed an empty model
+    frame with nothing to say why. This fills them in.
+    """
+    by_npc, by_name = {}, {}
+    if not os.path.exists(NPC_MODELS):
+        return by_npc, by_name
+    for line in open(NPC_MODELS, encoding="utf-8"):
+        if line.startswith("#"):
+            continue
+        parts = line.rstrip("\n").split("\t")
+        if len(parts) != 3:
+            continue
+        npc, display, name = int(parts[0]), int(parts[1]), parts[2]
+        if not display:
+            continue
+        by_npc[npc] = (display, name)
+        by_name.setdefault(normalise(name), set()).add(display)
+    return by_npc, by_name
+
+
+def fallback_display(boss, entry, by_npc, by_name):
+    """A display id for a boss AtlasLoot could not resolve, and where it came from.
+
+    Three joins, strongest first. Era encounterIDs *are* vanilla npc ids -- Ghamoo-ra
+    is encounter 4887 and npc 4887 -- which is why the first one carries almost all
+    of this. A name is matched only when it picks out exactly one creature, since
+    the world database has several distinct creatures sharing a name.
+
+    **The encounterID join must agree on the name**, and that is not belt and
+    braces. Only Era ids are npc ids; SoD and Forever number their encounters in a
+    different scheme that lands in the same range, so City of Dalaran's Arcane
+    Anomaly is encounter 3298 and npc 3298 is Gabrielle Chase. Without the check
+    the table fills up with confidently wrong models -- an Adder for Mana Devourer
+    -- which is worse than the empty frame it set out to fix, because nothing
+    about it looks broken.
+    """
+    enc = boss["encounterID"]
+    # A paired encounter is named for both creatures but numbered for one of them:
+    # "Weaver and Dreamscythe" is npc 5721, Dreamscythe. Either half counts as
+    # agreement; nothing looser, so the collisions above stay rejected.
+    wanted = {normalise(part) for part in re.split(r"\band\b", boss["name"])}
+    if enc in by_npc:
+        display, npc_name = by_npc[enc]
+        if normalise(npc_name) in wanted:
+            return [display], "encounterID"
+    match = re.search(r"npcs\s*=\s*\{([^}]*)\}", entry)
+    if match:
+        for npc in (int(x) for x in re.findall(r"\d+", match.group(1))):
+            if npc in by_npc:
+                return [by_npc[npc][0]], "npcs"
+    for part in wanted:
+        displays = by_name.get(part)
+        if displays and len(displays) == 1:
+            return [next(iter(displays))], "name"
+    return None, None
 
 
 def build_index():
@@ -119,6 +188,8 @@ def main():
     ap.add_argument("--skip", nargs="*", default=[],
                     help="repo-relative paths to leave alone")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--models-only", action="store_true",
+                    help="write data/CreatureModels.lua and leave npcs alone")
     args = ap.parse_args()
     skip = {s.replace("\\", "/") for s in args.skip}
 
@@ -127,7 +198,7 @@ def main():
 
     for path in data_files():
         rel = os.path.relpath(path, AG_ROOT).replace("\\", "/")
-        if rel in skip:
+        if rel in skip or args.models_only:
             skipped += 1
             continue
         fixed, cleared = rewrite_npcs(path, index, args.dry_run)
@@ -137,20 +208,27 @@ def main():
     # Display table covers every encounter we can resolve, including skipped
     # files -- the data file is generated wholesale and touches nothing in place.
     seen = set()
+    by_npc, by_name = build_npc_models()
+    from_atlasloot, from_fallback = 0, {"encounterID": 0, "npcs": 0, "name": 0}
     for path in data_files():
+        text = open(path, encoding="utf-8").read()
         for boss in parse_user(path):
             enc = boss["encounterID"]
             if enc in seen:
                 continue
             seen.add(enc)
             hit = index.get(enc)
-            if not hit:
-                continue
-            if not hit[1]:
-                no_display.append((boss["name"], enc))
-                continue
-            ids = ", ".join(str(d) for d in hit[1])
-            rows.append((enc, f"\t[{enc}] = {{ {ids} }},"))
+            if hit and hit[1]:
+                ids = hit[1]
+                from_atlasloot += 1
+            else:
+                start, end = boss["span"]
+                ids, source = fallback_display(boss, text[start:end], by_npc, by_name)
+                if not ids:
+                    no_display.append((boss["name"], enc))
+                    continue
+                from_fallback[source] += 1
+            rows.append((enc, "\t[%d] = { %s }," % (enc, ", ".join(str(d) for d in ids))))
 
     rows.sort()
 
@@ -178,6 +256,10 @@ def main():
     print(f"npcs cleared   : {total_cleared} (placeholder with no AtlasLoot match)")
     print(f"files skipped  : {skipped}")
     print(f"{OUT}: {len(rows)} encounters with display ids, {len(heights)} model heights")
+    print(f"  from AtlasLoot : {from_atlasloot}")
+    for source, count in from_fallback.items():
+        if count:
+            print(f"  from npc table : {count} (joined on {source})")
     if missing:
         print(f"  [warn] {missing} display id(s) have no height; regenerate "
               f"{os.path.basename(HEIGHTS)} (see tools/README.md)")

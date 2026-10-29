@@ -14,14 +14,19 @@ on it as large as it will go, hides its own controls for the frame the shutter
 fires on, and writes lossless screenshots so the edge survives to be keyed. What
 comes out needs no retouching, only tools/make_bossportrait.py.
 
-It walks the same worklist the tool does -- every encounter still carrying the
-placeholder id -- and names each shot in chat as it takes it, so a folder of
-timestamped screenshots can still be matched back to bosses afterwards.
+It walks every boss in every instance and names each shot in chat as it takes it,
+so a folder of timestamped screenshots can still be matched back to bosses
+afterwards. The Needs art button narrows that to the encounters still carrying the
+placeholder id, which is the worklist tools/make_bossportrait.py shares; the list
+starts wide because retaking a portrait and looking up what a boss looks like are
+both jobs about bosses that already have one.
 
-Display ids are typed in rather than looked up. Forever's creatures are not in the
-model data shipped here, and on an Era client the client itself has never heard of
-them; what it does have is the vanilla model most of them are built from, which is
-what the box is for.
+A display id is suggested where the addon knows one and typed in otherwise.
+Forever's creatures are not in the model data shipped here, and on an Era client
+the client itself has never heard of them; what it does have is the vanilla model
+most of them are built from, which is what the box is for. A model the running
+client does not ship cannot be photographed on it at all -- Harbinger of Sin is a
+recoloured Marrowgar, so he needs a client that has Icecrown Citadel.
 ]]
 select(2, ...).SetupGlobalFacade()
 
@@ -49,18 +54,36 @@ local CHROMA = {
 local MODEL_SIZE = 512
 local MIN_ZOOM, MAX_ZOOM = 0.1, 6
 
-local function PlaceholderBosses()
+--[[
+	Every boss in every instance, in list order.
+
+	It used to return only the encounters still carrying the placeholder, which is
+	the right worklist for finishing the set but the wrong one for everything else:
+	a portrait that came out badly cannot be retaken, and a model cannot be looked
+	up for a boss that already has art. The placeholder set is still one button
+	away -- see the Needs art toggle -- and `needsArt` marks them in the list.
+]]
+local function AllBosses()
 	local found = { }
 	for _, instance in ipairs(InstanceService.GetAllInstances() or { }) do
 		for _, encounter in ipairs(instance) do
-			if encounter.portrait == PLACEHOLDER_PORTRAIT then
-				found[#found + 1] = {
-					instance = instance.name,
-					name = encounter.name,
-					encounterID = encounter.encounterID,
-				}
-			end
+			found[#found + 1] = {
+				instance = instance.name,
+				name = encounter.name,
+				encounterID = encounter.encounterID,
+				needsArt = encounter.portrait == PLACEHOLDER_PORTRAIT,
+			}
 		end
+	end
+	return found
+end
+
+local function WorkList(onlyNeedingArt)
+	local all = AllBosses()
+	if not onlyNeedingArt then return all end
+	local found = { }
+	for _, boss in ipairs(all) do
+		if boss.needsArt then found[#found + 1] = boss end
 	end
 	return found
 end
@@ -83,56 +106,87 @@ local function SuggestedDisplay(boss)
 	return nil
 end
 
+-- Defined below, because loading a model and framing one call each other.
+local Frame
+
 local function ApplyModel()
 	if not (studio and studio.model) then return end
 	local displayId = tonumber(studio.displayBox:GetText())
 	if not displayId then
+		studio.loadedDisplay = nil
 		studio.model:Hide()
 		return
 	end
 	studio.model:Show()
-	studio.model:ClearModel()
-	studio.model:SetDisplayInfo(displayId)
-	if studio.model.SetPortraitZoom then studio.model:SetPortraitZoom(0) end
-	--[[
-		The pose is the point: every portrait wants the creature at the same size
-		and angle, and a kodo is not a gnome.
-
-		CreatureModelService already knows how far to pull the camera back for a
-		given display id, from the model heights measured for the journal's own
-		viewer, so that does the per-creature part. What is left is one adjustment
-		that applies to all of them -- which is what the buttons move, and why it
-		is deliberately not reset when stepping to the next boss. Tune the pose
-		once on the first model and the rest arrive wearing it.
-
-		A display id with no recorded height gets the service's neutral scale, so
-		Forever's creatures still need an eye on them.
-	]]
-	local fitted = 1
-	local ok, scale = pcall(CreatureModelService.GetCameraScale, displayId)
-	if ok and type(scale) == "number" and scale > 0 then fitted = scale end
-	studio.fitted = fitted
-	if studio.model.SetCamDistanceScale then
-		studio.model:SetCamDistanceScale(fitted * studio.zoom)
+	if displayId ~= studio.loadedDisplay then
+		studio.loadedDisplay = displayId
+		studio.model:ClearModel()
+		studio.model:SetDisplayInfo(displayId)
 	end
-	if studio.model.SetRotation then studio.model:SetRotation(studio.facing) end
-	if studio.model.SetPosition then
-		studio.model:SetPosition(0, 0, studio.height)
+	Frame()
+end
+
+--[[
+	Point the camera at the creature.
+
+	This is the whole reason a typed display id used to show nothing. The studio
+	asked for the automatic camera and then multiplied it -- SetPortraitZoom plus
+	SetCamDistanceScale -- which ModelFrame had already proved, with AGC_ModelPoke,
+	puts the camera *inside* the model: a correctly loaded creature, an empty
+	screen, and no amount of zooming or lifting brings it back, because nothing is
+	misplaced except the camera. Skul was the model it was proved on, and he is the
+	same model Karazhan Crypts' first boss uses.
+
+	So the framing goes through ModelFrame.AimCameraAt, which aims a custom camera
+	and is what the journal's own viewer uses. The buttons move that camera: zoom is
+	its distance, lift its height, turn the model's facing. The pose is deliberately
+	not reset between bosses -- tune it once and the rest arrive wearing it.
+
+	Height comes from the measured model heights, so one zoom value frames a gnome
+	and a kodo alike. Forever's creatures have no measured height and fall back to
+	the neutral one, so they still need an eye on them.
+]]
+Frame = function()
+	local model = studio and studio.model
+	local displayId = studio and studio.loadedDisplay
+	if not (model and displayId) then return end
+	local preset = {
+		scale = studio.zoom,
+		z = studio.height,
+		facing = studio.facing,
+	}
+	local height = CreatureModelService.GetHeight(displayId)
+	studio.modelHeight = height
+	local aimed = false
+	if components and components.ModelFrame and components.ModelFrame.AimCameraAt then
+		aimed = components.ModelFrame.AimCameraAt(model, height, preset)
 	end
+	if not aimed then
+		-- No custom camera on this client. The automatic one is all there is, and
+		-- its framing is the best that can be done here.
+		if model.SetPortraitZoom then model:SetPortraitZoom(0) end
+		if model.SetCamDistanceScale then model:SetCamDistanceScale(studio.zoom) end
+		if model.SetPosition then model:SetPosition(0, 0, studio.height) end
+	end
+	if model.SetFacing then model:SetFacing(studio.facing) end
 end
 
 local function Status()
 	local boss = CurrentBoss()
-	if not boss then return "nothing left on the placeholder" end
-	return ("%d/%d   %s  --  %s"):format(studio.index, #studio.bosses,
-		boss.name, boss.instance)
+	if not boss then
+		return studio.onlyNeedingArt and "nothing left on the placeholder"
+			or "no bosses"
+	end
+	return ("%d/%d   %s  --  %s%s"):format(studio.index, #studio.bosses,
+		boss.name, boss.instance, boss.needsArt and "   |cffffd100needs art|r" or "")
 end
 
 local function Refresh()
 	if not studio then return end
 	studio.status:SetText(Status())
-	studio.readout:SetText(("pose: zoom %.2f x fit %.2f   turn %.2f   lift %.2f"):format(
-		studio.zoom, studio.fitted or 1, studio.facing, studio.height))
+	studio.readout:SetText(("pose: zoom %.2f   turn %.2f   lift %.2f   model height %s"):format(
+		studio.zoom, studio.facing, studio.height,
+		studio.modelHeight and ("%.2f"):format(studio.modelHeight) or "unmeasured"))
 end
 
 local function Step(delta)
@@ -226,6 +280,22 @@ local function CreateStudio()
 	studio:SetFrameStrata("FULLSCREEN_DIALOG")
 	studio:EnableMouse(true)
 	studio:Hide()
+	--[[
+		Escape closes it, as it does the journal and the map.
+
+		It matters more here than there: the studio covers the whole screen and
+		takes the mouse, so without this the only ways out are the Close button and
+		running the command again.
+	]]
+	table.insert(UISpecialFrames, studio:GetName())
+	--[[
+		Put the screenshot format back however the studio closes.
+
+		Escape goes straight to Hide without passing through the Close button, so
+		restoring in the button's handler left the client writing 10MB lossless
+		screenshots for the rest of the session. On hide covers every route out.
+	]]
+	studio:SetScript("OnHide", PopScreenshotFormat)
 	studio.zoom, studio.facing, studio.height = 1, 0, 0
 	studio.fitted = 1
 	studio.chroma = 1
@@ -242,12 +312,16 @@ local function CreateStudio()
 		model:SetSize(MODEL_SIZE, MODEL_SIZE)
 		model:SetPoint("CENTER", 0, 40)
 		model:EnableMouse(false)
+		-- SetDisplayInfo zeroes the transform and finishes a frame later, so the
+		-- framing has to go on again once the model is actually there. Without
+		-- this the camera is aimed at a creature that has not loaded yet.
+		model:SetScript("OnModelLoaded", function() Frame() end)
 	else
 		studio.supported = false
 	end
 
 	local controls = CreateFrame("Frame", nil, studio, "BackdropTemplate")
-	controls:SetSize(560, 104)
+	controls:SetSize(560, 128)
 	controls:SetPoint("BOTTOM", 0, 40)
 	controls:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -286,6 +360,18 @@ local function CreateStudio()
 	AddButton(controls, "Next", 48, "TOPLEFT", 222, -46, function() Step(1) end)
 	AddButton(controls, "Shoot", 70, "TOPLEFT", 276, -46, Shoot)
 
+	--[[
+		Which bosses the Prev/Next pair walks. "All" is the default because the
+		common jobs -- retaking a portrait that came out badly, or looking up what
+		a boss actually looks like -- are about bosses that already have art.
+		"Needs art" is the finishing worklist, and the one the tool shares.
+	]]
+	studio.scopeButton = AddButton(controls, "All bosses", 86, "TOPLEFT", 12, -96,
+		function()
+			studio.onlyNeedingArt = not studio.onlyNeedingArt
+			component.Rebuild()
+		end)
+
 	studio.chromaButton = AddButton(controls, "Magenta", 76, "TOPLEFT", 350, -46,
 		function()
 			studio.chroma = (studio.chroma % #CHROMA) + 1
@@ -322,7 +408,6 @@ end
 
 function component.Hide()
 	if not studio then return end
-	PopScreenshotFormat()
 	studio:Hide()
 end
 
@@ -336,13 +421,34 @@ function component.Toggle()
 		print("|cffff5555[AGC]|r this client cannot show creature models.")
 		return
 	end
-	studio.bosses = PlaceholderBosses()
-	studio.index = 1
-	if #studio.bosses == 0 then
-		print("|cff66ff66[AGC]|r every boss already has a portrait.")
-	end
+	component.Rebuild()
 	PushScreenshotFormat()
 	studio:Show()
+end
+
+--[[
+	Rebuild the worklist for the current scope and show its first boss.
+
+	Keeps the boss being looked at where it can: switching to "Needs art" from a
+	boss that needs art should not throw away the place in the list.
+]]
+function component.Rebuild()
+	if not studio then return end
+	local wanted = CurrentBoss()
+	studio.bosses = WorkList(studio.onlyNeedingArt)
+	studio.scopeButton:SetText(studio.onlyNeedingArt and "Needs art" or "All bosses")
+	studio.index = 1
+	if wanted then
+		for i, boss in ipairs(studio.bosses) do
+			if boss.name == wanted.name and boss.instance == wanted.instance then
+				studio.index = i
+				break
+			end
+		end
+	end
+	if #studio.bosses == 0 and studio.onlyNeedingArt then
+		print("|cff66ff66[AGC]|r every boss already has a portrait.")
+	end
 	local boss = CurrentBoss()
 	studio.displayBox:SetText(tostring(SuggestedDisplay(boss) or ""))
 	ApplyModel()
@@ -352,5 +458,17 @@ end
 function component.Init(components_)
 	components = components_
 end
+
+--[[
+	A reload or a logout with the studio still open tears the frame down without
+	ever hiding it, so OnHide never runs and the lossless screenshot setting
+	survives into the next session -- where nothing explains why every screenshot
+	is suddenly a 10MB TGA. The CVar is restored here instead.
+]]
+local exitFrame = CreateFrame("Frame")
+Compat.RegisterEvents(exitFrame, "PLAYER_LOGOUT")
+exitFrame:SetScript("OnEvent", function()
+	if studio and studio:IsShown() then PopScreenshotFormat() end
+end)
 
 UI.Add(component)

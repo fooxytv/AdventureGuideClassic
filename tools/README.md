@@ -68,7 +68,12 @@ Corrects `npcs` in the encounter data and regenerates `data/CreatureModels.lua`:
 
 ```bash
 python tools/gen_creature_models.py [--dry-run] [--skip path ...]
+python tools/gen_creature_models.py --models-only   # leave npcs alone
 ```
+
+`--models-only` regenerates the display table and touches no encounter data, which
+is what to use when the point is the models: the `npcs` pass rewrites dozens of
+lines across the data files and does not belong in a change about something else.
 
 Both outputs join on `encounterID`, the one field in our data that is reliable.
 Much of `npcs` was a placeholder (`{2135, 12456, 12314}`) copy-pasted across 156
@@ -81,6 +86,42 @@ copies — 68 entries have mismatched counts, so zipping them by index would
 attach the wrong model to half the heroic encounters.
 
 Use `--skip` to leave files with uncommitted work alone.
+
+### Where AtlasLoot has no model
+
+AtlasLoot carries no `DisplayIDs` for about a quarter of the encounters we ship, and
+those bosses opened the model viewer on an empty frame with nothing to say why — 65
+of them, Ghamoo-ra and Mekgineer Thermaplugg among them. They are filled in from
+`npc_models.tsv`, the CMaNGOS Classic world database, by three joins:
+
+| Join | Fills |
+|---|---|
+| `encounterID` as an npc id, **name agreeing** | 24 |
+| the encounter's own `npcs` list | 3 |
+| the boss's name, when it picks out exactly one creature | 2 |
+
+The first works because **Era encounterIDs are vanilla npc ids** — Ghamoo-ra is
+encounter 4887 and npc 4887.
+
+**The name has to agree, and that is not belt and braces.** Only Era numbers its
+encounters that way; SoD and Forever use a different scheme that lands in the same
+range, so City of Dalaran's Arcane Anomaly is encounter 3298 and npc 3298 is
+Gabrielle Chase. Taking the id on trust fills the table with confidently wrong
+models — an Adder for Mana Devourer, a goblin called Nogg for Bjork — which is
+worse than the empty frame it set out to fix, because nothing about it looks broken.
+Twenty-four such collisions are rejected on exactly this check.
+
+Agreement allows one loosening: a paired encounter is named for both creatures but
+numbered for one, so "Weaver and Dreamscythe" matches npc 5721, Dreamscythe. Either
+half of an `and` counts. Nothing looser, or the collisions come back.
+
+That leaves 15, all invented content with no creature in a Classic database: Demon
+Fall Canyon's six, Karazhan Crypts' six, Atrexis the Grave Knight, Alexei the
+Beastlord, and Reliquary of Souls, which is two spirits and has no single model at
+all. Those need a display id by hand.
+
+New display ids arrive without a measured height and fall back to a neutral camera
+distance, so `creature_heights.tsv` is worth regenerating after a run like this.
 
 ### creature_heights.tsv
 
@@ -313,3 +354,46 @@ distance does not work -- half a dark model mixed into magenta still lands far f
 magenta, so it reads as pure model and keeps its rim. What shrinks in proportion as
 model mixes in is the backdrop's shape: magenta is high red and blue against low
 green. That is what is measured. If a rim survives anyway, raise `--erode`.
+
+## make_dungeonbutton.py
+
+Builds an instance's two smaller pictures: the tile in the instance list, and the
+round portrait on the overview header.
+
+```sh
+python tools/make_dungeonbutton.py build <source> CityOfDalaran
+python tools/make_dungeonbutton.py build <source> CityOfDalaran --pan-x 0.5
+python tools/make_dungeonbutton.py check <source> TheHallOfThanes
+```
+
+`build` writes `images/UIEJDungeonButton<Name>.png` and
+`images/UIEJDungeonPortrait<Name>.png` and prints the `thumbnail` and `icon` lines to
+paste in. Same sources as `make_lorebg.py`, and the same grey bands are trimmed.
+
+An instance with no `thumbnail` gets a plain dark tile rather than a broken one, so a
+missing picture is easy to miss: City of Dalaran shipped without either of these for
+three weeks because nothing says anything is wrong.
+
+### The recipe
+
+Recovered from the five tiles that already shipped, by correlating each against its
+loading screen **on luminance**. The paintings are each a single hue, so a colour
+difference finds nothing and reports art as unrelated when it is a crop of exactly
+that picture -- which is what it did at first.
+
+- Everything is cut from the painted band, never the padded file.
+- The tile is the **left** of the band, at the tile's aspect, full band height. Left
+  rather than centre because these paintings put their subject left of centre, and
+  all five that shipped are anchored there. `--pan-x` overrides it.
+- The picture occupies (3, 3)-(172, 88) of a 256x128 canvas and is transparent
+  outside that. The margin is not decoration: the button draws a frame over the art,
+  and art without a margin runs under it.
+- The portrait is the centre square of that same crop, at 128x128.
+
+`check` rebuilds art that already ships and scores it against what is there, then puts
+the original back. That is how the recipe above was confirmed -- 0.96 on Excavation
+Site: Wetlands. The other two score lower because each was hand-nudged by a few
+percent of zoom, not because the crop is wrong.
+
+The portrait is masked round at runtime, so it must not also carry tex coords -- the
+client errors rather than ignoring one. See *Masked textures take no tex coords*.
