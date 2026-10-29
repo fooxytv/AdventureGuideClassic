@@ -354,6 +354,79 @@ def cmd_build(args):
     print("    portrait = I.UIEJBoss%s," % name)
 
 
+#--------------------------------------------------------------------------
+# Checking a finished portrait.
+#
+# Three things have gone wrong in practice and none of them is visible at
+# 128x64 on a dark panel, which is why they are measured rather than looked at:
+#
+#   * backdrop left in the picture. A creature covering the plate's top-left
+#     corner once inverted the key entirely and the result -- solid magenta with
+#     bone fragments in it -- scored *better* on coverage than the real thing,
+#     because the magenta counted as creature.
+#   * too little of the creature. Below about 25% of its own box a model stops
+#     reading as itself and becomes scattered specks.
+#   * art behind the boss name. The row draws the 128x64 at TOPLEFT (-4, 13)
+#     and the name at LEFT 105, so x 109 onwards is under the first letters.
+#--------------------------------------------------------------------------
+
+NAME_STARTS_AT = 109
+THIN = 25.0
+
+
+def check(path, key):
+    im = open_any(path)
+    alpha = im.getchannel("A")
+    box = alpha.getbbox()
+    if not box:
+        return ["%s: nothing in it at all" % os.path.basename(path)]
+
+    values = list(alpha.get_flattened_data())
+    solid = sum(1 for v in values if v >= 200)
+    fill = 100.0 * solid / ((box[2] - box[0]) * (box[3] - box[1]))
+
+    # Only pixels that are actually drawn can be leftover backdrop; the shadow
+    # is black at low alpha and would otherwise read as a near miss on green.
+    left = 0
+    if key:
+        for r, g, b, a in im.get_flattened_data():
+            if a >= 32 and abs(r - key[0]) + abs(g - key[1]) + abs(b - key[2]) <= 150:
+                left += 1
+
+    strip = list(alpha.crop((NAME_STARTS_AT, 0, WIDTH, HEIGHT)).get_flattened_data())
+    under = 100.0 * sum(1 for v in strip if v >= 32) / len(strip)
+
+    lines = ["%s  %dx%d, filling %.1f%% of its box" % (
+        os.path.basename(path), im.width, im.height, fill)]
+    if fill < THIN:
+        lines.append("  [warn] thin -- shipped art runs 34-55% and retail's own "
+                     "34-37%; frame tighter on the creature, or accept it for "
+                     "something as full of gaps as a spider")
+    if key and left:
+        lines.append("  [warn] %d pixels still match the backdrop %s -- raise "
+                     "--tolerance, or shoot against the other colour if the "
+                     "creature shares it" % (left, key))
+    if under > 12:
+        lines.append("  [warn] %.0f%% of the strip behind the boss name is drawn; "
+                     "lower --height to narrow it, then --centre-x to move it "
+                     "left" % under)
+    if len(lines) == 1:
+        lines.append("  nothing to report")
+    return lines
+
+
+def cmd_check(args):
+    key = None
+    if args.key:
+        parts = args.key.split(",")
+        if len(parts) != 3 or not all(p.strip().isdigit() for p in parts):
+            sys.exit("--key wants three numbers, r,g,b")
+        key = tuple(int(p) for p in parts)
+    for path in args.portraits:
+        for line in check(path, key):
+            print(line)
+
+
 # The id every boss with no art of its own carries.
 PLACEHOLDER = "521744"
 ENCOUNTER_RE = re.compile(r'^\t\tname = "([^"]+)",(.*?)(?=^\t\tname = "|\Z)',
@@ -496,6 +569,13 @@ def main():
     b.add_argument("--out", help="write here instead of images/")
     b.add_argument("--dry-run", action="store_true")
     b.set_defaults(func=cmd_build)
+
+    c = sub.add_parser("check", help="measure a finished portrait")
+    c.add_argument("portraits", nargs="+", help="images/UIEJBoss<Name>.png")
+    c.add_argument("--key", metavar="R,G,B",
+                   help="the backdrop it was shot against, so leftovers of it "
+                        "can be counted -- 242,0,242 for magenta, 0,242,0 for green")
+    c.set_defaults(func=cmd_check)
 
     w = sub.add_parser("worklist", help="bosses still carrying the placeholder")
     w.add_argument("--names", action="store_true",

@@ -313,7 +313,89 @@ python tools/make_bossportrait.py worklist --names      # the filenames to shoot
 python tools/make_bossportrait.py batch shots/ --wire   # do the lot
 python tools/make_bossportrait.py build shot.png LynTheIgnored
 python tools/make_bossportrait.py build shot.png LynTheIgnored --tolerance 40 --erode 2
+python tools/make_bossportrait.py check images/UIEJBossLynTheIgnored.png --key 242,0,242
 ```
+
+`check` measures the three things that go wrong without looking wrong: backdrop
+left in the picture, a creature too thin to read, and art sitting behind the boss
+name. Run it on anything built from a screenshot.
+
+### Shooting one yourself, start to finish
+
+Read this before taking a single screenshot. Everything in it was learned by
+getting it wrong first, and none of the failures announce themselves -- a
+portrait that is wrong still looks like a portrait.
+
+**1. Open the studio.** `/agc portraits`, in game. Pick the boss from the two
+dropdowns. A display id is filled in where the addon knows one; where it does
+not, the boss is marked `no model` in red and you need the id before anything
+else can happen. Type it in the box.
+
+**2. Pick a backdrop the creature cannot contain.** The `Magenta` / `Green`
+button. Magenta suits almost everything -- but it is high red and blue against
+low green, and so is a nerubian spider, so magenta read Creeping Malison's legs
+as backdrop and no tolerance fixed it. A purple, pink or red creature wants
+green. A felguard or anything lime wants magenta.
+
+**3. Frame it.** Zoom, Turn, Lift, Left and Right; the wheel zooms; Shift takes
+bigger steps. Fill the white guide box with the creature, crown on the gold
+line, **and keep the feet out of shot** -- see the two sections below, which are
+the ones that actually decide whether a shot works.
+
+**4. Shoot.** The panel and the guide hide themselves, and the chat line names
+the boss and prints the flags that shot wants:
+
+```
+[AGC] shooting Creeping Malison (Karazhan Crypts)  --crop 1596,813,648,309 --height 55
+```
+
+Screenshots land in the client's `Screenshots` folder as lossless TGA; the studio
+sets that while it is open and puts your setting back when it closes.
+
+**5. Build, with the flags from that line.**
+
+```sh
+python tools/make_bossportrait.py build "<shot>.tga" CreepingMalison --crop 1596,813,648,309
+```
+
+The name takes no spaces and no prefix. Watch the `cleared N% as background`
+line: 40-85% is normal, and it says so itself if it is below 2% or above 97%.
+
+**6. Check it, before believing it.**
+
+```sh
+python tools/make_bossportrait.py check images/UIEJBossCreepingMalison.png --key 242,0,242
+```
+
+This is not optional politeness. A creature covering the plate's top-left corner
+once inverted the key completely -- the model removed, the magenta kept -- and
+the result **scored better on coverage than the real thing**, because the
+backdrop counted as creature. It took a colour check to notice.
+
+**7. Wire and commit.** The build prints the `portrait = I.UIEJBoss<Name>,` line
+for the encounter in `data/`, unless `batch --wire` has already done it. Commit
+the PNG and the data line together.
+
+### Four rules that cost a day each to learn
+
+**Pass `--crop`, always.** Everything after it crops to the outline of whatever
+is not backdrop, so without it a shot framed perfectly inside the guide box is
+still cut to the whole creature. Same plate: 18% solid cropped to the creature,
+36% cropped to the box.
+
+**Panning the model does not move the portrait.** The tool crops to the outline
+and recentres it at x 59, so where the creature stood in the shot makes no
+difference at all to where it lands. To move one, make it narrower with
+`--height` and *then* move it with `--centre-x`.
+
+**Density is a check, not a goal.** A close-up of a spider's legs measured 51%,
+better than anything else shipped, and read as nothing at all. Use the number to
+catch a portrait that is too thin, never to choose between two that both read.
+
+**Measure before theorising.** Twice the obvious explanation was wrong and a
+histogram gave the real one in a minute: Dark Rider's halo looked unkeyable and
+turned out to have a clean valley at tolerance 90, and `--box-alpha` was built
+on a theory about bounding boxes that the numbers flatly refused, then reverted.
 
 ### The whole job, three steps
 
