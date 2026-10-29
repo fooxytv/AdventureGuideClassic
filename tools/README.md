@@ -313,3 +313,46 @@ distance does not work -- half a dark model mixed into magenta still lands far f
 magenta, so it reads as pure model and keeps its rim. What shrinks in proportion as
 model mixes in is the backdrop's shape: magenta is high red and blue against low
 green. That is what is measured. If a rim survives anyway, raise `--erode`.
+
+## make_dungeonbutton.py
+
+Builds an instance's two smaller pictures: the tile in the instance list, and the
+round portrait on the overview header.
+
+```sh
+python tools/make_dungeonbutton.py build <source> CityOfDalaran
+python tools/make_dungeonbutton.py build <source> CityOfDalaran --pan-x 0.5
+python tools/make_dungeonbutton.py check <source> TheHallOfThanes
+```
+
+`build` writes `images/UIEJDungeonButton<Name>.png` and
+`images/UIEJDungeonPortrait<Name>.png` and prints the `thumbnail` and `icon` lines to
+paste in. Same sources as `make_lorebg.py`, and the same grey bands are trimmed.
+
+An instance with no `thumbnail` gets a plain dark tile rather than a broken one, so a
+missing picture is easy to miss: City of Dalaran shipped without either of these for
+three weeks because nothing says anything is wrong.
+
+### The recipe
+
+Recovered from the five tiles that already shipped, by correlating each against its
+loading screen **on luminance**. The paintings are each a single hue, so a colour
+difference finds nothing and reports art as unrelated when it is a crop of exactly
+that picture -- which is what it did at first.
+
+- Everything is cut from the painted band, never the padded file.
+- The tile is the **left** of the band, at the tile's aspect, full band height. Left
+  rather than centre because these paintings put their subject left of centre, and
+  all five that shipped are anchored there. `--pan-x` overrides it.
+- The picture occupies (3, 3)-(172, 88) of a 256x128 canvas and is transparent
+  outside that. The margin is not decoration: the button draws a frame over the art,
+  and art without a margin runs under it.
+- The portrait is the centre square of that same crop, at 128x128.
+
+`check` rebuilds art that already ships and scores it against what is there, then puts
+the original back. That is how the recipe above was confirmed -- 0.96 on Excavation
+Site: Wetlands. The other two score lower because each was hand-nudged by a few
+percent of zoom, not because the crop is wrong.
+
+The portrait is masked round at runtime, so it must not also carry tex coords -- the
+client errors rather than ignoring one. See *Masked textures take no tex coords*.

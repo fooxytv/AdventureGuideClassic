@@ -8,7 +8,8 @@ select(2, ...).SetupGlobalFacade()
 
 InstanceService.AddDungeon({
 	name = "City of Dalaran",
-	icon = 527422,
+	thumbnail = I.UIEJDungeonButtonCityOfDalaran,
+	icon = I.UIEJDungeonPortraitCityOfDalaran,
 	splash = I.UIEJLoreBGCityOfDalaran,
 	mapID = 2959,
 	seasonFilter = "forever",
