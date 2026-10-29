@@ -76,6 +76,20 @@ local GUIDE_CENTRE_X = 59
 local GUIDE_SCALE = 3.6
 
 --[[
+	A display id to start from, where one is known.
+
+	The model data shipped with the addon covers the clients' own creatures, so a
+	vanilla boss arrives with its model already chosen and only Forever's need
+	typing in.
+]]
+local function SuggestedDisplay(boss)
+	if not (boss and boss.encounterID) then return nil end
+	local ok, ids = pcall(CreatureModelService.GetDisplayIds, boss.encounterID)
+	if ok and type(ids) == "table" and ids[1] then return ids[1] end
+	return nil
+end
+
+--[[
 	Every boss in every instance, in list order.
 
 	It used to return only the encounters still carrying the placeholder, which is
@@ -88,12 +102,17 @@ local function AllBosses()
 	local found = { }
 	for _, instance in ipairs(InstanceService.GetAllInstances() or { }) do
 		for _, encounter in ipairs(instance) do
-			found[#found + 1] = {
+			local boss = {
 				instance = instance.name,
 				name = encounter.name,
 				encounterID = encounter.encounterID,
 				needsArt = encounter.portrait == PLACEHOLDER_PORTRAIT,
 			}
+			-- Whether data/CreatureModels.lua has a display for this encounter.
+			-- Marked in the encounter list, because a boss the addon cannot put a
+			-- model to is a gap in the data rather than a gap in the art.
+			boss.hasModel = SuggestedDisplay(boss) ~= nil
+			found[#found + 1] = boss
 		end
 	end
 	return found
@@ -111,20 +130,6 @@ end
 
 local function CurrentBoss()
 	return studio and studio.bosses[studio.index]
-end
-
---[[
-	A display id to start from, where one is known.
-
-	The model data shipped with the addon covers the clients' own creatures, so a
-	vanilla boss arrives with its model already chosen and only Forever's need
-	typing in.
-]]
-local function SuggestedDisplay(boss)
-	if not (boss and boss.encounterID) then return nil end
-	local ok, ids = pcall(CreatureModelService.GetDisplayIds, boss.encounterID)
-	if ok and type(ids) == "table" and ids[1] then return ids[1] end
-	return nil
 end
 
 -- Defined below, because loading a model and framing one call each other.
@@ -205,9 +210,28 @@ end
 local function Refresh()
 	if not studio then return end
 	studio.status:SetText(Status())
+	if studio.instanceDropdown then
+		local boss = CurrentBoss()
+		UIDropDownMenu_SetText(studio.instanceDropdown,
+			boss and boss.instance or "--")
+		UIDropDownMenu_SetText(studio.encounterDropdown, boss and boss.name or "--")
+	end
 	studio.readout:SetText(("pose: zoom %.2f   turn %.2f   lift %.2f   model height %s"):format(
 		studio.zoom, studio.facing, studio.height,
 		studio.modelHeight and ("%.2f"):format(studio.modelHeight) or "unmeasured"))
+end
+
+--[[
+	Show whatever studio.index now points at.
+
+	Shared by the arrows and the two dropdowns, so a boss reached either way
+	arrives with its suggested display id already in the box.
+]]
+local function SelectCurrent()
+	local boss = CurrentBoss()
+	studio.displayBox:SetText(tostring(SuggestedDisplay(boss) or ""))
+	ApplyModel()
+	Refresh()
 end
 
 local function Step(delta)
@@ -215,10 +239,73 @@ local function Step(delta)
 	studio.index = studio.index + delta
 	if studio.index < 1 then studio.index = #studio.bosses end
 	if studio.index > #studio.bosses then studio.index = 1 end
-	local boss = CurrentBoss()
-	studio.displayBox:SetText(tostring(SuggestedDisplay(boss) or ""))
-	ApplyModel()
-	Refresh()
+	SelectCurrent()
+end
+
+-- The instances represented in the current worklist, in list order.
+local function InstanceNames()
+	local seen, order = { }, { }
+	for _, boss in ipairs(studio.bosses) do
+		if not seen[boss.instance] then
+			seen[boss.instance] = true
+			order[#order + 1] = boss.instance
+		end
+	end
+	return order
+end
+
+local function JumpToInstance(name)
+	for i, boss in ipairs(studio.bosses) do
+		if boss.instance == name then
+			studio.index = i
+			SelectCurrent()
+			return
+		end
+	end
+end
+
+local function InitInstanceDropdown()
+	local current = CurrentBoss()
+	local info = UIDropDownMenu_CreateInfo()
+	for _, name in ipairs(InstanceNames()) do
+		info.text = name
+		info.value = name
+		info.checked = current ~= nil and current.instance == name
+		info.func = function(button)
+			JumpToInstance(button.value)
+			CloseDropDownMenus()
+		end
+		UIDropDownMenu_AddButton(info)
+	end
+end
+
+--[[
+	The bosses of whichever instance is selected.
+
+	A boss with no display id in data/CreatureModels.lua is marked rather than
+	hidden: walking an instance and seeing which entries say "no model" is the
+	quickest way to find holes in the data, which is half of what this panel is
+	for now.
+]]
+local function InitEncounterDropdown()
+	local current = CurrentBoss()
+	if not current then return end
+	local info = UIDropDownMenu_CreateInfo()
+	for i, boss in ipairs(studio.bosses) do
+		if boss.instance == current.instance then
+			info.text = boss.name
+				.. (boss.hasModel and "" or "   |cffff7f7fno model|r")
+				.. (boss.needsArt and "   |cffffd100needs art|r" or "")
+			info.value = i
+			info.checked = (i == studio.index)
+			info.func = function(button)
+				studio.index = button.value
+				SelectCurrent()
+				CloseDropDownMenus()
+			end
+			UIDropDownMenu_AddButton(info)
+		end
+	end
 end
 
 --[[
@@ -425,8 +512,21 @@ local function CreateStudio()
 	end
 
 	local controls = CreateFrame("Frame", nil, studio, "BackdropTemplate")
-	controls:SetSize(560, 128)
+	controls:SetSize(580, 172)
 	controls:SetPoint("BOTTOM", 0, 40)
+	--[[
+		Drag the panel by its background.
+
+		It sits over the model, and the pose that suits one creature hides another
+		behind the controls. Moving the panel is far less disruptive than moving the
+		model, which would change the shot.
+	]]
+	controls:EnableMouse(true)
+	controls:SetMovable(true)
+	controls:SetClampedToScreen(true)
+	controls:RegisterForDrag("LeftButton")
+	controls:SetScript("OnDragStart", function(self) self:StartMoving() end)
+	controls:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
 	controls:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -438,19 +538,38 @@ local function CreateStudio()
 
 	studio.status = controls:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	studio.status:SetPoint("TOPLEFT", 12, -10)
-	studio.status:SetWidth(536)
+	studio.status:SetWidth(556)
 	studio.status:SetJustifyH("LEFT")
 
 	studio.readout = controls:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 	studio.readout:SetPoint("TOPLEFT", 12, -28)
 
+	--[[
+		Pick an instance and a boss directly.
+
+		Prev and Next are still here and still the right tool for sweeping a
+		worklist, but 393 presses is not a way to reach one creature, and checking
+		whether an instance's models are right means going to that instance.
+	]]
+	studio.instanceDropdown = CreateFrame("Frame", "AGCPortraitStudioInstance",
+		controls, "UIDropDownMenuTemplate")
+	studio.instanceDropdown:SetPoint("TOPLEFT", -4, -42)
+	UIDropDownMenu_SetWidth(studio.instanceDropdown, 200)
+	UIDropDownMenu_Initialize(studio.instanceDropdown, InitInstanceDropdown)
+
+	studio.encounterDropdown = CreateFrame("Frame", "AGCPortraitStudioEncounter",
+		controls, "UIDropDownMenuTemplate")
+	studio.encounterDropdown:SetPoint("TOPLEFT", 272, -42)
+	UIDropDownMenu_SetWidth(studio.encounterDropdown, 200)
+	UIDropDownMenu_Initialize(studio.encounterDropdown, InitEncounterDropdown)
+
 	local displayLabel = controls:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-	displayLabel:SetPoint("TOPLEFT", 12, -48)
+	displayLabel:SetPoint("TOPLEFT", 12, -92)
 	displayLabel:SetText("Display id")
 
 	local box = CreateFrame("EditBox", nil, controls, "InputBoxTemplate")
 	box:SetSize(80, 18)
-	box:SetPoint("TOPLEFT", 78, -46)
+	box:SetPoint("TOPLEFT", 78, -90)
 	box:SetAutoFocus(false)
 	box:SetNumeric(true)
 	box:SetScript("OnTextChanged", function(_, userInput)
@@ -460,9 +579,9 @@ local function CreateStudio()
 	box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 	studio.displayBox = box
 
-	AddButton(controls, "Prev", 48, "TOPLEFT", 172, -46, function() Step(-1) end)
-	AddButton(controls, "Next", 48, "TOPLEFT", 222, -46, function() Step(1) end)
-	AddButton(controls, "Shoot", 70, "TOPLEFT", 276, -46, Shoot)
+	AddButton(controls, "Prev", 48, "TOPLEFT", 172, -90, function() Step(-1) end)
+	AddButton(controls, "Next", 48, "TOPLEFT", 222, -90, function() Step(1) end)
+	AddButton(controls, "Shoot", 70, "TOPLEFT", 276, -90, Shoot)
 
 	--[[
 		Which bosses the Prev/Next pair walks. "All" is the default because the
@@ -470,21 +589,21 @@ local function CreateStudio()
 		a boss actually looks like -- are about bosses that already have art.
 		"Needs art" is the finishing worklist, and the one the tool shares.
 	]]
-	studio.scopeButton = AddButton(controls, "All bosses", 86, "TOPLEFT", 12, -96,
+	studio.scopeButton = AddButton(controls, "All bosses", 86, "TOPLEFT", 12, -142,
 		function()
 			studio.onlyNeedingArt = not studio.onlyNeedingArt
 			component.Rebuild()
 		end)
 
 	studio.guide = CreateGuide(studio)
-	studio.guideButton = AddButton(controls, "Guide off", 86, "TOPLEFT", 104, -96,
+	studio.guideButton = AddButton(controls, "Guide off", 86, "TOPLEFT", 104, -142,
 		function()
 			studio.guide:SetShown(not studio.guide:IsShown())
 			studio.guideButton:SetText(studio.guide:IsShown() and "Guide on"
 				or "Guide off")
 		end)
 
-	studio.chromaButton = AddButton(controls, "Magenta", 76, "TOPLEFT", 350, -46,
+	studio.chromaButton = AddButton(controls, "Magenta", 76, "TOPLEFT", 350, -90,
 		function()
 			studio.chroma = (studio.chroma % #CHROMA) + 1
 			local c = CHROMA[studio.chroma]
@@ -492,25 +611,25 @@ local function CreateStudio()
 			studio.chromaButton:SetText(c.label)
 		end)
 
-	AddButton(controls, "Close", 60, "TOPLEFT", 430, -46, function()
+	AddButton(controls, "Close", 60, "TOPLEFT", 430, -90, function()
 		component.Hide()
 	end)
 
-	AddButton(controls, "Zoom -", 56, "TOPLEFT", 12, -72,
+	AddButton(controls, "Zoom -", 56, "TOPLEFT", 12, -116,
 		function() Nudge("zoom", -1) end)
-	AddButton(controls, "Zoom +", 56, "TOPLEFT", 70, -72,
+	AddButton(controls, "Zoom +", 56, "TOPLEFT", 70, -116,
 		function() Nudge("zoom", 1) end)
-	AddButton(controls, "Turn -", 56, "TOPLEFT", 132, -72,
+	AddButton(controls, "Turn -", 56, "TOPLEFT", 132, -116,
 		function() Nudge("facing", -1) end)
-	AddButton(controls, "Turn +", 56, "TOPLEFT", 190, -72,
+	AddButton(controls, "Turn +", 56, "TOPLEFT", 190, -116,
 		function() Nudge("facing", 1) end)
-	AddButton(controls, "Lift -", 56, "TOPLEFT", 252, -72,
+	AddButton(controls, "Lift -", 56, "TOPLEFT", 252, -116,
 		function() Nudge("height", -1) end)
-	AddButton(controls, "Lift +", 56, "TOPLEFT", 310, -72,
+	AddButton(controls, "Lift +", 56, "TOPLEFT", 310, -116,
 		function() Nudge("height", 1) end)
 
 	local hint = controls:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-	hint:SetPoint("TOPLEFT", 372, -76)
+	hint:SetPoint("TOPLEFT", 372, -120)
 	hint:SetWidth(176)
 	hint:SetJustifyH("LEFT")
 	hint:SetText("Wheel zooms, Shift for bigger steps. Shots are lossless "
