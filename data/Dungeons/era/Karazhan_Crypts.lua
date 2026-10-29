@@ -13,7 +13,7 @@ InstanceService.AddDungeon({
 	levelRange = { 60, 60 },
 	thumbnail = I.UIEJDungeonButtonKarazhanCrypts,
 	icon = I.UIEJDungeonPortraitKarazhanCrypts,
-	splash = 527422,
+	splash = I.UIEJLoreBGKarazhanCrypts,
 	mapID = 48,
 	seasonFilter = "exclusive",
 	overview = "The Karazhan Crypts lie beneath the legendary tower of Karazhan in Deadwind Pass. Long sealed away, these catacombs contain the restless dead, failed magical experiments, and dark secrets that Medivh's tower was built to contain. Adventurers must navigate through oppressive darkness using the Guiding Torchlight to survive the horrors within.",
