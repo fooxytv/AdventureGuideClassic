@@ -68,7 +68,12 @@ Corrects `npcs` in the encounter data and regenerates `data/CreatureModels.lua`:
 
 ```bash
 python tools/gen_creature_models.py [--dry-run] [--skip path ...]
+python tools/gen_creature_models.py --models-only   # leave npcs alone
 ```
+
+`--models-only` regenerates the display table and touches no encounter data, which
+is what to use when the point is the models: the `npcs` pass rewrites dozens of
+lines across the data files and does not belong in a change about something else.
 
 Both outputs join on `encounterID`, the one field in our data that is reliable.
 Much of `npcs` was a placeholder (`{2135, 12456, 12314}`) copy-pasted across 156
@@ -81,6 +86,31 @@ copies — 68 entries have mismatched counts, so zipping them by index would
 attach the wrong model to half the heroic encounters.
 
 Use `--skip` to leave files with uncommitted work alone.
+
+### Where AtlasLoot has no model
+
+AtlasLoot carries no `DisplayIDs` for about a quarter of the encounters we ship, and
+those bosses opened the model viewer on an empty frame with nothing to say why — 65
+of them, Ghamoo-ra and Mekgineer Thermaplugg among them. They are filled in from
+`npc_models.tsv`, the CMaNGOS Classic world database, by three joins:
+
+| Join | Fills |
+|---|---|
+| `encounterID` as an npc id | 48 |
+| the encounter's own `npcs` list | 2 |
+| the boss's name, when it picks out exactly one creature | 1 |
+
+The first one carries almost all of it because **Era encounterIDs are vanilla npc
+ids** — Ghamoo-ra is encounter 4887 and npc 4887. A name is used only when it is
+unambiguous, since the world database has distinct creatures sharing a name.
+
+That leaves 15, all of them invented content with no creature in a Classic database:
+Demon Fall Canyon's six, Karazhan Crypts' six, Atrexis the Grave Knight, Alexei the
+Beastlord, and Reliquary of Souls, which is two spirits and has no single model at
+all. Those need a display id by hand.
+
+New display ids arrive without a measured height and fall back to a neutral camera
+distance, so `creature_heights.tsv` is worth regenerating after a run like this.
 
 ### creature_heights.tsv
 

@@ -2,7 +2,7 @@
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
 
-Programming by: FooxyTV
+Programming by: TomCat / TomCat's Gaming
 
 GENERATED FILE -- do not edit by hand. Regenerate with:
     python tools/gen_creature_models.py
@@ -11,7 +11,10 @@ Creature display ids per encounter, for the model viewer. Keyed by encounterID
 rather than npc id: AtlasLoot lists one entry per distinct creature, while npcID
 carries extra ids for heroic copies of the same creature, so the two do not line
 up one to one.
-Source: AtlasLootClassic DungeonsAndRaids data.
+Source: AtlasLootClassic DungeonsAndRaids data, filled in from the CMaNGOS Classic
+world database (tools/npc_models.tsv) where AtlasLoot carries no DisplayIDs --
+about a quarter of the encounters, which until then showed an empty model frame.
+Era encounterIDs are vanilla npc ids, so that join needs no name matching.
 
 The second table is each creature's model height in world units, used to pull the
 camera back for the big ones. Creature heights span roughly 0.9 (Pusillin) to 66
@@ -27,10 +30,37 @@ CreatureModelService.Register({
 	[645] = { 1305 },
 	[646] = { 2026 },
 	[647] = { 7113, 2349, 2347, 5207 },
+	[1663] = { 2149 },
 	[1666] = { 825 },
+	[1696] = { 517 },
+	[1716] = { 1621 },
+	[1717] = { 3250 },
 	[1763] = { 7124 },
 	[1853] = { 11070 },
 	[2748] = { 5988 },
+	[3298] = { 1442 },
+	[3299] = { 1424 },
+	[3300] = { 1986 },
+	[3301] = { 3231 },
+	[3302] = { 3889 },
+	[3303] = { 3893 },
+	[3310] = { 1311 },
+	[3312] = { 1312 },
+	[3353] = { 1374 },
+	[3354] = { 1375 },
+	[3355] = { 1377 },
+	[3357] = { 1379 },
+	[3408] = { 4242 },
+	[3411] = { 4357 },
+	[3412] = { 7135 },
+	[3480] = { 3867 },
+	[3481] = { 3868 },
+	[3482] = { 4095 },
+	[3493] = { 7095 },
+	[3494] = { 7073 },
+	[3495] = { 7096 },
+	[3496] = { 7058 },
+	[3644] = { 1757 },
 	[3653] = { 5126 },
 	[3654] = { 4088 },
 	[3669] = { 4213 },
@@ -58,15 +88,27 @@ CreatureModelService.Register({
 	[4428] = { 4644 },
 	[4542] = { 2605 },
 	[4543] = { 11396 },
+	[4829] = { 2837 },
 	[4830] = { 1816 },
+	[4831] = { 4979 },
 	[4832] = { 4939 },
 	[4854] = { 11165 },
+	[4887] = { 5027 },
+	[5709] = { 7806 },
+	[5710] = { 6708 },
+	[5721] = { 7553 },
+	[5722] = { 9584 },
 	[5775] = { 4256 },
+	[6168] = { 6110 },
 	[6228] = { 6669 },
+	[6229] = { 6774 },
+	[6235] = { 6915 },
+	[6243] = { 1773 },
 	[6487] = { 5266 },
 	[6906] = { 5710 },
 	[6910] = { 5945 },
 	[7023] = { 5285 },
+	[7079] = { 5497 },
 	[7206] = { 10798 },
 	[7228] = { 6089 },
 	[7267] = { 6439 },
@@ -79,11 +121,16 @@ CreatureModelService.Register({
 	[7356] = { 6124 },
 	[7357] = { 8055 },
 	[7358] = { 7971 },
+	[7361] = { 6533 },
 	[7604] = { 6433 },
 	[7795] = { 6685 },
 	[7796] = { 6690 },
+	[7797] = { 6687 },
+	[7800] = { 6980 },
 	[8127] = { 7353 },
+	[8443] = { 8053 },
 	[8567] = { 7864 },
+	[8580] = { 7873 },
 	[8983] = { 8759 },
 	[9016] = { 12162 },
 	[9017] = { 1204 },
@@ -107,6 +154,7 @@ CreatureModelService.Register({
 	[9736] = { 9738 },
 	[9816] = { 2172 },
 	[9938] = { 12162 },
+	[10096] = { 9329 },
 	[10184] = { 8570 },
 	[10220] = { 9567 },
 	[10268] = { 9564 },
@@ -154,7 +202,9 @@ CreatureModelService.Register({
 	[11496] = { 14173 },
 	[11501] = { 11583 },
 	[11502] = { 11121 },
+	[11517] = { 11611 },
 	[11518] = { 11429 },
+	[11519] = { 2007 },
 	[11520] = { 7970 },
 	[11583] = { 11380 },
 	[11622] = { 12073 },
@@ -176,6 +226,7 @@ CreatureModelService.Register({
 	[12259] = { 13030, 12002 },
 	[12264] = { 13032 },
 	[12435] = { 10115 },
+	[12876] = { 110 },
 	[13020] = { 13992 },
 	[13280] = { 5489 },
 	[13282] = { 11172 },
@@ -276,6 +327,7 @@ CreatureModelService.Register({
 	[18341] = { 19338 },
 	[18343] = { 19332 },
 	[18344] = { 19780 },
+	[18371] = { 18916 },
 	[18373] = { 17715 },
 	[18472] = { 20599 },
 	[18473] = { 18636 },
@@ -322,6 +374,9 @@ CreatureModelService.Register({
 	[25165] = { 23334, 23177 },
 	[25315] = { 23200 },
 	[25741] = { 23404, 23428 },
+	[169243] = { 8690 },
+	[181366] = { 16155 },
+	[227019] = { 348 },
 	[238954] = { 126697 },
 	[240811] = { 129113 },
 	[240812] = { 127686 },
