@@ -67,6 +67,14 @@ local MIN_ZOOM, MAX_ZOOM = 0.1, 6
 	- INNER is 96x61, what retail's own 59 portraits actually fill. Match it and the
 	  result sits with them.
 
+	What goes *in* the box matters more than the box. A portrait is scaled to a
+	fixed height whatever it was shot at, so a full-body pose spends that height on
+	legs: measured against the shipped art, which fills a third to a half of its box
+	with solid pixels, full-body shots of the same creature managed a tenth. Frame
+	the head and ribcage. It also keeps the feet, and the glow they stand in, out of
+	the picture -- that glow is additive, so it takes the backdrop's colour and keys
+	as creature.
+
 	The tool then stands the model on the bottom edge and centres it at x 59 of 128,
 	which is why the centre tick is left of middle.
 ]]
@@ -445,7 +453,8 @@ local function CreateGuide(parent)
 
 	local label = guide:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	label:SetPoint("BOTTOM", guide, "TOP", 0, 6)
-	label:SetText("fill the white box -- standing on the line, centred on the tick")
+	label:SetText("head and ribcage filling the white box -- not the whole model, "
+		.. "and keep the feet and their glow out of shot")
 
 	guide:Hide()
 	return guide

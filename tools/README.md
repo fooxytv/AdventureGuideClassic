@@ -383,6 +383,37 @@ magenta, so it reads as pure model and keeps its rim. What shrinks in proportion
 model mixes in is the backdrop's shape: magenta is high red and blue against low
 green. That is what is measured. If a rim survives anyway, raise `--erode`.
 
+### Frame the upper body, not the creature
+
+The single thing that decides whether a shot works, and the one that is least
+obvious: **shoot the head and upper ribcage, not the whole model.**
+
+A portrait is 128x64 and the tool scales the creature to 61 points tall whatever it
+was shot at, so a full-body shot spends that height on legs and thin air. Marrowgar
+is the clearest case -- a cage of bone with gaps -- and the numbers are stark. What
+counts is how much of its own bounding box a portrait fills with solid pixels:
+
+| | fills |
+|---|---|
+| the hand-made portraits | 34-55% |
+| retail's own | 34-37% |
+| full-body shots of the same model | 9-26% |
+| the upper body alone, same shots | 28% |
+
+Below about 25% a creature stops reading as itself and becomes scattered specks.
+Retail frames the same model the same way, which is worth noticing before deciding
+their art is simply better drawn.
+
+Cropping above the feet also loses the **ground glow**, which is the other thing
+that ruins a shot. A model standing in its own light pools that light on the floor,
+and the glow is additive -- it takes the backdrop's colour and keys as creature. On
+a green plate it arrives as a lime mass across the bottom third. No tolerance
+removes it, because the pixels genuinely are part model and part backdrop; keeping
+the feet out of frame is the only thing that works.
+
+One tolerance note. Fire and magenta share red and blue, so a burning model keyed at
+the default 48 keeps magenta inside the flames. Harbinger of Sin needed 75.
+
 ## make_dungeonbutton.py
 
 Builds an instance's two smaller pictures: the tile in the instance list, and the
