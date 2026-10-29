@@ -1210,7 +1210,7 @@ PROBE = """
         { "era", 19, 6, "1,2,4,7" },
         { "sod", 18, 10, "1,3,4" },
         { "tbc", 19, 6, "1,5,7" },
-        { "forever", 28, 2, "1,2,4,6,7" },
+        { "forever", 23, 0, "1,2,4,6,7" },
     }
     local LOOT_PROBE = { { id = 1, filter = "all" }, { id = 2, filter = "era" },
         { id = 3, filter = "sod" }, { id = 4, filter = "classic" },
@@ -1636,14 +1636,15 @@ EXPECTED = {
     # era and classic loot is kept here on purpose. Compat.isVanillaLoot is
     # deliberately wider than isEraClient -- Forever shares vanilla's item ids
     # wherever it shares an instance -- so loot tagged era or classic belongs on it
-    # and only tbc loot does not. The 28 dungeons are Era's 19 plus Forever's 9:
+    # and only tbc loot does not. The 23 dungeons are Era's 19 plus Forever's 4:
     # with the journal cold, ForeverContentService falls back to ABSENT_ON_FOREVER
-    # and unknown beats hidden.
+    # and unknown beats hidden. Forever lists no raids because its only two were
+    # names with no data behind them and are unregistered in data/Data.xml.
     "forever": {
         "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
-        "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
+        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "seasonBeforeStart": "none",
@@ -1762,7 +1763,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
-        "loot": "1,2,4,6,7", "dungeons": 28, "raids": 2,
+        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "seasonBeforeStart": "none",

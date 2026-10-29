@@ -195,7 +195,7 @@ python ci/scripts/check_globals.py # every global read must be declared
 exists, and a lint nit is not a reason to fail a CurseForge upload.
 
 **`ci/tests/smoke_test.py` is the one to reach for first.** It follows `Script` and
-`Include` from `Main.xml`, loads all 141 files against `ci/tests/wow_stub.lua`, and
+`Include` from `Main.xml`, loads every registered file against `ci/tests/wow_stub.lua`, and
 asserts `Compat`'s flags, the loot filter's verdicts and the instance counts -- once
 each for `era`, `sod`, `tbc`, `forever` and `forever_old`. The stub owns
 `GetBuildInfo`, `WOW_PROJECT_ID` and whether `C_Seasons` exists at all, so a
