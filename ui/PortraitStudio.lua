@@ -143,6 +143,52 @@ end
 -- Defined below, because loading a model and framing one call each other.
 local Frame
 
+--[[
+	The pose each creature was last photographed in.
+
+	Dialling a creature in takes a minute, and a /reload threw it away: the panel
+	opened on zoom 1 and the next shot of the same boss started from whatever the
+	previous boss had wanted. Keeping it is worth more here than in most places,
+	because a portrait that comes out badly is retaken, and a retake wants the
+	pose it nearly worked at.
+
+	Keyed by display id, not encounter. The pose belongs to the model -- half of
+	Karazhan Crypts shares Marrowgar's -- so framing one of them frames the rest.
+
+	SavedVariables is bound on ADDON_LOADED, long before the studio is ever asked
+	for, but it is still read on use rather than at file scope: that is the
+	pattern every service here follows and the one that cannot be got wrong.
+]]
+local function PoseStore()
+	if not SavedVariables then return nil end
+	SavedVariables.PortraitStudioPoses = SavedVariables.PortraitStudioPoses or { }
+	return SavedVariables.PortraitStudioPoses
+end
+
+local function SavePose()
+	local store = PoseStore()
+	if not (store and studio and studio.loadedDisplay) then return end
+	store[studio.loadedDisplay] = {
+		zoom = studio.zoom,
+		facing = studio.facing,
+		height = studio.height,
+		side = studio.side,
+	}
+end
+
+-- Nothing saved leaves the current pose alone, which is what carries a tuned
+-- framing on to the next boss -- the behaviour that was there before this.
+local function LoadPose(displayId)
+	local store = PoseStore()
+	local saved = store and store[displayId]
+	if not saved then return false end
+	studio.zoom = saved.zoom or studio.zoom
+	studio.facing = saved.facing or studio.facing
+	studio.height = saved.height or studio.height
+	studio.side = saved.side or studio.side
+	return true
+end
+
 local function ApplyModel()
 	if not (studio and studio.model) then return end
 	local displayId = tonumber(studio.displayBox:GetText())
@@ -154,6 +200,7 @@ local function ApplyModel()
 	studio.model:Show()
 	if displayId ~= studio.loadedDisplay then
 		studio.loadedDisplay = displayId
+		studio.poseIsSaved = LoadPose(displayId)
 		studio.model:ClearModel()
 		studio.model:SetDisplayInfo(displayId)
 	end
@@ -227,9 +274,10 @@ local function Refresh()
 			boss and boss.instance or "--")
 		UIDropDownMenu_SetText(studio.encounterDropdown, boss and boss.name or "--")
 	end
-	studio.readout:SetText(("pose: zoom %.2f   turn %.2f   lift %.2f   pan %.2f   model height %s"):format(
+	studio.readout:SetText(("pose: zoom %.2f   turn %.2f   lift %.2f   pan %.2f   model height %s%s"):format(
 		studio.zoom, studio.facing, studio.height, -studio.side,
-		studio.modelHeight and ("%.2f"):format(studio.modelHeight) or "unmeasured"))
+		studio.modelHeight and ("%.2f"):format(studio.modelHeight) or "unmeasured",
+		studio.poseIsSaved and "   |cff66ff66saved|r" or ""))
 end
 
 --[[
@@ -531,6 +579,8 @@ local function Nudge(field, delta)
 	else
 		studio.height = studio.height + 0.1 * delta * step
 	end
+	SavePose()
+	studio.poseIsSaved = true
 	ApplyModel()
 	Refresh()
 end
@@ -651,7 +701,9 @@ local function CreateStudio()
 	box:SetAutoFocus(false)
 	box:SetNumeric(true)
 	box:SetScript("OnTextChanged", function(_, userInput)
-		if userInput then ApplyModel() end
+		-- Refresh as well as ApplyModel: typing a display id can restore a pose,
+		-- and the readout is where that shows.
+		if userInput then ApplyModel() Refresh() end
 	end)
 	box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
 	box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
