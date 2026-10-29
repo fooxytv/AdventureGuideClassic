@@ -404,6 +404,15 @@ Below about 25% a creature stops reading as itself and becomes scattered specks.
 Retail frames the same model the same way, which is worth noticing before deciding
 their art is simply better drawn.
 
+**Pass `--height` when the studio prints one.** The tool scales whatever it is
+handed to a fixed 61 points, which throws size away: a kobold and an ogre come out
+level, and which of two undead looks bigger is decided by how much air happened to
+surround them in the shot. The studio draws a gold **crown line** across the guide
+box at the height the creature's own measured model height asks for, and prints the
+matching `--height` beside the shot. Shoot with the crown on the line and two
+creatures the game says are the same size come out the same size, with no race
+table anywhere. A creature with no measured height gets no line and no flag.
+
 **Pass `--crop`.** The white guide box in the studio was advice and nothing more
 until the two halves were joined: the tool crops to the outline of everything that
 is not backdrop, so a shot framed perfectly inside the box was still cut to the

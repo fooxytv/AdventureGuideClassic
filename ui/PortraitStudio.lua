@@ -84,6 +84,38 @@ local GUIDE_CENTRE_X = 59
 local GUIDE_SCALE = 3.6
 
 --[[
+	How tall a creature should stand in the canvas, from how tall it really is.
+
+	The tool scales whatever it is handed to a fixed height, so size information is
+	thrown away: a kobold and an ogre come out level, and which of two undead looks
+	bigger is decided by how much air happened to surround them in the shot. Feeding
+	the measured model height back in restores it, and does so without anyone having
+	to label a creature's race -- two models the game says are the same size get the
+	same number by construction, which is what asking for it by race was reaching
+	for.
+
+	Doublings rather than units, because the measured heights span 1.3 to 58.7: on a
+	linear scale every boss in the journal would sit in the bottom tenth of it.
+
+	**The two anchors are a judgement, not a measurement**, and worth knowing as
+	one. There is nothing in the shipped art to fit them to -- every portrait there
+	was already forced to 61 -- so they are set to put a human-sized creature a
+	little short of full height and leave room above it for the genuinely big. They
+	are three numbers in one place; move them if the set comes out wrong.
+]]
+local HEIGHT_ANCHOR_UNITS = 2.0     -- a human, an undead, a gnoll
+local HEIGHT_ANCHOR_POINTS = 54     -- what that creature fills, of 61
+local HEIGHT_PER_DOUBLING = 3.5
+local HEIGHT_MIN, HEIGHT_MAX = 46, 61
+
+local function SuggestedHeight(modelHeight)
+	if not modelHeight or modelHeight <= 0 then return nil end
+	local doublings = math.log(modelHeight / HEIGHT_ANCHOR_UNITS) / math.log(2)
+	local points = HEIGHT_ANCHOR_POINTS + HEIGHT_PER_DOUBLING * doublings
+	return math.max(HEIGHT_MIN, math.min(HEIGHT_MAX, math.floor(points + 0.5)))
+end
+
+--[[
 	A display id to start from, where one is known.
 
 	The model data shipped with the addon covers the clients' own creatures, so a
@@ -265,8 +297,35 @@ local function Status()
 		boss.name, boss.instance, boss.needsArt and "   |cffffd100needs art|r" or "")
 end
 
+--[[
+	Put the crown line where this creature should reach.
+
+	A creature with no measured height gets no line rather than a guessed one --
+	31 displays are in that position, and a line in the wrong place is worse than
+	none, because it looks just as authoritative as a right one.
+]]
+local function UpdateCrown()
+	local guide = studio and studio.guide
+	if not (guide and guide.crown) then return end
+	local points = SuggestedHeight(studio.modelHeight)
+	studio.suggestedHeight = points
+	if not points then
+		guide.crown:Hide()
+		guide.crownLabel:Hide()
+		return
+	end
+	guide.crown:SetPoint("LEFT", guide, "BOTTOMLEFT", 0,
+		points / GUIDE_H * guide:GetHeight())
+	guide.crown:SetPoint("RIGHT", guide, "BOTTOMRIGHT", 0,
+		points / GUIDE_H * guide:GetHeight())
+	guide.crownLabel:SetText(("crown -- build with --height %d"):format(points))
+	guide.crown:Show()
+	guide.crownLabel:Show()
+end
+
 local function Refresh()
 	if not studio then return end
+	UpdateCrown()
 	studio.status:SetText(Status())
 	if studio.instanceDropdown then
 		local boss = CurrentBoss()
@@ -429,10 +488,16 @@ end
 local function Shoot()
 	local boss = CurrentBoss()
 	if boss then
-		local crop = GuideCrop()
+		-- The flags the shot wants, printed where the shot is named, so a folder of
+		-- timestamped screenshots carries its own build line in the chat log.
+		local flags = GuideCrop()
+		flags = flags and ("--crop " .. flags) or ""
+		if studio.suggestedHeight and studio.suggestedHeight ~= GUIDE_H then
+			flags = flags .. (" --height %d"):format(studio.suggestedHeight)
+		end
 		print(("|cff66ff66[AGC]|r shooting %s (%s)%s"):format(
 			boss.name, boss.instance,
-			crop and ("  |cffffd100--crop " .. crop .. "|r") or ""))
+			flags ~= "" and ("  |cffffd100" .. flags .. "|r") or ""))
 	end
 	local guideWasShown = studio.guide and studio.guide:IsShown()
 	studio.controls:Hide()
@@ -536,6 +601,30 @@ local function CreateGuide(parent)
 	tick:SetSize(1, 12)
 	tick:SetPoint("BOTTOM", guide, "BOTTOMLEFT",
 		GUIDE_CENTRE_X * GUIDE_SCALE, 0)
+
+	--[[
+		The crown line: how tall this creature should stand in the canvas.
+
+		Without it every portrait came out the same height, because the tool scales
+		whatever it is given to a fixed 61 points. Two undead of the same build ended
+		up different sizes next to each other for no reason but how much air happened
+		to be around them in the shot.
+
+		The line moves with the creature's measured model height, so two creatures
+		the game says are the same size get the same line without anyone deciding
+		they are both "undead". Shoot with the crown on it, build with the --height
+		the studio prints, and they match.
+	]]
+	guide.crown = guide:CreateTexture(nil, "OVERLAY")
+	guide.crown:SetColorTexture(1, 0.82, 0, 0.9)
+	guide.crown:SetHeight(1)
+	guide.crown:SetPoint("LEFT", guide, "BOTTOMLEFT", 0, 0)
+	guide.crown:SetPoint("RIGHT", guide, "BOTTOMRIGHT", 0, 0)
+	guide.crown:Hide()
+
+	guide.crownLabel = guide:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	guide.crownLabel:SetPoint("BOTTOMLEFT", guide.crown, "TOPLEFT", 2, 2)
+	guide.crownLabel:Hide()
 
 	local label = guide:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	label:SetPoint("BOTTOM", guide, "TOP", 0, 6)
