@@ -126,20 +126,26 @@ def drop_enclosed(im, key, tolerance):
     return cleared
 
 
-def drop_background(im, tolerance):
+def drop_background(im, tolerance, key=None):
     """Clear the backdrop by flooding in from the edges.
 
     A flood rather than a colour match everywhere: a grey backdrop and a grey
     creature are common, and only the part connected to the edge is background.
     Where the backdrop is a chroma key, drop_enclosed then takes the parts the
     flood could not reach.
+
+    `key` is the backdrop's colour. It defaults to the top-left pixel, which is
+    backdrop in any shot framed with room around the creature -- but a --crop
+    deliberately has none, and a creature covering that corner made the whole
+    thing run backwards: the model keyed out and the magenta kept. So a caller
+    that crops reads the colour off the plate first and passes it in.
     """
     im = im.copy()
     px = im.load()
     w, h = im.size
     seeds = [(x, y) for x in range(w) for y in (0, h - 1)]
     seeds += [(x, y) for y in range(h) for x in (0, w - 1)]
-    key = px[0, 0][:3]
+    key = tuple(key)[:3] if key else px[0, 0][:3]
     seen = bytearray(w * h)
     queue = deque()
     for x, y in seeds:
@@ -281,11 +287,15 @@ def parse_crop(text):
 def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
           erode_px=None, shadow=True, crop=None):
     im = open_any(source)
+    key = None
     if crop:
         # The guide box, as the studio measured it on screen. Taking it before
         # anything else is the whole point: the steps below crop to the outline
         # of what is left, so whatever is still in the picture -- the legs, and
         # the lit ground they stand on -- is what the 61pt height gets spent on.
+        # The backdrop's colour is read off the full plate first, because a good
+        # crop may well have no backdrop in any of its corners.
+        key = im.convert("RGB").getpixel((0, 0))
         im = im.crop(crop)
     if im.size == (WIDTH, HEIGHT) and has_alpha(im):
         if shadow:
@@ -293,7 +303,7 @@ def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
         return im, "already a portrait, copied as is"
     note = "used the source's own alpha"
     if not has_alpha(im):
-        im, cleared = drop_background(im, tolerance)
+        im, cleared = drop_background(im, tolerance, key)
         share = 100.0 * cleared / (im.width * im.height)
         note = "cleared %.0f%% as background" % share
         if share < 2:
