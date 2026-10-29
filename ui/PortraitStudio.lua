@@ -186,6 +186,7 @@ Frame = function()
 	if not (model and displayId) then return end
 	local preset = {
 		scale = studio.zoom,
+		y = studio.side,
 		z = studio.height,
 		facing = studio.facing,
 	}
@@ -200,7 +201,9 @@ Frame = function()
 		-- its framing is the best that can be done here.
 		if model.SetPortraitZoom then model:SetPortraitZoom(0) end
 		if model.SetCamDistanceScale then model:SetCamDistanceScale(studio.zoom) end
-		if model.SetPosition then model:SetPosition(0, 0, studio.height) end
+		if model.SetPosition then
+			model:SetPosition(0, studio.side, studio.height)
+		end
 	end
 	if model.SetFacing then model:SetFacing(studio.facing) end
 end
@@ -224,8 +227,8 @@ local function Refresh()
 			boss and boss.instance or "--")
 		UIDropDownMenu_SetText(studio.encounterDropdown, boss and boss.name or "--")
 	end
-	studio.readout:SetText(("pose: zoom %.2f   turn %.2f   lift %.2f   model height %s"):format(
-		studio.zoom, studio.facing, studio.height,
+	studio.readout:SetText(("pose: zoom %.2f   turn %.2f   lift %.2f   pan %.2f   model height %s"):format(
+		studio.zoom, studio.facing, studio.height, -studio.side,
 		studio.modelHeight and ("%.2f"):format(studio.modelHeight) or "unmeasured"))
 end
 
@@ -504,6 +507,18 @@ local function AddButton(parent, text, width, point, x, y, onClick)
 	return button
 end
 
+--[[
+	Sideways is the camera's offset, not the model's.
+
+	AimCameraAt moves the camera and its target together, so a positive y walks
+	the camera to the right and the creature appears to go left. The sign here is
+	taken from ModelFrame's own drag-to-pan, which subtracts the cursor's travel
+	from y so the model follows the hand -- so Right subtracts.
+
+	It earns its place because the guide box is wider than the creature and the
+	tool centres on x 59 of 128, left of middle: a creature sitting right of the
+	box's centre is cropped with air on its left and loses height to keep it.
+]]
 local function Nudge(field, delta)
 	local step = IsShiftKeyDown() and 5 or 1
 	if field == "zoom" then
@@ -511,6 +526,8 @@ local function Nudge(field, delta)
 			studio.zoom + 0.1 * delta * step))
 	elseif field == "facing" then
 		studio.facing = studio.facing + 0.1 * delta * step
+	elseif field == "side" then
+		studio.side = studio.side + 0.1 * delta * step
 	else
 		studio.height = studio.height + 0.1 * delta * step
 	end
@@ -548,7 +565,7 @@ local function CreateStudio()
 		screenshots for the rest of the session. On hide covers every route out.
 	]]
 	studio:SetScript("OnHide", PopScreenshotFormat)
-	studio.zoom, studio.facing, studio.height = 1, 0, 0
+	studio.zoom, studio.facing, studio.height, studio.side = 1, 0, 0, 0
 	studio.fitted = 1
 	studio.chroma = 1
 	studio.bosses = { }
@@ -657,6 +674,11 @@ local function CreateStudio()
 		end)
 
 	studio.guide = CreateGuide(studio)
+	AddButton(controls, "Left", 56, "TOPLEFT", 196, -142,
+		function() Nudge("side", 1) end)
+	AddButton(controls, "Right", 56, "TOPLEFT", 254, -142,
+		function() Nudge("side", -1) end)
+
 	studio.guideButton = AddButton(controls, "Guide off", 86, "TOPLEFT", 104, -142,
 		function()
 			studio.guide:SetShown(not studio.guide:IsShown())
