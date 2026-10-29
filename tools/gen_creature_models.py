@@ -32,6 +32,14 @@ NPC_MODELS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "npc_model
 # The npcs value copy-pasted across 156 encounters; not real data for any of them.
 PLACEHOLDER = {2135, 12456, 12314}
 
+# Displays neither source knows, identified in the game and recorded here rather
+# than in the generated file. SoD and Forever bosses are the ones that need it:
+# AtlasLoot does not cover them and they are not in a vanilla world database, so
+# the only way to find a display is to look at the creature.
+HAND_PICKED = {
+    237964: ([126313], "Harbinger of Sin"),   # Karazhan Crypts, a red Marrowgar
+}
+
 HEADER = """--[[
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
 All rights reserved.
@@ -49,6 +57,8 @@ Source: AtlasLootClassic DungeonsAndRaids data, filled in from the CMaNGOS Class
 world database (tools/npc_models.tsv) where AtlasLoot carries no DisplayIDs --
 about a quarter of the encounters, which until then showed an empty model frame.
 Era encounterIDs are vanilla npc ids, so that join needs no name matching.
+A handful neither source covers are hand-picked in the generator; those are SoD
+and Forever creatures, found by looking at them in the game.
 
 The second table is each creature's model height in world units, used to pull the
 camera back for the big ones. Creature heights span roughly 0.9 (Pusillin) to 66
@@ -209,7 +219,8 @@ def main():
     # files -- the data file is generated wholesale and touches nothing in place.
     seen = set()
     by_npc, by_name = build_npc_models()
-    from_atlasloot, from_fallback = 0, {"encounterID": 0, "npcs": 0, "name": 0}
+    from_atlasloot, from_hand = 0, 0
+    from_fallback = {"encounterID": 0, "npcs": 0, "name": 0}
     for path in data_files():
         text = open(path, encoding="utf-8").read()
         for boss in parse_user(path):
@@ -218,7 +229,13 @@ def main():
                 continue
             seen.add(enc)
             hit = index.get(enc)
-            if hit and hit[1]:
+            if enc in HAND_PICKED:
+                ids, name = HAND_PICKED[enc]
+                if normalise(name) != normalise(boss["name"]):
+                    sys.exit("hand-picked %d is %s, but encounter %d is %s"
+                             % (enc, name, enc, boss["name"]))
+                from_hand += 1
+            elif hit and hit[1]:
                 ids = hit[1]
                 from_atlasloot += 1
             else:
@@ -257,6 +274,8 @@ def main():
     print(f"files skipped  : {skipped}")
     print(f"{OUT}: {len(rows)} encounters with display ids, {len(heights)} model heights")
     print(f"  from AtlasLoot : {from_atlasloot}")
+    if from_hand:
+        print(f"  hand-picked    : {from_hand}")
     for source, count in from_fallback.items():
         if count:
             print(f"  from npc table : {count} (joined on {source})")

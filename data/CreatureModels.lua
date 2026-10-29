@@ -15,6 +15,8 @@ Source: AtlasLootClassic DungeonsAndRaids data, filled in from the CMaNGOS Class
 world database (tools/npc_models.tsv) where AtlasLoot carries no DisplayIDs --
 about a quarter of the encounters, which until then showed an empty model frame.
 Era encounterIDs are vanilla npc ids, so that join needs no name matching.
+A handful neither source covers are hand-picked in the generator; those are SoD
+and Forever creatures, found by looking at them in the game.
 
 The second table is each creature's model height in world units, used to pull the
 camera back for the big ones. Creature heights span roughly 0.9 (Pusillin) to 66
@@ -355,6 +357,7 @@ CreatureModelService.Register({
 	[169243] = { 8690 },
 	[181366] = { 16155 },
 	[227019] = { 348 },
+	[237964] = { 126313 },
 	[238954] = { 126697 },
 	[240811] = { 129113 },
 	[240812] = { 127686 },
