@@ -40,6 +40,7 @@ HAND_PICKED = {
     237964: ([126313], "Harbinger of Sin"),     # Karazhan Crypts, a red Marrowgar
     238010: ([126532], "Opera Boss"),           # Karazhan Crypts, whoever is on tonight
     238024: ([126401], "Creeping Malison"),     # Karazhan Crypts, the spider queen
+    238055: ([126912], "Dark Rider"),           # Karazhan Crypts, no retail lookalike
 }
 
 HEADER = """--[[
