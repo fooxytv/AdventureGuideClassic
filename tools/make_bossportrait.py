@@ -63,11 +63,53 @@ def has_alpha(im):
     return low < 250
 
 
+def chroma_signature(key):
+    """How strongly coloured the backdrop is: its highest channel minus its lowest.
+
+    Magenta and green score around 255; any grey scores 0. It is what tells a
+    backdrop chosen to be unmistakable from one that merely happens to be there.
+    """
+    high = [c for c in range(3) if key[c] >= 128]
+    low = [c for c in range(3) if key[c] < 128]
+    return (min(key[c] for c in high) - max(key[c] for c in low)
+            if high and low else 0)
+
+
+def drop_enclosed(im, key, tolerance):
+    """Clear backdrop the flood cannot reach, where the backdrop is a chroma key.
+
+    The flood only clears what joins the edge, so backdrop seen *through* a model
+    survives: Marrowgar is a cage of bone and the gaps between his ribs came out
+    filled with magenta, which no tolerance fixes because the pixels are correct
+    and merely unreachable.
+
+    Clearing them everywhere is safe only because of how the backdrop is chosen.
+    The studio offers magenta and green precisely as colours the creature cannot
+    contain -- that is the whole premise of the keyer -- so a pixel that still
+    matches one is backdrop wherever it sits. A grey backdrop carries no such
+    promise, which is why the flood alone handles those.
+    """
+    px = im.load()
+    w, h = im.size
+    cleared = 0
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            if abs(r - key[0]) + abs(g - key[1]) + abs(b - key[2]) <= tolerance * 3:
+                px[x, y] = (0, 0, 0, 0)
+                cleared += 1
+    return cleared
+
+
 def drop_background(im, tolerance):
     """Clear the backdrop by flooding in from the edges.
 
     A flood rather than a colour match everywhere: a grey backdrop and a grey
     creature are common, and only the part connected to the edge is background.
+    Where the backdrop is a chroma key, drop_enclosed then takes the parts the
+    flood could not reach.
     """
     im = im.copy()
     px = im.load()
@@ -93,6 +135,8 @@ def drop_background(im, tolerance):
             if 0 <= nx < w and 0 <= ny < h and not seen[ny * w + nx]:
                 seen[ny * w + nx] = 1
                 queue.append((nx, ny))
+    if chroma_signature(key) >= 60:
+        cleared += drop_enclosed(im, key, tolerance)
     defringe(im, key, tolerance)
     return im, cleared
 
@@ -148,8 +192,7 @@ def defringe(im, key, tolerance, band=3):
     # proportion as model is mixed in.
     high = [c for c in range(3) if key[c] >= 128]
     low = [c for c in range(3) if key[c] < 128]
-    signature = (min(key[c] for c in high) - max(key[c] for c in low)
-                 if high and low else 0)
+    signature = chroma_signature(key)
     reach = max(1.0, tolerance * 2.5)
 
     def backdrop_share(pixel):
