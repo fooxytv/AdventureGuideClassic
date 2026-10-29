@@ -55,6 +55,27 @@ local MODEL_SIZE = 512
 local MIN_ZOOM, MAX_ZOOM = 0.1, 6
 
 --[[
+	The shape of a finished portrait, for the guide box.
+
+	tools/make_bossportrait.py crops to the model's own outline and rescales it, so
+	what it is shot at does not matter in the least -- only the proportions do. Two
+	boxes say that better than a number:
+
+	- OUTER is 128x61, the canvas. A model wider than this cannot be scaled to full
+	  height without overflowing, so the tool scales it by width instead and it
+	  lands short of the top.
+	- INNER is 96x61, what retail's own 59 portraits actually fill. Match it and the
+	  result sits with them.
+
+	The tool then stands the model on the bottom edge and centres it at x 59 of 128,
+	which is why the centre tick is left of middle.
+]]
+local GUIDE_W, GUIDE_H = 128, 61
+local GUIDE_INNER_W = 96
+local GUIDE_CENTRE_X = 59
+local GUIDE_SCALE = 3.6
+
+--[[
 	Every boss in every instance, in list order.
 
 	It used to return only the encounters still carrying the placeholder, which is
@@ -203,24 +224,39 @@ end
 --[[
 	Take the shot.
 
-	The controls are hidden first and the shutter fires on the next frame, because
-	hiding a frame does not take effect until the client draws again -- fire in the
-	same call and the panel is in the picture. Era and Forever both have C_Timer;
-	without it the shot is taken anyway and the controls are simply in it, which is
-	better than silently doing nothing.
+	Everything that is not the creature is hidden first -- the panel and the guide
+	both, since the keyer crops to the outline of whatever is not backdrop and a
+	panel in shot becomes part of the model's bounding box. That is exactly what
+	happened to the first Harbinger of Sin shot: a correct model, keyed against a
+	panel 1500 pixels below it, came out as a speck in the corner.
+
+	One frame is not enough to wait. Screenshot captures the frame already drawn,
+	so a timer at zero fires before the client has redrawn without the panel and
+	photographs it anyway. A short delay is several frames at any frame rate and
+	costs nothing on a shot taken by hand.
+
+	Era and Forever both have C_Timer; without it the shot is taken anyway and the
+	panel is simply in it, which is better than silently doing nothing.
 ]]
+local SHUTTER_DELAY = 0.1
+
 local function Shoot()
 	local boss = CurrentBoss()
 	if boss then
 		print(("|cff66ff66[AGC]|r shooting %s (%s)"):format(boss.name, boss.instance))
 	end
+	local guideWasShown = studio.guide and studio.guide:IsShown()
 	studio.controls:Hide()
+	if studio.guide then studio.guide:Hide() end
 	local function Fire()
 		if _G.Screenshot then _G.Screenshot() end
-		if studio then studio.controls:Show() end
+		if studio then
+			studio.controls:Show()
+			if guideWasShown and studio.guide then studio.guide:Show() end
+		end
 	end
 	if C_Timer and C_Timer.After then
-		C_Timer.After(0, Fire)
+		C_Timer.After(SHUTTER_DELAY, Fire)
 	else
 		Fire()
 	end
@@ -248,6 +284,67 @@ local function PopScreenshotFormat()
 		pcall(SetCVar, "screenshotQuality", studio.oldQuality)
 	end
 	studio.oldFormat, studio.oldQuality = nil, nil
+end
+
+--[[
+	An outlined rectangle, drawn as four one-pixel textures.
+
+	Deliberately not a backdrop: a backdrop's edge file is art with a thickness of
+	its own, and this has to read as a measuring line over a flat colour.
+]]
+local function AddOutline(parent, width, height, r, g, b, a)
+	local box = CreateFrame("Frame", nil, parent)
+	box:SetSize(width, height)
+	local function Edge(point1, point2, w, h)
+		local line = box:CreateTexture(nil, "OVERLAY")
+		line:SetColorTexture(r, g, b, a)
+		line:SetPoint(point1)
+		line:SetPoint(point2)
+		if w then line:SetWidth(w) end
+		if h then line:SetHeight(h) end
+		return line
+	end
+	Edge("TOPLEFT", "TOPRIGHT", nil, 1)
+	Edge("BOTTOMLEFT", "BOTTOMRIGHT", nil, 1)
+	Edge("TOPLEFT", "BOTTOMLEFT", 1, nil)
+	Edge("TOPRIGHT", "BOTTOMRIGHT", 1, nil)
+	return box
+end
+
+--[[
+	The guide: the finished portrait's shape, laid over the model.
+
+	It takes no mouse input and sits above the model, so it can be left on while
+	posing. Shoot hides it with the controls -- a measuring line in the picture
+	would be keyed as part of the creature.
+]]
+local function CreateGuide(parent)
+	local guide = CreateFrame("Frame", nil, parent)
+	guide:SetSize(GUIDE_W * GUIDE_SCALE, GUIDE_H * GUIDE_SCALE)
+	guide:SetPoint("CENTER", 0, 40)
+	guide:EnableMouse(false)
+
+	local outer = AddOutline(guide, GUIDE_W * GUIDE_SCALE, GUIDE_H * GUIDE_SCALE,
+		0, 0, 0, 0.55)
+	outer:SetPoint("CENTER")
+
+	local inner = AddOutline(guide, GUIDE_INNER_W * GUIDE_SCALE,
+		GUIDE_H * GUIDE_SCALE, 1, 1, 1, 0.85)
+	inner:SetPoint("CENTER")
+
+	-- Where the tool centres the model: x 59 of 128, so left of middle.
+	local tick = guide:CreateTexture(nil, "OVERLAY")
+	tick:SetColorTexture(1, 1, 1, 0.5)
+	tick:SetSize(1, 12)
+	tick:SetPoint("BOTTOM", guide, "BOTTOMLEFT",
+		GUIDE_CENTRE_X * GUIDE_SCALE, 0)
+
+	local label = guide:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	label:SetPoint("BOTTOM", guide, "TOP", 0, 6)
+	label:SetText("fill the white box -- standing on the line, centred on the tick")
+
+	guide:Hide()
+	return guide
 end
 
 local function AddButton(parent, text, width, point, x, y, onClick)
@@ -279,6 +376,13 @@ local function CreateStudio()
 	studio:SetAllPoints(UIParent)
 	studio:SetFrameStrata("FULLSCREEN_DIALOG")
 	studio:EnableMouse(true)
+	--[[
+		The wheel zooms, which is how every other model view in the game behaves and
+		the first thing a hand reaches for. Shift still means a bigger step, as it
+		does on the buttons.
+	]]
+	studio:EnableMouseWheel(true)
+	studio:SetScript("OnMouseWheel", function(_, delta) Nudge("zoom", delta) end)
 	studio:Hide()
 	--[[
 		Escape closes it, as it does the journal and the map.
@@ -372,6 +476,14 @@ local function CreateStudio()
 			component.Rebuild()
 		end)
 
+	studio.guide = CreateGuide(studio)
+	studio.guideButton = AddButton(controls, "Guide off", 86, "TOPLEFT", 104, -96,
+		function()
+			studio.guide:SetShown(not studio.guide:IsShown())
+			studio.guideButton:SetText(studio.guide:IsShown() and "Guide on"
+				or "Guide off")
+		end)
+
 	studio.chromaButton = AddButton(controls, "Magenta", 76, "TOPLEFT", 350, -46,
 		function()
 			studio.chroma = (studio.chroma % #CHROMA) + 1
@@ -401,7 +513,8 @@ local function CreateStudio()
 	hint:SetPoint("TOPLEFT", 372, -76)
 	hint:SetWidth(176)
 	hint:SetJustifyH("LEFT")
-	hint:SetText("Shift for bigger steps. Shots are lossless while this is open.")
+	hint:SetText("Wheel zooms, Shift for bigger steps. Shots are lossless "
+		.. "while this is open.")
 
 	return studio
 end
