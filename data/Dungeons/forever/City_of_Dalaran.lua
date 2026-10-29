@@ -93,7 +93,7 @@ InstanceService.AddDungeon({
 		name = "Mana Devourer",
 		defeated = 0,
 		encounterID = 3300,
-		portrait = 521744,
+		portrait = I.UIEJBossManaDevourer,
 		loot = {
 			{ id = 273040, filter = "forever" }, -- Spine of the Devourer
 			{ id = 273041, filter = "forever" }, -- Slitherwrap Girdle

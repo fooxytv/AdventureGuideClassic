@@ -119,7 +119,7 @@ InstanceService.AddDungeon({
 		name = "Creeping Malison",
 		defeated = 0,
 		encounterID = 238024,
-		portrait = 521744,
+		portrait = I.UIEJBossCreepingMalison,
 		loot = {
 			{ id = 235893, seasonFilter = "exclusive" },
 			{ id = 235888, seasonFilter = "exclusive" },
@@ -165,7 +165,7 @@ InstanceService.AddDungeon({
 		name = "Harbinger of Sin",
 		defeated = 0,
 		encounterID = 237964,
-		portrait = 521744,
+		portrait = I.UIEJBossHarbingerOfSin,
 		loot = {
 			{ id = 235881, seasonFilter = "exclusive" },
 			{ id = 235891, seasonFilter = "exclusive" },
@@ -211,7 +211,7 @@ InstanceService.AddDungeon({
 		name = "Kharon",
 		defeated = 0,
 		encounterID = 237439,
-		portrait = 521744,
+		portrait = I.UIEJBossKharon,
 		loot = {
 			{ id = 235875, seasonFilter = "exclusive" },
 			{ id = 235874, seasonFilter = "exclusive" },
