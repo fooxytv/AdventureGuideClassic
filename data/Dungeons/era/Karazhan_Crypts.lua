@@ -285,7 +285,7 @@ InstanceService.AddDungeon({
 		name = "Dark Rider",
 		defeated = 0,
 		encounterID = 238055,
-		portrait = 521744,
+		portrait = I.UIEJBossDarkRider,
 		loot = {
 			{ id = 235892, seasonFilter = "exclusive" },
 			{ id = 235868, seasonFilter = "exclusive" },
