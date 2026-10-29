@@ -21,7 +21,7 @@ InstanceService.AddDungeon({
 		name = "The Failed Apprentices",
 		defeated = 0,
 		encounterID = 237963,
-		portrait = 521744,
+		portrait = I.UIEJBossSkul,
 		loot = {
 			{ id = 236707, seasonFilter = "exclusive" },
 			{ id = 236727, seasonFilter = "exclusive" },
