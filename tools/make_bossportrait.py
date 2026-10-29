@@ -34,7 +34,7 @@ import re
 import sys
 from collections import deque
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from blp2png import read_blp  # noqa: E402
@@ -47,6 +47,20 @@ WIDTH, HEIGHT = 128, 64
 # looming over them or floating small.
 TARGET_HEIGHT = 61
 CENTRE_X = 59
+
+# The drop shadow, recovered from the 64 portraits that already ship rather than
+# guessed. Modelling each as opacity * blur(shift(silhouette)) and fitting the
+# four numbers gives the same answer on every one of them: four pixels to the
+# right, no vertical offset, a Gaussian of three, at full strength, in black.
+#
+# It is what lifts a cut-out off the panel behind it, and the reason the art made
+# in Photoshop reads as placed rather than pasted. Retail's own portraits have no
+# shadow at all, so art taken from there needs one adding to sit with ours --
+# which is why this is on by default rather than a flag to remember.
+SHADOW_OFFSET = (4, 0)
+SHADOW_RADIUS = 3.0
+SHADOW_OPACITY = 1.0
+SHADOW_COLOUR = (0, 0, 0)
 
 
 def open_any(path):
@@ -217,10 +231,37 @@ def defringe(im, key, tolerance, band=3):
         px[x, y] = unmixed + (int(alpha * 255),)
 
 
+def add_shadow(im, offset=SHADOW_OFFSET, radius=SHADOW_RADIUS,
+               opacity=SHADOW_OPACITY):
+    """Lay a blurred copy of the silhouette under the model.
+
+    Blurred on a padded canvas and cropped back, so the shadow does not fade
+    towards the edges of a model that reaches them -- blurring in place treats
+    everything outside the canvas as empty and eats the edge.
+
+    Running this on art that already carries a shadow doubles it. Nothing detects
+    that, because a shadow is indistinguishable from dark pixels that belong to
+    the creature; rebuild from the source rather than from `images/`.
+    """
+    width, height = im.size
+    pad = int(radius * 3) + max(abs(offset[0]), abs(offset[1])) + 2
+    canvas = Image.new("L", (width + pad * 2, height + pad * 2), 0)
+    canvas.paste(im.getchannel("A"), (pad + offset[0], pad + offset[1]))
+    canvas = canvas.filter(ImageFilter.GaussianBlur(radius))
+    mask = canvas.crop((pad, pad, pad + width, pad + height))
+    if opacity != 1.0:
+        mask = mask.point(lambda v: int(max(0, min(255, v * opacity))))
+    shadow = Image.new("RGBA", (width, height), SHADOW_COLOUR + (0,))
+    shadow.putalpha(mask)
+    return Image.alpha_composite(shadow, im)
+
+
 def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
-          erode_px=None):
+          erode_px=None, shadow=True):
     im = open_any(source)
     if im.size == (WIDTH, HEIGHT) and has_alpha(im):
+        if shadow:
+            return add_shadow(im), "already a portrait, shadow added"
         return im, "already a portrait, copied as is"
     note = "used the source's own alpha"
     if not has_alpha(im):
@@ -251,12 +292,15 @@ def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
     x = round(centre_x - model.width / 2)
     x = max(0, min(WIDTH - model.width, x))
     out.alpha_composite(model, (x, HEIGHT - model.height))
+    if shadow:
+        out = add_shadow(out)
+        note += ", with shadow"
     return out, note
 
 
 def cmd_build(args):
     out, note = build(args.source, args.tolerance, args.height, args.centre_x,
-                      args.erode)
+                      args.erode, not args.no_shadow)
     name = args.name
     for prefix in ("I.UIEJBoss", "UIEJBoss"):
         if name.startswith(prefix):
@@ -365,7 +409,7 @@ def cmd_batch(args):
         path, boss = hit
         key = art_key(boss)
         out, note = build(source, args.tolerance, args.height, args.centre_x,
-                          args.erode)
+                          args.erode, not args.no_shadow)
         target = os.path.join(AG_ROOT, "images", "UIEJBoss%s.png" % key)
         if not args.dry_run:
             out.save(target)
@@ -406,6 +450,8 @@ def main():
     b.add_argument("--erode", type=int, default=None,
                    help="source pixels to shave off the edge; raise it if a rim of "
                         "the backdrop's colour survives (default: one output pixel)")
+    b.add_argument("--no-shadow", action="store_true",
+                   help="skip the drop shadow the shipped portraits all carry")
     b.add_argument("--out", help="write here instead of images/")
     b.add_argument("--dry-run", action="store_true")
     b.set_defaults(func=cmd_build)
@@ -423,6 +469,7 @@ def main():
     t.add_argument("--height", type=int, default=TARGET_HEIGHT)
     t.add_argument("--centre-x", type=int, default=CENTRE_X)
     t.add_argument("--erode", type=int, default=None)
+    t.add_argument("--no-shadow", action="store_true")
     t.add_argument("--dry-run", action="store_true")
     t.set_defaults(func=cmd_batch)
 

@@ -330,8 +330,36 @@ placeholder are listed rather than guessed at, so a typo is reported instead of
 landing on the wrong encounter.
 
 It writes `images/UIEJBoss<Name>.png` and prints the `portrait` line. The source may
-be PNG, JPEG or BLP; art that is already a 128x64 cut-out passes through untouched,
-so retail's own `UI-EJ-BOSS-*` files can be used directly.
+be PNG, JPEG or BLP; art that is already a 128x64 cut-out is taken as it stands, so
+retail's own `UI-EJ-BOSS-*` files can be used directly.
+
+### The drop shadow
+
+Every portrait gets one, because every one of the 64 made by hand already had one
+and a new portrait without it reads as pasted on rather than placed. `--no-shadow`
+opts out.
+
+The numbers were recovered rather than guessed: modelling each shipped portrait as
+`opacity * blur(shift(silhouette))` and fitting the four parameters gives the same
+answer on all of them, and applying it to a cut-out with no shadow reproduces that
+fit exactly.
+
+| | |
+|---|---|
+| Offset | 4 right, 0 down |
+| Blur | Gaussian, radius 3 |
+| Opacity | full |
+| Colour | black |
+
+Two things to know. It is applied to the finished 128x64 canvas, blurred on a
+padded copy so a model touching an edge does not have its shadow eaten there. And
+**it doubles if the source already has one**, which nothing can detect — a shadow
+is indistinguishable from dark pixels belonging to the creature — so rebuild from
+the original shot, never from `images/`.
+
+Retail's own art carries a soft halo of its own, symmetrical rather than offset.
+The shadow still goes on, since that halo is not a drop shadow and the result sits
+with ours, but it lands a little heavier than on a clean cut-out.
 
 The format, measured from the 59 shipped and confirmed against retail's (also
 128x64): the model stands on the bottom edge, fills about 60 of the 64 points of
