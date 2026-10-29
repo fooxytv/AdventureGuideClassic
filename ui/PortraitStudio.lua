@@ -317,15 +317,23 @@ end
 	happened to the first Harbinger of Sin shot: a correct model, keyed against a
 	panel 1500 pixels below it, came out as a speck in the corner.
 
-	One frame is not enough to wait. Screenshot captures the frame already drawn,
-	so a timer at zero fires before the client has redrawn without the panel and
-	photographs it anyway. A short delay is several frames at any frame rate and
-	costs nothing on a shot taken by hand.
+	There are two waits here and both are needed, which is why the first attempt
+	at this still photographed the panel.
+
+	The first is before the shutter: Screenshot captures the frame already drawn,
+	so firing immediately -- or on a timer at zero -- catches the frame that still
+	had the panel in it.
+
+	The second is after. Screenshot does not capture when it is called; it queues
+	the capture for the end of the frame. Showing the controls again on the next
+	line therefore puts them back *before* the picture is taken, which is exactly
+	what it looked like: a panel hidden for no observable time at all.
 
 	Era and Forever both have C_Timer; without it the shot is taken anyway and the
 	panel is simply in it, which is better than silently doing nothing.
 ]]
 local SHUTTER_DELAY = 0.1
+local RESTORE_DELAY = 0.5
 
 local function Shoot()
 	local boss = CurrentBoss()
@@ -335,13 +343,22 @@ local function Shoot()
 	local guideWasShown = studio.guide and studio.guide:IsShown()
 	studio.controls:Hide()
 	if studio.guide then studio.guide:Hide() end
+
+	local function Restore()
+		if not studio then return end
+		studio.controls:Show()
+		if guideWasShown and studio.guide then studio.guide:Show() end
+	end
+
 	local function Fire()
 		if _G.Screenshot then _G.Screenshot() end
-		if studio then
-			studio.controls:Show()
-			if guideWasShown and studio.guide then studio.guide:Show() end
+		if C_Timer and C_Timer.After then
+			C_Timer.After(RESTORE_DELAY, Restore)
+		else
+			Restore()
 		end
 	end
+
 	if C_Timer and C_Timer.After then
 		C_Timer.After(SHUTTER_DELAY, Fire)
 	else
