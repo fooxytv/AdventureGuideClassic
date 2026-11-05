@@ -149,7 +149,7 @@ read_globals = {
     -- while it is open and puts the client's own setting back on the way out.
     "GetCVar", "SetCVar",
     "PlaySound", "PlaySoundFile", "SOUNDKIT", "Screenshot",
-    "ChatEdit_InsertLink", "DressUpItemLink",
+    "ChatEdit_InsertLink", "ChatFrame_OpenChat", "DressUpItemLink",
 
     -- Lua/WoW shims
     "strsplit", "wipe", "nop", "floor", "mod", "time",
