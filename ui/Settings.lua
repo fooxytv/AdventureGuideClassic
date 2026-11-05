@@ -319,7 +319,7 @@ function component.Init(components_)
 
 	local appearanceContainer = CreateFrame("Frame", "AGCSettingsAppearanceContainer", content)
 	appearanceContainer:SetPoint("TOPLEFT", appearanceDesc, "BOTTOMLEFT", 0, -8)
-	appearanceContainer:SetSize(400, 80)
+	appearanceContainer:SetSize(400, 116)
 
 	local scaleMin, scaleMax = SettingsService.GetScaleBounds()
 	settingsPanel.scaleRow = CreateOptionsSlider(
@@ -333,6 +333,21 @@ function component.Init(components_)
 		0.05,
 		function() return SettingsService.GetScale() end,
 		function(val) SettingsService.SetScale(val) end
+	)
+
+	--[[
+		`/agc button` already toggled this; it was just undiscoverable. The state
+		lives in LibDBIcon's saved table either way, so the two agree without
+		either of them owning it.
+	]]
+	settingsPanel.minimapButtonRow = CreateOptionsCheckbox(
+		appearanceContainer,
+		"MinimapButton",
+		"Show Minimap Button",
+		"The button on the minimap that opens the journal. Also toggled with /agc button.",
+		1,
+		function() return MinimapButton.IsShown() end,
+		function(val) MinimapButton.SetShown(val) end
 	)
 
 	local toastPosHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -358,6 +373,7 @@ function component.Init(components_)
 		settingsPanel.levelUpSpellsRow.checkbox:SetChecked(SettingsService.GetLevelUpSpellsEnabled())
 		settingsPanel.bossDefeatedRow.checkbox:SetChecked(SettingsService.GetToastEnabled("BossDefeated"))
 		settingsPanel.wishlistRow.checkbox:SetChecked(SettingsService.GetToastEnabled("WishlistItem"))
+		settingsPanel.minimapButtonRow.checkbox:SetChecked(MinimapButton.IsShown())
 		settingsPanel.scaleRow.Refresh()
 		settingsPanel.levelUpPositionRow.Refresh()
 		settingsPanel.bossDefeatedPositionRow.Refresh()

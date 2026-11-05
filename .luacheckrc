@@ -54,7 +54,11 @@ globals = {
     "FILTER_PERSONAL_RESPONSIBILITY", "FILTER_TANK",
 
     -- From lib/TomCats (excluded from linting, but it defines these)
-    "I", "MinimapButton", "CreateMinimapButton",
+    "I", "MinimapButton",
+
+    -- The embedded libraries' registry. LibDataBroker and LibDBIcon are reached
+    -- through it rather than by name, so it is the only one declared here.
+    "LibStub",
 
     -- Saved variables, per the .toc
     "AdventureGuideClassic_Account", "AdventureGuideClassic_Lockout",
