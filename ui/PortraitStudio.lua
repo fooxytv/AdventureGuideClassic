@@ -197,15 +197,18 @@ local function PoseStore()
 	return SavedVariables.PortraitStudioPoses
 end
 
+-- Returns whether it stored anything, so the readout can say "saved" only when
+-- that is true: with no display loaded there is no key to file the pose under.
 local function SavePose()
 	local store = PoseStore()
-	if not (store and studio and studio.loadedDisplay) then return end
+	if not (store and studio and studio.loadedDisplay) then return false end
 	store[studio.loadedDisplay] = {
 		zoom = studio.zoom,
 		facing = studio.facing,
 		height = studio.height,
 		side = studio.side,
 	}
+	return true
 end
 
 -- Nothing saved leaves the current pose alone, which is what carries a tuned
@@ -668,8 +671,7 @@ local function Nudge(field, delta)
 	else
 		studio.height = studio.height + 0.1 * delta * step
 	end
-	SavePose()
-	studio.poseIsSaved = true
+	studio.poseIsSaved = SavePose()
 	ApplyModel()
 	Refresh()
 end

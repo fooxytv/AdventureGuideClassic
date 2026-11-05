@@ -71,6 +71,31 @@ def open_any(path):
     return Image.open(path).convert("RGB")
 
 
+def pixels(im):
+    """Every pixel, flat, on any Pillow we might be run against.
+
+    `getdata` is deprecated and goes away in Pillow 14; `get_flattened_data` is
+    its replacement and does not exist before Pillow 11.3. Asking for whichever
+    is there keeps the tool working either side of that.
+    """
+    reader = getattr(im, "get_flattened_data", None) or im.getdata
+    return reader()
+
+
+def fraction(text):
+    """A 0..1 argument, rejected rather than clamped if it is outside.
+
+    `--pan-x 50` meaning "50%" would otherwise slide the crop clean off the
+    source and come back padded with black, which looks like a bad loading
+    screen rather than a bad flag.
+    """
+    value = float(text)
+    if not 0.0 <= value <= 1.0:
+        raise argparse.ArgumentTypeError(
+            "must be between 0 and 1, not %s" % text)
+    return value
+
+
 def art_band(im):
     """The painted band, with the grey letterbox bars taken off.
 
@@ -79,7 +104,7 @@ def art_band(im):
     """
     width, height = im.size
     grey = im.convert("L")
-    row_px = [list(grey.crop((0, y, width, y + 1)).getdata()) for y in range(height)]
+    row_px = [list(pixels(grey.crop((0, y, width, y + 1)))) for y in range(height)]
     corner = grey.getpixel((0, 0))
 
     def is_bar(y):
@@ -155,8 +180,8 @@ def build(source_path, name, pan_x):
 
 def zncc(a, b):
     """Correlation on luminance, so colour grading cannot flatter or spoil it."""
-    ap = [p / 255.0 for p in a.convert("L").getdata()]
-    bp = [p / 255.0 for p in b.convert("L").getdata()]
+    ap = [p / 255.0 for p in pixels(a.convert("L"))]
+    bp = [p / 255.0 for p in pixels(b.convert("L"))]
     am = sum(ap) / len(ap)
     bm = sum(bp) / len(bp)
     num = sum((x - am) * (y - bm) for x, y in zip(ap, bp))
@@ -205,14 +230,14 @@ def main():
     b = sub.add_parser("build", help="make the tile and portrait for an instance")
     b.add_argument("source", help="loading screen: PNG, JPEG or BLP")
     b.add_argument("name", help="CamelCase instance name, e.g. CityOfDalaran")
-    b.add_argument("--pan-x", type=float, default=0.0,
-                   help="0 = left (the default, and what the shipped art uses)")
+    b.add_argument("--pan-x", type=fraction, default=0.0,
+                   help="0..1; 0 = left (the default, and what the shipped art uses)")
     b.set_defaults(func=cmd_build)
 
     c = sub.add_parser("check", help="rebuild existing art and score the recipe")
     c.add_argument("source")
     c.add_argument("name")
-    c.add_argument("--pan-x", type=float, default=0.0)
+    c.add_argument("--pan-x", type=fraction, default=0.0)
     c.set_defaults(func=cmd_check)
 
     args = p.parse_args()

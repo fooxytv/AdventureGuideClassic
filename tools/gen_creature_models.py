@@ -59,7 +59,10 @@ up one to one.
 Source: AtlasLootClassic DungeonsAndRaids data, filled in from the CMaNGOS Classic
 world database (tools/npc_models.tsv) where AtlasLoot carries no DisplayIDs --
 about a quarter of the encounters, which until then showed an empty model frame.
-Era encounterIDs are vanilla npc ids, so that join needs no name matching.
+Era encounterIDs are vanilla npc ids, which is what makes that join possible; it
+is accepted only when the npc's name agrees with the encounter's, because SoD and
+Forever number their encounters in a different scheme that lands in the same range
+and would otherwise attach a confidently wrong model.
 A handful neither source covers are hand-picked in the generator; those are SoD
 and Forever creatures, found by looking at them in the game.
 

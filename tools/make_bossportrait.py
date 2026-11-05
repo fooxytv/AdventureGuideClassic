@@ -81,6 +81,17 @@ def open_any(path):
     return Image.open(path).convert("RGBA")
 
 
+def pixels(im):
+    """Every pixel, flat, on any Pillow we might be run against.
+
+    `getdata` is deprecated and goes away in Pillow 14; `get_flattened_data` is
+    its replacement and does not exist before Pillow 11.3. Asking for whichever
+    is there keeps the tool working either side of that.
+    """
+    reader = getattr(im, "get_flattened_data", None) or im.getdata
+    return reader()
+
+
 def has_alpha(im):
     low, _ = im.split()[3].getextrema()
     return low < 250
@@ -381,7 +392,7 @@ def check(path, key):
     if not box:
         return ["%s: nothing in it at all" % os.path.basename(path)]
 
-    values = list(alpha.get_flattened_data())
+    values = list(pixels(alpha))
     solid = sum(1 for v in values if v >= 200)
     fill = 100.0 * solid / ((box[2] - box[0]) * (box[3] - box[1]))
 
@@ -389,11 +400,11 @@ def check(path, key):
     # is black at low alpha and would otherwise read as a near miss on green.
     left = 0
     if key:
-        for r, g, b, a in im.get_flattened_data():
+        for r, g, b, a in pixels(im):
             if a >= 32 and abs(r - key[0]) + abs(g - key[1]) + abs(b - key[2]) <= 150:
                 left += 1
 
-    strip = list(alpha.crop((NAME_STARTS_AT, 0, WIDTH, HEIGHT)).get_flattened_data())
+    strip = list(pixels(alpha.crop((NAME_STARTS_AT, 0, WIDTH, HEIGHT))))
     under = 100.0 * sum(1 for v in strip if v >= 32) / len(strip)
 
     lines = ["%s  %dx%d, filling %.1f%% of its box" % (
