@@ -53,8 +53,15 @@ globals = {
     "FILTER_AOE", "FILTER_DAMAGE_DEALER", "FILTER_HEALER", "FILTER_OTHER",
     "FILTER_PERSONAL_RESPONSIBILITY", "FILTER_TANK",
 
-    -- From lib/TomCats (excluded from linting, but it defines these)
-    "I", "MinimapButton", "CreateMinimapButton",
+    -- From lib/TomCats (excluded from linting, but it defines this)
+    "I",
+
+    -- ui/MinimapButton.lua, read from SlashCommands and Settings
+    "MinimapButton",
+
+    -- The embedded libraries' registry. LibDataBroker and LibDBIcon are reached
+    -- through it rather than by name, so it is the only one declared here.
+    "LibStub",
 
     -- Saved variables, per the .toc
     "AdventureGuideClassic_Account", "AdventureGuideClassic_Lockout",

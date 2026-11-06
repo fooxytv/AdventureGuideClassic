@@ -14,9 +14,19 @@ Programming by: FooxyTV
     <!-- Client detection. Must load before anything that branches on the client. -->
     <Script file="Compat.lua" />
 
+    <!--
+        Third-party, unmodified, and in dependency order: LibStub is the registry
+        the other three register themselves with, LibDataBroker needs
+        CallbackHandler, and LibDBIcon needs both. They do not call
+        SetupGlobalFacade and must not: they are loaded as their authors wrote
+        them, so an upgrade is a straight file replacement.
+    -->
+    <Script file="lib/LibStub/LibStub.lua" />
+    <Script file="lib/CallbackHandler-1.0/CallbackHandler-1.0.lua" />
+    <Script file="lib/LibDataBroker-1.1/LibDataBroker-1.1.lua" />
+    <Script file="lib/LibDBIcon-1.0/LibDBIcon-1.0.lua" />
+
     <Script file="lib/TomCats/Images.lua" />
-    <Include file="lib/TomCats/MinimapButton.xml" />
-    <Script file="lib/TomCats/MinimapButton.lua" />
 
     <Script file="DynamicTable.lua" />
     <Script file="Atlas.lua" />

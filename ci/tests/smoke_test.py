@@ -39,9 +39,17 @@ ADDON = "AdventureGuideClassic"
 # ui/ needs a widget surface this stub does not carry yet; the rest load the addon's
 # own entry point as the client would. SlashCommands, Bindings, Main and Probe are
 # wiring for a running client rather than logic worth asserting on.
+#
+# The embedded libraries are skipped for the same reason as ui/ and not because they
+# are third party: they want the client's string aliases and its frame API from their
+# first line, and stubbing that to load code we do not maintain would test the stub.
+# lib/TomCats still loads -- GlobalFacade is the thing under test.
 SKIP = (
     "ui/",
-    "lib/TomCats/MinimapButton",
+    "lib/LibStub/",
+    "lib/CallbackHandler-1.0/",
+    "lib/LibDataBroker-1.1/",
+    "lib/LibDBIcon-1.0/",
     "SlashCommands.lua",
     "Bindings.lua",
     "Main.lua",

@@ -131,10 +131,20 @@ local function CreateToastPositionRow(parent, name, label, toastType, rowIndex)
 	return row
 end
 
-local function CreateOptionsCheckbox(parent, name, label, description, rowIndex, getValue, setValue)
+--[[
+	`rowIndex` counts 36px rows from the top of the container, which only places a
+	row correctly where every row above it is also a checkbox. A slider row is
+	56px, so pass `anchorBelow` to sit under one instead of guessing a fractional
+	index.
+]]
+local function CreateOptionsCheckbox(parent, name, label, description, rowIndex, getValue, setValue, anchorBelow)
 	local row = CreateFrame("Frame", "AGCSettings" .. name .. "Row", parent)
 	row:SetSize(SETTINGS_CHECKBOX_WIDTH, SETTINGS_ROW_HEIGHT)
-	row:SetPoint("TOPLEFT", parent, "TOPLEFT", SETTINGS_LEFT_PADDING, -rowIndex * SETTINGS_ROW_HEIGHT)
+	if (anchorBelow) then
+		row:SetPoint("TOPLEFT", anchorBelow, "BOTTOMLEFT", SETTINGS_LEFT_PADDING, 0)
+	else
+		row:SetPoint("TOPLEFT", parent, "TOPLEFT", SETTINGS_LEFT_PADDING, -rowIndex * SETTINGS_ROW_HEIGHT)
+	end
 
 	local labelText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	labelText:SetPoint("LEFT", row, "LEFT", 0, 4)
@@ -319,7 +329,7 @@ function component.Init(components_)
 
 	local appearanceContainer = CreateFrame("Frame", "AGCSettingsAppearanceContainer", content)
 	appearanceContainer:SetPoint("TOPLEFT", appearanceDesc, "BOTTOMLEFT", 0, -8)
-	appearanceContainer:SetSize(400, 80)
+	appearanceContainer:SetSize(400, 116)
 
 	local scaleMin, scaleMax = SettingsService.GetScaleBounds()
 	settingsPanel.scaleRow = CreateOptionsSlider(
@@ -333,6 +343,22 @@ function component.Init(components_)
 		0.05,
 		function() return SettingsService.GetScale() end,
 		function(val) SettingsService.SetScale(val) end
+	)
+
+	--[[
+		`/agc button` already toggled this; it was just undiscoverable. The state
+		lives in LibDBIcon's saved table either way, so the two agree without
+		either of them owning it.
+	]]
+	settingsPanel.minimapButtonRow = CreateOptionsCheckbox(
+		appearanceContainer,
+		"MinimapButton",
+		"Show Minimap Button",
+		"The button on the minimap that opens the journal. Also toggled with /agc button.",
+		nil,
+		function() return MinimapButton.IsShown() end,
+		function(val) MinimapButton.SetShown(val) end,
+		settingsPanel.scaleRow
 	)
 
 	local toastPosHeader = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -358,6 +384,9 @@ function component.Init(components_)
 		settingsPanel.levelUpSpellsRow.checkbox:SetChecked(SettingsService.GetLevelUpSpellsEnabled())
 		settingsPanel.bossDefeatedRow.checkbox:SetChecked(SettingsService.GetToastEnabled("BossDefeated"))
 		settingsPanel.wishlistRow.checkbox:SetChecked(SettingsService.GetToastEnabled("WishlistItem"))
+		settingsPanel.minimapButtonRow.checkbox:SetChecked(MinimapButton.IsShown())
+		settingsPanel.minimapButtonRow.SetAvailable(MinimapButton.IsAvailable(),
+			"Unavailable: this copy of the addon shipped without LibDBIcon.")
 		settingsPanel.scaleRow.Refresh()
 		settingsPanel.levelUpPositionRow.Refresh()
 		settingsPanel.bossDefeatedPositionRow.Refresh()
