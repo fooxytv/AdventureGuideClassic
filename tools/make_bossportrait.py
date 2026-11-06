@@ -8,6 +8,15 @@ every time, which is the whole of this script.
     python tools/make_bossportrait.py build shot.png LynTheIgnored
     python tools/make_bossportrait.py build shot.png LynTheIgnored --tolerance 40
     python tools/make_bossportrait.py build "<retail UI-EJ-BOSS art>.blp" TheButcher
+    python tools/make_bossportrait.py build shot.png Boss --crop 1596,813,648,309
+
+`--crop` is the rectangle the portrait studio prints beside each shot, and it is
+the guide box the studio drew on screen. Pass it. Everything below crops to the
+outline of whatever is not backdrop, so without it a shot framed perfectly inside
+the box is still cut to the whole creature: measured on one plate, 18% of the
+result was solid pixels cropped to the creature and 36% cropped to the box, and
+the shipped and retail portraits sit at 34-55%. The difference is entirely legs
+and the lit ground under them.
 
 It writes `images/UIEJBoss<Name>.png` and prints the line to paste into the
 encounter. What it cannot do is produce the model: that still comes from the game,
@@ -34,7 +43,7 @@ import re
 import sys
 from collections import deque
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from blp2png import read_blp  # noqa: E402
@@ -48,6 +57,20 @@ WIDTH, HEIGHT = 128, 64
 TARGET_HEIGHT = 61
 CENTRE_X = 59
 
+# The drop shadow, recovered from the 64 portraits that already ship rather than
+# guessed. Modelling each as opacity * blur(shift(silhouette)) and fitting the
+# four numbers gives the same answer on every one of them: four pixels to the
+# right, no vertical offset, a Gaussian of three, at full strength, in black.
+#
+# It is what lifts a cut-out off the panel behind it, and the reason the art made
+# in Photoshop reads as placed rather than pasted. Retail's own portraits have no
+# shadow at all, so art taken from there needs one adding to sit with ours --
+# which is why this is on by default rather than a flag to remember.
+SHADOW_OFFSET = (4, 0)
+SHADOW_RADIUS = 3.0
+SHADOW_OPACITY = 1.0
+SHADOW_COLOUR = (0, 0, 0)
+
 
 def open_any(path):
     if path.lower().endswith(".blp"):
@@ -58,23 +81,82 @@ def open_any(path):
     return Image.open(path).convert("RGBA")
 
 
+def pixels(im):
+    """Every pixel, flat, on any Pillow we might be run against.
+
+    `getdata` is deprecated and goes away in Pillow 14; `get_flattened_data` is
+    its replacement and does not exist before Pillow 11.3. Asking for whichever
+    is there keeps the tool working either side of that.
+    """
+    reader = getattr(im, "get_flattened_data", None) or im.getdata
+    return reader()
+
+
 def has_alpha(im):
     low, _ = im.split()[3].getextrema()
     return low < 250
 
 
-def drop_background(im, tolerance):
+def chroma_signature(key):
+    """How strongly coloured the backdrop is: its highest channel minus its lowest.
+
+    Magenta and green score around 255; any grey scores 0. It is what tells a
+    backdrop chosen to be unmistakable from one that merely happens to be there.
+    """
+    high = [c for c in range(3) if key[c] >= 128]
+    low = [c for c in range(3) if key[c] < 128]
+    return (min(key[c] for c in high) - max(key[c] for c in low)
+            if high and low else 0)
+
+
+def drop_enclosed(im, key, tolerance):
+    """Clear backdrop the flood cannot reach, where the backdrop is a chroma key.
+
+    The flood only clears what joins the edge, so backdrop seen *through* a model
+    survives: Marrowgar is a cage of bone and the gaps between his ribs came out
+    filled with magenta, which no tolerance fixes because the pixels are correct
+    and merely unreachable.
+
+    Clearing them everywhere is safe only because of how the backdrop is chosen.
+    The studio offers magenta and green precisely as colours the creature cannot
+    contain -- that is the whole premise of the keyer -- so a pixel that still
+    matches one is backdrop wherever it sits. A grey backdrop carries no such
+    promise, which is why the flood alone handles those.
+    """
+    px = im.load()
+    w, h = im.size
+    cleared = 0
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            if abs(r - key[0]) + abs(g - key[1]) + abs(b - key[2]) <= tolerance * 3:
+                px[x, y] = (0, 0, 0, 0)
+                cleared += 1
+    return cleared
+
+
+def drop_background(im, tolerance, key=None):
     """Clear the backdrop by flooding in from the edges.
 
     A flood rather than a colour match everywhere: a grey backdrop and a grey
     creature are common, and only the part connected to the edge is background.
+    Where the backdrop is a chroma key, drop_enclosed then takes the parts the
+    flood could not reach.
+
+    `key` is the backdrop's colour. It defaults to the top-left pixel, which is
+    backdrop in any shot framed with room around the creature -- but a --crop
+    deliberately has none, and a creature covering that corner made the whole
+    thing run backwards: the model keyed out and the magenta kept. So a caller
+    that crops reads the colour off the plate first and passes it in.
     """
     im = im.copy()
     px = im.load()
     w, h = im.size
     seeds = [(x, y) for x in range(w) for y in (0, h - 1)]
     seeds += [(x, y) for y in range(h) for x in (0, w - 1)]
-    key = px[0, 0][:3]
+    key = tuple(key)[:3] if key else px[0, 0][:3]
     seen = bytearray(w * h)
     queue = deque()
     for x, y in seeds:
@@ -93,6 +175,8 @@ def drop_background(im, tolerance):
             if 0 <= nx < w and 0 <= ny < h and not seen[ny * w + nx]:
                 seen[ny * w + nx] = 1
                 queue.append((nx, ny))
+    if chroma_signature(key) >= 60:
+        cleared += drop_enclosed(im, key, tolerance)
     defringe(im, key, tolerance)
     return im, cleared
 
@@ -148,8 +232,7 @@ def defringe(im, key, tolerance, band=3):
     # proportion as model is mixed in.
     high = [c for c in range(3) if key[c] >= 128]
     low = [c for c in range(3) if key[c] < 128]
-    signature = (min(key[c] for c in high) - max(key[c] for c in low)
-                 if high and low else 0)
+    signature = chroma_signature(key)
     reach = max(1.0, tolerance * 2.5)
 
     def backdrop_share(pixel):
@@ -174,14 +257,64 @@ def defringe(im, key, tolerance, band=3):
         px[x, y] = unmixed + (int(alpha * 255),)
 
 
+def add_shadow(im, offset=SHADOW_OFFSET, radius=SHADOW_RADIUS,
+               opacity=SHADOW_OPACITY):
+    """Lay a blurred copy of the silhouette under the model.
+
+    Blurred on a padded canvas and cropped back, so the shadow does not fade
+    towards the edges of a model that reaches them -- blurring in place treats
+    everything outside the canvas as empty and eats the edge.
+
+    Running this on art that already carries a shadow doubles it. Nothing detects
+    that, because a shadow is indistinguishable from dark pixels that belong to
+    the creature; rebuild from the source rather than from `images/`.
+    """
+    width, height = im.size
+    pad = int(radius * 3) + max(abs(offset[0]), abs(offset[1])) + 2
+    canvas = Image.new("L", (width + pad * 2, height + pad * 2), 0)
+    canvas.paste(im.getchannel("A"), (pad + offset[0], pad + offset[1]))
+    canvas = canvas.filter(ImageFilter.GaussianBlur(radius))
+    mask = canvas.crop((pad, pad, pad + width, pad + height))
+    if opacity != 1.0:
+        mask = mask.point(lambda v: int(max(0, min(255, v * opacity))))
+    shadow = Image.new("RGBA", (width, height), SHADOW_COLOUR + (0,))
+    shadow.putalpha(mask)
+    return Image.alpha_composite(shadow, im)
+
+
+def parse_crop(text):
+    """`x,y,w,h` as the portrait studio prints it, in screenshot pixels."""
+    if not text:
+        return None
+    parts = [p.strip() for p in text.replace(" ", "").split(",")]
+    if len(parts) != 4 or not all(p.lstrip("-").isdigit() for p in parts):
+        sys.exit("--crop wants four numbers, x,y,w,h -- got %r" % text)
+    x, y, w, h = (int(p) for p in parts)
+    if w <= 0 or h <= 0:
+        sys.exit("--crop width and height must be positive")
+    return (x, y, x + w, y + h)
+
+
 def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
-          erode_px=None):
+          erode_px=None, shadow=True, crop=None):
     im = open_any(source)
+    key = None
+    if crop:
+        # The guide box, as the studio measured it on screen. Taking it before
+        # anything else is the whole point: the steps below crop to the outline
+        # of what is left, so whatever is still in the picture -- the legs, and
+        # the lit ground they stand on -- is what the 61pt height gets spent on.
+        # The backdrop's colour is read off the full plate first, because a good
+        # crop may well have no backdrop in any of its corners.
+        key = im.convert("RGB").getpixel((0, 0))
+        im = im.crop(crop)
     if im.size == (WIDTH, HEIGHT) and has_alpha(im):
+        if shadow:
+            return add_shadow(im), "already a portrait, shadow added"
         return im, "already a portrait, copied as is"
     note = "used the source's own alpha"
     if not has_alpha(im):
-        im, cleared = drop_background(im, tolerance)
+        im, cleared = drop_background(im, tolerance, key)
         share = 100.0 * cleared / (im.width * im.height)
         note = "cleared %.0f%% as background" % share
         if share < 2:
@@ -208,12 +341,15 @@ def build(source, tolerance=32, target_height=TARGET_HEIGHT, centre_x=CENTRE_X,
     x = round(centre_x - model.width / 2)
     x = max(0, min(WIDTH - model.width, x))
     out.alpha_composite(model, (x, HEIGHT - model.height))
+    if shadow:
+        out = add_shadow(out)
+        note += ", with shadow"
     return out, note
 
 
 def cmd_build(args):
     out, note = build(args.source, args.tolerance, args.height, args.centre_x,
-                      args.erode)
+                      args.erode, not args.no_shadow, parse_crop(args.crop))
     name = args.name
     for prefix in ("I.UIEJBoss", "UIEJBoss"):
         if name.startswith(prefix):
@@ -227,6 +363,79 @@ def cmd_build(args):
     print("%s  %dx%d" % (os.path.relpath(path, AG_ROOT).replace("\\", "/"),
                          out.width, out.height))
     print("    portrait = I.UIEJBoss%s," % name)
+
+
+#--------------------------------------------------------------------------
+# Checking a finished portrait.
+#
+# Three things have gone wrong in practice and none of them is visible at
+# 128x64 on a dark panel, which is why they are measured rather than looked at:
+#
+#   * backdrop left in the picture. A creature covering the plate's top-left
+#     corner once inverted the key entirely and the result -- solid magenta with
+#     bone fragments in it -- scored *better* on coverage than the real thing,
+#     because the magenta counted as creature.
+#   * too little of the creature. Below about 25% of its own box a model stops
+#     reading as itself and becomes scattered specks.
+#   * art behind the boss name. The row draws the 128x64 at TOPLEFT (-4, 13)
+#     and the name at LEFT 105, so x 109 onwards is under the first letters.
+#--------------------------------------------------------------------------
+
+NAME_STARTS_AT = 109
+THIN = 25.0
+
+
+def check(path, key):
+    im = open_any(path)
+    alpha = im.getchannel("A")
+    box = alpha.getbbox()
+    if not box:
+        return ["%s: nothing in it at all" % os.path.basename(path)]
+
+    values = list(pixels(alpha))
+    solid = sum(1 for v in values if v >= 200)
+    fill = 100.0 * solid / ((box[2] - box[0]) * (box[3] - box[1]))
+
+    # Only pixels that are actually drawn can be leftover backdrop; the shadow
+    # is black at low alpha and would otherwise read as a near miss on green.
+    left = 0
+    if key:
+        for r, g, b, a in pixels(im):
+            if a >= 32 and abs(r - key[0]) + abs(g - key[1]) + abs(b - key[2]) <= 150:
+                left += 1
+
+    strip = list(pixels(alpha.crop((NAME_STARTS_AT, 0, WIDTH, HEIGHT))))
+    under = 100.0 * sum(1 for v in strip if v >= 32) / len(strip)
+
+    lines = ["%s  %dx%d, filling %.1f%% of its box" % (
+        os.path.basename(path), im.width, im.height, fill)]
+    if fill < THIN:
+        lines.append("  [warn] thin -- shipped art runs 34-55% and retail's own "
+                     "34-37%; frame tighter on the creature, or accept it for "
+                     "something as full of gaps as a spider")
+    if key and left:
+        lines.append("  [warn] %d pixels still match the backdrop %s -- raise "
+                     "--tolerance, or shoot against the other colour if the "
+                     "creature shares it" % (left, key))
+    if under > 12:
+        lines.append("  [warn] %.0f%% of the strip behind the boss name is drawn; "
+                     "lower --height to narrow it, then --centre-x to move it "
+                     "left" % under)
+    if len(lines) == 1:
+        lines.append("  nothing to report")
+    return lines
+
+
+def cmd_check(args):
+    key = None
+    if args.key:
+        parts = args.key.split(",")
+        if len(parts) != 3 or not all(p.strip().isdigit() for p in parts):
+            sys.exit("--key wants three numbers, r,g,b")
+        key = tuple(int(p) for p in parts)
+    for path in args.portraits:
+        for line in check(path, key):
+            print(line)
 
 
 # The id every boss with no art of its own carries.
@@ -322,7 +531,7 @@ def cmd_batch(args):
         path, boss = hit
         key = art_key(boss)
         out, note = build(source, args.tolerance, args.height, args.centre_x,
-                          args.erode)
+                          args.erode, not args.no_shadow)
         target = os.path.join(AG_ROOT, "images", "UIEJBoss%s.png" % key)
         if not args.dry_run:
             out.save(target)
@@ -354,6 +563,9 @@ def main():
     b = sub.add_parser("build", help="make images/UIEJBoss<Name>.png")
     b.add_argument("source", help="PNG, JPEG or BLP of the model")
     b.add_argument("name", help="boss name, no spaces, e.g. LynTheIgnored")
+    b.add_argument("--crop", metavar="X,Y,W,H",
+                   help="keep only this rectangle of the source; the portrait "
+                        "studio prints the guide box in this form beside each shot")
     b.add_argument("--tolerance", type=int, default=32,
                    help="how close to the corner colour still counts as background")
     b.add_argument("--height", type=int, default=TARGET_HEIGHT,
@@ -363,9 +575,18 @@ def main():
     b.add_argument("--erode", type=int, default=None,
                    help="source pixels to shave off the edge; raise it if a rim of "
                         "the backdrop's colour survives (default: one output pixel)")
+    b.add_argument("--no-shadow", action="store_true",
+                   help="skip the drop shadow the shipped portraits all carry")
     b.add_argument("--out", help="write here instead of images/")
     b.add_argument("--dry-run", action="store_true")
     b.set_defaults(func=cmd_build)
+
+    c = sub.add_parser("check", help="measure a finished portrait")
+    c.add_argument("portraits", nargs="+", help="images/UIEJBoss<Name>.png")
+    c.add_argument("--key", metavar="R,G,B",
+                   help="the backdrop it was shot against, so leftovers of it "
+                        "can be counted -- 242,0,242 for magenta, 0,242,0 for green")
+    c.set_defaults(func=cmd_check)
 
     w = sub.add_parser("worklist", help="bosses still carrying the placeholder")
     w.add_argument("--names", action="store_true",
@@ -380,6 +601,7 @@ def main():
     t.add_argument("--height", type=int, default=TARGET_HEIGHT)
     t.add_argument("--centre-x", type=int, default=CENTRE_X)
     t.add_argument("--erode", type=int, default=None)
+    t.add_argument("--no-shadow", action="store_true")
     t.add_argument("--dry-run", action="store_true")
     t.set_defaults(func=cmd_batch)
 

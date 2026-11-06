@@ -68,7 +68,12 @@ Corrects `npcs` in the encounter data and regenerates `data/CreatureModels.lua`:
 
 ```bash
 python tools/gen_creature_models.py [--dry-run] [--skip path ...]
+python tools/gen_creature_models.py --models-only   # leave npcs alone
 ```
+
+`--models-only` regenerates the display table and touches no encounter data, which
+is what to use when the point is the models: the `npcs` pass rewrites dozens of
+lines across the data files and does not belong in a change about something else.
 
 Both outputs join on `encounterID`, the one field in our data that is reliable.
 Much of `npcs` was a placeholder (`{2135, 12456, 12314}`) copy-pasted across 156
@@ -81,6 +86,42 @@ copies — 68 entries have mismatched counts, so zipping them by index would
 attach the wrong model to half the heroic encounters.
 
 Use `--skip` to leave files with uncommitted work alone.
+
+### Where AtlasLoot has no model
+
+AtlasLoot carries no `DisplayIDs` for about a quarter of the encounters we ship, and
+those bosses opened the model viewer on an empty frame with nothing to say why — 65
+of them, Ghamoo-ra and Mekgineer Thermaplugg among them. They are filled in from
+`npc_models.tsv`, the CMaNGOS Classic world database, by three joins:
+
+| Join | Fills |
+|---|---|
+| `encounterID` as an npc id, **name agreeing** | 24 |
+| the encounter's own `npcs` list | 3 |
+| the boss's name, when it picks out exactly one creature | 2 |
+
+The first works because **Era encounterIDs are vanilla npc ids** — Ghamoo-ra is
+encounter 4887 and npc 4887.
+
+**The name has to agree, and that is not belt and braces.** Only Era numbers its
+encounters that way; SoD and Forever use a different scheme that lands in the same
+range, so City of Dalaran's Arcane Anomaly is encounter 3298 and npc 3298 is
+Gabrielle Chase. Taking the id on trust fills the table with confidently wrong
+models — an Adder for Mana Devourer, a goblin called Nogg for Bjork — which is
+worse than the empty frame it set out to fix, because nothing about it looks broken.
+Twenty-four such collisions are rejected on exactly this check.
+
+Agreement allows one loosening: a paired encounter is named for both creatures but
+numbered for one, so "Weaver and Dreamscythe" matches npc 5721, Dreamscythe. Either
+half of an `and` counts. Nothing looser, or the collisions come back.
+
+That leaves 15, all invented content with no creature in a Classic database: Demon
+Fall Canyon's six, Karazhan Crypts' six, Atrexis the Grave Knight, Alexei the
+Beastlord, and Reliquary of Souls, which is two spirits and has no single model at
+all. Those need a display id by hand.
+
+New display ids arrive without a measured height and fall back to a neutral camera
+distance, so `creature_heights.tsv` is worth regenerating after a run like this.
 
 ### creature_heights.tsv
 
@@ -272,7 +313,89 @@ python tools/make_bossportrait.py worklist --names      # the filenames to shoot
 python tools/make_bossportrait.py batch shots/ --wire   # do the lot
 python tools/make_bossportrait.py build shot.png LynTheIgnored
 python tools/make_bossportrait.py build shot.png LynTheIgnored --tolerance 40 --erode 2
+python tools/make_bossportrait.py check images/UIEJBossLynTheIgnored.png --key 242,0,242
 ```
+
+`check` measures the three things that go wrong without looking wrong: backdrop
+left in the picture, a creature too thin to read, and art sitting behind the boss
+name. Run it on anything built from a screenshot.
+
+### Shooting one yourself, start to finish
+
+Read this before taking a single screenshot. Everything in it was learned by
+getting it wrong first, and none of the failures announce themselves -- a
+portrait that is wrong still looks like a portrait.
+
+**1. Open the studio.** `/agc portraits`, in game. Pick the boss from the two
+dropdowns. A display id is filled in where the addon knows one; where it does
+not, the boss is marked `no model` in red and you need the id before anything
+else can happen. Type it in the box.
+
+**2. Pick a backdrop the creature cannot contain.** The `Magenta` / `Green`
+button. Magenta suits almost everything -- but it is high red and blue against
+low green, and so is a nerubian spider, so magenta read Creeping Malison's legs
+as backdrop and no tolerance fixed it. A purple, pink or red creature wants
+green. A felguard or anything lime wants magenta.
+
+**3. Frame it.** Zoom, Turn, Lift, Left and Right; the wheel zooms; Shift takes
+bigger steps. Fill the white guide box with the creature, crown on the gold
+line, **and keep the feet out of shot** -- see the two sections below, which are
+the ones that actually decide whether a shot works.
+
+**4. Shoot.** The panel and the guide hide themselves, and the chat line names
+the boss and prints the flags that shot wants:
+
+```
+[AGC] shooting Creeping Malison (Karazhan Crypts)  --crop 1596,813,648,309 --height 55
+```
+
+Screenshots land in the client's `Screenshots` folder as lossless TGA; the studio
+sets that while it is open and puts your setting back when it closes.
+
+**5. Build, with the flags from that line.**
+
+```sh
+python tools/make_bossportrait.py build "<shot>.tga" CreepingMalison --crop 1596,813,648,309
+```
+
+The name takes no spaces and no prefix. Watch the `cleared N% as background`
+line: 40-85% is normal, and it says so itself if it is below 2% or above 97%.
+
+**6. Check it, before believing it.**
+
+```sh
+python tools/make_bossportrait.py check images/UIEJBossCreepingMalison.png --key 242,0,242
+```
+
+This is not optional politeness. A creature covering the plate's top-left corner
+once inverted the key completely -- the model removed, the magenta kept -- and
+the result **scored better on coverage than the real thing**, because the
+backdrop counted as creature. It took a colour check to notice.
+
+**7. Wire and commit.** The build prints the `portrait = I.UIEJBoss<Name>,` line
+for the encounter in `data/`, unless `batch --wire` has already done it. Commit
+the PNG and the data line together.
+
+### Four rules that cost a day each to learn
+
+**Pass `--crop`, always.** Everything after it crops to the outline of whatever
+is not backdrop, so without it a shot framed perfectly inside the guide box is
+still cut to the whole creature. Same plate: 18% solid cropped to the creature,
+36% cropped to the box.
+
+**Panning the model does not move the portrait.** The tool crops to the outline
+and recentres it at x 59, so where the creature stood in the shot makes no
+difference at all to where it lands. To move one, make it narrower with
+`--height` and *then* move it with `--centre-x`.
+
+**Density is a check, not a goal.** A close-up of a spider's legs measured 51%,
+better than anything else shipped, and read as nothing at all. Use the number to
+catch a portrait that is too thin, never to choose between two that both read.
+
+**Measure before theorising.** Twice the obvious explanation was wrong and a
+histogram gave the real one in a minute: Dark Rider's halo looked unkeyable and
+turned out to have a clean valley at tolerance 90, and `--box-alpha` was built
+on a theory about bounding boxes that the numbers flatly refused, then reverted.
 
 ### The whole job, three steps
 
@@ -289,8 +412,36 @@ placeholder are listed rather than guessed at, so a typo is reported instead of
 landing on the wrong encounter.
 
 It writes `images/UIEJBoss<Name>.png` and prints the `portrait` line. The source may
-be PNG, JPEG or BLP; art that is already a 128x64 cut-out passes through untouched,
-so retail's own `UI-EJ-BOSS-*` files can be used directly.
+be PNG, JPEG or BLP; art that is already a 128x64 cut-out is taken as it stands, so
+retail's own `UI-EJ-BOSS-*` files can be used directly.
+
+### The drop shadow
+
+Every portrait gets one, because every one of the 64 made by hand already had one
+and a new portrait without it reads as pasted on rather than placed. `--no-shadow`
+opts out.
+
+The numbers were recovered rather than guessed: modelling each shipped portrait as
+`opacity * blur(shift(silhouette))` and fitting the four parameters gives the same
+answer on all of them, and applying it to a cut-out with no shadow reproduces that
+fit exactly.
+
+| | |
+|---|---|
+| Offset | 4 right, 0 down |
+| Blur | Gaussian, radius 3 |
+| Opacity | full |
+| Colour | black |
+
+Two things to know. It is applied to the finished 128x64 canvas, blurred on a
+padded copy so a model touching an edge does not have its shadow eaten there. And
+**it doubles if the source already has one**, which nothing can detect — a shadow
+is indistinguishable from dark pixels belonging to the creature — so rebuild from
+the original shot, never from `images/`.
+
+Retail's own art carries a soft halo of its own, symmetrical rather than offset.
+The shadow still goes on, since that halo is not a drop shadow and the result sits
+with ours, but it lands a little heavier than on a clean cut-out.
 
 The format, measured from the 59 shipped and confirmed against retail's (also
 128x64): the model stands on the bottom edge, fills about 60 of the 64 points of
@@ -313,3 +464,95 @@ distance does not work -- half a dark model mixed into magenta still lands far f
 magenta, so it reads as pure model and keeps its rim. What shrinks in proportion as
 model mixes in is the backdrop's shape: magenta is high red and blue against low
 green. That is what is measured. If a rim survives anyway, raise `--erode`.
+
+### Frame the upper body, not the creature
+
+The single thing that decides whether a shot works, and the one that is least
+obvious: **shoot the head and upper ribcage, not the whole model.**
+
+A portrait is 128x64 and the tool scales the creature to 61 points tall whatever it
+was shot at, so a full-body shot spends that height on legs and thin air. Marrowgar
+is the clearest case -- a cage of bone with gaps -- and the numbers are stark. What
+counts is how much of its own bounding box a portrait fills with solid pixels:
+
+| | fills |
+|---|---|
+| the hand-made portraits | 34-55% |
+| retail's own | 34-37% |
+| full-body shots of the same model | 9-26% |
+| the same four shots, cropped to the guide box | 30-38% |
+
+Below about 25% a creature stops reading as itself and becomes scattered specks.
+Retail frames the same model the same way, which is worth noticing before deciding
+their art is simply better drawn.
+
+**Pass `--height` when the studio prints one.** The tool scales whatever it is
+handed to a fixed 61 points, which throws size away: a kobold and an ogre come out
+level, and which of two undead looks bigger is decided by how much air happened to
+surround them in the shot. The studio draws a gold **crown line** across the guide
+box at the height the creature's own measured model height asks for, and prints the
+matching `--height` beside the shot. Shoot with the crown on the line and two
+creatures the game says are the same size come out the same size, with no race
+table anywhere. A creature with no measured height gets no line and no flag.
+
+**Pass `--crop`.** The white guide box in the studio was advice and nothing more
+until the two halves were joined: the tool crops to the outline of everything that
+is not backdrop, so a shot framed perfectly inside the box was still cut to the
+whole creature, legs and all. The studio now prints the box as a pixel rectangle
+beside each shot -- `--crop 1596,813,648,309` -- and that rectangle is the framing.
+The four Harbinger plates measure 15-25% of their box cropped to the creature and
+30-38% cropped to the guide; they are the same four shots.
+
+Cropping above the feet also loses the **ground glow**, which is the other thing
+that ruins a shot. A model standing in its own light pools that light on the floor,
+and the glow is additive -- it takes the backdrop's colour and keys as creature. On
+a green plate it arrives as a lime mass across the bottom third. No tolerance
+removes it, because the pixels genuinely are part model and part backdrop; keeping
+the feet out of frame is the only thing that works.
+
+One tolerance note. Fire and magenta share red and blue, so a burning model keyed at
+the default 48 keeps magenta inside the flames. Harbinger of Sin needed 75.
+
+## make_dungeonbutton.py
+
+Builds an instance's two smaller pictures: the tile in the instance list, and the
+round portrait on the overview header.
+
+```sh
+python tools/make_dungeonbutton.py build <source> CityOfDalaran
+python tools/make_dungeonbutton.py build <source> CityOfDalaran --pan-x 0.5
+python tools/make_dungeonbutton.py check <source> TheHallOfThanes
+```
+
+`build` writes `images/UIEJDungeonButton<Name>.png` and
+`images/UIEJDungeonPortrait<Name>.png` and prints the `thumbnail` and `icon` lines to
+paste in. Same sources as `make_lorebg.py`, and the same grey bands are trimmed.
+
+An instance with no `thumbnail` gets a plain dark tile rather than a broken one, so a
+missing picture is easy to miss: City of Dalaran shipped without either of these for
+three weeks because nothing says anything is wrong.
+
+### The recipe
+
+Recovered from the five tiles that already shipped, by correlating each against its
+loading screen **on luminance**. The paintings are each a single hue, so a colour
+difference finds nothing and reports art as unrelated when it is a crop of exactly
+that picture -- which is what it did at first.
+
+- Everything is cut from the painted band, never the padded file.
+- The tile is the **left** of the band, at the tile's aspect, full band height. Left
+  rather than centre because these paintings put their subject left of centre, and
+  all five that shipped are anchored there. `--pan-x` overrides it.
+- The picture occupies (3, 3)-(172, 88) of a 256x128 canvas and is transparent
+  outside that. The margin is not decoration: the button draws a frame over the art,
+  and art without a margin runs under it.
+- The portrait is the centre square of that same crop, at 128x128.
+
+`check` rebuilds art that already ships and scores it against what is there, then puts
+the original back. That is how the recipe above was confirmed -- 0.96 on Excavation
+Site: Wetlands. The other two score lower because each was hand-nudged by a few
+percent of zoom, not because the crop is wrong.
+
+The portrait is masked round at runtime, so it must not also carry tex coords -- the
+client errors rather than ignoring one. See commit 642716a, "Crop the art, not the
+quad", which is what the tool's own docstring cites.

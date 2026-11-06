@@ -91,7 +91,7 @@ InstanceService.AddDungeon({
 		name = "The Butcher",
 		defeated = 0,
 		encounterID = 3355,
-		portrait = 521744,
+		portrait = I.UIEJBossTheButcher,
 		loot = {
 			{ id = 271204, filter = "forever" }, -- Meathook Slicer
 			{ id = 271205, filter = "forever" }, -- Abomination Bones
