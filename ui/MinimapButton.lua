@@ -122,6 +122,15 @@ function MinimapButton.Init()
 	dbIcon = icon
 end
 
+--[[
+	Whether there is a button at all. False only where the addon was repackaged
+	without `lib/`, in which case the setting below it would be a live checkbox
+	that does nothing.
+]]
+function MinimapButton.IsAvailable()
+	return dbIcon ~= nil
+end
+
 function MinimapButton.IsShown()
 	local db = Store()
 	return not (db and db.hide)
