@@ -101,6 +101,7 @@ ModelPresetService.Register({
 	[16137] = { scale = 1.08 },
 	[16279] = { scale = 0.97 },
 	[16590] = { scale = 0.94 },
+	[126313] = { scale = 1.00, y = -0.02, z = 0.58, facing = -0.04 },
 	[126697] = { scale = 0.29 },
 	[129113] = { scale = 0.85, y = 0.50 },
 })

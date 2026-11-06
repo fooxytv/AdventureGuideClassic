@@ -92,10 +92,24 @@ local function CanAimCamera()
 		and type(creatureModel.SetCameraTarget) == "function"
 end
 
-local function AimCamera(preset)
-	if not CanAimCamera() then return false end
-	local height = currentDisplayId
-		and CreatureModelService.GetHeight(currentDisplayId)
+--[[
+	Aim any model frame, not just this one.
+
+	Exported because the portrait studio needs the same framing and had been
+	reaching for SetCamDistanceScale and SetPortraitZoom instead -- the automatic
+	camera the comment above is about, which leaves the camera inside the model and
+	the frame empty. One copy of that knowledge, in the place that proved it.
+
+	Returns false on a client with no custom camera, so a caller can fall back.
+]]
+function component.AimCameraAt(model, height, preset)
+	if not (model
+		and type(model.MakeCurrentCameraCustom) == "function"
+		and type(model.SetCameraPosition) == "function"
+		and type(model.SetCameraTarget) == "function") then
+		return false
+	end
+	preset = preset or { }
 	if not height or height <= 0 then height = DEFAULT_HEIGHT end
 	-- z raises the framing, y shifts it sideways, x adds distance. Moving the
 	-- camera and its target together pans rather than swings.
@@ -103,10 +117,17 @@ local function AimCamera(preset)
 	local side = preset.y or 0
 	local distance = (preset.scale or 1) * height * CAMERA_DISTANCE_FACTOR
 		+ (preset.x or 0)
-	creatureModel:MakeCurrentCameraCustom()
-	creatureModel:SetCameraPosition(distance, side, eye)
-	creatureModel:SetCameraTarget(0, side, eye)
+	model:MakeCurrentCameraCustom()
+	model:SetCameraPosition(distance, side, eye)
+	model:SetCameraTarget(0, side, eye)
 	return true
+end
+
+local function AimCamera(preset)
+	if not CanAimCamera() then return false end
+	local height = currentDisplayId
+		and CreatureModelService.GetHeight(currentDisplayId)
+	return component.AimCameraAt(creatureModel, height, preset)
 end
 
 function component.Reframe(preset)
