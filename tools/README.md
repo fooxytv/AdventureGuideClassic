@@ -554,4 +554,5 @@ Site: Wetlands. The other two score lower because each was hand-nudged by a few
 percent of zoom, not because the crop is wrong.
 
 The portrait is masked round at runtime, so it must not also carry tex coords -- the
-client errors rather than ignoring one. See *Masked textures take no tex coords*.
+client errors rather than ignoring one. See commit 642716a, "Crop the art, not the
+quad", which is what the tool's own docstring cites.
