@@ -322,10 +322,16 @@ local function RewardOnUpdate(self)
 	end
 end
 
+-- Ctrl dresses the preview model, as it does on a loot row; anything else links
+-- the item into chat, which is what a reward row has never done and is the one
+-- thing you want from it while asking a guild whether the quest is worth doing.
 local function RewardOnClick(self)
-	if self.link and IsControlKeyDown() and DressUpItemLink then
+	if not self.link then return end
+	if IsControlKeyDown() and DressUpItemLink then
 		DressUpItemLink(self.link)
+		return
 	end
+	UI.LinkItem(self.link)
 end
 
 --[[

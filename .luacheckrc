@@ -159,7 +159,7 @@ read_globals = {
     -- The studio prints the guide box as a pixel rectangle for the build tool,
     -- and a screenshot is in physical pixels rather than UI units.
     "GetPhysicalScreenSize",
-    "ChatEdit_InsertLink", "DressUpItemLink",
+    "ChatEdit_InsertLink", "ChatFrame_OpenChat", "DressUpItemLink",
 
     -- Lua/WoW shims
     "strsplit", "wipe", "nop", "floor", "mod", "time",
