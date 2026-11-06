@@ -4,7 +4,7 @@
 
 ## Interface: 16001
 ## Title: AdventureGuideClassic
-## Version: 1.10.1-alpha.d1e5bc6
+## Version: 1.11.0-alpha.8ee50ae
 ## Notes: Provides a dungeon and raid journal for Classic WoW
 ## X-TocFlavor: camelot
 ## DefaultState: enabled
