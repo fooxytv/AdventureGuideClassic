@@ -1,6 +1,6 @@
 --[[
 Copyright (C) 2023 FooxyTV (simon@fooxy.tv)
-All rights reserved.
+Licensed under the GNU General Public License v3.0. See LICENSE.
 
 Programming by: TomCat / TomCat's Gaming
 
