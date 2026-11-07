@@ -29,7 +29,10 @@ break by accident.
 3. `Compat.lua` — client detection, before anything that branches on the client
 4. `lib/TomCats/Images.lua`, MinimapButton, `DynamicTable.lua`, `Atlas.lua`
 5. `services/Services.xml`, `data/Data.xml`, `ui/UI.xml`, `ui/InstanceSelectTemplates.xml`
-6. `SlashCommands.lua`, `Bindings.lua`, `Main.lua`, `Probe.lua`
+6. `SlashCommands.lua`, `Bindings.lua`, `Main.lua`, `Probe.lua`, `LayerProbe.lua`
+
+Nothing in step 6 depends on the order *within* it: the slash handlers are closures that
+run long after every file has loaded, so a diagnostic added there can go at the end.
 
 ## The global facade — read this before writing any file
 
