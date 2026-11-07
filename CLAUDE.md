@@ -410,6 +410,7 @@ it to be read.
 |---|---|
 | `AGC_Probe()` | what the addon thinks it is running on |
 | `AGC_ProbeEvents()` | which events this client refuses to register (`/agcprobeevents`); raises one real error per restricted event |
+| `AGC_Layer()` | which layer/shard the character is on (`/agc layer`), read off a nearby creature's GUID; no client exposes a layer API |
 | `AGC_PreviewQuests("active")` | draw every quest row in that state (`available`, `active`, `completed`; no argument to clear) |
 | `AGC_DebugLootFilter()` | why the selected encounter's loot was filtered |
 | `AGC_ToggleDebug()` | encounter-detection debug printing |

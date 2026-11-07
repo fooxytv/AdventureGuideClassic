@@ -25,7 +25,7 @@ exclude_files = {
 globals = {
     -- Namespaces and services the addon defines
     "UI", "Widgets", "Atlas", "DynamicTable", "SavedVariables",
-    "SavedVariablesName", "addonName",
+    "SavedVariablesName", "addonName", "LayerProbe",
     "AdventureGuideNavigationService", "AdventureObjectives",
     "CreatureModelService", "DungeonMapService", "HyperlinkService",
     "ProgressService", "DiscoveryService",
@@ -91,6 +91,9 @@ globals = {
 read_globals = {
     -- API namespaces
     "C_AddOns", "C_Item", "C_KeyBindings", "C_Seasons", "C_Spell", "C_Timer",
+    -- Nameplates are the layer probe's last resort for a creature GUID when
+    -- nothing is targeted. Guarded at the call site: not every client has it.
+    "C_NamePlate",
 
     -- Widgets and frames
     -- os.date, which the client exposes bare. SeasonalService reads today's
@@ -145,6 +148,8 @@ read_globals = {
     -- name, which is why it is only the fallback.
     "GetRealZoneText", "GetZoneText",
     "UnitGUID", "UnitLevel", "UnitName",
+    -- Group size, so the layer probe can borrow a group member's target.
+    "IsInRaid", "GetNumGroupMembers",
     "GetInventoryItemID", "GetItemInfo", "GetItemInfoInstant",
     -- GetItemIcon is guarded at every call site and QUESTION_MARK_ICON has a
     -- literal fallback beside it, so neither has to exist on every client.
