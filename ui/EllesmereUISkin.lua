@@ -18,6 +18,10 @@ local component = UI.CreateComponent("EllesmereUISkin")
 	allows an interface of 16000-19999 or 120100+ and blocks the suite on anything
 	else, so on Era and BCC the `EllesmereUI` global is absent and every call here
 	is skipped. There is nothing for Compat.lua to decide.
+
+	`RegisterSkin` is only a stub in EllesmereUI core: it queues, and the child
+	addon "Blizzard Skins+" drains the queue at PLAYER_LOGIN. Core alone means a
+	registration that never fires, which is the Blizzard look and not an error.
 ]]
 local S
 
