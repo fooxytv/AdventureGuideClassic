@@ -63,6 +63,11 @@ globals = {
     -- through it rather than by name, so it is the only one declared here.
     "LibStub",
 
+    -- Another addon's, not ours: EllesmereUI's skinning API, read in
+    -- ui/EllesmereUISkin.lua. Absent on Era and BCC, which its own client gate
+    -- blocks, so it is read guarded and never assigned.
+    "EllesmereUI",
+
     -- Saved variables, per the .toc
     "AdventureGuideClassic_Account", "AdventureGuideClassic_Lockout",
 
