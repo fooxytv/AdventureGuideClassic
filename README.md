@@ -15,18 +15,7 @@ that every file in the project loads through. Much of the encounter data, the wi
 system and the journal's UI scaffolding are his work — the per-file headers say which.
 The addon would not exist in this shape without him.
 
+`lib/TomCats/` is licensed separately: a non-exclusive licence granted to FooxyTV for use
+within this addon. See the headers in those files.
+
 Programming and ongoing development by **FooxyTV** (simon@fooxy.tv).
-
-## Licence
-
-GPL-3.0 — see [`LICENSE`](LICENSE) for the full text. A derivative work has to stay
-GPL-3.0 and keep the notices.
-
-**`lib/TomCats/` is the one exception, and is not covered by it.** Those files are
-copyright TomCat's Tours, all rights reserved, used here under a non-exclusive licence
-granted to FooxyTV for this addon; their own headers carry the terms. They cannot be
-taken out of it.
-
-That is more than a footnote, because `GlobalFacade.lua` sits under the exception and
-every source file's first line loads through it. Anyone reusing this code needs to
-supply their own rather than assume that one travels.
