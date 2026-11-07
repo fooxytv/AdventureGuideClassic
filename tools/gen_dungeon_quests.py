@@ -234,7 +234,7 @@ def render(dungeon_name, quests):
     out = [
         "--[[",
         "Copyright (C) 2023 FooxyTV (simon@fooxy.tv)",
-        "Licensed under the GNU General Public License v3.0. See LICENSE.",
+        "All rights reserved.",
         "",
         "Programming by: FooxyTV",
         "",
