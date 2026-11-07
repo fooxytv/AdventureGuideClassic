@@ -887,6 +887,13 @@ PROBE = """
     WishlistService.ClearAll()
     ProgressService.ClearAll()
     alpha.levelRange, beta.levelRange = { 28, 32 }, { 28, 32 }
+    --[[
+        Saved rather than assumed nil. Alpha is whichever instance the client lists
+        first, which could be one of the two that carry a real `side`, and ending
+        this block on `nil` would wipe it -- failing the by-name assertions below
+        for the wrong reason the moment the dungeon order changes.
+    ]]
+    local alphaSideWas = alpha.side
     alpha.side = "Horde"
     out.suggestionHidesOtherFaction = (rankOf(alpha) == math.huge) and 1 or 0
     alpha.side = "Alliance"
@@ -894,6 +901,7 @@ PROBE = """
     -- Nil is "either side", which is every instance but those two.
     alpha.side = nil
     out.suggestionNilSideIsEitherFaction = (rankOf(alpha) ~= math.huge) and 1 or 0
+    alpha.side = alphaSideWas
 
     --[[
         And the reported case itself, by name, because a doctored instance proves
