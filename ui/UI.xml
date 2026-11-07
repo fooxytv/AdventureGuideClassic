@@ -46,4 +46,7 @@
     <Script file="ui/Suggest.lua" />
     <Script file="ui/SeasonalDecor.lua" />
     <Script file="ui/MinimapButton.lua" />
+
+    <!-- Last: its PostInit skins the frames every component above has built. -->
+    <Script file="ui/EllesmereUISkin.lua" />
 </Ui>
