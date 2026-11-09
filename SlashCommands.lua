@@ -45,6 +45,13 @@ SlashCmdList["ADVENTUREGUIDECLASSIC"] = function(message)
 		else
 			print("|cffff5555[AGC]|r IconProbe is not available on this client.")
 		end
+	elseif (message == "layer") then
+		-- Which layer/shard the character is on; see LayerProbe.lua.
+		if LayerProbe and LayerProbe.Report then
+			LayerProbe.Report()
+		else
+			print("|cffff5555[AGC]|r LayerProbe is not available on this client.")
+		end
 	else
 		--todo: print usage instructions to the console
 	end

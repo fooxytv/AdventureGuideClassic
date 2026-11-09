@@ -40,5 +40,6 @@ Programming by: FooxyTV
     <Script file="Bindings.lua" />
     <Script file="Main.lua" />
     <Script file="Probe.lua" />
+    <Script file="LayerProbe.lua" />
 
 </Ui>
