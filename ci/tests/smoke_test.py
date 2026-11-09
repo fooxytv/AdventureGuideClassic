@@ -876,6 +876,53 @@ PROBE = """
     out.suggestionKindPartial =
         (betaSuggestion and betaSuggestion.kind == "partial") and 1 or 0
 
+    --[[
+        The other faction's instance is not offered at all.
+
+        This is the Ragefire Chasm bug: on the numbers it is a perfect fit for a
+        level-13 Alliance player, so the ranking led with a dungeon that sits
+        inside Orgrimmar. The stub plays an Alliance character, so the three
+        branches are driven from the tag rather than from the faction.
+    ]]
+    WishlistService.ClearAll()
+    ProgressService.ClearAll()
+    alpha.levelRange, beta.levelRange = { 28, 32 }, { 28, 32 }
+    --[[
+        Saved rather than assumed nil. Alpha is whichever instance the client lists
+        first, which could be one of the two that carry a real `side`, and ending
+        this block on `nil` would wipe it -- failing the by-name assertions below
+        for the wrong reason the moment the dungeon order changes.
+    ]]
+    local alphaSideWas = alpha.side
+    alpha.side = "Horde"
+    out.suggestionHidesOtherFaction = (rankOf(alpha) == math.huge) and 1 or 0
+    alpha.side = "Alliance"
+    out.suggestionKeepsOwnFaction = (rankOf(alpha) ~= math.huge) and 1 or 0
+    -- Nil is "either side", which is every instance but those two.
+    alpha.side = nil
+    out.suggestionNilSideIsEitherFaction = (rankOf(alpha) ~= math.huge) and 1 or 0
+    alpha.side = alphaSideWas
+
+    --[[
+        And the reported case itself, by name, because a doctored instance proves
+        the filter and not the data. Guarded on presence: the five clients do not
+        ship the same instances, and one that does not have it is not a failure.
+
+        The level is 30 here, so Ragefire is well inside the door and would be
+        ranked if nothing else stopped it.
+    ]]
+    local ragefire, stockade
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        if dungeon.name == "Ragefire Chasm" then ragefire = dungeon end
+        if dungeon.name == "Stormwind Stockade" then stockade = dungeon end
+    end
+    out.ragefireIsHorde = (not ragefire or ragefire.side == "Horde") and 1 or 0
+    out.ragefireNotOfferedToAlliance =
+        (not ragefire or rankOf(ragefire) == math.huge) and 1 or 0
+    out.stockadeIsAlliance = (not stockade or stockade.side == "Alliance") and 1 or 0
+    out.stockadeOfferedToAlliance =
+        (not stockade or rankOf(stockade) ~= math.huge) and 1 or 0
+
     -- GetTop never pads beyond what there is.
     out.suggestionTopCapped = (#SuggestionService.GetTop(3) <= 3) and 1 or 0
 
@@ -1309,6 +1356,13 @@ EXPECTED = {
         "suggestionKindUnvisited": 1,
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
+        "suggestionHidesOtherFaction": 1,
+        "suggestionKeepsOwnFaction": 1,
+        "suggestionNilSideIsEitherFaction": 1,
+        "ragefireIsHorde": 1,
+        "ragefireNotOfferedToAlliance": 1,
+        "stockadeIsAlliance": 1,
+        "stockadeOfferedToAlliance": 1,
         "suggestionTopCapped": 1,
         "suggestionQuestsLift": 1,
         "suggestionHandedInQuestsDoNotCount": 1,
@@ -1427,6 +1481,13 @@ EXPECTED = {
         "suggestionKindUnvisited": 1,
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
+        "suggestionHidesOtherFaction": 1,
+        "suggestionKeepsOwnFaction": 1,
+        "suggestionNilSideIsEitherFaction": 1,
+        "ragefireIsHorde": 1,
+        "ragefireNotOfferedToAlliance": 1,
+        "stockadeIsAlliance": 1,
+        "stockadeOfferedToAlliance": 1,
         "suggestionTopCapped": 1,
         "suggestionQuestsLift": 1,
         "suggestionHandedInQuestsDoNotCount": 1,
@@ -1545,6 +1606,13 @@ EXPECTED = {
         "suggestionKindUnvisited": 1,
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
+        "suggestionHidesOtherFaction": 1,
+        "suggestionKeepsOwnFaction": 1,
+        "suggestionNilSideIsEitherFaction": 1,
+        "ragefireIsHorde": 1,
+        "ragefireNotOfferedToAlliance": 1,
+        "stockadeIsAlliance": 1,
+        "stockadeOfferedToAlliance": 1,
         "suggestionTopCapped": 1,
         "suggestionQuestsLift": 1,
         "suggestionHandedInQuestsDoNotCount": 1,
@@ -1678,6 +1746,13 @@ EXPECTED = {
         "suggestionKindUnvisited": 1,
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
+        "suggestionHidesOtherFaction": 1,
+        "suggestionKeepsOwnFaction": 1,
+        "suggestionNilSideIsEitherFaction": 1,
+        "ragefireIsHorde": 1,
+        "ragefireNotOfferedToAlliance": 1,
+        "stockadeIsAlliance": 1,
+        "stockadeOfferedToAlliance": 1,
         "suggestionTopCapped": 1,
         "suggestionQuestsLift": 1,
         "suggestionHandedInQuestsDoNotCount": 1,
@@ -1797,6 +1872,13 @@ EXPECTED = {
         "suggestionKindUnvisited": 1,
         "suggestionKindPartial": 1,
         "suggestionPrefersSomewhereNew": 1,
+        "suggestionHidesOtherFaction": 1,
+        "suggestionKeepsOwnFaction": 1,
+        "suggestionNilSideIsEitherFaction": 1,
+        "ragefireIsHorde": 1,
+        "ragefireNotOfferedToAlliance": 1,
+        "stockadeIsAlliance": 1,
+        "stockadeOfferedToAlliance": 1,
         "suggestionTopCapped": 1,
         "suggestionQuestsLift": 1,
         "suggestionHandedInQuestsDoNotCount": 1,

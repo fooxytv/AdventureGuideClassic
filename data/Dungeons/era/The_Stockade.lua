@@ -16,6 +16,7 @@ InstanceService.AddDungeon({
 	splash = 608262,
 	mapID = 34,
 	seasonFilter  = "all",
+	side = "Alliance",
 	overview = "Stormwind Stockade is a closely guarded prison built beneath the canals of Stormwind City. Warden Thelwater keeps watch over the stockade and the highly dangerous criminals who call it home. Recently, the inmates revolted, overthrowing their guards and plunging the prison into a state of pandemonium.",
 	{
 		name = "Targorr the Dread",
