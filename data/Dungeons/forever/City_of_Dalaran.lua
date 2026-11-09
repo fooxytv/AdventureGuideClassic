@@ -28,7 +28,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 245999 },
 		overview = {
 			"Raw magic that got loose on Krasus' Landing and never dispersed.",
 			{ heading = "Overview" },
@@ -65,7 +65,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246003 },
 		overview = {
 			"Barriered off in the centre of the city until Grindle Firespark is persuaded to drop them.",
 			{ heading = "Overview" },
@@ -103,7 +103,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246008 },
 		overview = {
 			"A thing that feeds on magic, settled in near the Violet Hold where there is most of it to take.",
 			{ heading = "Overview" },
@@ -162,7 +162,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246017 },
 		overview = {
 			"One of the city's own guardians, left running in the trade district with nobody maintaining it.",
 			{ heading = "Overview" },
@@ -200,7 +200,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246020 },
 		overview = {
 			"Aran again, by the look of him, waiting in the Purple Parlor behind a portal that Archmage Modela opens near the keep.",
 			{ heading = "Overview" },

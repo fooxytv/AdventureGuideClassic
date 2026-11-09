@@ -148,4 +148,75 @@ _G.AGC_NpcPreview = function(displayId)
 	component.Show({ name = "display " .. tostring(displayId), display = tonumber(displayId) })
 end
 
+--[[
+The display behind each npc id, printed ready for HAND_PICKED in
+tools/gen_creature_models.py. Each creature is shown as it is read, because a model
+getter is only worth believing when the model on screen agrees with it.
+]]
+local READ_INTERVAL = 2
+
+local function SelectedInstanceNpcs()
+	local list = {}
+	for _, encounter in ipairs(AdventureGuideNavigationService.GetInstance() or {}) do
+		for _, npc in ipairs(encounter.npcs or {}) do
+			list[#list + 1] = { npc = npc, key = encounter.encounterID, name = encounter.name }
+		end
+	end
+	return list
+end
+
+-- One line per encounter, so a boss made of several creatures keeps them together.
+local function PrintDisplays(list)
+	local order, displays = {}, {}
+	for _, entry in ipairs(list) do
+		if not displays[entry.key] then
+			displays[entry.key] = {}
+			order[#order + 1] = entry
+		end
+		if entry.display then table.insert(displays[entry.key], entry.display) end
+	end
+	for _, entry in ipairs(order) do
+		print(('    %d: ([%s], "%s"),'):format(entry.key,
+			table.concat(displays[entry.key], ", "), entry.name))
+	end
+end
+
+_G.AGC_NpcDisplays = function(...)
+	if not component.IsSupported() or type(model.SetCreature) ~= "function"
+		or type(model.GetDisplayInfo) ~= "function" then
+		print("|cffff5555[AGC]|r this client cannot read a display from an npc id")
+		return
+	end
+	local list = {}
+	for i = 1, select("#", ...) do
+		local npc = tonumber((select(i, ...)))
+		if npc then list[#list + 1] = { npc = npc, key = npc, name = "npc " .. npc } end
+	end
+	if #list == 0 then list = SelectedInstanceNpcs() end
+	if #list == 0 then
+		print("|cffff5555[AGC]|r no npc ids: pass some, or open an instance whose bosses list them")
+		return
+	end
+	for index, entry in ipairs(list) do
+		C_Timer.After((index - 1) * READ_INTERVAL, function()
+			currentDisplay = nil
+			model:ClearModel()
+			model:SetCreature(entry.npc)
+			frame.title:SetText(("%s (npc %d)"):format(entry.name, entry.npc))
+			AnchorToTooltip()
+			frame:Show()
+		end)
+		-- Read late in the slot: an npc the client has not met is fetched first.
+		C_Timer.After(index * READ_INTERVAL - 0.2, function()
+			local display = model:GetDisplayInfo()
+			if display and display > 0 then
+				entry.display = display
+			else
+				print(("|cffff5555[AGC]|r npc %d (%s) gave no display"):format(entry.npc, entry.name))
+			end
+			if index == #list then PrintDisplays(list) end
+		end)
+	end
+end
+
 UI.Add(component)
