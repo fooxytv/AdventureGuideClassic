@@ -41,6 +41,14 @@ HAND_PICKED = {
     238010: ([126532], "Opera Boss"),           # Karazhan Crypts, whoever is on tonight
     238024: ([126401], "Creeping Malison"),     # Karazhan Crypts, the spider queen
     238055: ([126912], "Dark Rider"),           # Karazhan Crypts, no retail lookalike
+    # City of Dalaran, read off the bosses in game
+    3298: ([129891], "Arcane Anomaly"),
+    3299: ([129894], "Fel Ancient"),
+    3300: ([129895], "Mana Devourer"),
+    3302: ([129954], "Unstable Sentinel"),
+    3303: ([130061], "Shade of the Archmage"),
+    3310: ([130235], "Lyn the Ignored"),
+    3311: ([145787], "Atrexis the Grave Knight"),
 }
 
 HEADER = """--[[

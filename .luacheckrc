@@ -77,7 +77,7 @@ globals = {
     "AGC_CheckEquipped", "AGC_DebugLootFilter", "AGC_ResetAllEncounters",
     "AGC_ResetInstance", "AGC_ToggleDebug", "AGC_Wishlist",
     "AGC_ModelDump", "AGC_ModelPoke",
-    "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
+    "AGC_NpcDisplays", "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "AGC_Ids", "SLASH_AGCIDS1",
     "AGC_MarkDefeated", "AGC_MarkInstanceDefeated", "AGC_ProgressDump",
     "AGC_SetLeftOff",

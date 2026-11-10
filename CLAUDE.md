@@ -429,6 +429,7 @@ it to be read.
 | `AGC_ModelDump()` | what the model preset asks for next to what the model reports back |
 | `AGC_ModelPoke()` | drive each model camera control in turn, two seconds apart, to find which one the client honours |
 | `AGC_NpcPreview(id)` | show an NPC model |
+| `AGC_NpcDisplays()` | the display id behind each npc id in the open instance, as `HAND_PICKED` lines; or pass npc ids |
 | `TestLevelUpToast()`, `TestLevelUpToastAt(level)` | level-up toast |
 | `TestBossDefeatedToast()`, `TestBossDefeatedToastCustom(name)` | defeat toast |
 | `TestWishlistToast()`, `TestWishlistToastCustom(itemID)` | wishlist toast |

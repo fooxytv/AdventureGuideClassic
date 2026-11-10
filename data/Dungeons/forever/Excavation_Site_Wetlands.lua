@@ -28,7 +28,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 260322 },
 		overview = {
 			"A crocolisk grown old and enormous on the lake shore, walking the waterline as though the dig had never happened.",
 			{ heading = "Overview" },
@@ -67,7 +67,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 260325 },
 		overview = {
 			"The raptor that owns the pathway, hunting it with a pair of Thicket Hunters at its flanks.",
 			{ heading = "Overview" },
@@ -142,7 +142,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 260326 },
 		overview = {
 			"What the excavation was always going to wake: a Titan construct that does not stir until somebody works the control panel beside it.",
 			{ heading = "Overview" },

@@ -18,7 +18,7 @@ InstanceService.AddDungeon({
 		name = "Arcane Anomaly",
 		defeated = 0,
 		encounterID = 3298,
-		portrait = 521744,
+		portrait = I.UIEJBossArcaneAnomaly,
 		loot = {
 			{ id = 273031, filter = "forever" }, -- Runemender's Seal
 			{ id = 273034, filter = "forever" }, -- Ephemeral Grips
@@ -28,7 +28,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 245999 },
 		overview = {
 			"Raw magic that got loose on Krasus' Landing and never dispersed.",
 			{ heading = "Overview" },
@@ -55,7 +55,7 @@ InstanceService.AddDungeon({
 		name = "Fel Ancient",
 		defeated = 0,
 		encounterID = 3299,
-		portrait = 521744,
+		portrait = I.UIEJBossFelAncient,
 		loot = {
 			{ id = 273037, filter = "forever" }, -- Felbough Arm
 			{ id = 273038, filter = "forever" }, -- Garb of Fallen Felbark
@@ -65,7 +65,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246003 },
 		overview = {
 			"Barriered off in the centre of the city until Grindle Firespark is persuaded to drop them.",
 			{ heading = "Overview" },
@@ -103,7 +103,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246008 },
 		overview = {
 			"A thing that feeds on magic, settled in near the Violet Hold where there is most of it to take.",
 			{ heading = "Overview" },
@@ -151,7 +151,7 @@ InstanceService.AddDungeon({
 		name = "Unstable Sentinel",
 		defeated = 0,
 		encounterID = 3302,
-		portrait = 521744,
+		portrait = I.UIEJBossUnstableSentinel,
 		loot = {
 			{ id = 273046, filter = "forever" }, -- Guardian's Dualblade
 			{ id = 273047, filter = "forever" }, -- Unstable Crystalline Shoulderpads
@@ -162,7 +162,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246017 },
 		overview = {
 			"One of the city's own guardians, left running in the trade district with nobody maintaining it.",
 			{ heading = "Overview" },
@@ -189,7 +189,7 @@ InstanceService.AddDungeon({
 		name = "Shade of the Archmage",
 		defeated = 0,
 		encounterID = 3303,
-		portrait = 521744,
+		portrait = I.UIEJBossShadeOfTheArchmage,
 		loot = {
 			{ id = 273049, filter = "forever" }, -- Archmagister's Faceted Pendant
 			{ id = 273051, filter = "forever" }, -- Violet Sorcerer's Mantle
@@ -200,7 +200,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 246020 },
 		overview = {
 			"Aran again, by the look of him, waiting in the Purple Parlor behind a portal that Archmage Modela opens near the keep.",
 			{ heading = "Overview" },
@@ -230,7 +230,7 @@ InstanceService.AddDungeon({
 		name = "Lyn the Ignored",
 		defeated = 0,
 		encounterID = 3310,
-		portrait = 521744,
+		portrait = I.UIEJBossLynTheIgnored,
 		loot = {
 			{ id = 273053, filter = "forever" }, -- Tendonscraper Dagger
 			{ id = 273054, filter = "forever" }, -- Cartilage Shapers
@@ -268,7 +268,7 @@ InstanceService.AddDungeon({
 		name = "Atrexis the Grave Knight",
 		defeated = 0,
 		encounterID = 3311,
-		portrait = 521744,
+		portrait = I.UIEJBossAtrexisTheGraveKnight,
 		loot = {
 			{ id = 273032, filter = "forever" }, -- Bonebinder's Signet
 			{ id = 273033, filter = "forever" }, -- Gravespike Repeater
