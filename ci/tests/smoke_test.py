@@ -208,6 +208,15 @@ PROBE = """
     out.raids = #InstanceService.GetRaids()
     out.instances = #InstanceService.GetAllInstances()
 
+    -- Listed dungeons with a quest the stub's Alliance player can take. A quest file
+    -- registered under a name no instance carries would not be counted.
+    out.questDungeons = 0
+    for _, dungeon in ipairs(InstanceService.GetDungeons()) do
+        if QuestService.HasQuests(dungeon.name) then
+            out.questDungeons = out.questDungeons + 1
+        end
+    end
+
     -- One item per tag, so the filter's verdict per client is visible at a glance.
     local encounter = { loot = {
         { id = 1, filter = "all" },
@@ -892,10 +901,10 @@ PROBE = """
         level, so nothing but the quest term can put it first. Both are unvisited and
         neither is wishlisted, so the other terms cancel.
 
-        Quest data ships for Era's nineteen dungeons only. All five clients list at
-        least one of them today, so the -1 branch below is a guard rather than a
-        path any of them takes: a client that listed none would otherwise record a
-        pass for a rule it never checked.
+        Quest data ships for Era's nineteen dungeons and four of Forever's. All five
+        clients list at least one of them today, so the -1 branch below is a guard
+        rather than a path any of them takes: a client that listed none would
+        otherwise record a pass for a rule it never checked.
     ]]
     WishlistService.ClearAll()
     ProgressService.ClearAll()
@@ -1283,7 +1292,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 1, "combatLogAvailable": 1,
-        "loot": "1,2,4,7", "dungeons": 19, "raids": 6,
+        "loot": "1,2,4,7", "dungeons": 19, "raids": 6, "questDungeons": 17,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "seasonBeforeStart": "none",
@@ -1401,7 +1410,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "era", "isForever": 0, "isClassicLine": 1, "isEraClient": 1,
         "isVanillaLoot": 1, "isSoD": 1, "isEra": 0, "combatLogAvailable": 1,
-        "loot": "1,3,4", "dungeons": 18, "raids": 10,
+        "loot": "1,3,4", "dungeons": 18, "raids": 10, "questDungeons": 14,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "seasonBeforeStart": "none",
@@ -1519,7 +1528,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "tbc", "isForever": 0, "isClassicLine": 1, "isEraClient": 0,
         "isVanillaLoot": 0, "isSoD": 0, "isEra": 0, "combatLogAvailable": 1,
-        "loot": "1,5,7", "dungeons": 19, "raids": 6,
+        "loot": "1,5,7", "dungeons": 19, "raids": 6, "questDungeons": 17,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "CharacterFrameTabButtonTemplate",
         "seasonBeforeStart": "none",
@@ -1652,7 +1661,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
-        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0,
+        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0, "questDungeons": 21,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "seasonBeforeStart": "none",
@@ -1771,7 +1780,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
-        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0,
+        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0, "questDungeons": 21,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "seasonBeforeStart": "none",
