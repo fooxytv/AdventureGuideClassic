@@ -129,6 +129,13 @@
     <Script file="data/Quests/era/Wailing_Caverns.lua" />
     <Script file="data/Quests/era/Zul_Farrak.lua" />
 
+    <!-- The five unregistered Forever dungeons have quest files too. They wait with
+         their dungeons. -->
+    <Script file="data/Quests/forever/City_of_Dalaran.lua" />
+    <Script file="data/Quests/forever/Excavation_Site_Wetlands.lua" />
+    <Script file="data/Quests/forever/Ruins_of_Lordaeron.lua" />
+    <Script file="data/Quests/forever/The_Hall_of_Thanes.lua" />
+
     <!-- Creature display ids per encounter, for the model viewer -->
     <Script file="data/CreatureModels.lua" />
     <Script file="data/CreatureModelPresets.lua" />
