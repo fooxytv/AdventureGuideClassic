@@ -11,6 +11,12 @@ local components
 local DungeonMap = _G.DungeonMap or {}
 local MapNavBar = _G.MapNavBar or {}
 
+-- Our own tiles for an instance, or nil when there are none to draw.
+local function OwnMap(instanceName)
+	local info = DungeonMapService.GetDungeonMapByInstanceName(instanceName)
+	if info and type(info.layers) == "table" and #info.layers > 0 then return info end
+end
+
 function component.Init(components_)
 	components = components_
 	local instance = CreateFrame("Frame", nil, EncounterJournal.encounter)
@@ -72,8 +78,8 @@ function component.Init(components_)
     instance.mapButton.text:SetText("Show\nMap")
 	instance.mapButton:SetScript("OnClick", function()
 		local instanceName = component.frame.title:GetText()
-		local dungeonInfo = DungeonMapService.GetDungeonMapByInstanceName(instanceName)
-		if dungeonInfo and type(dungeonInfo.layers) == "table" and #dungeonInfo.layers > 0 then
+		local dungeonInfo = OwnMap(instanceName)
+		if dungeonInfo then
 			local defaultLayer = dungeonInfo.layers[1]
 			local defaultMapID = defaultLayer.mapID
 			if not DungeonMapFrame then
@@ -83,9 +89,23 @@ function component.Init(components_)
 			DungeonMap:LoadTiledMap(defaultMapID)
 			DungeonMapFrame:Show()
 		else
-			print("ERROR: No map data found for instance ->", instanceName)
+			-- Forever ships no dungeon maps of its own; Leatrix Maps draws them.
+			local opened, status = LeatrixMapsService.Open(instanceName)
+			if not opened then
+				print("|cffff9900[AGC]|r " .. LeatrixMapsService.GetMessage(status))
+			end
 		end
 	end)
+	instance.mapButton:SetScript("OnEnter", function(self)
+		local instanceName = component.frame.title:GetText()
+		if OwnMap(instanceName) then return end
+		local status = LeatrixMapsService.GetStatus(instanceName)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(status == "ok" and "Opens in Leatrix Maps"
+			or LeatrixMapsService.GetMessage(status), 1, 1, 1, 1, true)
+		GameTooltip:Show()
+	end)
+	instance.mapButton:SetScript("OnLeave", GameTooltip_Hide)
 	instance.mapButton:SetScript("OnMouseDown", function(self)
 		self.texture:SetTexCoord(0.125, 0.875, 0.5, 1.0)
 	end)

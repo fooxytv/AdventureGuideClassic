@@ -10,7 +10,7 @@
 ## DefaultState: enabled
 # Loads EllesmereUI first where it is installed, so its skinning API is there to
 # register with. Optional: nothing here requires it.
-## OptionalDeps: EllesmereUI
+## OptionalDeps: EllesmereUI, Leatrix_Maps
 ## SavedVariables: AdventureGuideClassic_Account
 ## SavedVariablesPerCharacter: AdventureGuideClassic_Lockout
 

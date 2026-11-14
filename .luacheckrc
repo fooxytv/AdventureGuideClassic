@@ -29,7 +29,8 @@ globals = {
     "AdventureGuideNavigationService", "AdventureObjectives",
     "CreatureModelService", "DungeonMapService", "HyperlinkService",
     "ProgressService", "DiscoveryService",
-    "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
+    "InstanceService", "LeatrixMapsService", "LootFilterService",
+    "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
     "LevellingService",
     "SeasonalService", "SuggestionService",
@@ -67,6 +68,10 @@ globals = {
     -- ui/EllesmereUISkin.lua. Absent on Era and BCC, which its own client gate
     -- blocks, so it is read guarded and never assigned.
     "EllesmereUI",
+
+    -- Another addon's again: Leatrix Maps' saved variables, read guarded in
+    -- services/LeatrixMapsService.lua to see whether its dungeon maps are on.
+    "LeaMapsDB",
 
     -- Saved variables, per the .toc
     "AdventureGuideClassic_Account", "AdventureGuideClassic_Lockout",
