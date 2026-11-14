@@ -1272,6 +1272,31 @@ PROBE = """
     end
     out.pretendFailures = table.concat(problems, "; ")
 
+    --[[
+        The Forever map button hands off to Leatrix Maps through its slash command,
+        so what is checked is each reason for not calling it and, last, the words
+        it is called with. Every other client must refuse before looking for it.
+    ]]
+    local sent, version = "", "1.60.31"
+    local addOns = { IsAddOnLoaded = C_AddOns.IsAddOnLoaded, GetAddOnMetadata = C_AddOns.GetAddOnMetadata }
+    local leatrix = { LeatrixMapsService.GetStatus("City of Dalaran") }
+    C_AddOns.IsAddOnLoaded = function(name) return name == "Leatrix_Maps" end
+    C_AddOns.GetAddOnMetadata = function() return version end
+    SlashCmdList["Leatrix_Maps"] = function(message) sent = message end
+    _G.WorldMapFrame = { IsShown = function() return true end }
+    leatrix[#leatrix + 1] = (LeatrixMapsService.GetStatus("Blackmaw Hold"))
+    version = "1.60.26"
+    leatrix[#leatrix + 1] = (LeatrixMapsService.GetStatus("City of Dalaran"))
+    version = "1.60.31"
+    _G.LeaMapsDB = { ShowDungeonMaps = "Off" }
+    leatrix[#leatrix + 1] = (LeatrixMapsService.GetStatus("City of Dalaran"))
+    _G.LeaMapsDB = nil
+    LeatrixMapsService.Open("Krol'Dok Stronghold")
+    leatrix[#leatrix + 1] = sent
+    C_AddOns.IsAddOnLoaded, C_AddOns.GetAddOnMetadata = addOns.IsAddOnLoaded, addOns.GetAddOnMetadata
+    SlashCmdList["Leatrix_Maps"], _G.WorldMapFrame = nil, nil
+    out.leatrix = table.concat(leatrix, ", ")
+
     return out
 
 """
@@ -1368,6 +1393,7 @@ EXPECTED = {
         "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
+        "leatrix": "unsupported, unsupported, unsupported, unsupported, ",
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -1486,6 +1512,7 @@ EXPECTED = {
         "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
+        "leatrix": "unsupported, unsupported, unsupported, unsupported, ",
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -1604,6 +1631,7 @@ EXPECTED = {
         "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
+        "leatrix": "unsupported, unsupported, unsupported, unsupported, ",
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -1737,6 +1765,7 @@ EXPECTED = {
         "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
+        "leatrix": "missing, nomap, outdated, disabled, dun krol'dok",
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
@@ -1856,6 +1885,7 @@ EXPECTED = {
         "listedKeepsObtained": 1,
         "pinnedHidesObtained": 1,
         "pinnedOffShowsObtained": 1,
+        "leatrix": "missing, nomap, outdated, disabled, dun krol'dok",
         "spellDescription": "Description of spell 12054",
         "spellDescriptionUnknown": 1,
         "spellDescriptionNoId": 1,
