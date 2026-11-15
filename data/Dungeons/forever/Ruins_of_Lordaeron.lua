@@ -64,7 +64,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 250631 },
 		overview = {
 			"Called up out of the Market Square statue, which shakes before he arrives, and preceded by three waves of the dead.",
 			{ heading = "Overview" },
@@ -124,7 +124,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 250657 },
 		overview = {
 			"The last of the ruins' dead to still hold a position worth defending.",
 			{ heading = "Overview" },
@@ -159,7 +159,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 255699 },
 		overview = {
 			"Encounter details for this boss are not yet recorded. The client lists it, but no tactics have been confirmed for it.",
 		},

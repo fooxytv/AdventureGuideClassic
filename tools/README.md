@@ -153,7 +153,8 @@ https://wago.tools/db2/CreatureModelData/csv?build=<build>
 
 Build ids come from `https://wago.tools/api/builds`. The Era build only covers
 Era creatures, so TBC displays need a later Classic build as well; the committed
-file was built from `5.5.4.68806` with `1.15.9.68808` filling the gaps.
+file was built from `5.5.4.68806` with `1.15.9.68808` filling the gaps. Forever's own
+displays come from the `wowf` product, `1.60.1.70862`.
 
 The camera curve itself lives in `services/CreatureModelService.lua`, not here —
 tune `BASELINE_HEIGHT` there rather than regenerating this file.
