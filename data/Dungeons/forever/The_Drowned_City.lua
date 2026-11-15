@@ -140,7 +140,7 @@ InstanceService.AddDungeon({
 		extremelyRareLoot = {},
 		npcs = { 260202, 260213, 268478 },
 		overview = {
-			"Deathless Marrow, a thing of blood and bone raised at the western altar, with the undying servants of the old city answering its call.",
+			"The Deathless Guardians gather around Deathless Marrow, a thing of blood and bone raised at the western altar, with the undying servants of the old city answering its call.",
 			{ heading = "Overview" },
 			"Deathless Marrow has a very large health pool and calls in waves of three: a Deathless Guardian, a Deathless Sorcerer and a Deathless Watcher. Each add killed raises the group's damage against the boss by 20%, so build stacks on the waves before burning it, while {spell:1283034} keeps hitting the whole group.",
 			{
@@ -213,7 +213,7 @@ InstanceService.AddDungeon({
 		extremelyRareLoot = {},
 		npcs = { 260243, 260274 },
 		overview = {
-			"The troll at the far west end of the city, last of what holds I'lalai, who sheds his troll shape for a serpent's once pressed.",
+			"The troll at the far west end of the city, last of what holds I'lalai, who sheds his troll shape for a serpent's form once pressed.",
 			{ heading = "Overview" },
 			"A two-phase fight. Min'loth starts in troll form with a heavy hit on the tank and some damage on the group. When that form is beaten he becomes a serpent, poisoning the whole party with a bolt volley and fearing players.",
 			{
