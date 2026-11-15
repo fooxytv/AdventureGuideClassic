@@ -129,8 +129,8 @@
     <Script file="data/Quests/era/Wailing_Caverns.lua" />
     <Script file="data/Quests/era/Zul_Farrak.lua" />
 
-    <!-- The five unregistered Forever dungeons have quest files too. They wait with
-         their dungeons. -->
+    <!-- The four registered Forever dungeons. data/Quests/forever also holds files
+         for the five unregistered ones, which wait with their dungeons. -->
     <Script file="data/Quests/forever/City_of_Dalaran.lua" />
     <Script file="data/Quests/forever/Excavation_Site_Wetlands.lua" />
     <Script file="data/Quests/forever/Ruins_of_Lordaeron.lua" />
