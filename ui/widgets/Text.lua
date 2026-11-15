@@ -10,9 +10,30 @@ local widgetType = Mixin({
 	name = "Text"
 }, WidgetTypeMixin)
 
+--[[
+	Measured before the panel has its width, the string reads as one line, and it
+	does not re-wrap when the width arrives. So re-set the text and size to it then,
+	and let an enclosing section grow with it.
+]]
+local function Measure(frame)
+	local text = frame.text:GetText()
+	frame.text:SetText("")
+	frame.text:SetText(text)
+	frame.measuredWidth = frame:GetWidth()
+	frame:SetHeight(frame.text:GetStringHeight() + 12)
+	if frame:GetParent().widgetType.name ~= "Root" then
+		CollapsibleSectionWidgetTypeMixin:UpdateParentHeights(frame)
+	end
+end
+
 function widgetType:Construct(parent)
 	local frame = WidgetTypeMixin.ConstructDefault(widgetType, "Frame", nil, parent)
 	frame:SetSize(1,1)
+	frame:SetScript("OnSizeChanged", function(self, width)
+		if self.measuredWidth and math.abs(width - self.measuredWidth) > 0.5 then
+			Measure(self)
+		end
+	end)
 	frame.bullet = frame:CreateTexture(nil, "ARTWORK", "UI-PaperOverlay-Bullet")
 	frame.bullet:ClearAllPoints()
 	frame.bullet:SetPoint("TOPLEFT", 2, -8)
@@ -93,6 +114,7 @@ function widgetType:SetContents(widget, contents, bulleted)
 	widget.bullet:SetShown(bulleted)
 	self:SetAnchors(widget)
 	widget.text:SetText(TokenizedTextService.ReplaceTokens(contents.text))
+	widget.measuredWidth = widget:GetWidth()
 	widget:SetHeight(widget.text:GetStringHeight() + 12)
 	widget:Show()
 end
