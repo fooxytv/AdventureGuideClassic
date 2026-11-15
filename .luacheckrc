@@ -29,7 +29,8 @@ globals = {
     "AdventureGuideNavigationService", "AdventureObjectives",
     "CreatureModelService", "DungeonMapService", "HyperlinkService",
     "ProgressService", "DiscoveryService",
-    "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
+    "InstanceService", "LeatrixMapsService", "LootFilterService",
+    "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
     "LevellingService",
     "SeasonalService", "SuggestionService",
@@ -68,6 +69,10 @@ globals = {
     -- blocks, so it is read guarded and never assigned.
     "EllesmereUI",
 
+    -- Another addon's again: Leatrix Maps' saved variables, read guarded in
+    -- services/LeatrixMapsService.lua to see whether its dungeon maps are on.
+    "LeaMapsDB",
+
     -- Saved variables, per the .toc
     "AdventureGuideClassic_Account", "AdventureGuideClassic_Lockout",
 
@@ -77,7 +82,7 @@ globals = {
     "AGC_CheckEquipped", "AGC_DebugLootFilter", "AGC_ResetAllEncounters",
     "AGC_ResetInstance", "AGC_ToggleDebug", "AGC_Wishlist",
     "AGC_ModelDump", "AGC_ModelPoke",
-    "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
+    "AGC_NpcDisplays", "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "AGC_Ids", "SLASH_AGCIDS1",
     "AGC_MarkDefeated", "AGC_MarkInstanceDefeated", "AGC_ProgressDump",
     "AGC_SetLeftOff",

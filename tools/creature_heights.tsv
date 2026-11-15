@@ -2,7 +2,8 @@
 # CreatureDisplayInfo.CreatureModelScale is deliberately NOT applied: the model
 # frame renders the base model without it, so including it pulled the camera back
 # by up to 7x on creatures the game scales up when spawning them in the world.
-# source: wago.tools DB2 export, builds 5.5.4.68806 and 1.15.9.68808
+# source: wago.tools DB2 export, builds 5.5.4.68806 and 1.15.9.68808,
+# and 1.60.1.70862 (wowf) for Forever's own displays
 522	2.29
 524	2.29
 571	1.97
@@ -336,3 +337,10 @@
 127818	2.14
 128659	1.93
 129113	3.65
+129891	4.26
+129894	10.25
+129895	0.59
+129954	3.13
+130061	2.12
+130235	2.12
+145787	2.12
