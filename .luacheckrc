@@ -25,11 +25,12 @@ exclude_files = {
 globals = {
     -- Namespaces and services the addon defines
     "UI", "Widgets", "Atlas", "DynamicTable", "SavedVariables",
-    "SavedVariablesName", "addonName",
+    "SavedVariablesName", "addonName", "LayerProbe",
     "AdventureGuideNavigationService", "AdventureObjectives",
     "CreatureModelService", "DungeonMapService", "HyperlinkService",
     "ProgressService", "DiscoveryService",
-    "InstanceService", "LootFilterService", "ModelPresetService", "NPCService",
+    "InstanceService", "LeatrixMapsService", "LootFilterService",
+    "ModelPresetService", "NPCService",
     "SearchService", "SettingsService", "SpellsByLevelService",
     "LevellingService",
     "SeasonalService", "SuggestionService",
@@ -53,8 +54,24 @@ globals = {
     "FILTER_AOE", "FILTER_DAMAGE_DEALER", "FILTER_HEALER", "FILTER_OTHER",
     "FILTER_PERSONAL_RESPONSIBILITY", "FILTER_TANK",
 
-    -- From lib/TomCats (excluded from linting, but it defines these)
-    "I", "MinimapButton", "CreateMinimapButton",
+    -- From lib/TomCats (excluded from linting, but it defines this)
+    "I",
+
+    -- ui/MinimapButton.lua, read from SlashCommands and Settings
+    "MinimapButton",
+
+    -- The embedded libraries' registry. LibDataBroker and LibDBIcon are reached
+    -- through it rather than by name, so it is the only one declared here.
+    "LibStub",
+
+    -- Another addon's, not ours: EllesmereUI's skinning API, read in
+    -- ui/EllesmereUISkin.lua. Absent on Era and BCC, which its own client gate
+    -- blocks, so it is read guarded and never assigned.
+    "EllesmereUI",
+
+    -- Another addon's again: Leatrix Maps' saved variables, read guarded in
+    -- services/LeatrixMapsService.lua to see whether its dungeon maps are on.
+    "LeaMapsDB",
 
     -- Saved variables, per the .toc
     "AdventureGuideClassic_Account", "AdventureGuideClassic_Lockout",
@@ -65,7 +82,7 @@ globals = {
     "AGC_CheckEquipped", "AGC_DebugLootFilter", "AGC_ResetAllEncounters",
     "AGC_ResetInstance", "AGC_ToggleDebug", "AGC_Wishlist",
     "AGC_ModelDump", "AGC_ModelPoke",
-    "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
+    "AGC_NpcDisplays", "AGC_NpcPreview", "AGC_PreviewQuests", "AGC_Probe", "AGC_ProbeEvents",
     "AGC_Ids", "SLASH_AGCIDS1",
     "AGC_MarkDefeated", "AGC_MarkInstanceDefeated", "AGC_ProgressDump",
     "AGC_SetLeftOff",
@@ -79,6 +96,9 @@ globals = {
 read_globals = {
     -- API namespaces
     "C_AddOns", "C_Item", "C_KeyBindings", "C_Seasons", "C_Spell", "C_Timer",
+    -- Nameplates are the layer probe's last resort for a creature GUID when
+    -- nothing is targeted. Guarded at the call site: not every client has it.
+    "C_NamePlate",
 
     -- Widgets and frames
     -- os.date, which the client exposes bare. SeasonalService reads today's
@@ -133,6 +153,8 @@ read_globals = {
     -- name, which is why it is only the fallback.
     "GetRealZoneText", "GetZoneText",
     "UnitGUID", "UnitLevel", "UnitName",
+    -- Group size, so the layer probe can borrow a group member's target.
+    "IsInRaid", "GetNumGroupMembers",
     "GetInventoryItemID", "GetItemInfo", "GetItemInfoInstant",
     -- GetItemIcon is guarded at every call site and QUESTION_MARK_ICON has a
     -- literal fallback beside it, so neither has to exist on every client.
@@ -145,8 +167,14 @@ read_globals = {
     -- Input, sound, chat
     "GetBindingKey", "SetBinding", "GetCursorPosition",
     "IsControlKeyDown", "IsShiftKeyDown",
+    -- Read and restored by the portrait studio, which writes lossless screenshots
+    -- while it is open and puts the client's own setting back on the way out.
+    "GetCVar", "SetCVar",
     "PlaySound", "PlaySoundFile", "SOUNDKIT", "Screenshot",
-    "ChatEdit_InsertLink", "DressUpItemLink",
+    -- The studio prints the guide box as a pixel rectangle for the build tool,
+    -- and a screenshot is in physical pixels rather than UI units.
+    "GetPhysicalScreenSize",
+    "ChatEdit_InsertLink", "ChatFrame_OpenChat", "DressUpItemLink",
 
     -- Lua/WoW shims
     "strsplit", "wipe", "nop", "floor", "mod", "time",

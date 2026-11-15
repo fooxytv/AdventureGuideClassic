@@ -10,7 +10,7 @@ InstanceService.AddDungeon({
 	name = "Excavation Site: Wetlands",
 	thumbnail = I.UIEJDungeonButtonExcavationSiteWetlands,
 	icon = I.UIEJDungeonPortraitExcavationSiteWetlands,
-	splash = 527422,
+	splash = I.UIEJLoreBGExcavationSiteWetlands,
 	mapID = 2998,
 	seasonFilter = "forever",
 	overview = "A Titan dig site opened up in the Wetlands marshes, and everything living in that country has moved into it -- crocolisks off the lake, raptors along the ridges, spiders in the tall grass, and a Dragonmaw camp working the edges. What the diggers were trying to reach is still sealed, and still guarded.",
@@ -28,7 +28,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 260322 },
 		overview = {
 			"A crocolisk grown old and enormous on the lake shore, walking the waterline as though the dig had never happened.",
 			{ heading = "Overview" },
@@ -67,7 +67,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 260325 },
 		overview = {
 			"The raptor that owns the pathway, hunting it with a pair of Thicket Hunters at its flanks.",
 			{ heading = "Overview" },
@@ -142,7 +142,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 260326 },
 		overview = {
 			"What the excavation was always going to wake: a Titan construct that does not stir until somebody works the control panel beside it.",
 			{ heading = "Overview" },

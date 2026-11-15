@@ -4,10 +4,13 @@
 
 ## Interface: 16001
 ## Title: AdventureGuideClassic
-## Version: 1.10.0
+## Version: 1.11.0
 ## Notes: Provides a dungeon and raid journal for Classic WoW
 ## X-TocFlavor: mainline
 ## DefaultState: enabled
+# Loads EllesmereUI first where it is installed, so its skinning API is there to
+# register with. Optional: nothing here requires it.
+## OptionalDeps: EllesmereUI, Leatrix_Maps
 ## SavedVariables: AdventureGuideClassic_Account
 ## SavedVariablesPerCharacter: AdventureGuideClassic_Lockout
 

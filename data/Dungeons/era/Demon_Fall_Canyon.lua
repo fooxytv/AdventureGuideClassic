@@ -13,7 +13,7 @@ InstanceService.AddDungeon({
 	levelRange = { 60, 60 },
 	thumbnail = I.UIEJDungeonButtonDemonFallCanyon,
 	icon = I.UIEJDungeonPortraitDemonFallCanyon,
-	splash = 527422,
+	splash = I.UIEJLoreBGDemonFallCanyon,
 	mapID = 48,
 	seasonFilter = "exclusive",
 	overview = "Demon Fall Canyon is a fel-corrupted canyon located in Ashenvale, south of Felfire Hill. This cursed place earned its name after the titanic clash between the demonic pit lord Mannoroth and the two orcs Grommash Hellscream and Thrall. The lingering demonic energy has attracted new threats, and brave adventurers must venture into its depths to cleanse the corruption.",

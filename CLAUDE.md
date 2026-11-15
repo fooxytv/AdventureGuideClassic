@@ -29,7 +29,10 @@ break by accident.
 3. `Compat.lua` — client detection, before anything that branches on the client
 4. `lib/TomCats/Images.lua`, MinimapButton, `DynamicTable.lua`, `Atlas.lua`
 5. `services/Services.xml`, `data/Data.xml`, `ui/UI.xml`, `ui/InstanceSelectTemplates.xml`
-6. `SlashCommands.lua`, `Bindings.lua`, `Main.lua`, `Probe.lua`
+6. `SlashCommands.lua`, `Bindings.lua`, `Main.lua`, `Probe.lua`, `LayerProbe.lua`
+
+Nothing in step 6 depends on the order *within* it: the slash handlers are closures that
+run long after every file has loaded, so a diagnostic added there can go at the end.
 
 ## The global facade — read this before writing any file
 
@@ -195,7 +198,7 @@ python ci/scripts/check_globals.py # every global read must be declared
 exists, and a lint nit is not a reason to fail a CurseForge upload.
 
 **`ci/tests/smoke_test.py` is the one to reach for first.** It follows `Script` and
-`Include` from `Main.xml`, loads all 141 files against `ci/tests/wow_stub.lua`, and
+`Include` from `Main.xml`, loads every registered file against `ci/tests/wow_stub.lua`, and
 asserts `Compat`'s flags, the loot filter's verdicts and the instance counts -- once
 each for `era`, `sod`, `tbc`, `forever` and `forever_old`. The stub owns
 `GetBuildInfo`, `WOW_PROJECT_ID` and whether `C_Seasons` exists at all, so a
@@ -392,6 +395,21 @@ loot = {
 }
 ```
 
+### `side`, for the two faction-locked instances
+
+An instance may carry `side = "Horde"` or `side = "Alliance"`. Nil means either side,
+which is everything except **Ragefire Chasm** (inside Orgrimmar) and the **Stormwind
+Stockade** (inside Stormwind). `side` is the same tag `QuestService` reads on a quest.
+
+It is read by `SuggestionService` only, and deliberately: the journal still *lists* both,
+as retail's Encounter Journal does, and only what the addon **recommends** is filtered.
+Suggesting a dungeon the character cannot walk into is the same mistake as suggesting one
+they are too low for, which is why it sits beside the `minLevel` check.
+
+Do not tag an instance merely because it is in the other faction's territory —
+Gnomeregan, Deadmines and Shadowfang Keep are all reachable by both, and tagging them
+would hide content players legitimately run.
+
 Dungeons tag the same way. **Era raids do not tag at all**: all eleven in
 `data/Raids/era/` carry a `season` boolean instead and have no instance-level
 `seasonFilter`. `ShouldIncludeInstance` in `services/Instance.lua` returns inside its
@@ -410,6 +428,7 @@ it to be read.
 |---|---|
 | `AGC_Probe()` | what the addon thinks it is running on |
 | `AGC_ProbeEvents()` | which events this client refuses to register (`/agcprobeevents`); raises one real error per restricted event |
+| `AGC_Layer()` | which layer/shard the character is on (`/agc layer`), read off a nearby creature's GUID; no client exposes a layer API |
 | `AGC_PreviewQuests("active")` | draw every quest row in that state (`available`, `active`, `completed`; no argument to clear) |
 | `AGC_DebugLootFilter()` | why the selected encounter's loot was filtered |
 | `AGC_ToggleDebug()` | encounter-detection debug printing |
@@ -425,6 +444,7 @@ it to be read.
 | `AGC_ModelDump()` | what the model preset asks for next to what the model reports back |
 | `AGC_ModelPoke()` | drive each model camera control in turn, two seconds apart, to find which one the client honours |
 | `AGC_NpcPreview(id)` | show an NPC model |
+| `AGC_NpcDisplays()` | the display id behind each npc id in the open instance, as `HAND_PICKED` lines; or pass npc ids |
 | `TestLevelUpToast()`, `TestLevelUpToastAt(level)` | level-up toast |
 | `TestBossDefeatedToast()`, `TestBossDefeatedToastCustom(name)` | defeat toast |
 | `TestWishlistToast()`, `TestWishlistToastCustom(itemID)` | wishlist toast |

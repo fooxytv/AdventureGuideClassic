@@ -318,9 +318,7 @@ local function ButtonOnClick(self, mouseButton)
 			DressUpItemLink(target)
 		end
 	elseif mouseButton == "LeftButton" then
-		if lootItem.link then
-			ChatEdit_InsertLink(lootItem.link)
-		end
+		UI.LinkItem(lootItem.link)
 	end
 end
 

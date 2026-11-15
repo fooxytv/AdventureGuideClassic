@@ -86,6 +86,20 @@ function component.Init(components_)
 	local scrollbar = CreateFrame("EventFrame", nil, instanceSelect, "MinimalScrollBar")
 	scrollbar:SetPoint("TOPLEFT", scrollbox, "TOPRIGHT", 12, -6)
 	scrollbar:SetPoint("BOTTOMLEFT", scrollbox, "BOTTOMRIGHT", 12, 4)
+
+	--[[
+		Shown when the list is empty, which a grid of tiles cannot say for itself.
+		Forever reaches this on the Raids tab: its two raids were names with no data
+		and are unregistered in data/Data.xml, so the tab would otherwise open onto a
+		blank pane that reads as broken. Deliberately not "discovered" -- that word
+		belongs to DiscoveryService, which hides bosses the character has not met, and
+		would promise content that is findable in game.
+	]]
+	instanceSelect.emptyText = instanceSelect:CreateFontString(nil, "OVERLAY",
+		"GameFontNormalLarge")
+	instanceSelect.emptyText:SetPoint("CENTER", scrollbox, "CENTER", 0, 0)
+	instanceSelect.emptyText:SetWidth(420)
+	instanceSelect.emptyText:Hide()
 	local function Initializer(button, instance)
 		if (not button.initialized) then
 			button:SetSize(174, 96)
@@ -158,10 +172,18 @@ function component.Show()
 	end
 
 	local dataProvider = CreateDataProvider()
+	local count = 0
 	for _, instance in ipairs(AdventureGuideNavigationService.GetInstances()) do
 		dataProvider:Insert(instance)
+		count = count + 1
 	end
 	scrollbox:SetDataProvider(dataProvider)
+
+	-- The title is what this list is of, so it names what is missing.
+	local what = component.frame.title:GetText()
+	component.frame.emptyText:SetText(("No %s recorded for this client yet"):format(
+		what and what:lower() or "instances"))
+	component.frame.emptyText:SetShown(count == 0)
 	components.EncounterJournal.SetCurrentView(component.frame)
 	components.NavBar.Reset()
 end

@@ -37,7 +37,9 @@ end
 
 --[[
 	Every registered instance, before any filtering. ForeverContentService needs the
-	raw set to decide whether the client's journal agrees with our data.
+	raw set to decide whether the client's journal agrees with our data, and the
+	portrait studio needs it to reach Forever's bosses from an Era client, where
+	every filtered list leaves them out by design.
 ]]
 function InstanceService.GetAllInstances()
 	local all = { }

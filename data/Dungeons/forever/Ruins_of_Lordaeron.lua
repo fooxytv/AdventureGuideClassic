@@ -10,7 +10,7 @@ InstanceService.AddDungeon({
 	name = "Ruins of Lordaeron",
 	thumbnail = I.UIEJDungeonButtonRuinsOfLordaeron,
 	icon = I.UIEJDungeonPortraitRuinsOfLordaeron,
-	splash = 527422,
+	splash = I.UIEJLoreBGRuinsOfLordaeron,
 	mapID = 2999,
 	seasonFilter = "forever",
 	overview = "The broken city above the Undercity, walked now by the dead of its own garrison. Seven encounters spread across the alleys, the market and the overlook, several of them only appearing once something has been disturbed. Horde adventurers come up through the Undercity; the Alliance walk in from Southshore.",
@@ -64,7 +64,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 250631 },
 		overview = {
 			"Called up out of the Market Square statue, which shakes before he arrives, and preceded by three waves of the dead.",
 			{ heading = "Overview" },
@@ -91,7 +91,7 @@ InstanceService.AddDungeon({
 		name = "The Butcher",
 		defeated = 0,
 		encounterID = 3355,
-		portrait = 521744,
+		portrait = I.UIEJBossTheButcher,
 		loot = {
 			{ id = 271204, filter = "forever" }, -- Meathook Slicer
 			{ id = 271205, filter = "forever" }, -- Abomination Bones
@@ -124,7 +124,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 250657 },
 		overview = {
 			"The last of the ruins' dead to still hold a position worth defending.",
 			{ heading = "Overview" },
@@ -159,7 +159,7 @@ InstanceService.AddDungeon({
 		rareLoot = {},
 		veryRareLoot = {},
 		extremelyRareLoot = {},
-		npcs = {},
+		npcs = { 255699 },
 		overview = {
 			"Encounter details for this boss are not yet recorded. The client lists it, but no tactics have been confirmed for it.",
 		},

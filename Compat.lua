@@ -340,3 +340,88 @@ end
 function Compat.IsEra()
 	return Compat.isEraClient and Compat.GetActiveSeason() ~= SEASON_OF_DISCOVERY
 end
+
+--[[
+	Pretending to be a different client, for testing content this one cannot show.
+
+	This works because of two things that are true elsewhere. Every flag above is
+	read live -- some forty reads across the addon, not one of them cached into a
+	local at file scope -- and ShouldIncludeInstance filters per query rather than
+	at registration, with all five clients' data registered regardless. So the
+	content is already in memory and merely filtered out, and changing these flags
+	changes what the journal shows without a reload.
+
+	Session only, and deliberately not in SavedVariables: a journal that quietly
+	kept lying about the client after a reload is a bug report waiting to happen.
+]]
+local real = {
+	flavor = Compat.flavor,
+	tocVersion = Compat.tocVersion,
+	isForever = Compat.isForever,
+	isRetail = Compat.isRetail,
+	isTBC = Compat.isTBC,
+	isClassicLine = Compat.isClassicLine,
+	isEraClient = Compat.isEraClient,
+	isVanillaLoot = Compat.isVanillaLoot,
+	GetActiveSeason = Compat.GetActiveSeason,
+	HasActiveSeason = Compat.HasActiveSeason,
+}
+
+-- SoD is not a flavour of its own; it is Era with a season, which is exactly how
+-- the real detection sees it.
+local PRETEND = {
+	era     = { flavor = "era",     tocVersion = 11509, season = 0 },
+	sod     = { flavor = "era",     tocVersion = 11509, season = SEASON_OF_DISCOVERY },
+	tbc     = { flavor = "tbc",     tocVersion = 20506, season = 0 },
+	forever = { flavor = "forever", tocVersion = 16001, season = 0 },
+}
+
+function Compat.SetPretend(name)
+	if not name then
+		Compat.ClearPretend()
+		return true
+	end
+	local want = PRETEND[name]
+	if not want then return false end
+
+	Compat.pretending = name
+	Compat.flavor = want.flavor
+	Compat.tocVersion = want.tocVersion
+	Compat.isForever = (want.flavor == "forever")
+	Compat.isRetail = false
+	Compat.isTBC = (want.flavor == "tbc")
+	Compat.isClassicLine = (want.flavor == "era" or want.flavor == "tbc")
+	Compat.isEraClient = Compat.isClassicLine and want.tocVersion < 20000
+	Compat.isVanillaLoot = Compat.isEraClient or Compat.isForever
+	Compat.GetActiveSeason = function() return want.season end
+	Compat.HasActiveSeason = function() return want.season ~= 0 end
+	return true
+end
+
+function Compat.ClearPretend()
+	Compat.pretending = nil
+	for key, value in pairs(real) do
+		Compat[key] = value
+	end
+end
+
+--[[
+	The player's level, so one override reaches every reader.
+
+	Suggestions rank instances against it, so a pretend level is the only way to see
+	what the Suggested Content tab offers someone else.
+]]
+local pretendLevel
+
+function Compat.SetPretendLevel(level)
+	pretendLevel = level
+end
+
+function Compat.GetPretendLevel()
+	return pretendLevel
+end
+
+function Compat.GetPlayerLevel()
+	if pretendLevel then return pretendLevel end
+	return (UnitLevel and UnitLevel("player")) or 1
+end
