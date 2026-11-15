@@ -64,7 +64,7 @@ def rows(path, root=Q_ROOT):
     """Yield (id, fields) for each `[id] = {...},` line of a Questie database file."""
     full = os.path.join(root, path)
     if not os.path.exists(full):
-        sys.exit("Questie file not found: %s" % full)
+        sys.exit("%s file not found: %s" % ("QuestieDB" if root == QDB_ROOT else "Questie", full))
     text = io.open(full, encoding="utf-8", errors="replace").read()
     for m in re.finditer(r"^\[(\d+)\] = \{(.*)\},\s*$", text, re.M):
         yield int(m.group(1)), split_top(m.group(2))
