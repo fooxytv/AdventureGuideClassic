@@ -11,8 +11,8 @@ through /agc portraits -- a tuning aid, not a user feature.
 The repetitive half of making a portrait was never the model; it was staging the
 shot. This covers the screen in a single colour the keyer can find, puts the model
 on it as large as it will go, hides its own controls for the frame the shutter
-fires on, and writes lossless screenshots so the edge survives to be keyed. What
-comes out needs no retouching, only tools/make_bossportrait.py.
+fires on, and writes lossless screenshots, TGA and PNG, so the edge survives to be
+keyed. What comes out needs no retouching, only tools/make_bossportrait.py.
 
 It walks every boss in every instance and names each shot in chat as it takes it,
 so a folder of timestamped screenshots can still be matched back to bosses
@@ -455,6 +455,38 @@ end
 ]]
 local SHUTTER_DELAY = 0.1
 local RESTORE_DELAY = 0.5
+local SHOT_TIMEOUT = 5
+
+--[[
+	Each shot is taken twice: TGA for the keyer, then PNG to look at. The format is
+	switched only once the first file is written, in case the client reads the
+	setting when it saves rather than when it captures.
+]]
+local shotWaiter = CreateFrame("Frame")
+shotWaiter:SetScript("OnEvent", function(self)
+	if self.callback then self.callback() end
+end)
+Compat.RegisterEvents(shotWaiter, "SCREENSHOT_SUCCEEDED", "SCREENSHOT_FAILED")
+
+local function AfterShot(callback)
+	local done = false
+	local function finish()
+		if done then return end
+		done = true
+		if shotWaiter.callback == finish then shotWaiter.callback = nil end
+		callback()
+	end
+	shotWaiter.callback = finish
+	C_Timer.After(SHOT_TIMEOUT, finish)
+end
+
+-- True only if the client kept the value, so an unsupported format is skipped.
+local function SetScreenshotFormat(format)
+	pcall(SetCVar, "screenshotFormat", format)
+	return GetCVar("screenshotFormat") == format
+end
+
+local pngWarned = false
 
 --[[
 	Where the guide box sits, in the pixels the screenshot will have.
@@ -514,11 +546,35 @@ local function Shoot()
 
 	local function Fire()
 		if _G.Screenshot then _G.Screenshot() end
-		if C_Timer and C_Timer.After then
-			C_Timer.After(RESTORE_DELAY, Restore)
-		else
+		if not (C_Timer and C_Timer.After) then
 			Restore()
+			return
 		end
+		if not (_G.Screenshot and GetCVar and SetCVar) then
+			C_Timer.After(RESTORE_DELAY, Restore)
+			return
+		end
+		AfterShot(function()
+			-- The studio closing in between has already put the user's format back.
+			if not (studio and studio.oldFormat) then
+				Restore()
+				return
+			end
+			if not SetScreenshotFormat("png") then
+				SetScreenshotFormat("tga")
+				if not pngWarned then
+					pngWarned = true
+					print("|cff66ff66[AGC]|r this client cannot save PNG screenshots; TGA only.")
+				end
+				Restore()
+				return
+			end
+			_G.Screenshot()
+			AfterShot(function()
+				if studio and studio.oldFormat then SetScreenshotFormat("tga") end
+				Restore()
+			end)
+		end)
 	end
 
 	if C_Timer and C_Timer.After then
