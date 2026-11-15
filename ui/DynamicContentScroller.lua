@@ -72,4 +72,48 @@ spellDataFrame:SetScript("OnEvent", function()
 end)
 Compat.RegisterEvents(spellDataFrame, "SPELL_DATA_LOAD_RESULT")
 
+--[[
+	/run AGC_TextDump() while overview text shows as one "..." line. An instrument, not
+	a fix: it prints what each widget's box resolved to, so the clipped one shows itself.
+]]
+local function Size(region)
+	local top, bottom = region:GetTop(), region:GetBottom()
+	local box = (top and bottom) and string.format("%.0f", top - bottom) or "unresolved"
+	return string.format("h=%.0f box=%s w=%.0f", region:GetHeight(), box, region:GetWidth())
+end
+
+local function Points(region)
+	local names = { }
+	for i = 1, region:GetNumPoints() do
+		local point, _, relativePoint = region:GetPoint(i)
+		table.insert(names, point .. ">" .. relativePoint)
+	end
+	return table.concat(names, " ")
+end
+
+local function DumpWidget(widget, depth)
+	local pad = string.rep("  ", depth)
+	local name = widget.widgetType and widget.widgetType.name or "?"
+	print(string.format("%s%s #%s %s [%s]", pad, name, tostring(widget.idx), Size(widget), Points(widget)))
+	if widget.text then
+		local text = widget.text
+		print(string.format("%s  text %s string=%.0f truncated=%s lines=%s [%s] %q", pad, Size(text),
+			text:GetStringHeight(), tostring(text.IsTruncated and text:IsTruncated()),
+			tostring(text.GetNumLines and text:GetNumLines()), Points(text),
+			(text:GetText() or ""):sub(1, 24)))
+	end
+	for _, child in ipairs(widget.widgets or { }) do
+		DumpWidget(child, depth + 1)
+	end
+end
+
+_G.AGC_TextDump = function()
+	local scrollFrame = component.scrollFrame
+	if not scrollFrame then return end
+	local encounter = AdventureGuideNavigationService.GetEncounter()
+	print("|cffff9900[AGC]|r TextDump: " .. tostring(encounter and encounter.name)
+		.. ", shown=" .. tostring(component.frame:IsShown()))
+	DumpWidget(scrollFrame.child, 0)
+end
+
 UI.Add(component)
