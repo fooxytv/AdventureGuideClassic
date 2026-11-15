@@ -177,6 +177,23 @@ local function RaidNames()
 end
 
 --[[
+	The other side's instance, which is the same argument as the door below.
+	Ragefire Chasm is inside Orgrimmar and the Stockade inside Stormwind, so
+	offering one to the wrong faction is offering somewhere that cannot be walked
+	into -- and Ragefire outranked everything for a level-13 Alliance player,
+	because on the numbers alone it is a perfect fit.
+
+	`side` is QuestService's own tag and means the same here. Nil is either side,
+	which is every instance but those two: the filter only excludes what is
+	genuinely locked, and is deliberately not a guess about where a faction is
+	welcome. Browsing is untouched -- the journal still lists both, as retail's
+	does; this is only about what the addon *recommends*.
+]]
+local function WrongFaction(instance)
+	return instance.side ~= nil and instance.side ~= UnitFactionGroup("player")
+end
+
+--[[
 	Every instance this character could walk into today, ranked.
 
 	An instance the player is too low for is left out rather than ranked badly.
@@ -192,7 +209,7 @@ function SuggestionService.GetRanked()
 	for _, instance in ipairs(AllInstances()) do
 		local total = #instance
 		local locked = instance.minLevel and playerLevel < instance.minLevel
-		if total > 0 and not locked then
+		if total > 0 and not locked and not WrongFaction(instance) then
 			local wanted = counts[instance.name] or 0
 			local defeated = DefeatedCount(instance)
 			local distance = LevelDistance(instance, playerLevel) or UNKNOWN_LEVEL_DISTANCE

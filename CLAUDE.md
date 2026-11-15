@@ -395,6 +395,21 @@ loot = {
 }
 ```
 
+### `side`, for the two faction-locked instances
+
+An instance may carry `side = "Horde"` or `side = "Alliance"`. Nil means either side,
+which is everything except **Ragefire Chasm** (inside Orgrimmar) and the **Stormwind
+Stockade** (inside Stormwind). `side` is the same tag `QuestService` reads on a quest.
+
+It is read by `SuggestionService` only, and deliberately: the journal still *lists* both,
+as retail's Encounter Journal does, and only what the addon **recommends** is filtered.
+Suggesting a dungeon the character cannot walk into is the same mistake as suggesting one
+they are too low for, which is why it sits beside the `minLevel` check.
+
+Do not tag an instance merely because it is in the other faction's territory —
+Gnomeregan, Deadmines and Shadowfang Keep are all reachable by both, and tagging them
+would hide content players legitimately run.
+
 Dungeons tag the same way. **Era raids do not tag at all**: all eleven in
 `data/Raids/era/` carry a `season` boolean instead and have no instance-level
 `seasonFilter`. `ShouldIncludeInstance` in `services/Instance.lua` returns inside its
