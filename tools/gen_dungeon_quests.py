@@ -239,8 +239,8 @@ FOREVER_ZONES = "support/Forever/Zones/"
 
 # Instances QuestieDB's dungeon list does not carry yet, by the area it files them under.
 FOREVER_EXTRA_AREAS = {
-    "Shaper's Terrace": [16985],
-    "Krol'Dok Stronghold": [17780],
+    "The Shaper's Terrace": [16985],
+    "Krol'dok Stronghold": [17780],
 }
 
 # Forever adds a Skyborne race to each side, on bits the Classic masks do not reach.

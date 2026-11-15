@@ -901,7 +901,7 @@ PROBE = """
         level, so nothing but the quest term can put it first. Both are unvisited and
         neither is wishlisted, so the other terms cancel.
 
-        Quest data ships for Era's nineteen dungeons and four of Forever's. All five
+        Quest data ships for Era's nineteen dungeons and Forever's nine. All five
         clients list at least one of them today, so the -1 branch below is a guard
         rather than a path any of them takes: a client that listed none would
         otherwise record a pass for a rule it never checked.
@@ -1227,7 +1227,7 @@ PROBE = """
         { "era", 19, 6, "1,2,4,7" },
         { "sod", 18, 10, "1,3,4" },
         { "tbc", 19, 6, "1,5,7" },
-        { "forever", 23, 0, "1,2,4,6,7" },
+        { "forever", 28, 0, "1,2,4,6,7" },
     }
     local LOOT_PROBE = { { id = 1, filter = "all" }, { id = 2, filter = "era" },
         { id = 3, filter = "sod" }, { id = 4, filter = "classic" },
@@ -1653,7 +1653,7 @@ EXPECTED = {
     # era and classic loot is kept here on purpose. Compat.isVanillaLoot is
     # deliberately wider than isEraClient -- Forever shares vanilla's item ids
     # wherever it shares an instance -- so loot tagged era or classic belongs on it
-    # and only tbc loot does not. The 23 dungeons are Era's 19 plus Forever's 4:
+    # and only tbc loot does not. The 28 dungeons are Era's 19 plus Forever's 9:
     # with the journal cold, ForeverContentService falls back to ABSENT_ON_FOREVER
     # and unknown beats hidden. Forever lists no raids because its only two were
     # names with no data behind them and are unregistered in data/Data.xml.
@@ -1661,7 +1661,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
-        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0, "questDungeons": 21,
+        "loot": "1,2,4,6,7", "dungeons": 28, "raids": 0, "questDungeons": 26,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "seasonBeforeStart": "none",
@@ -1780,7 +1780,7 @@ EXPECTED = {
         "pretendFailures": "",
         "flavor": "forever", "isForever": 1, "isClassicLine": 0, "isEraClient": 0,
         "isVanillaLoot": 1, "isSoD": 0, "isEra": 0, "combatLogAvailable": 0,
-        "loot": "1,2,4,6,7", "dungeons": 23, "raids": 0, "questDungeons": 21,
+        "loot": "1,2,4,6,7", "dungeons": 28, "raids": 0, "questDungeons": 26,
         "spellName": "Spell 123", "spellIcon": 1, "tabTemplateExists": 1,
         "tabTemplate": "PanelTabButtonTemplate",
         "seasonBeforeStart": "none",
