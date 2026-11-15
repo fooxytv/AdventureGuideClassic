@@ -24,15 +24,17 @@ local SEARCH_WORDS = {
 	["Ruins of Lordaeron"] = "lordaeron",
 	["The Hall of Thanes"] = "thanes",
 	["The Drowned City"] = "drowned",
-	["Krol'Dok Stronghold"] = "krol'dok",
+	["Krol'dok Stronghold"] = "krol'dok",
 	["Alcaz Prison"] = "alcaz",
-	["Shaper's Terrace"] = "shaper",
+	["The Shaper's Terrace"] = "shaper",
 }
 
 -- The version dungeon maps arrived in; before it "dun" is an invalid command.
 local MIN_VERSION = { 1, 60, 27 }
 
+-- unsupported: any client but Forever, where our own tiles are the only maps.
 local MESSAGES = {
+	unsupported = "There is no map for this instance.",
 	missing = "Install Leatrix Maps to see this dungeon's map.",
 	outdated = "Update Leatrix Maps to see this dungeon's map.",
 	disabled = "Turn on \"Show dungeon maps\" in Leatrix Maps to see this dungeon's map.",

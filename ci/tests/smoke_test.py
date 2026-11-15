@@ -1291,7 +1291,7 @@ PROBE = """
     _G.LeaMapsDB = { ShowDungeonMaps = "Off" }
     leatrix[#leatrix + 1] = (LeatrixMapsService.GetStatus("City of Dalaran"))
     _G.LeaMapsDB = nil
-    LeatrixMapsService.Open("Krol'Dok Stronghold")
+    LeatrixMapsService.Open("Krol'dok Stronghold")
     leatrix[#leatrix + 1] = sent
     C_AddOns.IsAddOnLoaded, C_AddOns.GetAddOnMetadata = addOns.IsAddOnLoaded, addOns.GetAddOnMetadata
     SlashCmdList["Leatrix_Maps"], _G.WorldMapFrame = nil, nil
